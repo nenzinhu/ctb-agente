@@ -7,6 +7,7 @@ interface ProviderStatus {
   nome: string;
   envVar: string;
   modeloPadrao: string;
+  modelos: string[];
   papel: string;
   ordem: number;
   configurado: boolean;
@@ -93,8 +94,9 @@ export default function AdminProvedores() {
 
               <div className="flex-1 min-w-[220px]">
                 <p className="font-semibold text-gray-900">{provider.nome}</p>
-                <p className="text-xs text-gray-600">
-                  {provider.modeloPadrao} · {provider.papel}
+                <p className="text-xs text-gray-600">{provider.papel}</p>
+                <p className="text-xs text-gray-500 mt-1">
+                  Modelos: {provider.modelos.join(', ')}
                 </p>
                 <p className="text-xs text-gray-500">Variável: {provider.envVar}</p>
               </div>

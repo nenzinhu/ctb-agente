@@ -65,8 +65,10 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       );
     }
 
-    // Validate file size (50MB max)
-    const maxSize = 50 * 1024 * 1024;
+    // Vercel Serverless Functions hard-reject request bodies over 4.5MB
+    // before this handler even runs, so this check is mostly a safety net
+    // for other hosts — keep it aligned with components/AdminUploadForm.tsx.
+    const maxSize = 4 * 1024 * 1024;
     if (file.size > maxSize) {
       return NextResponse.json(
         {
@@ -191,7 +193,7 @@ export async function GET(): Promise<NextResponse> {
             file: 'File to upload (PDF, DOCX, or TXT)',
             metadata: 'JSON metadata (normaId, documentType, etc)',
           },
-          maxFileSize: '50MB',
+          maxFileSize: '4MB',
         },
       },
     },

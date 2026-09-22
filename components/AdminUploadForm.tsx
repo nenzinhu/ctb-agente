@@ -12,6 +12,36 @@ interface UploadFormProps {
   onUploadSuccess?: () => void;
 }
 
+// Vercel Serverless Functions reject request bodies over 4.5MB before the
+// route handler runs (returns plain-text "Request Entity Too Large", not
+// JSON) — this is a platform limit, not configurable from app code. Staying
+// under it here means the person sees a clear message instead of a
+// JSON-parse crash on a body we never controlled.
+const MAX_UPLOAD_BYTES = 4 * 1024 * 1024;
+
+/**
+ * Turn a failed upload response into a message a person can act on.
+ * A 413 body may be our own JSON or Vercel's plain-text platform rejection —
+ * either way the file was too big. Anything else falls back to response.text()
+ * since the body is not guaranteed to be JSON (a 500 from an upstream proxy,
+ * for instance).
+ */
+async function describeUploadError(response: Response): Promise<string> {
+  if (response.status === 413) {
+    return 'Arquivo muito grande para o servidor (limite de 4 MB por envio).';
+  }
+
+  // Read the body once as text: response.json() consumes the stream even
+  // when parsing fails, so a body already read can't be re-read as text.
+  const raw = await response.text().catch(() => '');
+  try {
+    const error = JSON.parse(raw);
+    return error.message || error.error || 'Falha no envio';
+  } catch {
+    return raw.slice(0, 200) || `Falha no envio (HTTP ${response.status})`;
+  }
+}
+
 export default function AdminUploadForm({ onUploadSuccess }: UploadFormProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isDragging, setIsDragging] = useState(false);
@@ -61,9 +91,12 @@ export default function AdminUploadForm({ onUploadSuccess }: UploadFormProps) {
 
         // Validate file type and size
         if (!isValidFile(file)) {
+          const tamanhoInvalido = file.size > MAX_UPLOAD_BYTES;
           setMessage({
             type: 'error',
-            text: `Arquivo inválido: ${file.name}. Formatos aceitos: PDF, DOCX, TXT (até 50 MB).`,
+            text: tamanhoInvalido
+              ? `Arquivo muito grande: ${file.name} (limite de 4 MB por envio).`
+              : `Arquivo inválido: ${file.name}. Formatos aceitos: PDF, DOCX, TXT (até 4 MB).`,
           });
           continue;
         }
@@ -78,8 +111,7 @@ export default function AdminUploadForm({ onUploadSuccess }: UploadFormProps) {
           });
 
           if (!response.ok) {
-            const error = await response.json();
-            throw new Error(error.message || error.error || 'Falha no envio');
+            throw new Error(await describeUploadError(response));
           }
 
           const data = await response.json();
@@ -128,9 +160,7 @@ export default function AdminUploadForm({ onUploadSuccess }: UploadFormProps) {
       file.name.toLowerCase().endsWith(ext)
     );
 
-    // Max file size: 50MB
-    const maxSize = 50 * 1024 * 1024;
-    const hasValidSize = file.size <= maxSize;
+    const hasValidSize = file.size <= MAX_UPLOAD_BYTES;
 
     return (hasValidMimeType || hasValidExtension) && hasValidSize;
   };
@@ -178,7 +208,7 @@ export default function AdminUploadForm({ onUploadSuccess }: UploadFormProps) {
             ou clique para selecionar
           </p>
           <p className="text-xs text-gray-400">
-            Aceitos: PDF, DOCX, TXT (até 50 MB)
+            Aceitos: PDF, DOCX, TXT (até 4 MB)
           </p>
         </div>
       </div>
