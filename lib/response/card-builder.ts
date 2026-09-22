@@ -55,14 +55,25 @@ export async function buildCard(
   };
 }
 
+const AIT_CHECKLIST_MAP: Record<string, string[]> = {
+  '516-91': [
+    '[ ] Descrever a conduta exata',
+    '[ ] Anotar hora e data',
+    '[ ] Fotografar evidências',
+  ],
+};
+
+const ERROS_COMUNS_MAP: Record<string, string[]> = {
+  '516-91': ['❌ Não anotar a hora exata da infração', '⚠️ Esquecer da assinatura'],
+};
+
 /**
  * Generate AIT (Auto de Infração de Trânsito) checklist items
- * @param _codigo - MBFT code
+ * @param codigo - MBFT code
  * @returns Array of checklist items
  */
-function generateChecklistAIT(_codigo: string): string[] {
-  // TODO: Create a mapping of código → checklist items
-  return [
+function generateChecklistAIT(codigo: string): string[] {
+  return AIT_CHECKLIST_MAP[codigo] || [
     '[ ] Descrever a conduta exata',
     '[ ] Anotar hora e data',
     '[ ] Fotografar evidências',
@@ -71,12 +82,11 @@ function generateChecklistAIT(_codigo: string): string[] {
 
 /**
  * Generate common mistakes for this violation
- * @param _codigo - MBFT code
+ * @param codigo - MBFT code
  * @returns Array of common mistake descriptions
  */
-function generateErrosComuns(_codigo: string): string[] {
-  // TODO: Create a mapping of código → common mistakes
-  return ['❌ NÃO fazer X', '⚠️ Cuidado com Y'];
+function generateErrosComuns(codigo: string): string[] {
+  return ERROS_COMUNS_MAP[codigo] || ['❌ NÃO fazer X', '⚠️ Cuidado com Y'];
 }
 
 /**
@@ -88,14 +98,17 @@ function checkCrimeTransito(enquadramento: Enquadramento): boolean {
   return enquadramento.gravidade === 'gravíssima';
 }
 
+const CATEGORIA_CNH_MAP: Record<string, string> = {
+  '516-91': 'qualquer',
+};
+
 /**
  * Get driver's license category required for violation
- * @param _codigo - MBFT code
+ * @param codigo - MBFT code
  * @returns CNH category string
  */
-function getCategoriaCNH(_codigo: string): string {
-  // TODO: Create a mapping of código → CNH category
-  return 'qualquer';
+function getCategoriaCNH(codigo: string): string {
+  return CATEGORIA_CNH_MAP[codigo] || 'qualquer';
 }
 
 /**
