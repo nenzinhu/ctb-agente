@@ -139,18 +139,75 @@ export async function getCacheStats(): Promise<CacheStats> {
 }
 
 /**
- * Delete expired cache entries
- * @returns Number of removed entries
+ * Delete expired cache entries, honoring each row's own ttl_dias.
+ * Uses the purge_expired_cache() RPC (migration 007); falls back to a plain
+ * delete with the default TTL when the RPC is not applied yet.
+ * @returns Number of removed entries (0 when the RPC errors)
  */
 export async function clearExpiredCache(): Promise<number> {
-  const stats = await getCacheStats();
-  if (stats.expiradas === 0) return 0;
+  if (!databaseConfigured) return 0;
 
+  try {
+    const { data, error } = await supabaseAdmin.rpc('purge_expired_cache');
+    if (!error) {
+      const removidos = Array.isArray(data) ? Number(data[0]) : Number(data);
+      return Number.isFinite(removidos) ? removidos : 0;
+    }
+
+    if (!isMissingRpcError(error)) {
+      console.warn('Cache purge failed:', error.message);
+      return 0;
+    }
+  } catch (error) {
+    const mensagem = error instanceof Error ? error.message : String(error);
+    if (!/could not find the function|does not exist|schema cache/i.test(mensagem)) {
+      console.warn('Cache purge failed:', mensagem);
+      return 0;
+    }
+  }
+
+  // Legacy fallback: assumes DEFAULT_TTL_DIAS for every row.
   const limite = new Date(Date.now() - DEFAULT_TTL_DIAS * 86_400_000).toISOString();
-  const { error } = await supabaseAdmin
+  const { error: erroDelete } = await supabaseAdmin
     .from('cache_respostas')
     .delete()
     .lt('data_ultimo_acesso', limite);
 
-  return error ? 0 : stats.expiradas;
+  return erroDelete ? 0 : -1;
+}
+
+/**
+ * Drop every cached response. Called right after the corpus changes
+ * (document ingestion, enquadramento CRUD) so agents never see a stale
+ * card for up to 30 days after the fix. Best-effort: failures are logged,
+ * never propagated.
+ * @returns Number of removed entries, -1 on failure
+ */
+export async function invalidateResponseCache(): Promise<number> {
+  if (!databaseConfigured) return -1;
+
+  try {
+    const { data, error } = await supabaseAdmin.rpc('bump_corpus_version');
+    if (!error) {
+      const removidos = Array.isArray(data) ? Number(data[0]) : Number(data);
+      return Number.isFinite(removidos) ? removidos : -1;
+    }
+    console.warn('Cache invalidation failed:', error.message);
+  } catch (error) {
+    console.warn('Cache invalidation failed:', error);
+  }
+  return -1;
+}
+
+/**
+ * Detect the Supabase error raised when the RPC is absent (migration pending)
+ * @param error - Error returned by the rpc() call
+ * @returns True when the function does not exist in the database
+ */
+function isMissingRpcError(error: unknown): boolean {
+  const code = (error as { code?: string } | null)?.code;
+  if (code === 'PGRST202' || code === '42883') return true;
+  return /could not find the function|does not exist|schema cache/i.test(
+    error instanceof Error ? error.message : String(error ?? '')
+  );
 }

@@ -13,6 +13,13 @@ import { DOCUMENTS_BUCKET } from '@/lib/ingestion/storage';
 import { parseDocument } from '@/lib/ingestion/parser';
 import { chunkText } from '@/lib/ingestion/chunker';
 import { processChunks } from '@/lib/ingestion/processor';
+import { invalidateResponseCache } from '@/lib/response/cache';
+
+// A full document is now parsed into hundreds of chunks, each needing an
+// embedding call before it's inserted. 60s is the highest value every
+// Vercel plan (including Hobby) accepts without failing the deploy — raise
+// it if the account is confirmed to be on Pro or higher.
+export const maxDuration = 60;
 
 const UploadRequestSchema = z.object({
   storagePath: z.string().min(1),
@@ -103,6 +110,13 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     console.log(
       `Processing complete: ${processingResult.insertedCount} inserted, ${processingResult.failedCount} failed`
     );
+
+    // The corpus changed: cached cards may cite outdated text. Best-effort —
+    // a failed invalidation must not fail an upload that actually landed.
+    if (processingResult.insertedCount > 0) {
+      const removidos = await invalidateResponseCache();
+      console.log(`Response cache invalidated: ${removidos} entries removed`);
+    }
 
     const success = processingResult.insertedCount > 0;
 

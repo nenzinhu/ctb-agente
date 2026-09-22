@@ -4,6 +4,7 @@ import { z } from 'zod';
 import { validateSession } from '@/lib/auth/session';
 import { databaseConfigured } from '@/lib/db/client';
 import { deleteEnquadramento, listEnquadramentos, upsertEnquadramento } from '@/lib/db/queries';
+import { invalidateResponseCache } from '@/lib/response/cache';
 
 const SEM_BANCO = {
   error: 'database_not_configured',
@@ -83,6 +84,8 @@ export async function POST(request: NextRequest) {
 
   try {
     const enquadramento = await upsertEnquadramento(parsed.data);
+    // Cards cached by code now cite the new description/values: drop them.
+    await invalidateResponseCache();
     return NextResponse.json({ enquadramento }, { status: 200 });
   } catch (error) {
     console.error('Failed to upsert enquadramento:', error);
@@ -115,6 +118,7 @@ export async function DELETE(request: NextRequest) {
 
   try {
     await deleteEnquadramento(codigo);
+    await invalidateResponseCache();
     return NextResponse.json({ ok: true }, { status: 200 });
   } catch (error) {
     console.error('Failed to delete enquadramento:', error);

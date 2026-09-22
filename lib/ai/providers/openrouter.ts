@@ -1,4 +1,5 @@
 import { AIProvider, AIModel } from './base';
+import { fetchWithTimeout } from './timeout';
 
 export class OpenRouterProvider implements AIProvider {
   name = 'OpenRouter';
@@ -29,7 +30,7 @@ export class OpenRouterProvider implements AIProvider {
   }
 
   async generate(prompt: string, model: string, maxTokens: number, temperature = 0.7): Promise<string> {
-    const response = await fetch(`${this.baseUrl}/chat/completions`, {
+    const response = await fetchWithTimeout(`${this.baseUrl}/chat/completions`, {
       method: 'POST',
       headers: {
         Authorization: `Bearer ${this.apiKey}`,

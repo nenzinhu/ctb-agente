@@ -10,6 +10,7 @@ import {
 } from '@/lib/response/card-builder';
 import { getCachedCard, setCachedCard } from '@/lib/response/cache';
 import { validateCitations } from '@/lib/response/validator';
+import { isBackedByNormas } from '@/lib/response/card-builder';
 import { checkRateLimit, recordQuery } from '@/lib/ratelimit/limiter';
 import { turnstileEnabled, verifyTurnstile } from '@/lib/ratelimit/turnstile';
 import {
@@ -62,10 +63,16 @@ export async function handleConsulta(
   const tipo = TIPO_POR_QUERY[identifyQueryType(consulta)] ?? 'situacao';
 
   try {
-    const limit = await checkRateLimit(ipAddress);
+    // PII leaves this function only in filtered form: the usage log and the
+    // cache key must never store plates, CPFs or CNPJs typed by the agent.
+    const consultaFiltrada = filterPII(consulta);
+    const limit = await checkRateLimit(ipAddress, {
+      tipo,
+      pergunta: consultaFiltrada,
+    });
     if (!limit.allowed) {
       const erro: ConsultaError = limit.blocked ? 'ip_blocked' : 'rate_limit_exceeded';
-      await recordQuery(ipAddress, consulta, { tipo, sucesso: false, tempoMs: 0 });
+      await recordQuery(ipAddress, consultaFiltrada, { tipo, sucesso: false, tempoMs: 0 }, limit.registroId);
       return {
         card: emptyCard(consulta, tipo),
         sucesso: false,
@@ -84,7 +91,7 @@ export async function handleConsulta(
           ? await verifyTurnstile(turnstileToken, ipAddress)
           : { ok: true, skipped: true };
       if (!verification.ok) {
-        await recordQuery(ipAddress, consulta, { tipo, sucesso: false, tempoMs: 0 });
+        await recordQuery(ipAddress, consultaFiltrada, { tipo, sucesso: false, tempoMs: 0 }, limit.registroId);
         return {
           card: emptyCard(consulta, tipo),
           sucesso: false,
@@ -95,16 +102,16 @@ export async function handleConsulta(
       }
     }
 
-    const cached = await getCachedCard(consulta);
+    const cached = await getCachedCard(consultaFiltrada);
     if (cached) {
       const card = { ...cached, cache_hit: true, tempo_ms: Date.now() - startTime };
-      await recordQuery(ipAddress, consulta, {
+      await recordQuery(ipAddress, consultaFiltrada, {
         tipo,
         cacheHit: true,
         sucesso: true,
         tempoMs: card.tempo_ms,
         modelo: 'cache',
-      });
+      }, limit.registroId);
       return {
         card,
         sucesso: card.sucesso,
@@ -118,22 +125,22 @@ export async function handleConsulta(
     const tempo = Date.now() - startTime;
     const finalCard: CartaoEstruturado = { ...validated, tempo_ms: tempo, cache_hit: false };
 
-    await recordQuery(ipAddress, consulta, {
+    await recordQuery(ipAddress, consultaFiltrada, {
       tipo,
       cacheHit: false,
       sucesso: finalCard.sucesso,
       tempoMs: tempo,
       modelo: 'database',
-    });
+    }, limit.registroId);
 
     if (finalCard.sucesso) {
-      await setCachedCard(consulta, finalCard);
+      await setCachedCard(consultaFiltrada, finalCard);
     }
 
     return { card: finalCard, sucesso: finalCard.sucesso, tempo_ms: tempo, cache_hit: false };
   } catch (error) {
     console.error('Consulta failed:', error);
-    await recordQuery(ipAddress, consulta, { tipo, sucesso: false, tempoMs: Date.now() - startTime });
+    await recordQuery(ipAddress, filterPII(consulta), { tipo, sucesso: false, tempoMs: Date.now() - startTime });
     return {
       card: emptyCard(consulta, tipo),
       sucesso: false,
@@ -250,11 +257,44 @@ function validateCard(card: CartaoEstruturado): CartaoEstruturado {
     return { ...card, citacoes: [] };
   }
 
-  const { issues } = validateCitations(JSON.stringify(card.citacoes), card.normas);
+  // Structural check: keep only citations backed by the retrieved norms.
+  // This does not depend on the validator's message format (which is an
+  // implementation detail) and never drops explicitly unverified citations.
+  const citacoesFiltradas = card.citacoes.filter(
+    (c) => !c.validada || isBackedByNormas(c.dispositivo, card.normas)
+  );
+
+  // Regex sweep over the free-text fields as a second line of defense.
+  const { issues } = validateCitations(
+    JSON.stringify([card.explicacao_simples, card.exemplo_dia_a_dia]),
+    card.normas
+  );
   if (issues.length === 0) {
-    return card;
+    return { ...card, citacoes: citacoesFiltradas };
   }
 
-  const invalidas = new Set(issues.map((i) => i.replace(/^Citation not found: "|"$/g, '')));
-  return { ...card, citacoes: card.citacoes.filter((c) => !invalidas.has(c.dispositivo)) };
+  const invalidas = new Set(
+    issues.map((i) => i.replace(/^Citation not found: "/, '').replace(/"$/, ''))
+  );
+  return {
+    ...card,
+    explicacao_simples: dropInvalidCitations(card.explicacao_simples, invalidas),
+    exemplo_dia_a_dia: dropInvalidCitations(card.exemplo_dia_a_dia, invalidas),
+    citacoes: citacoesFiltradas,
+  };
+}
+
+/**
+ * Remove article references that validation flagged as unbacked from free text
+ * @param texto - Free-text field of the card
+ * @param invalidas - Article keys flagged by the validator (e.g. "art. 999 § 2")
+ * @returns Text without the unbacked references
+ */
+function dropInvalidCitations(texto: string, invalidas: Set<string>): string {
+  let resultado = texto;
+  for (const chave of invalidas) {
+    const escapado = chave.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    resultado = resultado.replace(new RegExp(`${escapado}(?![\\d])\\s*,?\\s*`, 'gi'), '');
+  }
+  return resultado;
 }

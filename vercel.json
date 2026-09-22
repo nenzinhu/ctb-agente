@@ -1,5 +1,11 @@
 {
   "regions": ["gru1"],
+  "crons": [
+    {
+      "path": "/api/cron/clear-cache",
+      "schedule": "0 4 * * *"
+    }
+  ],
   "headers": [
     {
       "source": "/(.*)",

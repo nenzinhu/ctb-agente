@@ -60,7 +60,10 @@ const getCacheStats = jest.fn(async () => ({
   ultimoAcesso: '2026-09-22T10:00:00Z',
 }));
 
-jest.mock('../../lib/response/cache', () => ({ getCacheStats: () => getCacheStats() }));
+jest.mock('../../lib/response/cache', () => ({
+  getCacheStats: () => getCacheStats(),
+  invalidateResponseCache: jest.fn(async () => 0),
+}));
 
 const listProviders = jest.fn(() => [
   { id: 'groq', nome: 'Groq', envVar: 'GROQ_API_KEY', modeloPadrao: 'llama', papel: 'x', ordem: 1, configurado: false },

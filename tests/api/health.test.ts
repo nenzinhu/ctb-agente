@@ -3,6 +3,7 @@
  */
 // Tests for GET /api/health
 const respostas: Record<string, { error: unknown; count?: number }> = {};
+const rpcRespostas: Record<string, { error: unknown; data?: unknown }> = {};
 let dbConfigurado = true;
 
 jest.mock('../../lib/db/client', () => ({
@@ -19,6 +20,12 @@ jest.mock('../../lib/db/client', () => ({
         Promise.resolve(respostas[tabela] ?? { error: null, count: 5 }).then(resolve);
       return chain;
     },
+    rpc: (fn: string) => {
+      const chain: Record<string, unknown> = {};
+      chain.then = (resolve: (value: unknown) => unknown) =>
+        Promise.resolve(rpcRespostas[fn] ?? { error: null, data: [] }).then(resolve);
+      return chain;
+    },
   },
   supabaseAdmin: {},
 }));
@@ -29,6 +36,7 @@ describe('GET /api/health', () => {
   beforeEach(() => {
     dbConfigurado = true;
     for (const chave of Object.keys(respostas)) delete respostas[chave];
+    for (const chave of Object.keys(rpcRespostas)) delete rpcRespostas[chave];
   });
 
   it('reports ok when the database answers', async () => {
@@ -41,6 +49,36 @@ describe('GET /api/health', () => {
     expect(corpo).toHaveProperty('versao');
     expect(Array.isArray(corpo.provedoresAusentes)).toBe(true);
     expect(corpo.configuracoes).toMatchObject({ consultas_por_hora: expect.any(Number) });
+  });
+
+  it('exposes the embeddings status and warnings array', async () => {
+    process.env.MISTRAL_API_KEY = 'test-key';
+    try {
+      const corpo = await (await GET()).json();
+      expect(corpo.embeddings).toBe('ok');
+      expect(Array.isArray(corpo.avisos)).toBe(true);
+    } finally {
+      delete process.env.MISTRAL_API_KEY;
+    }
+  });
+
+  it('warns when the embedding key is absent (hybrid search runs BM25 only)', async () => {
+    delete process.env.MISTRAL_API_KEY;
+
+    const corpo = await (await GET()).json();
+    expect(corpo.embeddings).toBe('indisponivel');
+    expect(corpo.avisos.join(' ')).toMatch(/MISTRAL_API_KEY/);
+  });
+
+  it('warns when the vector-search RPC is missing (migration 003 pending)', async () => {
+    process.env.MISTRAL_API_KEY = 'test-key';
+    rpcRespostas.search_dispositivos_vector = { error: { code: 'PGRST202' } };
+    try {
+      const corpo = await (await GET()).json();
+      expect(corpo.avisos.join(' ')).toMatch(/migrations-003/);
+    } finally {
+      delete process.env.MISTRAL_API_KEY;
+    }
   });
 
   it('reports degraded when the database errors', async () => {

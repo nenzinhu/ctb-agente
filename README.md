@@ -13,12 +13,12 @@ Aplicativo PWA que permite consulta interativa da legislação de trânsito (Có
 - Respostas estruturadas com enquadramento legal, gravidade, pontos, multa
 - Checklist AIT, erros comuns, normas aplicáveis e jurisprudência cadastrada
 - Validação de citações (não exibe referência inventada como verificada)
-- Cache de respostas (30 dias) invalidado quando a base muda
+- Cache de respostas (30 dias) invalidado quando a base muda (ingestão/CRUD) + limpeza diária de expirados
 - Dossiê temático em PDF (`@react-pdf/renderer`), cacheado por 1 semana
 - Ditado por voz (Groq Whisper) para uso no campo
 - Modo sol (alto contraste) para leitura sob luz do dia
 - Rate limiting por IP + Turnstile anti-bot + filtro PII (placas, CPF, CNPJ)
-- Suporte a múltiplos LLMs (Groq → NVIDIA → OpenRouter → Mistral)
+- Suporte a múltiplos LLMs em cadeia de fallback (Groq, NVIDIA, Nous, OrcaRouter, AnyAPI, OpenRouter, Mistral)
 - Painel master com documentos, enquadramentos, provedores, uso e limites
 
 ## 🏗️ Stack
@@ -28,7 +28,7 @@ Aplicativo PWA que permite consulta interativa da legislação de trânsito (Có
 - **Database:** Supabase PostgreSQL + pgvector
 - **Search:** BM25 (tsvector) + pgvector embeddings
 - **PDF:** @react-pdf/renderer
-- **LLM:** Pluggable (Groq → NVIDIA → OpenRouter → Mistral)
+- **LLM:** Pluggable em cadeia (Groq → NVIDIA → Nous → OrcaRouter → AnyAPI → OpenRouter → Mistral)
 - **Testes:** Jest (unit + componentes + rotas) e Playwright (E2E)
 
 ## 📋 Roadmap
@@ -61,6 +61,11 @@ Aplicar as migrations no Supabase (SQL Editor), na ordem:
 4. `scripts/migrations-004-rls.sql`
 5. `scripts/migrations-005-pin-function-search-path.sql`
 6. `scripts/migrations-006-documents-storage-bucket.sql`
+7. `scripts/migrations-007-ratelimit-cache.sql` (rate limit atômico + invalidação do cache)
+
+A migration 007 é opcional: sem ela o app continua funcionando (rate limit
+legado e invalidação via fallback), mas perde a atomicidade anti-rajada e a
+limpeza por TTL individual.
 
 Depois, popular a base com dados de exemplo:
 
@@ -80,6 +85,12 @@ npm run seed
 | `npm run seed` | Popula o corpus inicial |
 | `npm run icons` | (Re)gera os ícones PWA sem dependências |
 
+## ⏰ Cron
+
+O `vercel.json` agenda `GET /api/cron/clear-cache` diariamente (04:00 UTC) para
+remover as entradas expiradas de `cache_respostas`. Em deploy fora da Vercel,
+chame a rota por um cron externo com o header `Authorization: Bearer $CRON_SECRET`.
+
 O conjunto E2E que depende de base populada só roda com `E2E_SEEDED=1`.
 
 ## 📚 Docs
@@ -95,7 +106,8 @@ O conjunto E2E que depende de base populada só roda com `E2E_SEEDED=1`.
 - Rate limit por IP/hora, configurável no painel (Limites)
 - Turnstile anti-bot, exigido conforme o consumo do IP
 - Filtro PII antes de qualquer envio a provedores de IA
-- Sem credenciais em código (`.env.local` git-ignored)
+- Sem credenciais em código (`.env*.local` git-ignored)
+- PII (placas, CPF, CNPJ) filtrada antes de gravar em `uso_diario`/`cache_respostas` e antes de provedores de IA
 
 ## 📝 License
 

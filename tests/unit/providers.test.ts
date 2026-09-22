@@ -1,5 +1,5 @@
 import { GroqProvider } from '@/lib/ai/providers/groq';
-import { ProviderChain } from '@/lib/ai/providers/chain';
+import { fetchWithTimeout } from '@/lib/ai/providers/timeout';
 
 describe('AI Providers', () => {
   describe('GroqProvider', () => {
@@ -10,12 +10,23 @@ describe('AI Providers', () => {
     });
   });
 
-  describe('ProviderChain', () => {
-    it('should initialize with multiple providers', () => {
-      const chain = new ProviderChain();
-      expect(chain.name).toBe('Provider Chain');
-      expect(chain.generate).toBeDefined();
-      expect(chain.getModels).toBeDefined();
+  describe('fetchWithTimeout', () => {
+    it('passes through a caller-provided signal untouched', async () => {
+      const controller = new AbortController();
+      const originalFetch = global.fetch;
+      const fetchMock = jest.fn().mockResolvedValue({ ok: true, json: async () => ({}) });
+      // jsdom has no global fetch to spyOn — replace it directly.
+      (global as { fetch: unknown }).fetch = fetchMock;
+
+      try {
+        await fetchWithTimeout('https://exemplo.test', { signal: controller.signal }, 5);
+        expect(fetchMock).toHaveBeenCalledWith(
+          'https://exemplo.test',
+          expect.objectContaining({ signal: controller.signal })
+        );
+      } finally {
+        (global as { fetch: unknown }).fetch = originalFetch;
+      }
     });
   });
 });

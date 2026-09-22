@@ -37,7 +37,8 @@ export interface CartaoEstruturado {
   normas: NormaAplicavel[];
   checklist_ait: string[];
   erros_comuns: string[];
-  concurso_infrações: string[];
+  /** Códigos MBFT que podem ser cumulados com este enquadramento. */
+  concurso_infracoes: string[];
   crime_transito: boolean;
   categoria_cnh_exigida: string;
   normas_relacionadas: string[];

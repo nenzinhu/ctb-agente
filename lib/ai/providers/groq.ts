@@ -1,4 +1,5 @@
 import { AIProvider, AIModel } from './base';
+import { fetchWithTimeout } from './timeout';
 
 export class GroqProvider implements AIProvider {
   name = 'Groq';
@@ -9,7 +10,7 @@ export class GroqProvider implements AIProvider {
   }
 
   async getModels(): Promise<AIModel[]> {
-    const response = await fetch('https://api.groq.com/openai/v1/models', {
+    const response = await fetchWithTimeout('https://api.groq.com/openai/v1/models', {
       headers: { Authorization: `Bearer ${this.apiKey}` },
     });
     const data = await response.json();
@@ -27,7 +28,7 @@ export class GroqProvider implements AIProvider {
   }
 
   async generate(prompt: string, model: string, maxTokens: number, temperature = 0.7): Promise<string> {
-    const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+    const response = await fetchWithTimeout('https://api.groq.com/openai/v1/chat/completions', {
       method: 'POST',
       headers: {
         Authorization: `Bearer ${this.apiKey}`,

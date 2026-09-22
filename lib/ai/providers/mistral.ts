@@ -1,4 +1,5 @@
 import { AIProvider, AIModel, EmbeddingProvider } from './base';
+import { fetchWithTimeout } from './timeout';
 
 export class MistralProvider implements AIProvider {
   name = 'Mistral';
@@ -18,7 +19,7 @@ export class MistralProvider implements AIProvider {
   }
 
   async generate(prompt: string, model: string, maxTokens: number, temperature = 0.7): Promise<string> {
-    const response = await fetch(`${this.baseUrl}/chat/completions`, {
+    const response = await fetchWithTimeout(`${this.baseUrl}/chat/completions`, {
       method: 'POST',
       headers: {
         Authorization: `Bearer ${this.apiKey}`,
@@ -51,7 +52,7 @@ export class MistralEmbedding implements EmbeddingProvider {
   }
 
   async embed(text: string): Promise<number[]> {
-    const response = await fetch(`${this.baseUrl}/embeddings`, {
+    const response = await fetchWithTimeout(`${this.baseUrl}/embeddings`, {
       method: 'POST',
       headers: {
         Authorization: `Bearer ${this.apiKey}`,

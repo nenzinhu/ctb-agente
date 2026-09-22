@@ -44,7 +44,7 @@ function cartaoCache(): CartaoEstruturado {
     normas: [],
     checklist_ait: [],
     erros_comuns: [],
-    concurso_infrações: [],
+    concurso_infracoes: [],
     crime_transito: false,
     categoria_cnh_exigida: 'qualquer',
     normas_relacionadas: [],

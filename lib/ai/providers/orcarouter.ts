@@ -1,4 +1,5 @@
 import { AIProvider, AIModel } from './base';
+import { fetchWithTimeout } from './timeout';
 
 /**
  * OpenAI-compatible router with no fixed base URL — must be set via
@@ -34,7 +35,7 @@ export class OrcaRouterProvider implements AIProvider {
       throw new Error('ORCAROUTER_BASE_URL não configurada');
     }
 
-    const response = await fetch(`${this.baseUrl}/chat/completions`, {
+    const response = await fetchWithTimeout(`${this.baseUrl}/chat/completions`, {
       method: 'POST',
       headers: {
         Authorization: `Bearer ${this.apiKey}`,
