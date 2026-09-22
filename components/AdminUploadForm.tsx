@@ -124,6 +124,17 @@ export default function AdminUploadForm({ onUploadSuccess }: UploadFormProps) {
     if (!ingestResponse.ok) {
       throw new Error(await describeUploadError(ingestResponse));
     }
+
+    // A 2xx here only means the request completed, not that every chunk was
+    // saved — some may have failed to embed while others succeeded.
+    const result = (await ingestResponse.json()) as {
+      data?: { insertedCount: number; failedCount: number };
+    };
+    if (result.data && result.data.failedCount > 0) {
+      throw new Error(
+        `${result.data.insertedCount} trecho(s) importado(s), mas ${result.data.failedCount} falharam (ver console/logs do servidor).`
+      );
+    }
   };
 
   const uploadFiles = async (files: FileList) => {

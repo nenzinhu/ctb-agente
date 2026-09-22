@@ -142,12 +142,21 @@ async function parsePdf(filePath: string): Promise<{ text: string; pageCount: nu
         const page = await pdf.getPage(i);
         const textContent = await page.getTextContent();
 
-        // Combine text items into a coherent string
+        // Combine text items into a coherent string. pdfjs gives each word
+        // (or run of words) as a separate item with no separator between
+        // them — joining with '' glues words together ("ArtigosdoCódigo").
+        // A space between items plus a real line break wherever pdfjs marks
+        // hasEOL keeps words and lines apart, which the chunker below
+        // depends on to find paragraph/sentence boundaries instead of
+        // treating an entire page (or the whole document) as one run-on
+        // paragraph.
         const pageText = textContent.items
-          .map((item: any) => (item.str ? item.str : ''))
+          .map((item: any) => (item.str ? item.str + (item.hasEOL ? '\n' : ' ') : ''))
           .join('');
 
-        fullText += pageText + '\n';
+        // Blank line between pages so the chunker sees a paragraph break at
+        // every page boundary, not just wherever the last "." happens to be.
+        fullText += pageText + '\n\n';
       } catch (pageError) {
         console.warn(`Failed to extract text from page ${i}:`, pageError);
         continue;

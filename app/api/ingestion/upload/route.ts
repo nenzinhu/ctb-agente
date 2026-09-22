@@ -104,9 +104,35 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       `Processing complete: ${processingResult.insertedCount} inserted, ${processingResult.failedCount} failed`
     );
 
+    const success = processingResult.insertedCount > 0;
+
+    // A 200 here with insertedCount 0 would look like a successful upload to
+    // the admin panel (it only checks response.ok) while nothing actually
+    // landed in `dispositivos`. Fail the request instead so the real reason
+    // (usually the embedding provider) surfaces in the UI.
+    if (!success) {
+      const firstError = processingResult.errors[0]?.error;
+      return NextResponse.json(
+        {
+          error: 'ingestion_failed',
+          message: firstError
+            ? `Nenhum trecho de "${fileName}" foi importado: ${firstError}`
+            : `Nenhum trecho de "${fileName}" pôde ser importado.`,
+          data: {
+            fileName,
+            chunkCount: chunks.length,
+            insertedCount: processingResult.insertedCount,
+            failedCount: processingResult.failedCount,
+            errors: processingResult.errors,
+          },
+        },
+        { status: 422 }
+      );
+    }
+
     return NextResponse.json(
       {
-        success: processingResult.insertedCount > 0,
+        success: true,
         message: `Processed ${fileName}: ${processingResult.insertedCount} chunks inserted`,
         data: {
           fileName,

@@ -119,8 +119,53 @@ export function chunkText(
     });
   }
 
+  // Safety net: a paragraph with no period near its end (e.g. a wall of
+  // text with no punctuation) skips the sentence-break above entirely and
+  // comes out here as one oversized chunk — large enough to blow past an
+  // embedding provider's input limit. Hard-split anything still far bigger
+  // than the target instead of shipping it as-is.
+  const sized = chunks.flatMap((chunk) => splitOversizedChunk(chunk, targetChunkSize));
+
   // Validate chunk size - remove empty chunks and ensure quality
-  return chunks.filter((chunk) => chunk.text.length > 20);
+  return sized
+    .filter((chunk) => chunk.text.length > 20)
+    .map((chunk, i) => ({ ...chunk, order: i }));
+}
+
+const MAX_CHUNK_MULTIPLIER = 4;
+
+/**
+ * Splits a chunk that's far larger than the target size into ~target-sized
+ * pieces, breaking on whitespace so words stay intact.
+ */
+function splitOversizedChunk(chunk: TextChunk, targetChunkSize: number): TextChunk[] {
+  const maxSize = targetChunkSize * MAX_CHUNK_MULTIPLIER;
+  if (chunk.text.length <= maxSize) {
+    return [chunk];
+  }
+
+  const pieces: TextChunk[] = [];
+  let rest = chunk.text;
+
+  while (rest.length > maxSize) {
+    let breakAt = rest.lastIndexOf(' ', targetChunkSize);
+    if (breakAt < targetChunkSize * 0.5) {
+      breakAt = targetChunkSize; // no good whitespace break — cut hard
+    }
+
+    pieces.push({
+      text: rest.slice(0, breakAt).trim(),
+      numero_dispositivo: chunk.numero_dispositivo,
+      order: chunk.order,
+    });
+    rest = rest.slice(breakAt).trim();
+  }
+
+  if (rest.length > 0) {
+    pieces.push({ text: rest, numero_dispositivo: chunk.numero_dispositivo, order: chunk.order });
+  }
+
+  return pieces;
 }
 
 /**
