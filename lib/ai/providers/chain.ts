@@ -7,7 +7,6 @@ import { MistralProvider } from './mistral';
 export class ProviderChain implements AIProvider {
   name = 'Provider Chain';
   private providers: AIProvider[];
-  private currentProviderIndex = 0;
 
   constructor() {
     this.providers = [
@@ -39,7 +38,8 @@ export class ProviderChain implements AIProvider {
       try {
         return await provider.generate(prompt, model, maxTokens, temperature);
       } catch (error) {
-        lastError = error as Error;
+        if (error instanceof Error) lastError = error;
+        else lastError = new Error(String(error));
         console.warn(`Provider ${provider.name} failed, trying next...`, error);
         continue;
       }
