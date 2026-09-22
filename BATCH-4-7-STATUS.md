@@ -130,3 +130,16 @@ relatórios de agentes. O código foi agora implementado e verificado aqui.
     `tests/mocks/pdf.js` também passou a reproduzir a checagem estrita de
     `Buffer` do pdfjs real, então essa classe de bug não passa mais
     despercebida.
+16. **O fallback de worker do item 15 ainda quebrava, só que na Vercel.**
+    Mesmo no build legacy, sem `GlobalWorkerOptions.workerSrc` definido, o
+    pdfjs tenta `await import(workerSrc)` (`./pdf.worker.mjs`, relativo ao
+    próprio pacote) pra montar um worker "fake" em processo — isso funciona
+    num `node_modules` normal, mas quando o Next/Vercel empacota a rota num
+    arquivo único, não existe `pdf.worker.mjs` do lado do bundle e o import
+    dinâmico 404: `Cannot find module '.../pdf.worker.mjs'`. Corrigido
+    importando `WorkerMessageHandler` de `pdfjs-dist/legacy/build/pdf.worker.mjs`
+    estaticamente e registrando em `globalThis.pdfjsWorker` — o pdfjs checa
+    isso antes de tentar o import dinâmico (`PDFWorker.#mainThreadWorkerMessageHandler`
+    em `pdf.mjs`), então o caminho problemático nunca roda. Confirmado
+    inspecionando o `route.js` compilado (`.next/server/app/api/ingestion/upload/route.js`
+    foi de ~161 B pra 2,16 MB, prova que o worker foi embutido no bundle).

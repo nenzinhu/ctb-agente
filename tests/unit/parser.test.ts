@@ -81,6 +81,16 @@ describe('Document Parser', () => {
       expect(result.text).toContain('Mock PDF text');
       expect(result.pageCount).toBe(1);
     });
+
+    it('registers the worker handler on globalThis instead of relying on a dynamic import', () => {
+      // Once Next.js/Vercel bundles this route into a single file, there's
+      // no pdf.worker.mjs sitting next to it for pdfjs's fallback dynamic
+      // import to find — this is what makes pdfjs skip that lookup.
+      const globalWithWorker = globalThis as unknown as {
+        pdfjsWorker?: { WorkerMessageHandler: unknown };
+      };
+      expect(globalWithWorker.pdfjsWorker?.WorkerMessageHandler).toBeDefined();
+    });
   });
 
   describe('parseTxt', () => {

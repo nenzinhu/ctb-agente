@@ -8,9 +8,22 @@ import { z } from 'zod';
 // server-side, and the browser build's worker setup doesn't resolve
 // correctly here anyway.
 import * as pdfjsLib from 'pdfjs-dist/legacy/build/pdf.mjs';
+import { WorkerMessageHandler } from 'pdfjs-dist/legacy/build/pdf.worker.mjs';
 
 // For DOCX parsing
 import mammoth from 'mammoth';
+
+// Without this, pdfjs falls back to `await import(workerSrc)` at parse
+// time to find its worker code. That works in a plain node_modules
+// checkout, but once Next.js/Vercel bundles this route into a single
+// file, there's no pdf.worker.mjs sitting next to it on disk and the
+// dynamic import 404s ("Cannot find module '.../pdf.worker.mjs'").
+// Registering the handler pdfjs already bundled via this static import
+// short-circuits that lookup entirely — see PDFWorker.#mainThreadWorkerMessageHandler
+// in pdfjs-dist/legacy/build/pdf.mjs.
+(globalThis as unknown as { pdfjsWorker?: { WorkerMessageHandler: unknown } }).pdfjsWorker = {
+  WorkerMessageHandler,
+};
 
 export interface ParsedDocument {
   text: string;

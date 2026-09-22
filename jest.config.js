@@ -19,6 +19,7 @@ const config = {
   moduleNameMapper: {
     '^pdfjs-dist/build/pdf$': '<rootDir>/tests/mocks/pdf.js',
     '^pdfjs-dist/legacy/build/pdf\\.mjs$': '<rootDir>/tests/mocks/pdf.js',
+    '^pdfjs-dist/legacy/build/pdf\\.worker\\.mjs$': '<rootDir>/tests/mocks/pdf-worker.js',
     '^pdfjs-dist$': '<rootDir>/tests/mocks/pdf.js',
     '^mammoth$': '<rootDir>/tests/mocks/mammoth.js',
   },
