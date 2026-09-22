@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { verifyAdminCredentials } from '@/lib/auth/admin';
+import { adminPasswordConfigured, getAdminUsername, verifyAdminCredentials } from '@/lib/auth/admin';
 import { createSession } from '@/lib/auth/session';
+import { sessionSecret } from '@/lib/auth/session-token';
 
 /**
  * Admin login API endpoint
@@ -15,8 +16,23 @@ export async function POST(request: NextRequest) {
     // Validate input
     if (!username || !password) {
       return NextResponse.json(
-        { error: 'Username and password are required' },
+        { error: 'missing_credentials', message: 'Informe usuário e senha.' },
         { status: 400 }
+      );
+    }
+
+    // Refuse early when the panel cannot be secured (production without a hash)
+    if (process.env.NODE_ENV === 'production' && (!adminPasswordConfigured() || !sessionSecret())) {
+      console.error(
+        'Admin panel misconfigured: set ADMIN_PASSWORD_HASH (and optionally ADMIN_SESSION_SECRET).'
+      );
+      return NextResponse.json(
+        {
+          error: 'admin_not_configured',
+          message:
+            'Painel indisponível: ADMIN_PASSWORD_HASH não está configurada neste ambiente.',
+        },
+        { status: 503 }
       );
     }
 
@@ -24,16 +40,17 @@ export async function POST(request: NextRequest) {
     const isValid = await verifyAdminCredentials(username, password);
     if (!isValid) {
       return NextResponse.json(
-        { error: 'Invalid credentials' },
+        { error: 'invalid_credentials', message: 'Usuário ou senha inválidos.' },
         { status: 401 }
       );
     }
 
-    // Create session
-    await createSession(username);
+    // Create the signed session. `getAdminUsername` keeps the response honest
+    // about who is logged in instead of echoing the posted username.
+    await createSession(getAdminUsername());
 
     return NextResponse.json(
-      { message: 'Login successful' },
+      { message: 'Login successful', username: getAdminUsername() },
       { status: 200 }
     );
   } catch (error) {

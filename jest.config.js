@@ -12,6 +12,8 @@ const config = {
     '**/__tests__/**/*.[jt]s?(x)',
     '**/?(*.)+(spec|test).[jt]s?(x)',
   ],
+  // Playwright specs live in tests/e2e and are run by `npm run test:e2e`
+  testPathIgnorePatterns: ['/node_modules/', '<rootDir>/.next/', '<rootDir>/tests/e2e/'],
   setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],
   // Mock problematic ES modules
   moduleNameMapper: {

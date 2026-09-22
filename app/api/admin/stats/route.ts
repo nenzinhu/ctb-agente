@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { validateSession } from '@/lib/auth/session';
-import { supabaseAdmin } from '@/lib/db/client';
+import { databaseConfigured, supabaseAdmin } from '@/lib/db/client';
 
 /**
  * Get admin dashboard statistics
@@ -15,6 +15,19 @@ export async function GET() {
       return NextResponse.json(
         { error: 'Unauthorized' },
         { status: 401 }
+      );
+    }
+
+    if (!databaseConfigured) {
+      return NextResponse.json(
+        {
+          totalDocuments: 0,
+          byType: {},
+          lastUpdated: null,
+          bancoConfigurado: false,
+          message: 'Banco não configurado neste ambiente.',
+        },
+        { status: 200 }
       );
     }
 
@@ -63,6 +76,7 @@ export async function GET() {
         totalDocuments: totalCount || 0,
         byType,
         lastUpdated,
+        bancoConfigurado: true,
       },
       { status: 200 }
     );

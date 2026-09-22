@@ -3,8 +3,20 @@ import ConsultaResult from '@/components/ConsultaResult';
 import { CartaoEstruturado } from '@/lib/response/response-types';
 
 const mockCard: CartaoEstruturado = {
-  tipo: 'enquadramento',
+  tipo: 'codigo',
   sucesso: true,
+  consulta: '516-91',
+  normas: [
+    {
+      numero_dispositivo: 'art. 181 XVII',
+      texto: 'Art. 181. Estacionar o veículo...',
+      norma_id: 'ctb-lei-9503-97',
+      tipo: 'lei',
+      vigente: true,
+    },
+  ],
+  cache_hit: false,
+  tempo_ms: 42,
   enquadramento: {
     id: '1',
     codigo_mbft: '516-91',
@@ -76,5 +88,76 @@ describe('ConsultaResult', () => {
     render(<ConsultaResult card={mockCard} />);
     expect(screen.getByText('Técnico')).toBeInTheDocument();
     expect(screen.getByText('Em Palavras Simples')).toBeInTheDocument();
+  });
+
+  it('lists the applicable norms with their source', () => {
+    render(<ConsultaResult card={mockCard} />);
+
+    expect(screen.getByText('📖 Normas aplicáveis')).toBeInTheDocument();
+    expect(screen.getByText('art. 181 XVII')).toBeInTheDocument();
+  });
+
+  it('says explicitly when no jurisprudence is registered', () => {
+    render(<ConsultaResult card={mockCard} />);
+    expect(screen.getByText(/Nenhuma decisão cadastrada/)).toBeInTheDocument();
+  });
+
+  it('renders registered jurisprudence when present', () => {
+    const comDecisao: CartaoEstruturado = {
+      ...mockCard,
+      jurisprudencia: [
+        {
+          id: 'j1',
+          tipo: 'stj',
+          numero: 'REsp 1/SP',
+          ementa: 'ementa',
+          resumo: 'Resumo da decisão cadastrada',
+          data_decisao: '2023-05-10',
+          tema: 'estacionamento',
+          dispositivos_relacionados: ['art. 181'],
+          link_oficial: 'https://exemplo',
+          criado_em: '2023-05-10',
+        },
+      ],
+    };
+
+    render(<ConsultaResult card={comDecisao} />);
+
+    expect(screen.getByText('Resumo da decisão cadastrada')).toBeInTheDocument();
+    expect(screen.getByText(/STJ · REsp 1\/SP/)).toBeInTheDocument();
+  });
+
+  it('shows a friendly empty state when nothing was found', () => {
+    const vazio: CartaoEstruturado = {
+      ...mockCard,
+      sucesso: false,
+      enquadramento: null,
+      normas: [],
+      citacoes: [],
+      explicacao_simples: 'Não encontrei essa infração na base.',
+    };
+
+    render(<ConsultaResult card={vazio} />);
+
+    expect(screen.getByText('Nada encontrado na base')).toBeInTheDocument();
+    expect(screen.getByText(/Não encontrei essa infração/)).toBeInTheDocument();
+    expect(screen.queryByText('516-91')).not.toBeInTheDocument();
+  });
+
+  it('flags cached answers', () => {
+    render(<ConsultaResult card={{ ...mockCard, cache_hit: true }} />);
+    expect(screen.getByText(/Resposta do cache/)).toBeInTheDocument();
+  });
+
+  it('warns about a possible traffic crime', () => {
+    render(<ConsultaResult card={{ ...mockCard, crime_transito: true }} />);
+    expect(screen.getByText(/crime de trânsito/)).toBeInTheDocument();
+  });
+
+  it('shows the collected document and the responsible party', () => {
+    render(<ConsultaResult card={mockCard} />);
+
+    expect(screen.getByText(/Recolhimento de documento: CRLV/)).toBeInTheDocument();
+    expect(screen.getByText(/Responsável: Proprietário/)).toBeInTheDocument();
   });
 });

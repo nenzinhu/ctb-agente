@@ -1,10 +1,13 @@
 'use client';
 
 import { useState } from 'react';
+import Link from 'next/link';
 import { CartaoEstruturado } from '@/lib/response/response-types';
 import CartaoTecnico from './CartaoTecnico';
 import CartaoSimples from './CartaoSimples';
 import CitacaoEvidencia from './CitacaoEvidencia';
+import NormasAplicaveis from './NormasAplicaveis';
+import JurisprudenciaBloco from './JurisprudenciaBloco';
 
 interface ConsultaResultProps {
   card: CartaoEstruturado;
@@ -13,8 +16,41 @@ interface ConsultaResultProps {
 export default function ConsultaResult({ card }: ConsultaResultProps) {
   const [view, setView] = useState<'tecnico' | 'simples'>('tecnico');
 
+  if (!card.sucesso) {
+    return (
+      <div className="max-w-4xl mx-auto py-8 px-4">
+        <div className="bg-amber-50 dark:bg-amber-900 border-l-4 border-amber-500 p-6 rounded">
+          <h2 className="font-bold text-amber-900 dark:text-amber-100 text-lg">
+            Nada encontrado na base
+          </h2>
+          <p className="text-amber-900 dark:text-amber-100 text-sm mt-2">
+            {card.explicacao_simples ||
+              'A base ainda não tem conteúdo para esta consulta.'}
+          </p>
+          <ul className="text-sm text-amber-900 dark:text-amber-100 mt-4 space-y-1">
+            <li>• Confira o código (ex.: 516-91) ou o artigo (ex.: art. 165)</li>
+            <li>• Descreva a situação com mais detalhes</li>
+            <li>• Peça ao master para cadastrar o documento no painel</li>
+          </ul>
+          <Link
+            href="/?form=1"
+            className="inline-block mt-4 bg-ctb-green text-white font-semibold px-5 py-2 rounded-lg hover:bg-ctb-green/90"
+          >
+            Fazer nova consulta
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="max-w-4xl mx-auto py-8 px-4">
+      {card.cache_hit && (
+        <p className="mb-4 text-xs uppercase tracking-wide text-gray-500 dark:text-gray-400">
+          ⚡ Resposta do cache (base inalterada)
+        </p>
+      )}
+
       <div className="flex gap-2 mb-8 border-b border-gray-200 dark:border-gray-700">
         <button
           onClick={() => setView('tecnico')}
@@ -41,6 +77,8 @@ export default function ConsultaResult({ card }: ConsultaResultProps) {
       {view === 'tecnico' && (
         <div className="space-y-8">
           <CartaoTecnico card={card} />
+          <NormasAplicaveis normas={card.normas} />
+
           {card.checklist_ait && card.checklist_ait.length > 0 && (
             <div className="bg-white dark:bg-gray-800 rounded-lg p-6">
               <h3 className="font-bold text-gray-900 dark:text-white mb-4">
@@ -55,6 +93,7 @@ export default function ConsultaResult({ card }: ConsultaResultProps) {
               </ul>
             </div>
           )}
+
           {card.erros_comuns && card.erros_comuns.length > 0 && (
             <div className="bg-white dark:bg-gray-800 rounded-lg p-6">
               <h3 className="font-bold text-gray-900 dark:text-white mb-4">
@@ -69,6 +108,8 @@ export default function ConsultaResult({ card }: ConsultaResultProps) {
               </ul>
             </div>
           )}
+
+          <JurisprudenciaBloco decisoes={card.jurisprudencia} />
           <CitacaoEvidencia citacoes={card.citacoes} />
         </div>
       )}
@@ -76,6 +117,7 @@ export default function ConsultaResult({ card }: ConsultaResultProps) {
       {view === 'simples' && (
         <div className="space-y-8">
           <CartaoSimples card={card} />
+          <JurisprudenciaBloco decisoes={card.jurisprudencia} />
           <CitacaoEvidencia citacoes={card.citacoes} />
         </div>
       )}

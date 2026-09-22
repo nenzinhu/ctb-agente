@@ -7,7 +7,7 @@ export interface Dispositivo {
   data_publicacao: string; // ISO date
   data_vigencia_inicio: string;
   data_vigencia_fim: string | null;
-  embedding: number[]; // pgvector (1536 dims)
+  embedding: number[]; // pgvector (1024 dims — mistral-embed)
   tsvector_pt: string; // tsvector in Portuguese
   citacoes_dentro: string[]; // ["art. 270", "Res. 432/2013"]
   criado_em: string;

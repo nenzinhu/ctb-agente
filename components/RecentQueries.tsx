@@ -42,7 +42,8 @@ export default function RecentQueries() {
           <button
             key={idx}
             onClick={() => handleQueryClick(query)}
-            className="px-3 py-1 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-full text-sm hover:bg-ctb-green/20 transition-colors"
+            title={query}
+            className="max-w-[16rem] truncate px-3 py-1 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-full text-sm hover:bg-ctb-green/20 transition-colors"
           >
             {query}
           </button>

@@ -1,33 +1,42 @@
 import { cookies } from 'next/headers';
+import {
+  type AdminSession,
+  sessionSecret,
+  signSession,
+  verifySessionToken,
+} from './session-token';
 
 /**
- * Session management for admin panel using httpOnly cookies
+ * Session management for the admin panel using signed httpOnly cookies
  */
 
-export interface AdminSession {
-  username: string;
-  createdAt: number;
-  expiresAt: number;
-}
+export type { AdminSession };
 
 const SESSION_COOKIE_NAME = 'admin_session';
 const SESSION_DURATION_MS = 24 * 60 * 60 * 1000; // 24 hours
 
 /**
- * Create a new admin session and set it as a secure httpOnly cookie
+ * Create a new signed admin session cookie
+ * @param username - Authenticated master username
+ * @throws When no signing secret is configured (production without ADMIN_PASSWORD_HASH)
  */
 export async function createSession(username: string): Promise<void> {
-  const now = Date.now();
-  const expiresAt = now + SESSION_DURATION_MS;
+  const secret = sessionSecret();
+  if (!secret) {
+    throw new Error(
+      'ADMIN_PASSWORD_HASH (ou ADMIN_SESSION_SECRET) não configurada: login do painel indisponível.'
+    );
+  }
 
+  const now = Date.now();
   const session: AdminSession = {
     username,
     createdAt: now,
-    expiresAt,
+    expiresAt: now + SESSION_DURATION_MS,
   };
 
   const cookieStore = await cookies();
-  cookieStore.set(SESSION_COOKIE_NAME, JSON.stringify(session), {
+  cookieStore.set(SESSION_COOKIE_NAME, await signSession(session, secret), {
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
     sameSite: 'lax',
@@ -37,22 +46,24 @@ export async function createSession(username: string): Promise<void> {
 }
 
 /**
- * Get the current admin session from cookies
+ * Get the current admin session from cookies, verifying the signature
+ * @returns Valid session, or null when missing, forged or expired
  */
 export async function getSession(): Promise<AdminSession | null> {
+  const secret = sessionSecret();
+  if (!secret) {
+    console.error('Admin session secret is not configured; refusing every session.');
+    return null;
+  }
+
   try {
     const cookieStore = await cookies();
     const sessionCookie = cookieStore.get(SESSION_COOKIE_NAME);
+    if (!sessionCookie?.value) return null;
 
-    if (!sessionCookie || !sessionCookie.value) {
-      return null;
-    }
-
-    const session: AdminSession = JSON.parse(sessionCookie.value);
-
-    // Check if session has expired
-    if (session.expiresAt < Date.now()) {
-      // Clear expired session
+    const session = await verifySessionToken(sessionCookie.value, secret);
+    if (!session) {
+      // Invalid or forged cookie: drop it so the next request starts clean
       cookieStore.delete(SESSION_COOKIE_NAME);
       return null;
     }

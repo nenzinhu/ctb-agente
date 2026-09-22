@@ -1,5 +1,5 @@
 // Vector similarity search using pgvector
-import { supabase } from '@/lib/db/client';
+import { databaseConfigured, supabase } from '@/lib/db/client';
 import { embeddingChain } from '@/lib/ai/embeddings';
 
 /**
@@ -21,6 +21,8 @@ import { embeddingChain } from '@/lib/ai/embeddings';
  * @returns Array of search results with similarity score
  */
 export async function searchByVector(query: string, limit = 10) {
+  if (!databaseConfigured || !process.env.MISTRAL_API_KEY) return [];
+
   const embedding = await embeddingChain.embed(query);
 
   const { data, error } = await supabase.rpc('search_dispositivos_vector', {

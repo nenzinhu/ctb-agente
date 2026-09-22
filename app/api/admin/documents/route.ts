@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { validateSession } from '@/lib/auth/session';
-import { supabaseAdmin } from '@/lib/db/client';
+import { databaseConfigured, supabaseAdmin } from '@/lib/db/client';
 import { Dispositivo } from '@/lib/db/schema';
 
 /**
@@ -16,6 +16,20 @@ export async function GET() {
       return NextResponse.json(
         { error: 'Unauthorized' },
         { status: 401 }
+      );
+    }
+
+    // Without credentials the list is legitimately empty; a 500 here would
+    // look like a broken panel on a fresh deployment.
+    if (!databaseConfigured) {
+      return NextResponse.json(
+        {
+          documents: [],
+          bancoConfigurado: false,
+          message:
+            'Banco não configurado: defina NEXT_PUBLIC_SUPABASE_URL e SUPABASE_SERVICE_ROLE_KEY.',
+        },
+        { status: 200 }
       );
     }
 
@@ -35,7 +49,7 @@ export async function GET() {
     }
 
     return NextResponse.json(
-      { documents: data as Dispositivo[] },
+      { documents: data as Dispositivo[], bancoConfigurado: true },
       { status: 200 }
     );
   } catch (error) {

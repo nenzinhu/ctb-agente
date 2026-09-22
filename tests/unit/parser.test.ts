@@ -3,7 +3,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as os from 'os';
 import { parseDocument, validateFile } from '@/lib/ingestion/parser';
-import { chunkText, extractDispositivoNumber } from '@/lib/ingestion/chunker';
+import { chunkText } from '@/lib/ingestion/chunker';
 
 describe('Document Parser', () => {
   let tempDir: string;

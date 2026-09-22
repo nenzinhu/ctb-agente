@@ -1,42 +1,29 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { cookies } from 'next/headers';
+import { sessionSecret, verifySessionToken } from '@/lib/auth/session-token';
 
 /**
- * Middleware to protect admin routes
- * Redirects to login if no valid session exists
+ * Middleware to protect admin routes.
+ * The session cookie is signed, so a hand-written cookie is rejected here
+ * before the page (or its API calls) ever renders.
  */
+
+const SESSION_COOKIE_NAME = 'admin_session';
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   // Only protect /admin routes (except /admin/login)
   if (pathname.startsWith('/admin') && pathname !== '/admin/login') {
-    const cookieStore = await cookies();
-    const sessionCookie = cookieStore.get('admin_session');
+    const secret = sessionSecret();
+    const sessionCookie = request.cookies.get(SESSION_COOKIE_NAME)?.value;
+    const session = secret ? await verifySessionToken(sessionCookie, secret) : null;
 
-    if (!sessionCookie) {
-      // No session, redirect to login
-      const loginUrl = new URL('/admin/login', request.url);
-      return NextResponse.redirect(loginUrl);
-    }
-
-    try {
-      const session = JSON.parse(sessionCookie.value);
-
-      // Check if session has expired
-      if (session.expiresAt < Date.now()) {
-        // Expired session, redirect to login
-        const loginUrl = new URL('/admin/login', request.url);
-        const response = NextResponse.redirect(loginUrl);
-        response.cookies.delete('admin_session');
-        return response;
-      }
-    } catch (error) {
-      console.error('Error parsing session:', error);
-      // Invalid session, redirect to login
+    if (!session) {
       const loginUrl = new URL('/admin/login', request.url);
       const response = NextResponse.redirect(loginUrl);
-      response.cookies.delete('admin_session');
+      if (sessionCookie) {
+        response.cookies.delete(SESSION_COOKIE_NAME);
+      }
       return response;
     }
   }

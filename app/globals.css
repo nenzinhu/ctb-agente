@@ -24,3 +24,87 @@ body {
     color: #ffffff;
   }
 }
+
+:focus-visible {
+  outline: 3px solid #1a5f3f;
+  outline-offset: 2px;
+}
+
+/* ---- Modo sol (alto contraste para uso em via pública) ----
+   Applied through `data-tema="sol"` set by components/TemaToggle.tsx.
+   Overrides win over both the light palette and the dark media query. */
+[data-tema='sol'] body {
+  background-color: #ffffff !important;
+  color: #000000 !important;
+}
+
+@media (prefers-color-scheme: dark) {
+  [data-tema='sol'] body {
+    background-color: #ffffff !important;
+    color: #000000 !important;
+  }
+}
+
+[data-tema='sol'] nav {
+  background-color: #000000 !important;
+  color: #ffffff !important;
+}
+
+[data-tema='sol'] main,
+[data-tema='sol'] section {
+  background-image: none !important;
+}
+
+[data-tema='sol'] * {
+  border-color: #000000 !important;
+  box-shadow: none !important;
+  text-shadow: none !important;
+}
+
+/* Force readable text on the light surfaces used across the app */
+[data-tema='sol'] p,
+[data-tema='sol'] li,
+[data-tema='sol'] h1,
+[data-tema='sol'] h2,
+[data-tema='sol'] h3,
+[data-tema='sol'] span,
+[data-tema='sol'] label,
+[data-tema='sol'] strong {
+  color: #000000 !important;
+}
+
+[data-tema='sol'] nav span,
+[data-tema='sol'] nav a {
+  color: #ffffff !important;
+}
+
+[data-tema='sol'] a {
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+}
+
+[data-tema='sol'] button,
+[data-tema='sol'] input,
+[data-tema='sol'] textarea,
+[data-tema='sol'] select {
+  border: 2px solid #000000 !important;
+  font-weight: 600;
+}
+
+[data-tema='sol'] :focus-visible {
+  outline: 4px solid #d97706;
+  outline-offset: 2px;
+}
+
+/* Printing a consultation should not waste ink on the shell */
+@media print {
+  nav,
+  .print\:hidden {
+    display: none !important;
+  }
+
+  body {
+    background: #ffffff !important;
+    color: #000000 !important;
+  }
+}

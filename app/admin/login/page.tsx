@@ -1,7 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
 
 /**
  * Admin login page
@@ -9,7 +8,6 @@ import { useRouter } from 'next/navigation';
  * Password: hashed with bcrypt (from ADMIN_PASSWORD_HASH env var)
  */
 export default function LoginPage() {
-  const router = useRouter();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -30,15 +28,21 @@ export default function LoginPage() {
       const data = await response.json();
 
       if (!response.ok) {
-        setError(data.error || 'Login failed. Please try again.');
+        // Prefer the human message: `error` is a machine code such as
+        // "invalid_credentials", which means nothing to the master.
+        setError(data.message || 'Não foi possível entrar. Tente novamente.');
         return;
       }
 
-      // Redirect to admin dashboard on success
-      router.push('/admin');
+      // Hard navigation, not router.push: the shell prefetches /admin while the
+      // visitor is still anonymous, and the middleware answers that prefetch with
+      // a redirect to this same page. The client router caches that redirect, so
+      // pushing /admin right after a successful login just replays it and the
+      // master lands back here, as if the credentials had been wrong.
+      window.location.assign('/admin');
     } catch (err) {
       console.error('Login error:', err);
-      setError('An error occurred. Please try again.');
+      setError('Erro de conexão ao entrar. Tente novamente.');
     } finally {
       setIsLoading(false);
     }
@@ -51,7 +55,7 @@ export default function LoginPage() {
           <h1 className="text-3xl font-bold text-center text-gray-900 mb-2">
             CTB Agente
           </h1>
-          <p className="text-center text-gray-600 mb-8">Admin Panel Login</p>
+          <p className="text-center text-gray-600 mb-8">Acesso do painel master</p>
 
           {error && (
             <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-6">
@@ -62,7 +66,7 @@ export default function LoginPage() {
           <form onSubmit={handleSubmit} className="space-y-6">
             <div>
               <label htmlFor="username" className="block text-sm font-medium text-gray-700 mb-2">
-                Username
+                Usuário
               </label>
               <input
                 id="username"
@@ -78,7 +82,7 @@ export default function LoginPage() {
 
             <div>
               <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
-                Password
+                Senha
               </label>
               <input
                 id="password"
@@ -96,12 +100,12 @@ export default function LoginPage() {
               disabled={isLoading || !username || !password}
               className="w-full bg-green-600 hover:bg-green-700 disabled:bg-gray-400 text-white font-medium py-2 px-4 rounded-lg transition"
             >
-              {isLoading ? 'Logging in...' : 'Login'}
+              {isLoading ? 'Entrando…' : 'Entrar'}
             </button>
           </form>
 
           <p className="text-center text-gray-500 text-sm mt-6">
-            Development mode: If no password is set, any password works
+            A senha é definida por <code>ADMIN_PASSWORD_HASH</code> no servidor.
           </p>
         </div>
       </div>

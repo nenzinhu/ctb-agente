@@ -8,8 +8,19 @@ import * as bcryptjs from 'bcryptjs';
 const ADMIN_USERNAME = 'nenzinhu';
 
 /**
+ * Whether the master password hash is configured
+ * @returns True when ADMIN_PASSWORD_HASH is present
+ */
+export function adminPasswordConfigured(): boolean {
+  return Boolean(process.env.ADMIN_PASSWORD_HASH);
+}
+
+/**
  * Verify admin credentials
- * If ADMIN_PASSWORD_HASH is not set, allow login for development
+ *
+ * Without ADMIN_PASSWORD_HASH the panel is open to anyone, so the open mode is
+ * restricted to non-production environments: a production deployment that
+ * forgot the variable fails closed instead of exposing the master panel.
  */
 export async function verifyAdminCredentials(
   username: string,
@@ -23,10 +34,16 @@ export async function verifyAdminCredentials(
   // Get password hash from environment
   const passwordHash = process.env.ADMIN_PASSWORD_HASH;
 
-  // Development mode: if no hash set, allow any password
   if (!passwordHash) {
+    if (process.env.NODE_ENV === 'production') {
+      console.error(
+        'ADMIN_PASSWORD_HASH is not set: refusing admin login in production. Configure it to enable the panel.'
+      );
+      return false;
+    }
+
     console.warn(
-      'ADMIN_PASSWORD_HASH not set - running in development mode with no password requirement'
+      'ADMIN_PASSWORD_HASH not set - development mode: any password is accepted locally'
     );
     return true;
   }

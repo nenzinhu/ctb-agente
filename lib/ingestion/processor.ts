@@ -75,7 +75,6 @@ export async function processChunks(input: ProcessorInput): Promise<ProcessingRe
         data_vigencia_inicio: dataVigenciaInicio,
         data_vigencia_fim: validated.dataVigenciaFim || null,
         embedding: embedding,
-        tsvector_pt: generateTsvector(chunk.text),
         citacoes_dentro: extractCitations(chunk.text),
         criado_em: now,
         atualizado_em: now,
@@ -118,22 +117,6 @@ export async function processChunks(input: ProcessorInput): Promise<ProcessingRe
   }
 
   return result;
-}
-
-/**
- * Generates a simple tsvector for Portuguese full-text search
- * This is a simplified version; Supabase can also generate this server-side
- */
-function generateTsvector(text: string): string {
-  // Simple tsvector format: normalize text to lowercase and remove punctuation
-  const normalized = text
-    .toLowerCase()
-    .replace(/[^\w\s]/g, ' ')
-    .split(/\s+/)
-    .filter((word) => word.length > 2)
-    .join(' ');
-
-  return normalized;
 }
 
 /**

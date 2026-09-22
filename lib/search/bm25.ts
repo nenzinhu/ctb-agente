@@ -1,5 +1,5 @@
 // BM25 full-text search using PostgreSQL tsvector
-import { supabase } from '@/lib/db/client';
+import { databaseConfigured, supabase } from '@/lib/db/client';
 
 /**
  * Search dispositivos using BM25 (tsvector) in Portuguese
@@ -20,6 +20,8 @@ import { supabase } from '@/lib/db/client';
  * @returns Array of search results with rank
  */
 export async function searchByTsvector(query: string, limit = 10) {
+  if (!databaseConfigured) return [];
+
   const { data, error } = await supabase.rpc('search_dispositivos_tsvector', {
     query_text: query,
     limit_count: limit,

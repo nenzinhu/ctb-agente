@@ -1,157 +1,99 @@
-# Batch 4-7 Execution Status
+# Batch 4-7 — Status da Execução
 
-**Date:** 2026-09-22  
-**Push Status:** ✅ Complete for Tasks 1-8
-
----
-
-## Summary
-
-| Task | Component | Status | GitHub | Notes |
-|------|-----------|--------|--------|-------|
-| 1-3 | Infrastructure, AI, Ingestion, Admin | ✅ Complete | ✅ Pushed | Initial 3 batches complete |
-| 7 | Frontend Response Display | ✅ Complete | ✅ Pushed | commit 9098a98 |
-| 8 | Search UI & Recent Queries | ✅ Complete | ✅ Pushed | commit bae1436 |
-| 9 | PDF Generation Endpoint | ⏳ Done (report only) | ❌ Not in repo | 53/53 tests passing locally |
-| 10 | PDF UI (Gerar PDF Tab) | ⏳ Done (report only) | ❌ Not in repo | 50/50 tests passing locally |
-| 11 | End-to-End Tests | ⏳ Done (report only) | ❌ Not in repo | 7 E2E tests defined |
-| 12 | Vercel Environment Config | ⏳ Done (report only) | ❌ Not in repo | Deployment docs created |
-| 13 | Corpus Seeding Script | ⏳ Done (report only) | ❌ Not in repo | npm run seed ready |
-| 14 | Final Deployment | ⏳ Done (report only) | ❌ Not in repo | Verification guide complete |
+**Atualizado em:** 2026-09-22
+**Branch:** master
 
 ---
 
-## What's on GitHub (Pushed)
+## Resumo
 
-**Current commits (as of 2026-09-22):**
+| Task | Componente | Status |
+|---|---|---|
+| 1-3 | Infraestrutura, IA, ingestão, admin | ✅ Completo |
+| 7 | Exibição do resultado da consulta | ✅ Completo |
+| 8 | Busca e consultas recentes | ✅ Completo |
+| 9 | Backend de PDF (dossiê temático) | ✅ Implementado neste repo |
+| 10 | UI de PDF (`/gerador-pdf`) | ✅ Implementado neste repo |
+| 11 | Testes E2E (Playwright) | ✅ Implementado neste repo |
+| 12 | Configuração de deploy (Vercel) | ✅ Documentado em `docs/DEPLOY.md` |
+| 13 | Seed do corpus | ✅ `npm run seed` |
+| 14 | Deploy final | ⏳ Depende das credenciais do projeto |
 
-```
-9c4eca7 docs: add Batch 4-7 implementation plan
-bae1436 feat: add search UI with recent queries
-9098a98 feat: implement consultation result display component
-128b2c2 feat: implement admin panel for document management
-6c72659 feat: implement document ingestion system
-dfa89b0 fix: remove invalid vercel.json schema
-...earlier commits...
-```
-
-**Live on GitHub:**
-- ✅ Full Batch 1-3 (infra, AI, ingestion, admin) 
-- ✅ Task 7: Frontend response display (CartaoTecnico, CartaoSimples, ConsultaResult, /consulta page)
-- ✅ Task 8: Search UI (ConsultaForm, RecentQueries, localStorage persistence)
-- ✅ Plan document for Tasks 9-14
-
-**Total test coverage on GitHub:** 58/58 tests passing
+A versão anterior deste documento dizia que as tasks 9-14 existiam apenas em
+relatórios de agentes. O código foi agora implementado e verificado aqui.
 
 ---
 
-## What's Pending (Not Synced to GitHub)
+## O que foi entregue
 
-Tasks 9-14 were executed by independent agents who generated complete reports, but the code files remain in agent workspaces and were not synchronized to the main repository. Detailed reports are available at:
+### Correções de bugs
 
-```
-.superpowers/sdd/2026-09-21-batch-4-7-frontend-pdf-e2e-deploy/
-├── task-9-report.md   (PDF Generation: 53/53 tests)
-├── task-10-report.md  (PDF UI: 50/50 tests)
-├── task-11-report.md  (E2E Tests: 7 test cases)
-├── task-12-report.md  (Vercel Config: deployment guide)
-├── task-13-report.md  (Seed Script: npm run seed)
-└── task-14-report.md  (Final Deployment: verification guide)
-```
+1. **Consulta por código devolvia cartão vazio.** O handler retornava a linha crua
+   de `enquadramentos`; agora `buildCardFromEnquadramento` monta o `CartaoEstruturado`
+   completo (checklist, erros comuns, resumo, normas, citações, jurisprudência).
+2. **Consulta por artigo também não montava cartão** (o código do MBFT era passado
+   como se fosse número de dispositivo). Agora há `buildCardFromNormas`.
+3. **`/api/consulta` devolvia 500 para erro de validação.** Agora 400 com detalhes do
+   campo, 429 para rate limit e 403 para IP bloqueado/Turnstile.
+4. **Turnstile apontava para o endpoint errado** (`/turnstile/validate` em vez de
+   `/turnstile/v0/siteverify`) e nunca era exigido. Corrigido e ligado ao widget.
+5. **`metadata.viewport/themeColor`** (deprecado no Next 15) movido para `export const viewport`.
+6. **`serverExternalPackages: ['@node-rs/argon2']`** removido: pacote inexistente no projeto.
+7. **Ícones PWA ausentes** (o manifest apontava para arquivos que não existiam) e
+   `favicon.ico` gerados por `npm run icons`.
+8. **Caminho sem banco demorava 35 s** por retries do Supabase em URL placeholder;
+   agora curto-circuita e responde em ~0,1 s.
+9. **`valor_multa` é armazenado em centavos** — o seed de exemplo do plano usava reais
+   e um `recolhe_documento` em maiúsculas que violava o `CHECK` do banco.
 
-**To complete:**
+### Novas funcionalidades
 
-1. **Task 9 (PDF Generation)**
-   - Files: `lib/pdf/themes.ts`, `lib/pdf/cache.ts`, `lib/pdf/generator.tsx`, `app/api/pdf/generate/route.ts`
-   - Status: Code generated, 53 tests passing
-   - Action: Copy from agent workspace or re-execute inline
-
-2. **Task 10 (PDF UI)**
-   - Files: `components/GerarPDFTab.tsx`, `app/gerador-pdf/page.tsx`, layout navigation update
-   - Status: Code generated, 50 tests passing
-   - Action: Copy or re-execute
-
-3. **Task 11 (E2E Tests)**
-   - Files: `tests/e2e/fixtures.ts`, `tests/e2e/full-flow.test.ts`, `playwright.config.ts`
-   - Status: Tests defined, ready for execution
-   - Action: Copy or re-execute
-
-4. **Task 12 (Vercel Config)**
-   - Files: `.env.production`, `docs/DEPLOY.md`, `.env.local.example` update
-   - Status: Documentation complete, 600+ line deployment guide
-   - Action: Copy or re-execute
-
-5. **Task 13 (Corpus Seed)**
-   - Files: `scripts/seed-corpus.ts`, `package.json` script update
-   - Status: Script ready, npm run seed configured
-   - Action: Copy or re-execute
-
-6. **Task 14 (Final Deployment)**
-   - Files: Verification documentation
-   - Status: Deployment checklist and smoke test procedures documented
-   - Action: Follow guide for production deployment
+- **Dossiê PDF** com capa, normas, enquadramentos, procedimento, exemplos,
+  jurisprudência e projetos de lei (marcados como PROPOSTA), com cache semanal.
+- **Voz** (`/api/transcribe` + botão de ditado) via Groq Whisper, com filtro de PII.
+- **Modo sol** (alto contraste) com preferência persistida.
+- **Cache de respostas** em `cache_respostas` (30 dias) + estatísticas de cache hit.
+- **Jurisprudência** passa a ser lida da base em todo cartão (antes era `[]` fixo).
+- **Painel master com 5 abas:** Documentos, Enquadramentos (CRUD), Provedores de IA
+  (com ping real), Uso (consultas/dia, cache hit, perguntas sem resposta, falhas) e
+  Limites (rate limit, Turnstile, IPs bloqueados).
+- **`/api/health`** com status do banco, do cache e dos provedores.
+- **CI** (`.github/workflows/ci.yml`): typecheck, testes e build; job E2E sob demanda.
 
 ---
 
-## Next Steps
+## Verificação executada
 
-**Option A: Sync Agent Work**
-- Copy code files from agent reports into project
-- Commit: `git commit -m "feat: sync tasks 9-14 from agent execution"`
-- Push: `git push origin master`
+| Checagem | Resultado |
+|---|---|
+| `npx tsc --noEmit` | ✅ sem erros |
+| `npx jest` | ✅ 20 suítes, 182 testes (antes: 58 testes + 14 `.skip`) |
+| `npx next build` | ✅ build de produção |
+| `POST /api/pdf/generate` (dev server) | ✅ 200, `application/pdf`, 5,4 kB, `%PDF` válido (sem banco) |
+| `/api/health`, `/`, `/gerador-pdf`, `/consulta`, `/admin` | ✅ 200 / 200 / 200 / 307→login |
+| Erros de validação | ✅ 400 (JSON, tamanho), 503 (voz sem chave), 401 (admin sem sessão) |
 
-**Option B: Re-execute Inline**
-- Run Tasks 9-14 directly in this session without agent isolation
-- Ensures code reaches repo immediately
-- Takes ~20 minutes for full implementation
+## Pendências conhecidas
 
-**Option C: Manual Implementation**
-- Use agent reports as specification
-- Implement Tasks 9-14 step-by-step by hand
-- Full control and verification
+- Deploy real na Vercel e aplicação das migrations dependem das credenciais do
+  projeto (ver `docs/DEPLOY.md`).
+- As funções RPC `search_dispositivos_tsvector` e `search_dispositivos_vector`
+  agora existem em `scripts/migrations-003-search-functions.sql`, mas ainda
+  precisam ser aplicadas no Supabase real; sem elas a busca híbrida degrada
+  (sem erro 500).
+- O seed insere dados de exemplo: códigos MBFT e valores devem ser revisados.
 
----
+### Correções adicionais (auditoria pós-deploy)
 
-## Technical Debt / Blocking Issues
-
-**None blocking for Tasks 7-8 (currently deployed).**
-
-Task 9 has one note: `lib/pdf/generator.ts` contains JSX and should be renamed to `.tsx` before build.
-
----
-
-## Deployment Readiness
-
-**Current State:**
-- ✅ Frontend (Tasks 7-8): Ready for production
-- ⏳ Backend PDF API (Task 9): Ready but not in repo
-- ⏳ E2E Tests (Task 11): Ready but not in repo  
-- ⏳ Deployment Config (Task 12): Ready but not in repo
-
-**To Go Live:**
-1. Sync Tasks 9-14 code to GitHub
-2. Set Vercel environment variables (documented in Task 12)
-3. Seed initial corpus (Task 13)
-4. Run E2E tests (Task 11)
-5. Deploy to Vercel (auto-deploys on main push)
-
----
-
-## Files Summary
-
-**On GitHub:**
-- 58 tests passing
-- 2 Batches + 2 Tasks implemented
-- Full plan document for remaining work
-
-**In Agent Workspaces (Not Synced):**
-- 6 complete task implementations
-- 113+ new tests defined
-- 600+ lines of deployment documentation
-- All code reports mark status as "COMPLETE"
-
----
-
-**Status as of:** 2026-09-22 00:30  
-**Branch:** master  
-**Ahead of origin:** 0 (synced after latest push)
+10. **`dispositivos.embedding` era `VECTOR(1536)`** (dimensão da OpenAI), mas o
+    único provedor de embeddings plugado é o Mistral (`mistral-embed`, 1024
+    dims). Toda inserção real teria falhado por incompatibilidade de dimensão.
+    Corrigido para `VECTOR(1024)` em `scripts/migrations.sql` e nas funções RPC.
+11. **`processChunks` tentava inserir `tsvector_pt` manualmente**, mas essa
+    coluna é `GENERATED ALWAYS ... STORED` — Postgres rejeita insert explícito
+    nela. Toda ingestão de documento teria falhado. Removido o campo (e a
+    função `generateTsvector`, agora morta) de `lib/ingestion/processor.ts`.
+    Coberto por `tests/unit/processor.test.ts` (sem teste algum antes).
+12. **Funções RPC de busca híbrida nunca existiam no banco** — o código já as
+    chamava (`lib/search/bm25.ts`, `lib/search/vector.ts`) mas nenhuma migration
+    as criava. Adicionadas em `scripts/migrations-003-search-functions.sql`.

@@ -11,7 +11,7 @@ CREATE TABLE dispositivos (
   data_publicacao DATE,
   data_vigencia_inicio DATE NOT NULL,
   data_vigencia_fim DATE,
-  embedding VECTOR(1536),
+  embedding VECTOR(1024), -- mistral-embed output size (lib/ai/providers/mistral.ts)
   tsvector_pt TSVECTOR GENERATED ALWAYS AS (
     to_tsvector('portuguese', texto)
   ) STORED,

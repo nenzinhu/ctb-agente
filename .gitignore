@@ -11,3 +11,10 @@ out/
 .vscode/settings.json
 
 .vercel
+.freebuff
+
+# Playwright
+playwright-report/
+test-results/
+blob-report/
+.playwright/

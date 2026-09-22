@@ -63,7 +63,7 @@ export default function AdminUploadForm({ onUploadSuccess }: UploadFormProps) {
         if (!isValidFile(file)) {
           setMessage({
             type: 'error',
-            text: `Invalid file: ${file.name}. Supported formats: PDF, DOCX, TXT`,
+            text: `Arquivo inválido: ${file.name}. Formatos aceitos: PDF, DOCX, TXT (até 50 MB).`,
           });
           continue;
         }
@@ -79,7 +79,7 @@ export default function AdminUploadForm({ onUploadSuccess }: UploadFormProps) {
 
           if (!response.ok) {
             const error = await response.json();
-            throw new Error(error.error || 'Upload failed');
+            throw new Error(error.message || error.error || 'Falha no envio');
           }
 
           const data = await response.json();
@@ -90,7 +90,7 @@ export default function AdminUploadForm({ onUploadSuccess }: UploadFormProps) {
           if (i === files.length - 1) {
             setMessage({
               type: 'success',
-              text: `Successfully uploaded ${files.length} file(s)`,
+              text: `${files.length} arquivo(s) enviado(s) com sucesso.`,
             });
             // Clear file input
             if (fileInputRef.current) {
@@ -103,7 +103,9 @@ export default function AdminUploadForm({ onUploadSuccess }: UploadFormProps) {
           console.error('Upload error:', error);
           setMessage({
             type: 'error',
-            text: `Failed to upload ${file.name}: ${error instanceof Error ? error.message : 'Unknown error'}`,
+            text: `Falha ao enviar ${file.name}: ${
+              error instanceof Error ? error.message : 'erro desconhecido'
+            }`,
           });
         }
       }
@@ -170,13 +172,13 @@ export default function AdminUploadForm({ onUploadSuccess }: UploadFormProps) {
             />
           </svg>
           <p className="text-lg font-medium text-gray-900 mb-2">
-            Drag and drop files here
+            Arraste os arquivos para cá
           </p>
           <p className="text-sm text-gray-500 mb-4">
-            or click to select files
+            ou clique para selecionar
           </p>
           <p className="text-xs text-gray-400">
-            Supported: PDF, DOCX, TXT (max 50MB)
+            Aceitos: PDF, DOCX, TXT (até 50 MB)
           </p>
         </div>
       </div>
@@ -184,7 +186,7 @@ export default function AdminUploadForm({ onUploadSuccess }: UploadFormProps) {
       {isUploading && (
         <div className="mt-4">
           <div className="flex items-center justify-between mb-2">
-            <p className="text-sm font-medium text-gray-700">Uploading...</p>
+            <p className="text-sm font-medium text-gray-700">Enviando…</p>
             <p className="text-sm text-gray-500">{Math.round(progress)}%</p>
           </div>
           <div className="w-full h-2 bg-gray-200 rounded-full overflow-hidden">

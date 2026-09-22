@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import ConsultaForm from '@/components/ConsultaForm';
 import RecentQueries from '@/components/RecentQueries';
@@ -8,12 +8,20 @@ import RecentQueries from '@/components/RecentQueries';
 export default function Home() {
   const [showForm, setShowForm] = useState(false);
 
+  // "Nova consulta" chega aqui como /?form=1 e abre o formulário direto,
+  // sem obrigar o agente a passar pela tela de abertura.
+  useEffect(() => {
+    if (new URLSearchParams(window.location.search).get('form') === '1') {
+      setShowForm(true);
+    }
+  }, []);
+
   if (showForm) {
     return (
       <main className="min-h-screen bg-gradient-to-b from-white to-gray-50 dark:from-gray-900 dark:to-gray-800 p-4">
         <div className="max-w-2xl mx-auto py-12">
           <div className="mb-8">
-            <Link href="/" onClick={() => setShowForm(false)} className="text-ctb-green hover:text-opacity-80 font-semibold">
+            <Link href="/" onClick={() => setShowForm(false)} className="inline-block py-2 text-ctb-green hover:text-opacity-80 font-semibold sm:py-0">
               ← Voltar
             </Link>
           </div>
@@ -67,7 +75,11 @@ export default function Home() {
 
         <div className="mt-16 text-sm text-gray-600 dark:text-gray-400">
           <p className="mb-4">Para agentes de trânsito (PM, PC, PRF, polícia municipal)</p>
-          <p>⚠️ App em desenvolvimento - Fase 3/7 em progresso</p>
+          <ul className="space-y-1">
+            <li>Consulta por código MBFT, artigo ou situação descrita</li>
+            <li>Dossiê temático em PDF para levar para a rua</li>
+            <li>Ditado por voz e modo sol (alto contraste)</li>
+          </ul>
         </div>
       </div>
     </main>

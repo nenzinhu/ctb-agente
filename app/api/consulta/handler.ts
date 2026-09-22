@@ -2,37 +2,56 @@
 import { identifyQueryType, normalizeQuery } from '@/lib/query/router';
 import { filterPII } from '@/lib/query/pii-filter';
 import { hybridSearch } from '@/lib/search/hybrid';
-import { buildCard } from '@/lib/response/card-builder';
-import { checkRateLimit, recordQuery } from '@/lib/ratelimit/limiter';
-import { verifyTurnstile } from '@/lib/ratelimit/turnstile';
+import {
+  buildCardFromEnquadramento,
+  buildCardFromNormas,
+  dispositivoToNorma,
+  emptyCard,
+} from '@/lib/response/card-builder';
+import { getCachedCard, setCachedCard } from '@/lib/response/cache';
 import { validateCitations } from '@/lib/response/validator';
-import { getDispositivoByNumero } from '@/lib/db/queries';
-import { supabase } from '@/lib/db/client';
-import type { CartaoEstruturado } from '@/lib/response/response-types';
+import { checkRateLimit, recordQuery } from '@/lib/ratelimit/limiter';
+import { turnstileEnabled, verifyTurnstile } from '@/lib/ratelimit/turnstile';
+import {
+  findDispositivoByReferencia,
+  getDispositivoByNumero,
+  getEnquadramentoByCodigo,
+  searchDispositivos,
+} from '@/lib/db/queries';
+import type { CartaoEstruturado, NormaAplicavel, TipoConsulta } from '@/lib/response/response-types';
+
+export type ConsultaError =
+  | 'rate_limit_exceeded'
+  | 'ip_blocked'
+  | 'turnstile_failed'
+  | 'internal_error';
 
 export interface ConsultaResponse {
-  card?: CartaoEstruturado;
-  enquadramento?: any;
-  error?: string;
-  type?: 'code' | 'situation';
+  card: CartaoEstruturado;
   sucesso: boolean;
   tempo_ms: number;
+  cache_hit: boolean;
+  error?: ConsultaError;
 }
+
+const TIPO_POR_QUERY: Record<string, TipoConsulta> = {
+  code: 'codigo',
+  article: 'artigo',
+  situation: 'situacao',
+};
 
 /**
  * Handle a consultation query end-to-end
- * 1. Check rate limit
- * 2. Verify Turnstile (if needed)
- * 3. Identify query type
- * 4. Filter PII
- * 5. Search (direct lookup or hybrid search)
- * 6. Build response card
- * 7. Validate citations
- * 8. Record usage
+ * 1. Check rate limit and block list
+ * 2. Verify Turnstile when the widget is enabled
+ * 3. Serve from cache when possible
+ * 4. Route the query (code, article or situation)
+ * 5. Build the structured card and validate its citations
+ * 6. Record usage and cache the answer
  * @param consulta - User query
  * @param ipAddress - Client IP address
  * @param turnstileToken - Optional Turnstile token
- * @returns Response object or error
+ * @returns Response with a card and telemetry
  */
 export async function handleConsulta(
   consulta: string,
@@ -40,64 +59,202 @@ export async function handleConsulta(
   turnstileToken?: string
 ): Promise<ConsultaResponse> {
   const startTime = Date.now();
-  // Rate limit check
-  const { allowed, remaining } = await checkRateLimit(ipAddress);
-  if (!allowed) {
-    return { error: 'Rate limit exceeded', sucesso: false, tempo_ms: Date.now() - startTime };
-  }
+  const tipo = TIPO_POR_QUERY[identifyQueryType(consulta)] ?? 'situacao';
 
-  // Turnstile check (if suspicious)
-  if (remaining < 5 && turnstileToken) {
-    const turnstileValid = await verifyTurnstile(turnstileToken);
-    if (!turnstileValid) {
-      return { error: 'Turnstile verification failed', sucesso: false, tempo_ms: Date.now() - startTime };
+  try {
+    const limit = await checkRateLimit(ipAddress);
+    if (!limit.allowed) {
+      const erro: ConsultaError = limit.blocked ? 'ip_blocked' : 'rate_limit_exceeded';
+      await recordQuery(ipAddress, consulta, { tipo, sucesso: false, tempoMs: 0 });
+      return {
+        card: emptyCard(consulta, tipo),
+        sucesso: false,
+        tempo_ms: Date.now() - startTime,
+        cache_hit: false,
+        error: erro,
+      };
     }
-  }
 
-  // Identify query type
-  const queryType = identifyQueryType(consulta);
-  const normalized = normalizeQuery(consulta);
-  const filtered = filterPII(consulta);
-
-  // Handle code lookups directly
-  if (queryType === 'code') {
-    const { data: enquadramento } = await supabase
-      .from('enquadramentos')
-      .select('*')
-      .eq('codigo_mbft', filtered)
-      .single();
-
-    await recordQuery(ipAddress, consulta);
-    return { enquadramento, type: 'code', sucesso: !!enquadramento, tempo_ms: Date.now() - startTime };
-  }
-
-  // Handle article lookups directly
-  if (queryType === 'article') {
-    const dispositivo = await getDispositivoByNumero(normalized);
-    if (dispositivo) {
-      const card = await buildCard(dispositivo.numero_dispositivo, [dispositivo]);
-
-      // Validate citations
-      const validation = validateCitations(JSON.stringify(card), [dispositivo]);
-      if (card.citacoes && !validation.valid) {
-        card.citacoes = [];
+    // Turnstile: verified whenever a token is sent, and required once the IP is
+    // close to the hourly limit (the abusive path).
+    if (await turnstileEnabled()) {
+      const requerToken = limit.remaining < 5;
+      const verification =
+        requerToken || turnstileToken
+          ? await verifyTurnstile(turnstileToken, ipAddress)
+          : { ok: true, skipped: true };
+      if (!verification.ok) {
+        await recordQuery(ipAddress, consulta, { tipo, sucesso: false, tempoMs: 0 });
+        return {
+          card: emptyCard(consulta, tipo),
+          sucesso: false,
+          tempo_ms: Date.now() - startTime,
+          cache_hit: false,
+          error: 'turnstile_failed',
+        };
       }
+    }
 
-      await recordQuery(ipAddress, consulta);
-      return { card, type: 'situation', sucesso: true, tempo_ms: Date.now() - startTime };
+    const cached = await getCachedCard(consulta);
+    if (cached) {
+      const card = { ...cached, cache_hit: true, tempo_ms: Date.now() - startTime };
+      await recordQuery(ipAddress, consulta, {
+        tipo,
+        cacheHit: true,
+        sucesso: true,
+        tempoMs: card.tempo_ms,
+        modelo: 'cache',
+      });
+      return {
+        card,
+        sucesso: card.sucesso,
+        tempo_ms: card.tempo_ms,
+        cache_hit: true,
+      };
+    }
+
+    const card = await buildAnswer(consulta, tipo);
+    const validated = validateCard(card);
+    const tempo = Date.now() - startTime;
+    const finalCard: CartaoEstruturado = { ...validated, tempo_ms: tempo, cache_hit: false };
+
+    await recordQuery(ipAddress, consulta, {
+      tipo,
+      cacheHit: false,
+      sucesso: finalCard.sucesso,
+      tempoMs: tempo,
+      modelo: 'database',
+    });
+
+    if (finalCard.sucesso) {
+      await setCachedCard(consulta, finalCard);
+    }
+
+    return { card: finalCard, sucesso: finalCard.sucesso, tempo_ms: tempo, cache_hit: false };
+  } catch (error) {
+    console.error('Consulta failed:', error);
+    await recordQuery(ipAddress, consulta, { tipo, sucesso: false, tempoMs: Date.now() - startTime });
+    return {
+      card: emptyCard(consulta, tipo),
+      sucesso: false,
+      tempo_ms: Date.now() - startTime,
+      cache_hit: false,
+      error: 'internal_error',
+    };
+  }
+}
+
+/**
+ * Route the query to the right data source and build its card
+ * @param consulta - User query
+ * @param tipo - Query classification
+ * @returns Structured card
+ */
+async function buildAnswer(
+  consulta: string,
+  tipo: TipoConsulta
+): Promise<CartaoEstruturado> {
+  const normalized = normalizeQuery(consulta);
+  const filtered = filterPII(consulta).trim();
+
+  if (tipo === 'codigo') {
+    const enquadramento = await getEnquadramentoByCodigo(filtered);
+    if (!enquadramento) {
+      const proximos = await searchDispositivos(normalized, 5);
+      return buildCardFromNormas(proximos, consulta, 'codigo');
+    }
+
+    const normas = await getNormasForEnquadramento(enquadramento.amparo_legal, enquadramento.descricao);
+    return buildCardFromEnquadramento(enquadramento, consulta, normas);
+  }
+
+  if (tipo === 'artigo') {
+    const dispositivo =
+      (await getDispositivoByNumero(normalized)) ?? (await findDispositivoByReferencia(filtered));
+
+    if (dispositivo) {
+      const relacionadas = normalizeRelated(dispositivo, await searchDispositivos(normalized, 3));
+      return buildCardFromNormas([dispositivo, ...relacionadas], consulta, 'artigo');
     }
   }
 
-  // Hybrid search for situations
-  const results = await hybridSearch(normalized, 5);
-  const card = await buildCard(results[0]?.numero_dispositivo || '', results);
-
-  // Validate citations
-  const validation = validateCitations(JSON.stringify(card), results);
-  if (card.citacoes && !validation.valid) {
-    card.citacoes = [];
+  const resultados = await safeHybridSearch(normalized);
+  if (resultados.length > 0) {
+    return buildCardFromNormas(resultados, consulta, tipo);
   }
 
-  await recordQuery(ipAddress, consulta);
-  return { card, type: 'situation', sucesso: results.length > 0, tempo_ms: Date.now() - startTime };
+  // Last resort for article lookups: full-text search on the normalized query
+  const texto = await searchDispositivos(normalized, 5);
+  return buildCardFromNormas(texto, consulta, tipo);
+}
+
+/**
+ * Collect the norms that back an enquadramento: the cited article plus related text
+ * @param amparoLegal - Amparo legal from the enquadramento
+ * @param descricao - Infraction description, used as a fallback search
+ * @returns Applicable norms (deduplicated)
+ */
+async function getNormasForEnquadramento(
+  amparoLegal: string,
+  descricao: string
+): Promise<NormaAplicavel[]> {
+  const normas: NormaAplicavel[] = [];
+
+  const principal = await findDispositivoByReferencia(amparoLegal);
+  if (principal) {
+    normas.push(dispositivoToNorma(principal));
+  }
+
+  const relacionados = await searchDispositivos(normalizeQuery(descricao), 3);
+  for (const row of relacionados) {
+    if (!normas.some((n) => n.numero_dispositivo === row.numero_dispositivo)) {
+      normas.push(dispositivoToNorma(row));
+    }
+  }
+
+  return normas;
+}
+
+/**
+ * Remove duplicated provisions from a related-norms list
+ * @param principal - The provision already in the card
+ * @param rows - Candidate rows
+ * @returns Rows that are not the principal provision
+ */
+function normalizeRelated(principal: { numero_dispositivo: string }, rows: any[]): any[] {
+  return rows.filter((r) => r.numero_dispositivo !== principal.numero_dispositivo);
+}
+
+/**
+ * Run the hybrid search, degrading to an empty result when it is unavailable
+ * @param query - Normalized query
+ * @returns Ranked rows, possibly empty
+ */
+async function safeHybridSearch(query: string): Promise<any[]> {
+  try {
+    return await hybridSearch(query, 5);
+  } catch (error) {
+    console.warn('Hybrid search unavailable:', error);
+    return [];
+  }
+}
+
+/**
+ * Ensure every citation in the card is backed by the retrieved norms.
+ * Unverified citations are dropped rather than shown as trustworthy.
+ * @param card - Card to validate
+ * @returns Card with validated citations only
+ */
+function validateCard(card: CartaoEstruturado): CartaoEstruturado {
+  if (!card.citacoes || card.citacoes.length === 0) {
+    return { ...card, citacoes: [] };
+  }
+
+  const { issues } = validateCitations(JSON.stringify(card.citacoes), card.normas);
+  if (issues.length === 0) {
+    return card;
+  }
+
+  const invalidas = new Set(issues.map((i) => i.replace(/^Citation not found: "|"$/g, '')));
+  return { ...card, citacoes: card.citacoes.filter((c) => !invalidas.has(c.dispositivo)) };
 }
