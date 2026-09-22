@@ -7,9 +7,7 @@ const nextConfig: NextConfig = {
   images: {
     unoptimized: true,
   },
-  experimental: {
-    serverComponentsExternalPackages: ['@node-rs/argon2'],
-  },
+  serverExternalPackages: ['@node-rs/argon2'],
 };
 
 export default withPWA({
