@@ -21,6 +21,13 @@ No SQL Editor do Supabase, aplique **nesta ordem**:
 3. `scripts/migrations-003-search-functions.sql` — funções RPC
    `search_dispositivos_tsvector` e `search_dispositivos_vector` usadas pela
    busca híbrida; sem elas a busca degrada silenciosamente (sem erro)
+4. `scripts/migrations-004-rls.sql` — habilita Row Level Security em todas as
+   tabelas e libera SELECT público só onde o app lê com a chave anônima.
+   **Sem essa migration, a chave pública (exposta no bundle do navegador)
+   tem leitura e escrita total no banco.**
+5. `scripts/migrations-005-pin-function-search-path.sql` — fixa o
+   `search_path` das funções RPC (hardening recomendado pelo linter do
+   Supabase)
 
 Confira se as tabelas existem:
 

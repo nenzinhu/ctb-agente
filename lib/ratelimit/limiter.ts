@@ -1,5 +1,10 @@
 // Rate limiting logic
-import { databaseConfigured, supabase } from '@/lib/db/client';
+//
+// Reads/writes `uso_diario` with the service-role client on purpose: this
+// table holds every visitor's IP and question text, and this module only
+// ever runs server-side, so there is no reason to expose it through the
+// anon-key RLS policy the client bundle can extract.
+import { databaseConfigured, supabaseAdmin } from '@/lib/db/client';
 import { getSettings, isIpBlocked } from '@/lib/config/settings';
 import type { TipoConsulta } from '@/lib/response/response-types';
 
@@ -61,7 +66,7 @@ export async function checkRateLimit(ipAddress: string): Promise<RateLimitResult
   const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000);
 
   try {
-    const { count, error } = await supabase
+    const { count, error } = await supabaseAdmin
       .from('uso_diario')
       .select('*', { count: 'exact', head: true })
       .eq('ip_endereco', ipAddress)
@@ -111,7 +116,7 @@ export async function recordQuery(
   if (!databaseConfigured) return;
 
   try {
-    await supabase.from('uso_diario').insert({
+    await supabaseAdmin.from('uso_diario').insert({
       ip_endereco: ipAddress,
       pergunta: consulta.slice(0, 500),
       tipo_consulta: details.tipo ?? 'situacao',
@@ -145,7 +150,7 @@ export async function getUsageStats(dias = 30): Promise<UsoStats> {
 
   try {
     const desde = new Date(Date.now() - dias * 86_400_000).toISOString();
-    const { data, error } = await supabase
+    const { data, error } = await supabaseAdmin
       .from('uso_diario')
       .select('pergunta, timestamp, cache_hit, sucesso, modelo_ia_usado')
       .gte('timestamp', desde)

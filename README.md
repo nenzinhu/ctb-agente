@@ -58,6 +58,8 @@ Aplicar as migrations no Supabase (SQL Editor), na ordem:
 1. `scripts/migrations.sql`
 2. `scripts/migrations-002-config.sql`
 3. `scripts/migrations-003-search-functions.sql`
+4. `scripts/migrations-004-rls.sql`
+5. `scripts/migrations-005-pin-function-search-path.sql`
 
 Depois, popular a base com dados de exemplo:
 
