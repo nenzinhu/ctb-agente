@@ -2,6 +2,7 @@
 
 import { useState, useRef } from 'react';
 import { supabaseBrowser } from '@/lib/db/browser-client';
+import { compressFile, compressionSupported, formatBytes } from '@/lib/ingestion/compress-client';
 
 /**
  * Admin upload form component
@@ -26,8 +27,27 @@ const DOCUMENT_TYPES = [
 ] as const;
 
 // Matches the documentos-pendentes Storage bucket's file_size_limit
-// (scripts/migrations-006-documents-storage-bucket.sql).
+// (scripts/migrations-006-documents-storage-bucket.sql). With compression on,
+// that limit applies to the gzipped bytes; the original may be larger, up to
+// what the server agrees to decompress (MAX_DECOMPRESSED_BYTES).
 const MAX_UPLOAD_BYTES = 50 * 1024 * 1024;
+const MAX_COMPRESSED_SOURCE_BYTES = 100 * 1024 * 1024;
+
+const TYPE_BY_EXTENSION: Record<string, string> = {
+  pdf: 'application/pdf',
+  docx: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+  txt: 'text/plain',
+};
+
+/**
+ * Windows often reports an empty MIME for .docx (and sometimes .pdf), which
+ * the upload-url route and the Storage bucket would reject — fall back to
+ * the extension.
+ */
+function contentTypeOf(file: File): string {
+  const ext = file.name.toLowerCase().split('.').pop() ?? '';
+  return TYPE_BY_EXTENSION[ext] ?? (file.type || 'application/octet-stream');
+}
 
 /**
  * Turn a failed fetch response into a message a person can act on.
@@ -64,6 +84,8 @@ export default function AdminUploadForm({ onUploadSuccess }: UploadFormProps) {
   );
   const [normaId, setNormaId] = useState('');
   const [documentType, setDocumentType] = useState<(typeof DOCUMENT_TYPES)[number]['value']>('lei');
+  const [compress, setCompress] = useState(true);
+  const [stage, setStage] = useState<string | null>(null);
   const [message, setMessage] = useState<{
     type: 'success' | 'error';
     text: string;
@@ -96,12 +118,41 @@ export default function AdminUploadForm({ onUploadSuccess }: UploadFormProps) {
     }
   };
 
-  const uploadOne = async (file: File): Promise<void> => {
+  /**
+   * @returns A note about the compression applied, for the success message
+   */
+  const uploadOne = async (file: File): Promise<string | null> => {
+    const contentType = contentTypeOf(file);
+
+    // 0. Optionally gzip the file in the browser. The blob keeps the
+    // original content type (the bucket only accepts PDF/DOCX/TXT); the
+    // server recognizes gzip by its magic bytes and decompresses it.
+    let body: Blob = file;
+    let note: string | null = null;
+    if (compress) {
+      setStage('Comprimindo');
+      const result = await compressFile(file);
+      if (result.compressed) {
+        body = new Blob([result.blob], { type: contentType });
+        const saving = Math.round((1 - result.finalBytes / result.originalBytes) * 100);
+        note = `${file.name}: ${formatBytes(result.originalBytes)} → ${formatBytes(result.finalBytes)} (−${saving}%)`;
+      }
+    }
+
+    if (body.size > MAX_UPLOAD_BYTES) {
+      throw new Error(
+        compress
+          ? `mesmo comprimido o arquivo tem ${formatBytes(body.size)} (limite de 50 MB).`
+          : 'arquivo acima de 50 MB. Ative "Comprimir antes de enviar" e tente de novo.'
+      );
+    }
+
     // 1. Ask the server for a place to put the file.
+    setStage('Enviando');
     const urlResponse = await fetch('/api/admin/documents/upload-url', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ fileName: file.name, contentType: file.type || 'application/octet-stream' }),
+      body: JSON.stringify({ fileName: file.name, contentType }),
     });
 
     if (!urlResponse.ok) {
@@ -116,12 +167,15 @@ export default function AdminUploadForm({ onUploadSuccess }: UploadFormProps) {
 
     // 2. Upload the bytes directly to Supabase Storage — this is the step
     // that bypasses Vercel's request body limit entirely.
-    const { error: storageError } = await supabaseBrowser.storage.from(bucket).uploadToSignedUrl(path, token, file);
+    const { error: storageError } = await supabaseBrowser.storage
+      .from(bucket)
+      .uploadToSignedUrl(path, token, body, { contentType });
     if (storageError) {
       throw new Error(storageError.message || 'Falha ao enviar para o armazenamento.');
     }
 
     // 3. Tell the server to process what's now sitting in Storage.
+    setStage('Processando');
     const ingestResponse = await fetch('/api/ingestion/upload', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -142,6 +196,8 @@ export default function AdminUploadForm({ onUploadSuccess }: UploadFormProps) {
         `${result.data.insertedCount} trecho(s) importado(s), mas ${result.data.failedCount} falharam (ver console/logs do servidor).`
       );
     }
+
+    return note;
   };
 
   const uploadFiles = async (files: FileList) => {
@@ -154,6 +210,7 @@ export default function AdminUploadForm({ onUploadSuccess }: UploadFormProps) {
       setIsUploading(true);
       setFileProgress({ current: 1, total: files.length });
       setMessage(null);
+      const notes: string[] = [];
 
       // For now, we'll upload files one by one
       for (let i = 0; i < files.length; i++) {
@@ -162,23 +219,30 @@ export default function AdminUploadForm({ onUploadSuccess }: UploadFormProps) {
 
         // Validate file type and size
         if (!isValidFile(file)) {
-          const tamanhoInvalido = file.size > MAX_UPLOAD_BYTES;
+          const tamanhoInvalido = file.size > maxSourceBytes;
           setMessage({
             type: 'error',
             text: tamanhoInvalido
-              ? `Arquivo muito grande: ${file.name} (limite de 50 MB por envio).`
-              : `Arquivo inválido: ${file.name}. Formatos aceitos: PDF, DOCX, TXT (até 50 MB).`,
+              ? `Arquivo muito grande: ${file.name} (limite de ${formatBytes(maxSourceBytes)} por envio${
+                  maxSourceBytes === MAX_UPLOAD_BYTES && compressionSupported()
+                    ? '; ative "Comprimir antes de enviar" para até 100 MB'
+                    : ''
+                }).`
+              : `Arquivo inválido: ${file.name}. Formatos aceitos: PDF, DOCX, TXT.`,
           });
           continue;
         }
 
         try {
-          await uploadOne(file);
+          const note = await uploadOne(file);
+          if (note) notes.push(note);
 
           if (i === files.length - 1) {
             setMessage({
               type: 'success',
-              text: `${files.length} arquivo(s) enviado(s) com sucesso.`,
+              text: `${files.length} arquivo(s) enviado(s) com sucesso.${
+                notes.length > 0 ? ` Comprimido: ${notes.join('; ')}.` : ''
+              }`,
             });
             // Clear file input
             if (fileInputRef.current) {
@@ -200,8 +264,14 @@ export default function AdminUploadForm({ onUploadSuccess }: UploadFormProps) {
     } finally {
       setIsUploading(false);
       setFileProgress(null);
+      setStage(null);
     }
   };
+
+  // Without compression the bucket limit applies to the file as-is; with it,
+  // only the gzipped bytes must fit (checked in uploadOne after compressing).
+  const maxSourceBytes =
+    compress && compressionSupported() ? MAX_COMPRESSED_SOURCE_BYTES : MAX_UPLOAD_BYTES;
 
   const isValidFile = (file: File): boolean => {
     const validMimeTypes = [
@@ -217,7 +287,7 @@ export default function AdminUploadForm({ onUploadSuccess }: UploadFormProps) {
       file.name.toLowerCase().endsWith(ext)
     );
 
-    const hasValidSize = file.size <= MAX_UPLOAD_BYTES;
+    const hasValidSize = file.size <= maxSourceBytes;
 
     return (hasValidMimeType || hasValidExtension) && hasValidSize;
   };
@@ -253,6 +323,24 @@ export default function AdminUploadForm({ onUploadSuccess }: UploadFormProps) {
           </select>
         </label>
       </div>
+
+      <label className="flex items-start gap-2 mb-4 text-sm text-gray-700">
+        <input
+          type="checkbox"
+          checked={compress}
+          onChange={(e) => setCompress(e.target.checked)}
+          disabled={isUploading || !compressionSupported()}
+          className="mt-0.5"
+        />
+        <span>
+          Comprimir antes de enviar
+          <span className="block text-xs text-gray-400">
+            {compressionSupported()
+              ? 'Reduz o envio (bastante em TXT; pouco em PDF/DOCX, que já vêm comprimidos) e aceita arquivos de até 100 MB.'
+              : 'Indisponível neste navegador — o envio será feito sem compressão.'}
+          </span>
+        </span>
+      </label>
 
       <div
         onDragOver={handleDragOver}
@@ -295,7 +383,7 @@ export default function AdminUploadForm({ onUploadSuccess }: UploadFormProps) {
             ou clique para selecionar
           </p>
           <p className="text-xs text-gray-400">
-            Aceitos: PDF, DOCX, TXT (até 50 MB)
+            Aceitos: PDF, DOCX, TXT (até {formatBytes(maxSourceBytes)})
           </p>
         </div>
       </div>
@@ -304,7 +392,7 @@ export default function AdminUploadForm({ onUploadSuccess }: UploadFormProps) {
         <div className="mt-4">
           <div className="flex items-center justify-between mb-2">
             <p className="text-sm font-medium text-gray-700">
-              Processando{fileProgress && fileProgress.total > 1 ? ` arquivo ${fileProgress.current} de ${fileProgress.total}` : ''}…
+              {stage ?? 'Processando'}{fileProgress && fileProgress.total > 1 ? ` arquivo ${fileProgress.current} de ${fileProgress.total}` : ''}…
             </p>
           </div>
           {/* Indeterminate: the server does one blocking request per file

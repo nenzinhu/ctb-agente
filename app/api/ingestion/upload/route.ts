@@ -10,6 +10,7 @@ import { z } from 'zod';
 import { validateSession } from '@/lib/auth/session';
 import { supabaseAdmin } from '@/lib/db/client';
 import { DOCUMENTS_BUCKET } from '@/lib/ingestion/storage';
+import { maybeGunzip } from '@/lib/ingestion/decompress';
 import { parseDocument } from '@/lib/ingestion/parser';
 import { chunkText } from '@/lib/ingestion/chunker';
 import { processChunks } from '@/lib/ingestion/processor';
@@ -79,12 +80,42 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       );
     }
 
-    const buffer = Buffer.from(await fileBlob.arrayBuffer());
-    tempFilePath = path.join(os.tmpdir(), `ctb-ingestion-${Date.now()}-${fileName}`);
+    // The admin panel may gzip the file before uploading it (see
+    // lib/ingestion/compress-client.ts); restore the original bytes.
+    let buffer: Buffer;
+    try {
+      buffer = maybeGunzip(Buffer.from(await fileBlob.arrayBuffer()));
+    } catch (gunzipError) {
+      const detalhe = gunzipError instanceof Error ? gunzipError.message : String(gunzipError);
+      return NextResponse.json(
+        { error: 'decompress_failed', message: `Não foi possível ler "${fileName}": ${detalhe}` },
+        { status: 422 }
+      );
+    }
+    // fileName comes from the client: only its extension is needed (the
+    // parser picks the format by it), and keeping the rest out of the path
+    // stops a name like "../../x.pdf" from writing outside tmpdir.
+    const ext = path.extname(fileName).toLowerCase().replace(/[^a-z0-9.]/g, '');
+    tempFilePath = path.join(
+      os.tmpdir(),
+      `ctb-ingestion-${Date.now()}-${Math.random().toString(36).slice(2, 8)}${ext}`
+    );
     fs.writeFileSync(tempFilePath, buffer);
 
     console.log(`Parsing document: ${fileName}`);
-    const parsedDoc = await parseDocument(tempFilePath, fileName);
+    let parsedDoc;
+    try {
+      parsedDoc = await parseDocument(tempFilePath, fileName);
+    } catch (parseError) {
+      // An unreadable file (scanned, password-protected, corrupt) is a
+      // problem with the upload, not a server fault — say what's wrong.
+      const detalhe = parseError instanceof Error ? parseError.message : String(parseError);
+      console.error('Parse error:', parseError);
+      return NextResponse.json(
+        { error: 'parse_failed', message: `Não foi possível ler "${fileName}": ${detalhe}` },
+        { status: 422 }
+      );
+    }
 
     console.log('Chunking document into segments');
     const chunks = chunkText(parsedDoc.text, 500); // ~500 char chunks

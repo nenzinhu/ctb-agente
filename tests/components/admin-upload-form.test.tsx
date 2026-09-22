@@ -104,6 +104,32 @@ describe('AdminUploadForm', () => {
     expect(ingestBody).toMatchObject({ storagePath: '123-ctb.pdf', normaId: 'ctb' });
   });
 
+  it('infers the content type from the extension when the browser reports none', async () => {
+    const fetchMock = jest.fn(async (url: string, _init?: RequestInit) => {
+      if (url === '/api/admin/documents/upload-url') {
+        return {
+          ok: true,
+          status: 200,
+          json: async () => ({ bucket: 'documentos-pendentes', path: '123-lei.docx', token: 'tok' }),
+        };
+      }
+      return { ok: true, status: 200, json: async () => ({ success: true, data: { insertedCount: 1 } }) };
+    });
+    global.fetch = fetchMock as unknown as typeof fetch;
+
+    const { container } = render(<AdminUploadForm />);
+    await fillMetadata();
+
+    const input = container.querySelector('input[type="file"]') as HTMLInputElement;
+    await userEvent.upload(input, makeFile('lei.docx', 1024, ''));
+
+    expect(await screen.findByText(/com sucesso/i)).toBeInTheDocument();
+    const urlCall = fetchMock.mock.calls.find(([url]) => url === '/api/admin/documents/upload-url');
+    expect(JSON.parse((urlCall?.[1] as RequestInit).body as string).contentType).toBe(
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+    );
+  });
+
   it('shows a readable message when the signed-url step returns a non-JSON body', async () => {
     const fetchMock = jest.fn(async () => ({
       ok: false,

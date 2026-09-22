@@ -68,6 +68,16 @@ describe('POST /api/admin/documents/upload-url', () => {
     expect(createSignedUploadUrl).not.toHaveBeenCalled();
   });
 
+  it('accepts a known extension when the browser sent a generic content type', async () => {
+    const resposta = await POST(
+      requisicao({ fileName: 'resolucao.docx', contentType: 'application/octet-stream' })
+    );
+    expect(resposta.status).toBe(200);
+    expect((await resposta.json()).contentType).toBe(
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+    );
+  });
+
   it('mints a signed upload URL for an allowed file', async () => {
     const resposta = await POST(requisicao({ fileName: 'CTB completo (2026).pdf', contentType: 'application/pdf' }));
     expect(resposta.status).toBe(200);

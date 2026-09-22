@@ -8,11 +8,24 @@ import { validateSession } from '@/lib/auth/session';
 import { databaseConfigured, supabaseAdmin } from '@/lib/db/client';
 import { DOCUMENTS_BUCKET } from '@/lib/ingestion/storage';
 
-const ALLOWED_TYPES = [
-  'application/pdf',
-  'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-  'text/plain',
-];
+const TYPE_BY_EXTENSION: Record<string, string> = {
+  pdf: 'application/pdf',
+  docx: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+  txt: 'text/plain',
+};
+
+const ALLOWED_TYPES = Object.values(TYPE_BY_EXTENSION);
+
+/**
+ * The browser's MIME for a file is often empty or generic on Windows
+ * (no registered handler for .docx, etc.). Trust a known extension then.
+ * @returns An allowed content type, or null when neither source is accepted
+ */
+function resolveContentType(fileName: string, contentType: string): string | null {
+  if (ALLOWED_TYPES.includes(contentType)) return contentType;
+  const ext = fileName.toLowerCase().split('.').pop() ?? '';
+  return TYPE_BY_EXTENSION[ext] ?? null;
+}
 
 const RequestSchema = z.object({
   fileName: z.string().min(1).max(255),
@@ -31,7 +44,7 @@ function sanitizeFileName(name: string): string {
 
 /**
  * POST /api/admin/documents/upload-url
- * Body: { fileName, contentType } → { bucket, path, token }
+ * Body: { fileName, contentType } → { bucket, path, token, contentType }
  */
 export async function POST(request: NextRequest) {
   if (!(await validateSession())) {
@@ -70,7 +83,8 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  if (!ALLOWED_TYPES.includes(parsed.data.contentType)) {
+  const contentType = resolveContentType(parsed.data.fileName, parsed.data.contentType);
+  if (!contentType) {
     return NextResponse.json(
       {
         error: 'invalid_type',
@@ -92,7 +106,7 @@ export async function POST(request: NextRequest) {
   }
 
   return NextResponse.json(
-    { bucket: DOCUMENTS_BUCKET, path: data.path, token: data.token },
+    { bucket: DOCUMENTS_BUCKET, path: data.path, token: data.token, contentType },
     { status: 200 }
   );
 }
