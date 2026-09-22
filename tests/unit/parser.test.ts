@@ -67,6 +67,22 @@ describe('Document Parser', () => {
     });
   });
 
+  describe('parsePdf', () => {
+    it('parses a PDF without ever handing pdfjs a Node Buffer', async () => {
+      // Content doesn't matter here — tests/mocks/pdf.js stands in for
+      // pdfjs-dist and only cares whether it received a Buffer or a plain
+      // Uint8Array, same constructor check the real library makes.
+      const testFile = path.join(tempDir, 'test-parse.pdf');
+      fs.writeFileSync(testFile, '%PDF-1.4 minimal fixture, content unused by the mock');
+
+      const result = await parseDocument(testFile, 'test-parse.pdf');
+
+      expect(result.fileType).toBe('pdf');
+      expect(result.text).toContain('Mock PDF text');
+      expect(result.pageCount).toBe(1);
+    });
+  });
+
   describe('parseTxt', () => {
     it('should extract text from TXT file', async () => {
       const testFile = path.join(tempDir, 'test-parse.txt');

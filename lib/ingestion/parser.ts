@@ -3,8 +3,11 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { z } from 'zod';
 
-// For PDF parsing
-import * as pdfjsLib from 'pdfjs-dist';
+// For PDF parsing. Use the "legacy" Node build, not the default browser
+// build — pdfjs-dist warns about this every time the wrong one loads
+// server-side, and the browser build's worker setup doesn't resolve
+// correctly here anyway.
+import * as pdfjsLib from 'pdfjs-dist/legacy/build/pdf.mjs';
 
 // For DOCX parsing
 import mammoth from 'mammoth';
@@ -104,14 +107,18 @@ async function parseDocx(filePath: string): Promise<string> {
  */
 async function parsePdf(filePath: string): Promise<{ text: string; pageCount: number }> {
   try {
-    // Set up worker for pdfjs
-    if (!pdfjsLib.GlobalWorkerOptions.workerSrc) {
-      // Use a CDN-hosted worker as fallback
-      pdfjsLib.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.js`;
-    }
-
+    // pdfjs-dist rejects a Node Buffer even though Buffer is technically a
+    // Uint8Array subclass — it checks the exact constructor. Copy into a
+    // plain Uint8Array before handing it over.
     const pdfBuffer = fs.readFileSync(filePath);
-    const pdf = await pdfjsLib.getDocument({ data: pdfBuffer }).promise;
+    const data = new Uint8Array(pdfBuffer.buffer, pdfBuffer.byteOffset, pdfBuffer.byteLength);
+
+    // The legacy Node build detects it isn't running in a browser and
+    // falls back to an in-process "fake worker" automatically — no
+    // GlobalWorkerOptions.workerSrc needed, which avoids resolving a
+    // worker script path across bundlers/hosts (a source of failures on
+    // its own).
+    const pdf = await pdfjsLib.getDocument({ data }).promise;
 
     let fullText = '';
     const pageCount = pdf.numPages;

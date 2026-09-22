@@ -115,3 +115,18 @@ relatórios de agentes. O código foi agora implementado e verificado aqui.
     service role. A rota também não checava sessão de admin — corrigido.
     Coberto por `tests/api/upload-url.test.ts`, `tests/api/ingestion-upload.test.ts`
     e `tests/components/admin-upload-form.test.tsx` (nenhum teste existia antes).
+15. **Parsing de PDF real sempre falhava.** Duas causas em `lib/ingestion/parser.ts`:
+    (a) `fs.readFileSync` devolve um `Buffer`, e o pdfjs-dist rejeita isso
+    (`Please provide binary data as Uint8Array, rather than Buffer`) mesmo
+    `Buffer` sendo tecnicamente uma subclasse de `Uint8Array` — ele checa o
+    construtor exato; (b) o import usava o build de navegador (`pdfjs-dist`)
+    em vez do build de Node (`pdfjs-dist/legacy/build/pdf.mjs`), e o
+    `workerSrc` apontava pra uma URL de CDN que não faz sentido rodando no
+    servidor. Corrigido: cópia pra `Uint8Array` real e troca pro build
+    legacy (que detecta Node e usa worker in-process automaticamente, sem
+    precisar de `workerSrc`). Verificado com o pdfjs-dist real (não só
+    mock) contra um PDF de verdade. Coberto por um novo teste de PDF em
+    `tests/unit/parser.test.ts` — só havia teste de TXT antes; o mock em
+    `tests/mocks/pdf.js` também passou a reproduzir a checagem estrita de
+    `Buffer` do pdfjs real, então essa classe de bug não passa mais
+    despercebida.
