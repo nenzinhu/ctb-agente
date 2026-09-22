@@ -2,7 +2,6 @@
 import { z } from 'zod';
 import { embeddingChain } from '@/lib/ai/embeddings';
 import { supabaseAdmin } from '@/lib/db/client';
-import { Dispositivo } from '@/lib/db/schema';
 import { TextChunk } from './chunker';
 
 // Schema for processor input
