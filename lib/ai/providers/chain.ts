@@ -1,31 +1,49 @@
 // Fallback chain over every provider registered in registry.ts.
-// The order of PROVIDERS is the failover order: fast responders first, then
-// the analytical ones. A provider without its env var is skipped, so the
-// chain works with any subset of keys configured.
+// The provider/model the master picked in the admin panel goes first; after
+// it, the order of PROVIDERS is the failover order. A provider without its
+// env var is skipped, so the chain works with any subset of keys configured.
 import type { AIModel, AIProvider } from './base';
 import { PROVIDERS } from './registry';
+import { getAIPreference, type AIPreference } from '../preference';
+
+interface Elo {
+  id: string;
+  provider: AIProvider;
+  modeloPadrao: string;
+}
 
 export class ProviderChain implements AIProvider {
   name = 'Provider Chain';
-  private providers: AIProvider[];
+  private elos: Elo[];
 
   constructor() {
-    this.providers = PROVIDERS.filter((p) => Boolean(process.env[p.envVar])).map((p) =>
-      p.criar()
-    );
+    this.elos = PROVIDERS.filter((p) => Boolean(process.env[p.envVar])).map((p) => ({
+      id: p.id,
+      provider: p.criar(),
+      modeloPadrao: p.modelos[0],
+    }));
   }
 
   /** Providers actually wired in this deployment, in failover order. */
   get ativos(): string[] {
-    return this.providers.map((p) => p.name);
+    return this.elos.map((e) => e.provider.name);
+  }
+
+  /**
+   * Attempts in order: the preferred provider/model, then every other
+   * provider with its own default model.
+   */
+  tentativas(preferencia: AIPreference | null): Array<{ elo: Elo; modelo: string }> {
+    const preferido = preferencia && this.elos.find((e) => e.id === preferencia.providerId);
+    const resto = this.elos.filter((e) => e !== preferido).map((elo) => ({ elo, modelo: elo.modeloPadrao }));
+    return preferido ? [{ elo: preferido, modelo: preferencia!.modelo }, ...resto] : resto;
   }
 
   async getModels(): Promise<AIModel[]> {
     const allModels: AIModel[] = [];
-    for (const provider of this.providers) {
+    for (const { provider } of this.elos) {
       try {
-        const models = await provider.getModels();
-        allModels.push(...models);
+        allModels.push(...(await provider.getModels()));
       } catch (error) {
         console.warn(`Failed to fetch models from ${provider.name}:`, error);
       }
@@ -33,25 +51,28 @@ export class ProviderChain implements AIProvider {
     return allModels;
   }
 
-  async generate(prompt: string, model: string, maxTokens: number, temperature = 0.7): Promise<string> {
-    let lastError: Error | null = null;
+  /**
+   * @param model - Ignored: model ids are provider-specific, so passing one
+   * id to every provider made each fallback fail with "model not found".
+   * The model comes from the admin preference or each provider's default.
+   */
+  async generate(prompt: string, _model: string, maxTokens: number, temperature = 0.7): Promise<string> {
+    if (this.elos.length === 0) {
+      throw new Error(
+        'Nenhum provedor de IA configurado — defina ao menos uma API key (ver .env.local.example).'
+      );
+    }
 
-    for (const provider of this.providers) {
-      // Skip the model if the chain already knows the current provider does
-      // not serve it; otherwise try and fail over on any error.
+    let lastError: Error | null = null;
+    for (const { elo, modelo } of this.tentativas(await getAIPreference())) {
       try {
-        return await provider.generate(prompt, model, maxTokens, temperature);
+        return await elo.provider.generate(prompt, modelo, maxTokens, temperature);
       } catch (error) {
         lastError = error instanceof Error ? error : new Error(String(error));
-        console.warn(`Provider ${provider.name} failed, trying next...`, error);
-        continue;
+        console.warn(`Provider ${elo.provider.name} (${modelo}) failed, trying next...`, error);
       }
     }
 
-    throw new Error(
-      this.providers.length === 0
-        ? 'Nenhum provedor de IA configurado — defina ao menos uma API key (ver .env.local.example).'
-        : `All providers failed. Last error: ${lastError?.message}`
-    );
+    throw new Error(`All providers failed. Last error: ${lastError?.message}`);
   }
 }

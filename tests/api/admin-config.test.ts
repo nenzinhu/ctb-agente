@@ -87,9 +87,23 @@ const pingProvider = jest.fn(
   })
 );
 
+const listLiveModels = jest.fn(async (..._args: unknown[]) => ({ modelos: ['llama', 'qwen'] }));
+
 jest.mock('../../lib/ai/providers/registry', () => ({
+  PROVIDERS: [{ id: 'groq' }],
   listProviders: () => listProviders(),
-  pingProvider: (id: string) => pingProvider(id),
+  listLiveModels: (...args: unknown[]) => listLiveModels(...args),
+  pingProvider: (...args: unknown[]) => pingProvider(...args),
+}));
+
+let preferenciaSalva: { providerId: string; modelo: string } | null = null;
+const setAIPreference = jest.fn(async (valor: { providerId: string; modelo: string } | null) => {
+  preferenciaSalva = valor;
+});
+
+jest.mock('../../lib/ai/preference', () => ({
+  getAIPreference: async () => preferenciaSalva,
+  setAIPreference: (valor: { providerId: string; modelo: string } | null) => setAIPreference(valor),
 }));
 
 const listEnquadramentos = jest.fn(async (..._args: unknown[]) => [{ codigo_mbft: '516-91' }]);
@@ -118,7 +132,7 @@ import { NextRequest } from 'next/server';
 import { createSession } from '@/lib/auth/session';
 import { GET as getLimites, POST as blockIP, PUT as putLimites, DELETE as deleteIP } from '@/app/api/admin/limites/route';
 import { GET as getUso } from '@/app/api/admin/uso/route';
-import { GET as getProviders, POST as postProvider } from '@/app/api/admin/providers/route';
+import { GET as getProviders, POST as postProvider, PUT as putProvider } from '@/app/api/admin/providers/route';
 import {
   DELETE as deleteEnquadramentoRoute,
   GET as getEnquadramentos,
@@ -250,9 +264,44 @@ describe('Admin configuration API', () => {
 
   describe('/api/admin/providers', () => {
     it('lists the chain for an authenticated master', async () => {
-      const resposta = await getProviders();
+      const resposta = await getProviders(new NextRequest('http://localhost/api/admin/providers'));
       expect(resposta.status).toBe(200);
-      expect((await resposta.json()).providers[0].envVar).toBe('GROQ_API_KEY');
+      const corpo = await resposta.json();
+      expect(corpo.providers[0].envVar).toBe('GROQ_API_KEY');
+      expect(corpo).toHaveProperty('preferencia');
+    });
+
+    it('lists a provider live free catalog', async () => {
+      const resposta = await getProviders(
+        new NextRequest('http://localhost/api/admin/providers?modelos=groq')
+      );
+      expect(listLiveModels).toHaveBeenCalledWith('groq');
+      expect((await resposta.json()).modelos).toEqual(['llama', 'qwen']);
+    });
+
+    it('pings the specific model the master picked', async () => {
+      await postProvider(requisicao('/api/admin/providers', { providerId: 'groq', modelo: 'qwen' }));
+      expect(pingProvider).toHaveBeenCalledWith('groq', 'qwen');
+    });
+
+    it('saves and clears the preferred model', async () => {
+      const salvar = await putProvider(
+        requisicao('/api/admin/providers', { providerId: 'groq', modelo: 'qwen' }, 'PUT')
+      );
+      expect(salvar.status).toBe(200);
+      expect(setAIPreference).toHaveBeenCalledWith({ providerId: 'groq', modelo: 'qwen' });
+
+      const limpar = await putProvider(requisicao('/api/admin/providers', null, 'PUT'));
+      expect(limpar.status).toBe(200);
+      expect(setAIPreference).toHaveBeenLastCalledWith(null);
+    });
+
+    it('refuses a preference for an unknown provider', async () => {
+      const resposta = await putProvider(
+        requisicao('/api/admin/providers', { providerId: 'nope', modelo: 'x' }, 'PUT')
+      );
+      expect(resposta.status).toBe(400);
+      expect(setAIPreference).not.toHaveBeenCalled();
     });
 
     it('pings a provider', async () => {

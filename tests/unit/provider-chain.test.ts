@@ -8,7 +8,7 @@ describe('ProviderChain', () => {
     process.env = { ...originalEnv };
   });
 
-  it('is built from the full registry (7 providers)', () => {
+  it('is built from the full registry', () => {
     const chain = new ProviderChain();
     expect(chain.name).toBe('Provider Chain');
     expect(chain.getModels).toBeDefined();
@@ -27,6 +27,52 @@ describe('ProviderChain', () => {
 
     const chain = new ProviderChain();
     expect(chain.ativos).toEqual(['Groq', 'Mistral']);
+  });
+
+  it('tries the preferred model first, then each other provider with its own default model', () => {
+    for (const p of PROVIDERS) delete process.env[p.envVar];
+    process.env.GROQ_API_KEY = 'k';
+    process.env.MISTRAL_API_KEY = 'k';
+    process.env.OPENROUTER_API_KEY = 'k';
+
+    const chain = new ProviderChain();
+    const plano = chain
+      .tentativas({ providerId: 'openrouter', modelo: 'openrouter/free' })
+      .map((t) => `${t.elo.id}:${t.modelo}`);
+
+    const padrao = (id: string) => PROVIDERS.find((p) => p.id === id)!.modelos[0];
+    expect(plano).toEqual([
+      'openrouter:openrouter/free',
+      `groq:${padrao('groq')}`,
+      `mistral:${padrao('mistral')}`,
+    ]);
+  });
+
+  it('falls over to the next provider with that provider\'s model', async () => {
+    for (const p of PROVIDERS) delete process.env[p.envVar];
+    process.env.GROQ_API_KEY = 'k';
+    process.env.MISTRAL_API_KEY = 'k';
+
+    const originalFetch = global.fetch;
+    const modelosPedidos: string[] = [];
+    (global as { fetch: unknown }).fetch = jest.fn(async (url: string, init: RequestInit) => {
+      modelosPedidos.push(JSON.parse(init.body as string).model);
+      if (url.includes('groq')) {
+        return { ok: false, status: 429, statusText: '', text: async () => '{"error":{"message":"slow down"}}' };
+      }
+      return { ok: true, json: async () => ({ choices: [{ message: { content: 'resposta' } }] }) };
+    });
+
+    try {
+      const chain = new ProviderChain();
+      await expect(chain.generate('x', 'ignored', 8)).resolves.toBe('resposta');
+      expect(modelosPedidos).toEqual([
+        PROVIDERS.find((p) => p.id === 'groq')!.modelos[0],
+        PROVIDERS.find((p) => p.id === 'mistral')!.modelos[0],
+      ]);
+    } finally {
+      (global as { fetch: unknown }).fetch = originalFetch;
+    }
   });
 
   it('explains itself when no provider is configured', async () => {

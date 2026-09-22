@@ -1,11 +1,15 @@
-// Registry of the pluggable AI providers, used by the admin panel.
+// Registry of the pluggable AI providers, used by the admin panel and the
+// fallback chain. Every one of them has a free tier; `modelos` are the
+// suggested free models (most recommended first). These catalogs change
+// every few weeks, so the admin panel can also pull each provider's current
+// free catalog live (listLiveModels) and test any model in it.
 import { GroqProvider } from './groq';
 import { NVIDIAProvider } from './nvidia';
 import { OpenRouterProvider } from './openrouter';
-import { MistralProvider } from './mistral';
 import { NousProvider } from './nous';
 import { OrcaRouterProvider } from './orcarouter';
 import { AnyApiProvider } from './anyapi';
+import { OpenAICompatibleProvider } from './openai-compatible';
 import type { AIProvider } from './base';
 
 export interface ProviderDescriptor {
@@ -15,10 +19,13 @@ export interface ProviderDescriptor {
   /** Free-tier models this provider offers, most recommended first. */
   modelos: string[];
   papel: 'resposta rapida' | 'resposta analitica' | 'embeddings';
+  /** Where to create a free key ('' when unknown). */
+  cadastro: string;
   criar: () => AIProvider;
 }
 
-const TIMEOUT_MS = 8000;
+// Big free models (120B+) regularly take 10s+ to answer even a one-word ping.
+const TIMEOUT_MS = 25_000;
 
 export const PROVIDERS: ProviderDescriptor[] = [
   {
@@ -27,20 +34,93 @@ export const PROVIDERS: ProviderDescriptor[] = [
     envVar: 'GROQ_API_KEY',
     modelos: [
       'llama-3.3-70b-versatile',
-      'qwen/qwen3.6-27b',
       'openai/gpt-oss-120b',
       'openai/gpt-oss-20b',
+      'llama-3.1-8b-instant',
+      'qwen/qwen3.6-27b',
     ],
     papel: 'resposta rapida',
+    cadastro: 'https://console.groq.com/keys',
     criar: () => new GroqProvider(process.env.GROQ_API_KEY || ''),
+  },
+  {
+    id: 'cerebras',
+    nome: 'Cerebras',
+    envVar: 'CEREBRAS_API_KEY',
+    modelos: ['gpt-oss-120b', 'llama-3.3-70b', 'llama3.1-8b', 'qwen-3-32b'],
+    papel: 'resposta rapida',
+    cadastro: 'https://cloud.cerebras.ai',
+    criar: () =>
+      new OpenAICompatibleProvider({
+        name: 'Cerebras',
+        apiKey: process.env.CEREBRAS_API_KEY || '',
+        baseUrl: 'https://api.cerebras.ai/v1',
+      }),
   },
   {
     id: 'nvidia',
     nome: 'NVIDIA NIM',
     envVar: 'NVIDIA_API_KEY',
-    modelos: ['meta/llama-3.1-70b-instruct', 'nvidia/nemotron-3-super-120b-a12b'],
+    modelos: [
+      'nvidia/nemotron-3-super-120b-a12b',
+      'deepseek-ai/deepseek-v4.1-flash',
+      'moonshotai/kimi-k2.6',
+      'z-ai/glm-5.3-flash',
+      'openai/gpt-oss-20b',
+      'nvidia/llama-3.1-nemotron-70b-instruct',
+    ],
     papel: 'resposta rapida',
+    cadastro: 'https://build.nvidia.com',
     criar: () => new NVIDIAProvider(process.env.NVIDIA_API_KEY || ''),
+  },
+  {
+    id: 'gemini',
+    nome: 'Google Gemini (AI Studio)',
+    envVar: 'GEMINI_API_KEY',
+    modelos: ['gemini-2.5-flash', 'gemini-2.5-flash-lite', 'gemini-2.0-flash'],
+    papel: 'resposta analitica',
+    cadastro: 'https://aistudio.google.com/apikey',
+    criar: () =>
+      new OpenAICompatibleProvider({
+        name: 'Gemini',
+        apiKey: process.env.GEMINI_API_KEY || '',
+        baseUrl: 'https://generativelanguage.googleapis.com/v1beta/openai',
+        filtroGratis: (id) => /^gemini-.*flash/i.test(id) && !/image|tts|audio|live/i.test(id),
+      }),
+  },
+  {
+    id: 'sambanova',
+    nome: 'SambaNova Cloud',
+    envVar: 'SAMBANOVA_API_KEY',
+    modelos: ['Meta-Llama-3.3-70B-Instruct', 'DeepSeek-V3.2', 'gpt-oss-120b', 'gemma-4-31B-it'],
+    papel: 'resposta analitica',
+    cadastro: 'https://cloud.sambanova.ai/apis',
+    criar: () =>
+      new OpenAICompatibleProvider({
+        name: 'SambaNova',
+        apiKey: process.env.SAMBANOVA_API_KEY || '',
+        baseUrl: 'https://api.sambanova.ai/v1',
+      }),
+  },
+  {
+    id: 'huggingface',
+    nome: 'Hugging Face (créditos grátis mensais)',
+    envVar: 'HF_TOKEN',
+    modelos: [
+      'openai/gpt-oss-120b',
+      'meta-llama/Llama-3.3-70B-Instruct',
+      'deepseek-ai/DeepSeek-V4.1-Flash',
+      'Qwen/Qwen3.8-27B',
+      'google/gemma-4-31B-it',
+    ],
+    papel: 'resposta analitica',
+    cadastro: 'https://huggingface.co/settings/tokens',
+    criar: () =>
+      new OpenAICompatibleProvider({
+        name: 'Hugging Face',
+        apiKey: process.env.HF_TOKEN || '',
+        baseUrl: 'https://router.huggingface.co/v1',
+      }),
   },
   {
     id: 'nous',
@@ -55,6 +135,7 @@ export const PROVIDERS: ProviderDescriptor[] = [
       'meta-llama/llama-3.1-8b-instruct',
     ],
     papel: 'resposta analitica',
+    cadastro: 'https://portal.nousresearch.com',
     criar: () =>
       new NousProvider(process.env.NOUS_API_KEY || '', process.env.NOUS_BASE_URL || undefined),
   },
@@ -62,12 +143,9 @@ export const PROVIDERS: ProviderDescriptor[] = [
     id: 'orcarouter',
     nome: 'OrcaRouter',
     envVar: 'ORCAROUTER_API_KEY',
-    modelos: [
-      'deepseek/deepseek-v4-flash-free',
-      'z-ai/glm-5.3-flash-free',
-      'tencent/hy3-free',
-    ],
+    modelos: ['deepseek/deepseek-v4-flash-free', 'z-ai/glm-5.3-flash-free', 'tencent/hy3-free'],
     papel: 'resposta analitica',
+    cadastro: '',
     criar: () =>
       new OrcaRouterProvider(process.env.ORCAROUTER_API_KEY || '', process.env.ORCAROUTER_BASE_URL || ''),
   },
@@ -80,6 +158,7 @@ export const PROVIDERS: ProviderDescriptor[] = [
       'nvidia/nemotron-3-nano-omni-30b-a3b-reasoning:free',
     ],
     papel: 'resposta analitica',
+    cadastro: '',
     criar: () => new AnyApiProvider(process.env.ANYAPI_API_KEY || '', process.env.ANYAPI_BASE_URL || ''),
   },
   {
@@ -87,12 +166,15 @@ export const PROVIDERS: ProviderDescriptor[] = [
     nome: 'OpenRouter (modelos :free)',
     envVar: 'OPENROUTER_API_KEY',
     modelos: [
-      'meta-llama/llama-3.2-3b-instruct:free',
       'nvidia/nemotron-3-super-120b-a12b:free',
       'openrouter/free',
+      'google/gemma-4-31b-it:free',
+      'qwen/qwen3.8-27b:free',
+      'z-ai/glm-5.2:free',
       'nex-agi/nex-n2.5-pro:free',
     ],
     papel: 'resposta analitica',
+    cadastro: 'https://openrouter.ai/keys',
     criar: () => new OpenRouterProvider(process.env.OPENROUTER_API_KEY || ''),
   },
   {
@@ -101,7 +183,14 @@ export const PROVIDERS: ProviderDescriptor[] = [
     envVar: 'MISTRAL_API_KEY',
     modelos: ['mistral-small-latest', 'ministral-14b-latest', 'ministral-8b-latest'],
     papel: 'resposta analitica',
-    criar: () => new MistralProvider(process.env.MISTRAL_API_KEY || ''),
+    cadastro: 'https://console.mistral.ai/api-keys',
+    criar: () =>
+      new OpenAICompatibleProvider({
+        name: 'Mistral',
+        apiKey: process.env.MISTRAL_API_KEY || '',
+        baseUrl: 'https://api.mistral.ai/v1',
+        filtroGratis: (id) => !/embed|moderation|ocr|voxtral/i.test(id),
+      }),
   },
 ];
 
@@ -112,6 +201,7 @@ export interface ProviderStatus {
   modeloPadrao: string;
   modelos: string[];
   papel: string;
+  cadastro: string;
   ordem: number;
   configurado: boolean;
 }
@@ -128,9 +218,31 @@ export function listProviders(): ProviderStatus[] {
     modeloPadrao: provider.modelos[0],
     modelos: provider.modelos,
     papel: provider.papel,
+    cadastro: provider.cadastro,
     ordem: index + 1,
     configurado: Boolean(process.env[provider.envVar]),
   }));
+}
+
+/**
+ * The provider's current free catalog, straight from its /models endpoint
+ * @param providerId - Provider identifier
+ * @returns Model ids, or the error that prevented listing them
+ */
+export async function listLiveModels(
+  providerId: string
+): Promise<{ modelos: string[]; erro?: string }> {
+  const descriptor = PROVIDERS.find((p) => p.id === providerId);
+  if (!descriptor) return { modelos: [], erro: 'Provedor desconhecido' };
+  if (!process.env[descriptor.envVar]) {
+    return { modelos: [], erro: `${descriptor.envVar} não configurada` };
+  }
+  try {
+    const modelos = await descriptor.criar().getModels();
+    return { modelos: Array.from(new Set(modelos.map((m) => m.id))).sort() };
+  } catch (error) {
+    return { modelos: [], erro: error instanceof Error ? error.message : 'Falha desconhecida' };
+  }
 }
 
 export interface PingResult {
@@ -143,11 +255,12 @@ export interface PingResult {
 }
 
 /**
- * Generate a trivial completion to prove the provider works end to end
+ * Generate a trivial completion to prove the provider/model works end to end
  * @param providerId - Provider identifier
+ * @param modelo - Model to test (defaults to the provider's first model)
  * @returns Ping result, never throws
  */
-export async function pingProvider(providerId: string): Promise<PingResult> {
+export async function pingProvider(providerId: string, modelo?: string): Promise<PingResult> {
   const descriptor = PROVIDERS.find((p) => p.id === providerId);
   const inicio = Date.now();
 
@@ -161,13 +274,13 @@ export async function pingProvider(providerId: string): Promise<PingResult> {
     };
   }
 
-  const modeloPadrao = descriptor.modelos[0];
+  const modeloUsado = modelo || descriptor.modelos[0];
 
   if (!process.env[descriptor.envVar]) {
     return {
       provider: descriptor.nome,
       ok: false,
-      modeloUsado: modeloPadrao,
+      modeloUsado,
       latenciaMs: 0,
       erro: `${descriptor.envVar} não configurada`,
     };
@@ -175,15 +288,17 @@ export async function pingProvider(providerId: string): Promise<PingResult> {
 
   try {
     const provider = descriptor.criar();
+    // 64 tokens, not 8: reasoning models spend the first tokens thinking
+    // and would come back empty on a tighter budget.
     const resposta = await withTimeout(
-      provider.generate('Responda apenas com a palavra: ok', modeloPadrao, 8, 0),
+      provider.generate('Responda apenas com a palavra: ok', modeloUsado, 64, 0),
       TIMEOUT_MS
     );
 
     return {
       provider: descriptor.nome,
       ok: true,
-      modeloUsado: modeloPadrao,
+      modeloUsado,
       latenciaMs: Date.now() - inicio,
       resposta: resposta.trim().slice(0, 80),
     };
@@ -191,7 +306,7 @@ export async function pingProvider(providerId: string): Promise<PingResult> {
     return {
       provider: descriptor.nome,
       ok: false,
-      modeloUsado: modeloPadrao,
+      modeloUsado,
       latenciaMs: Date.now() - inicio,
       erro: error instanceof Error ? error.message : 'Falha desconhecida',
     };
