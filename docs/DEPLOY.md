@@ -28,6 +28,9 @@ No SQL Editor do Supabase, aplique **nesta ordem**:
 5. `scripts/migrations-005-pin-function-search-path.sql` — fixa o
    `search_path` das funções RPC (hardening recomendado pelo linter do
    Supabase)
+6. `scripts/migrations-006-documents-storage-bucket.sql` — cria o bucket
+   privado `documentos-pendentes` usado pelo upload de documentos
+   (`/api/admin/documents/upload-url` + `/api/ingestion/upload`)
 
 Confira se as tabelas existem:
 

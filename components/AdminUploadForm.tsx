@@ -1,38 +1,46 @@
 'use client';
 
 import { useState, useRef } from 'react';
+import { supabaseBrowser } from '@/lib/db/browser-client';
 
 /**
  * Admin upload form component
- * Handles drag & drop or file input for document uploads
- * Integrates with /api/ingestion/upload endpoint (Task 5)
+ * Handles drag & drop or file input for document uploads.
+ *
+ * The file goes browser → Supabase Storage directly, via a signed URL
+ * minted by /api/admin/documents/upload-url — it never passes through this
+ * app's Vercel functions, which reject bodies over 4.5MB before the route
+ * handler even runs. Once it lands in Storage, /api/ingestion/upload is
+ * told the storage path (a tiny JSON call) and does the actual parsing.
  */
 
 interface UploadFormProps {
   onUploadSuccess?: () => void;
 }
 
-// Vercel Serverless Functions reject request bodies over 4.5MB before the
-// route handler runs (returns plain-text "Request Entity Too Large", not
-// JSON) — this is a platform limit, not configurable from app code. Staying
-// under it here means the person sees a clear message instead of a
-// JSON-parse crash on a body we never controlled.
-const MAX_UPLOAD_BYTES = 4 * 1024 * 1024;
+const DOCUMENT_TYPES = [
+  { value: 'lei', label: 'Lei' },
+  { value: 'resolucao', label: 'Resolução' },
+  { value: 'portaria', label: 'Portaria' },
+  { value: 'manual', label: 'Manual' },
+] as const;
+
+// Matches the documentos-pendentes Storage bucket's file_size_limit
+// (scripts/migrations-006-documents-storage-bucket.sql).
+const MAX_UPLOAD_BYTES = 50 * 1024 * 1024;
 
 /**
- * Turn a failed upload response into a message a person can act on.
- * A 413 body may be our own JSON or Vercel's plain-text platform rejection —
- * either way the file was too big. Anything else falls back to response.text()
- * since the body is not guaranteed to be JSON (a 500 from an upstream proxy,
- * for instance).
+ * Turn a failed fetch response into a message a person can act on.
+ * A 413 body may be our own JSON or a platform-level plain-text rejection —
+ * either way read the body as text first, since response.json() consumes
+ * the stream even when parsing fails, and a body already read can't be
+ * re-read as text.
  */
 async function describeUploadError(response: Response): Promise<string> {
   if (response.status === 413) {
-    return 'Arquivo muito grande para o servidor (limite de 4 MB por envio).';
+    return 'Arquivo muito grande para o servidor.';
   }
 
-  // Read the body once as text: response.json() consumes the stream even
-  // when parsing fails, so a body already read can't be re-read as text.
   const raw = await response.text().catch(() => '');
   try {
     const error = JSON.parse(raw);
@@ -47,6 +55,8 @@ export default function AdminUploadForm({ onUploadSuccess }: UploadFormProps) {
   const [isDragging, setIsDragging] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [progress, setProgress] = useState(0);
+  const [normaId, setNormaId] = useState('');
+  const [documentType, setDocumentType] = useState<(typeof DOCUMENT_TYPES)[number]['value']>('lei');
   const [message, setMessage] = useState<{
     type: 'success' | 'error';
     text: string;
@@ -79,7 +89,49 @@ export default function AdminUploadForm({ onUploadSuccess }: UploadFormProps) {
     }
   };
 
+  const uploadOne = async (file: File): Promise<void> => {
+    // 1. Ask the server for a place to put the file.
+    const urlResponse = await fetch('/api/admin/documents/upload-url', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ fileName: file.name, contentType: file.type || 'application/octet-stream' }),
+    });
+
+    if (!urlResponse.ok) {
+      throw new Error(await describeUploadError(urlResponse));
+    }
+
+    const { bucket, path, token } = (await urlResponse.json()) as {
+      bucket: string;
+      path: string;
+      token: string;
+    };
+
+    // 2. Upload the bytes directly to Supabase Storage — this is the step
+    // that bypasses Vercel's request body limit entirely.
+    const { error: storageError } = await supabaseBrowser.storage.from(bucket).uploadToSignedUrl(path, token, file);
+    if (storageError) {
+      throw new Error(storageError.message || 'Falha ao enviar para o armazenamento.');
+    }
+
+    // 3. Tell the server to process what's now sitting in Storage.
+    const ingestResponse = await fetch('/api/ingestion/upload', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ storagePath: path, fileName: file.name, normaId, documentType }),
+    });
+
+    if (!ingestResponse.ok) {
+      throw new Error(await describeUploadError(ingestResponse));
+    }
+  };
+
   const uploadFiles = async (files: FileList) => {
+    if (!normaId.trim()) {
+      setMessage({ type: 'error', text: 'Informe a norma antes de enviar o arquivo.' });
+      return;
+    }
+
     try {
       setIsUploading(true);
       setProgress(0);
@@ -95,27 +147,14 @@ export default function AdminUploadForm({ onUploadSuccess }: UploadFormProps) {
           setMessage({
             type: 'error',
             text: tamanhoInvalido
-              ? `Arquivo muito grande: ${file.name} (limite de 4 MB por envio).`
-              : `Arquivo inválido: ${file.name}. Formatos aceitos: PDF, DOCX, TXT (até 4 MB).`,
+              ? `Arquivo muito grande: ${file.name} (limite de 50 MB por envio).`
+              : `Arquivo inválido: ${file.name}. Formatos aceitos: PDF, DOCX, TXT (até 50 MB).`,
           });
           continue;
         }
 
-        const formData = new FormData();
-        formData.append('file', file);
-
         try {
-          const response = await fetch('/api/ingestion/upload', {
-            method: 'POST',
-            body: formData,
-          });
-
-          if (!response.ok) {
-            throw new Error(await describeUploadError(response));
-          }
-
-          const data = await response.json();
-          console.log('Upload successful:', data);
+          await uploadOne(file);
 
           setProgress(((i + 1) / files.length) * 100);
 
@@ -167,6 +206,36 @@ export default function AdminUploadForm({ onUploadSuccess }: UploadFormProps) {
 
   return (
     <div className="w-full">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+        <label className="block">
+          <span className="text-sm font-medium text-gray-700">Norma</span>
+          <input
+            type="text"
+            value={normaId}
+            onChange={(e) => setNormaId(e.target.value)}
+            placeholder="ex: ctb, res-432-2013"
+            disabled={isUploading}
+            className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
+          />
+        </label>
+
+        <label className="block">
+          <span className="text-sm font-medium text-gray-700">Tipo</span>
+          <select
+            value={documentType}
+            onChange={(e) => setDocumentType(e.target.value as typeof documentType)}
+            disabled={isUploading}
+            className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
+          >
+            {DOCUMENT_TYPES.map((tipo) => (
+              <option key={tipo.value} value={tipo.value}>
+                {tipo.label}
+              </option>
+            ))}
+          </select>
+        </label>
+      </div>
+
       <div
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
@@ -208,7 +277,7 @@ export default function AdminUploadForm({ onUploadSuccess }: UploadFormProps) {
             ou clique para selecionar
           </p>
           <p className="text-xs text-gray-400">
-            Aceitos: PDF, DOCX, TXT (até 4 MB)
+            Aceitos: PDF, DOCX, TXT (até 50 MB)
           </p>
         </div>
       </div>

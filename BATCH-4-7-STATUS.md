@@ -97,3 +97,21 @@ relatórios de agentes. O código foi agora implementado e verificado aqui.
 12. **Funções RPC de busca híbrida nunca existiam no banco** — o código já as
     chamava (`lib/search/bm25.ts`, `lib/search/vector.ts`) mas nenhuma migration
     as criava. Adicionadas em `scripts/migrations-003-search-functions.sql`.
+13. **RLS estava desligado nas 8 tabelas** — a chave pública (exposta no
+    bundle do navegador) tinha leitura e escrita total no banco, inclusive em
+    `configuracoes` e `ip_bloqueados`. Habilitado em
+    `scripts/migrations-004-rls.sql`, com `uso_diario` (IPs e perguntas de
+    todo mundo) travado 100% para a service role — `lib/ratelimit/limiter.ts`
+    passou a usar `supabaseAdmin` em vez da chave anônima.
+14. **Upload de documento estava quebrado de duas formas**: o Vercel rejeita
+    corpos de requisição acima de 4,5 MB antes da rota rodar (texto puro, não
+    JSON — daí o erro "Unexpected token 'R'..."), e o formulário nunca enviava
+    `normaId`/`documentType`, que a rota exige. Reescrito para upload direto
+    do navegador pro Supabase Storage via URL assinada
+    (`/api/admin/documents/upload-url` + bucket privado
+    `documentos-pendentes`, `scripts/migrations-006-documents-storage-bucket.sql`),
+    restaurando o limite original de 50 MB; `/api/ingestion/upload` agora só
+    recebe `{ storagePath, normaId, documentType }` e baixa o arquivo com a
+    service role. A rota também não checava sessão de admin — corrigido.
+    Coberto por `tests/api/upload-url.test.ts`, `tests/api/ingestion-upload.test.ts`
+    e `tests/components/admin-upload-form.test.tsx` (nenhum teste existia antes).
