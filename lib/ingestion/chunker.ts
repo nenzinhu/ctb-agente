@@ -18,10 +18,11 @@ const ChunkInputSchema = z.object({
 export type ChunkInput = z.infer<typeof ChunkInputSchema>;
 
 // Regular expressions to detect article/section patterns
-const ARTICLE_PATTERN = /(?:art\.?\s*|artigo\s+)(\d+(?:\s*[-–]\s*\d+)?)/gi;
-const SECTION_PATTERN = /(?:§|seção|secção)\s+(\d+(?:\s*[-–]\s*\d+)?)/gi;
-const PARAGRAPH_PATTERN = /^\s*§\s*\d+/m;
-const TITLE_PATTERN = /^#{1,3}\s+.+$/gm;
+// Note: These patterns are used by extractDispositivoNumber() inline
+// const ARTICLE_PATTERN = /(?:art\.?\s*|artigo\s+)(\d+(?:\s*[-–]\s*\d+)?)/gi;
+// const SECTION_PATTERN = /(?:§|seção|secção)\s+(\d+(?:\s*[-–]\s*\d+)?)/gi;
+// const PARAGRAPH_PATTERN = /^\s*§\s*\d+/m;
+// const TITLE_PATTERN = /^#{1,3}\s+.+$/gm;
 
 /**
  * Detects article numbers in text and returns the article number and position
