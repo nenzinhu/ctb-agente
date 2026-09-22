@@ -2,7 +2,6 @@
 import { z } from 'zod';
 import { embeddingChain } from '@/lib/ai/embeddings';
 import { supabaseAdmin } from '@/lib/db/client';
-import { TextChunk } from './chunker';
 
 // Schema for processor input
 const ProcessorInputSchema = z.object({
