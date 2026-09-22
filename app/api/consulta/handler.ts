@@ -79,8 +79,8 @@ export async function handleConsulta(
 
       // Validate citations
       const validation = validateCitations(JSON.stringify(card), [dispositivo]);
-      if (card.citacoes) {
-        card.citacoes = card.citacoes.filter(c => validation.valid);
+      if (card.citacoes && !validation.valid) {
+        card.citacoes = [];
       }
 
       await recordQuery(ipAddress, consulta);
@@ -94,8 +94,8 @@ export async function handleConsulta(
 
   // Validate citations
   const validation = validateCitations(JSON.stringify(card), results);
-  if (card.citacoes) {
-    card.citacoes = card.citacoes.filter(c => validation.valid);
+  if (card.citacoes && !validation.valid) {
+    card.citacoes = [];
   }
 
   await recordQuery(ipAddress, consulta);

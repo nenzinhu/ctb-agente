@@ -9,3 +9,5 @@ out/
 .idea/
 *.swp
 .vscode/settings.json
+
+.vercel

@@ -1,0 +1,627 @@
+diff --git a/.env.local.example b/.env.local.example
+new file mode 100644
+index 0000000..a8ccb57
+--- /dev/null
++++ b/.env.local.example
+@@ -0,0 +1,22 @@
++# Supabase
++NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
++NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
++SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
++
++# Admin credentials (set on first run)
++ADMIN_USERNAME=nenzinhu
++ADMIN_PASSWORD_HASH=bcrypt-hash-here
++
++# LLM Providers
++GROQ_API_KEY=your-key
++NVIDIA_API_KEY=your-key
++OPENROUTER_API_KEY=your-key
++MISTRAL_API_KEY=your-key
++
++# Turnstile
++NEXT_PUBLIC_TURNSTILE_SITE_KEY=your-site-key
++TURNSTILE_SECRET_KEY=your-secret-key
++
++# App
++NEXT_PUBLIC_APP_NAME=CTB Agente
++RATE_LIMIT_QUERIES_PER_HOUR=30
+diff --git a/.gitignore b/.gitignore
+new file mode 100644
+index 0000000..c00d6fd
+--- /dev/null
++++ b/.gitignore
+@@ -0,0 +1,11 @@
++node_modules/
++.next/
++.env.local
++.env.local.backup
++dist/
++out/
++*.log
++.DS_Store
++.idea/
++*.swp
++.vscode/settings.json
+diff --git a/app/globals.css b/app/globals.css
+new file mode 100644
+index 0000000..4c51cc0
+--- /dev/null
++++ b/app/globals.css
+@@ -0,0 +1,26 @@
++@tailwind base;
++@tailwind components;
++@tailwind utilities;
++
++* {
++  margin: 0;
++  padding: 0;
++  box-sizing: border-box;
++}
++
++html {
++  scroll-behavior: smooth;
++}
++
++body {
++  font-family: system-ui, -apple-system, sans-serif;
++  background-color: #ffffff;
++  color: #1a1a1a;
++}
++
++@media (prefers-color-scheme: dark) {
++  body {
++    background-color: #1a1a1a;
++    color: #ffffff;
++  }
++}
+diff --git a/app/layout.tsx b/app/layout.tsx
+new file mode 100644
+index 0000000..6fea0bb
+--- /dev/null
++++ b/app/layout.tsx
+@@ -0,0 +1,27 @@
++import type { Metadata } from 'next';
++import './globals.css';
++
++export const metadata: Metadata = {
++  title: 'CTB Agente',
++  description: 'Consulta legislação de trânsito brasileira com IA',
++  manifest: '/manifest.json',
++  viewport: 'width=device-width, initial-scale=1, viewport-fit=cover',
++  themeColor: '#1a5f3f',
++};
++
++export default function RootLayout({
++  children,
++}: {
++  children: React.ReactNode;
++}) {
++  return (
++    <html lang="pt-BR">
++      <head>
++        <meta name="apple-mobile-web-app-capable" content="yes" />
++        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
++        <meta name="apple-mobile-web-app-title" content="CTB Agente" />
++      </head>
++      <body>{children}</body>
++    </html>
++  );
++}
+diff --git a/app/page.tsx b/app/page.tsx
+new file mode 100644
+index 0000000..1458f5e
+--- /dev/null
++++ b/app/page.tsx
+@@ -0,0 +1,17 @@
++export default function Home() {
++  return (
++    <main className="min-h-screen flex items-center justify-center bg-gradient-to-b from-white to-gray-50 dark:from-gray-900 dark:to-gray-800 p-4">
++      <div className="text-center">
++        <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">
++          CTB Agente
++        </h1>
++        <p className="text-lg text-gray-600 dark:text-gray-400 mb-8">
++          Consulta legislação de trânsito brasileira com IA
++        </p>
++        <div className="inline-block bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-6 rounded-lg transition-colors">
++          Iniciar
++        </div>
++      </div>
++    </main>
++  );
++}
+diff --git a/docs/SETUP.md b/docs/SETUP.md
+new file mode 100644
+index 0000000..1a896e5
+--- /dev/null
++++ b/docs/SETUP.md
+@@ -0,0 +1,30 @@
++# CTB Agente — Setup Guia
++
++## 1. Supabase Project
++
++1. Create project at supabase.com
++2. Copy `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY` to `.env.local`
++3. Get `SUPABASE_SERVICE_ROLE_KEY` from Settings > API > Service Role Key
++4. Copy to `.env.local`
++
++## 2. Run migrations
++
++1. Go to Supabase dashboard > SQL Editor
++2. Paste the entire contents of `scripts/migrations.sql`
++3. Click "Run"
++4. Verify tables exist: `dispositivos`, `enquadramentos`, etc.
++
++## 3. Initialize .env.local
++
++```bash
++cp .env.local.example .env.local
++# Edit .env.local and fill in your credentials
++```
++
++## 4. Install dependencies and run dev server
++
++```bash
++npm install
++npm run dev
++# Open http://localhost:3000
++```
+diff --git a/jest.config.ts b/jest.config.ts
+new file mode 100644
+index 0000000..e1c1904
+--- /dev/null
++++ b/jest.config.ts
+@@ -0,0 +1,14 @@
++import type { Config } from 'jest';
++import nextJest from 'next/jest';
++
++const createJestConfig = nextJest({
++  dir: './',
++});
++
++const config: Config = {
++  coverageProvider: 'v8',
++  testEnvironment: 'jsdom',
++  roots: ['<rootDir>/tests', '<rootDir>/app', '<rootDir>/lib'],
++};
++
++export default createJestConfig(config);
+diff --git a/lib/db/client.ts b/lib/db/client.ts
+new file mode 100644
+index 0000000..5a0a873
+--- /dev/null
++++ b/lib/db/client.ts
+@@ -0,0 +1,12 @@
++import { createClient } from '@supabase/supabase-js';
++
++const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
++const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
++
++export const supabase = createClient(supabaseUrl, supabaseKey);
++
++// For server-side operations (with service role key)
++const supabaseServiceUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
++const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
++
++export const supabaseAdmin = createClient(supabaseServiceUrl, supabaseServiceKey);
+diff --git a/lib/db/queries.ts b/lib/db/queries.ts
+new file mode 100644
+index 0000000..31e880f
+--- /dev/null
++++ b/lib/db/queries.ts
+@@ -0,0 +1,34 @@
++import { supabase } from './client';
++import type { Dispositivo, Enquadramento } from './schema';
++
++export async function getEnquadramentoByCodigo(codigo: string): Promise<Enquadramento | null> {
++  const { data, error } = await supabase
++    .from('enquadramentos')
++    .select('*')
++    .eq('codigo_mbft', codigo)
++    .single();
++
++  if (error) throw error;
++  return data;
++}
++
++export async function getDispositivoByNumero(numero: string): Promise<Dispositivo | null> {
++  const { data, error } = await supabase
++    .from('dispositivos')
++    .select('*')
++    .eq('numero_dispositivo', numero)
++    .single();
++
++  if (error) throw error;
++  return data;
++}
++
++export async function searchDispositivosByTsvector(query: string, limit = 5) {
++  const { data, error } = await supabase.rpc('search_dispositivos_tsvector', {
++    query_text: query,
++    limit_count: limit,
++  });
++
++  if (error) throw error;
++  return data;
++}
+diff --git a/lib/db/schema.ts b/lib/db/schema.ts
+new file mode 100644
+index 0000000..ddd15f7
+--- /dev/null
++++ b/lib/db/schema.ts
+@@ -0,0 +1,78 @@
++export interface Dispositivo {
++  id: string;
++  numero_dispositivo: string; // "art. 165 § 1º"
++  texto: string;
++  norma_id: string;
++  tipo: 'lei' | 'resolucao' | 'portaria' | 'jurisprudencia' | 'manual';
++  data_publicacao: string; // ISO date
++  data_vigencia_inicio: string;
++  data_vigencia_fim: string | null;
++  embedding: number[]; // pgvector (1536 dims)
++  tsvector_pt: string; // tsvector in Portuguese
++  citacoes_dentro: string[]; // ["art. 270", "Res. 432/2013"]
++  criado_em: string;
++  atualizado_em: string;
++}
++
++export interface Enquadramento {
++  id: string;
++  codigo_mbft: string; // "516-91"
++  desdobramento: number; // 0, 1, 2, ...
++  descricao: string; // "Estacionar em local proibido"
++  gravidade: 'leve' | 'média' | 'grave' | 'gravíssima';
++  pontos: number;
++  valor_multa: number;
++  unidade: string; // "UIRF", "UFIR"
++  retem_veiculo: boolean;
++  remove_veiculo: boolean;
++  recolhe_documento: 'cnh' | 'crlv' | 'ambos' | null;
++  amparo_legal: string; // "art. 181 XVII do CTB"
++  medida_administrativa: string;
++  responsavel: 'condutor' | 'proprietario' | 'ambos';
++  criado_em: string;
++}
++
++export interface CacheResposta {
++  id: string;
++  hash_pergunta: string;
++  pergunta_original: string;
++  resposta_completa: Record<string, unknown>; // Full response JSON
++  modelo_usado: string;
++  tempo_geracao_ms: number;
++  citacoes_validadas: boolean;
++  data_criacao: string;
++  data_ultimo_acesso: string;
++  ttl_dias: number;
++}
++
++export interface UsoDiario {
++  id: string;
++  ip_endereco: string;
++  timestamp: string;
++  tipo_consulta: 'codigo' | 'artigo' | 'situacao';
++  cache_hit: boolean;
++  modelo_ia_usado: string;
++  sucesso: boolean;
++  tempo_ms: number;
++}
++
++export interface Remissao {
++  id: string;
++  origem_dispositivo_id: string;
++  destino_dispositivo_id: string;
++  tipo: 'remete' | 'revoga' | 'altera';
++  criado_em: string;
++}
++
++export interface Jurisprudencia {
++  id: string;
++  tipo: 'stj' | 'tj' | 'cetran' | 'jari';
++  numero: string;
++  ementa: string;
++  resumo: string;
++  data_decisao: string;
++  tema: string;
++  dispositivos_relacionados: string[];
++  link_oficial: string;
++  criado_em: string;
++}
+diff --git a/next.config.ts b/next.config.ts
+new file mode 100644
+index 0000000..101b6df
+--- /dev/null
++++ b/next.config.ts
+@@ -0,0 +1,20 @@
++import type { NextConfig } from 'next';
++import withPWA from 'next-pwa';
++
++const nextConfig: NextConfig = {
++  reactStrictMode: true,
++  poweredByHeader: false,
++  images: {
++    unoptimized: true,
++  },
++  experimental: {
++    serverComponentsExternalPackages: ['@node-rs/argon2'],
++  },
++};
++
++export default withPWA({
++  dest: 'public',
++  register: true,
++  skipWaiting: true,
++  disable: process.env.NODE_ENV === 'development',
++})(nextConfig);
+diff --git a/package.json b/package.json
+new file mode 100644
+index 0000000..fdbf277
+--- /dev/null
++++ b/package.json
+@@ -0,0 +1,31 @@
++{
++  "name": "ctb-agente",
++  "version": "0.1.0",
++  "private": true,
++  "dependencies": {
++    "next": "^15.0.0",
++    "react": "^19.0.0",
++    "react-dom": "^19.0.0",
++    "@supabase/supabase-js": "^2.40.0",
++    "zod": "^3.22.0",
++    "pdfjs-dist": "^3.11.174",
++    "mammoth": "^1.6.0",
++    "next-pwa": "^5.6.0"
++  },
++  "devDependencies": {
++    "typescript": "^5.6.0",
++    "@types/node": "^22.0.0",
++    "@types/react": "^19.1.0",
++    "tailwindcss": "^3.4.1",
++    "postcss": "^8.4.40",
++    "jest": "^29.7.0",
++    "@testing-library/react": "^15.0.0"
++  },
++  "scripts": {
++    "dev": "next dev",
++    "build": "next build",
++    "start": "next start",
++    "test": "jest",
++    "test:watch": "jest --watch"
++  }
++}
+diff --git a/postcss.config.js b/postcss.config.js
+new file mode 100644
+index 0000000..12a703d
+--- /dev/null
++++ b/postcss.config.js
+@@ -0,0 +1,6 @@
++module.exports = {
++  plugins: {
++    tailwindcss: {},
++    autoprefixer: {},
++  },
++};
+diff --git a/public/manifest.json b/public/manifest.json
+new file mode 100644
+index 0000000..f600de1
+--- /dev/null
++++ b/public/manifest.json
+@@ -0,0 +1,22 @@
++{
++  "name": "CTB Agente",
++  "short_name": "CTB",
++  "description": "Consulta legislação de trânsito com precisão cirúrgica",
++  "start_url": "/",
++  "display": "standalone",
++  "background_color": "#ffffff",
++  "theme_color": "#1a5f3f",
++  "orientation": "portrait-primary",
++  "icons": [
++    {
++      "src": "/icons/icon-192x192.png",
++      "sizes": "192x192",
++      "type": "image/png"
++    },
++    {
++      "src": "/icons/icon-512x512.png",
++      "sizes": "512x512",
++      "type": "image/png"
++    }
++  ]
++}
+diff --git a/scripts/migrations.sql b/scripts/migrations.sql
+new file mode 100644
+index 0000000..48e5cad
+--- /dev/null
++++ b/scripts/migrations.sql
+@@ -0,0 +1,109 @@
++-- Create pgvector extension
++CREATE EXTENSION IF NOT EXISTS vector;
++
++-- Create dispositivos table
++CREATE TABLE dispositivos (
++  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
++  numero_dispositivo TEXT NOT NULL UNIQUE,
++  texto TEXT NOT NULL,
++  norma_id TEXT,
++  tipo TEXT NOT NULL CHECK (tipo IN ('lei', 'resolucao', 'portaria', 'jurisprudencia', 'manual')),
++  data_publicacao DATE,
++  data_vigencia_inicio DATE NOT NULL,
++  data_vigencia_fim DATE,
++  embedding VECTOR(1536),
++  tsvector_pt TSVECTOR GENERATED ALWAYS AS (
++    to_tsvector('portuguese', texto)
++  ) STORED,
++  citacoes_dentro TEXT[] DEFAULT '{}',
++  criado_em TIMESTAMP DEFAULT NOW(),
++  atualizado_em TIMESTAMP DEFAULT NOW()
++);
++
++CREATE INDEX idx_dispositivos_numero ON dispositivos USING BTREE (numero_dispositivo);
++CREATE INDEX idx_dispositivos_tsvector_pt ON dispositivos USING GIN (tsvector_pt);
++CREATE INDEX idx_dispositivos_embedding ON dispositivos USING IVFFlat (embedding vector_cosine_ops) WITH (lists = 100);
++CREATE INDEX idx_dispositivos_vigencia ON dispositivos (data_vigencia_inicio, data_vigencia_fim);
++
++-- Create enquadramentos table
++CREATE TABLE enquadramentos (
++  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
++  codigo_mbft TEXT NOT NULL UNIQUE,
++  desdobramento INT NOT NULL DEFAULT 0,
++  descricao TEXT NOT NULL,
++  gravidade TEXT NOT NULL CHECK (gravidade IN ('leve', 'média', 'grave', 'gravíssima')),
++  pontos INT NOT NULL,
++  valor_multa DECIMAL(10, 2) NOT NULL,
++  unidade TEXT NOT NULL,
++  retem_veiculo BOOLEAN DEFAULT FALSE,
++  remove_veiculo BOOLEAN DEFAULT FALSE,
++  recolhe_documento TEXT CHECK (recolhe_documento IN ('cnh', 'crlv', 'ambos', null)),
++  amparo_legal TEXT NOT NULL,
++  medida_administrativa TEXT NOT NULL,
++  responsavel TEXT NOT NULL CHECK (responsavel IN ('condutor', 'proprietario', 'ambos')),
++  criado_em TIMESTAMP DEFAULT NOW()
++);
++
++CREATE INDEX idx_enquadramentos_codigo ON enquadramentos USING BTREE (codigo_mbft);
++CREATE INDEX idx_enquadramentos_gravidade ON enquadramentos USING BTREE (gravidade);
++
++-- Create remissoes table (graph of cross-references)
++CREATE TABLE remissoes (
++  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
++  origem_dispositivo_id UUID NOT NULL REFERENCES dispositivos(id) ON DELETE CASCADE,
++  destino_dispositivo_id UUID NOT NULL REFERENCES dispositivos(id) ON DELETE CASCADE,
++  tipo TEXT NOT NULL CHECK (tipo IN ('remete', 'revoga', 'altera')),
++  criado_em TIMESTAMP DEFAULT NOW()
++);
++
++CREATE INDEX idx_remissoes_origem ON remissoes (origem_dispositivo_id);
++CREATE INDEX idx_remissoes_destino ON remissoes (destino_dispositivo_id);
++
++-- Create cache_respostas table
++CREATE TABLE cache_respostas (
++  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
++  hash_pergunta TEXT NOT NULL UNIQUE,
++  pergunta_original TEXT NOT NULL,
++  resposta_completa JSONB NOT NULL,
++  modelo_usado TEXT NOT NULL,
++  tempo_geracao_ms INT,
++  citacoes_validadas BOOLEAN DEFAULT FALSE,
++  data_criacao TIMESTAMP DEFAULT NOW(),
++  data_ultimo_acesso TIMESTAMP DEFAULT NOW(),
++  ttl_dias INT DEFAULT 30
++);
++
++CREATE INDEX idx_cache_respostas_hash ON cache_respostas USING BTREE (hash_pergunta);
++CREATE INDEX idx_cache_respostas_ttl ON cache_respostas (data_ultimo_acesso);
++
++-- Create uso_diario table
++CREATE TABLE uso_diario (
++  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
++  ip_endereco TEXT NOT NULL,
++  timestamp TIMESTAMP DEFAULT NOW(),
++  tipo_consulta TEXT NOT NULL,
++  cache_hit BOOLEAN DEFAULT FALSE,
++  modelo_ia_usado TEXT,
++  sucesso BOOLEAN DEFAULT TRUE,
++  tempo_ms INT
++);
++
++CREATE INDEX idx_uso_diario_ip ON uso_diario USING BTREE (ip_endereco, timestamp);
++CREATE INDEX idx_uso_diario_timestamp ON uso_diario USING BTREE (timestamp);
++
++-- Create jurisprudencia table
++CREATE TABLE jurisprudencia (
++  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
++  tipo TEXT NOT NULL CHECK (tipo IN ('stj', 'tj', 'cetran', 'jari')),
++  numero TEXT NOT NULL UNIQUE,
++  ementa TEXT NOT NULL,
++  resumo TEXT,
++  data_decisao DATE,
++  tema TEXT,
++  dispositivos_relacionados TEXT[] DEFAULT '{}',
++  link_oficial TEXT,
++  criado_em TIMESTAMP DEFAULT NOW()
++);
++
++CREATE INDEX idx_jurisprudencia_numero ON jurisprudencia (numero);
++CREATE INDEX idx_jurisprudencia_tema ON jurisprudencia (tema);
+diff --git a/tailwind.config.ts b/tailwind.config.ts
+new file mode 100644
+index 0000000..17b2d90
+--- /dev/null
++++ b/tailwind.config.ts
+@@ -0,0 +1,30 @@
++import type { Config } from 'tailwindcss';
++
++const config: Config = {
++  content: [
++    './app/**/*.{js,ts,jsx,tsx,mdx}',
++    './components/**/*.{js,ts,jsx,tsx,mdx}',
++  ],
++  theme: {
++    extend: {
++      colors: {
++        primary: {
++          50: '#f0fdf4',
++          100: '#dcfce7',
++          200: '#bbf7d0',
++          300: '#86efac',
++          400: '#4ade80',
++          500: '#22c55e',
++          600: '#16a34a',
++          700: '#15803d',
++          800: '#166534',
++          900: '#145231',
++          950: '#0a3622',
++        },
++      },
++    },
++  },
++  plugins: [],
++};
++
++export default config;
+diff --git a/tsconfig.json b/tsconfig.json
+new file mode 100644
+index 0000000..4dbe49a
+--- /dev/null
++++ b/tsconfig.json
+@@ -0,0 +1,36 @@
++{
++  "compilerOptions": {
++    "target": "ES2020",
++    "lib": ["ES2020", "DOM", "DOM.Iterable"],
++    "jsx": "preserve",
++    "module": "ESNext",
++    "moduleResolution": "bundler",
++    "allowImportingTsExtensions": true,
++    "resolveJsonModule": true,
++    "strict": true,
++    "noImplicitAny": true,
++    "strictNullChecks": true,
++    "strictFunctionTypes": true,
++    "strictBindCallApply": true,
++    "strictPropertyInitialization": true,
++    "noImplicitThis": true,
++    "alwaysStrict": true,
++    "noUnusedLocals": true,
++    "noUnusedParameters": true,
++    "noImplicitReturns": true,
++    "noFallthroughCasesInSwitch": true,
++    "allowJs": true,
++    "skipLibCheck": true,
++    "forceConsistentCasingInFileNames": true,
++    "esModuleInterop": true,
++    "declaration": true,
++    "declarationMap": true,
++    "sourceMap": true,
++    "baseUrl": ".",
++    "paths": {
++      "@/*": ["./*"]
++    }
++  },
++  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"],
++  "exclude": ["node_modules"]
++}
