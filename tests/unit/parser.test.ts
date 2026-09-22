@@ -2,7 +2,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import * as os from 'os';
-import { parseDocument, validateFile } from '@/lib/ingestion/parser';
+import { parseDocument, validateFile, pageItemsToText, normalizePdfText } from '@/lib/ingestion/parser';
 import { chunkText } from '@/lib/ingestion/chunker';
 
 describe('Document Parser', () => {
@@ -308,5 +308,28 @@ describe('Chunk Validation', () => {
     expect(Math.abs(combinedText.length - text.length)).toBeLessThan(
       text.length * 0.1,
     );
+  });
+});
+
+describe('PDF text reconstruction', () => {
+  const item = (str: string, x: number, y: number, width: number) => ({
+    str,
+    transform: [10, 0, 0, 10, x, y],
+    width,
+    height: 10,
+  });
+
+  it('keeps words split across fragments together and separates spaced ones', () => {
+    const text = pageItemsToText([item('Cód', 0, 700, 18), item('igo', 18, 700, 15), item('de', 36, 700, 10)]);
+    expect(text).toBe('Código de');
+  });
+
+  it('breaks lines on vertical moves and paragraphs on large gaps', () => {
+    const text = pageItemsToText([item('linha 1', 0, 700, 30), item('linha 2', 0, 688, 30), item('outro', 0, 650, 25)]);
+    expect(text).toBe('linha 1\nlinha 2\n\noutro');
+  });
+
+  it('rejoins hyphenated words and starts a paragraph at each article', () => {
+    expect(normalizePdfText('o trân-\nsito seguro.\nArt. 2º O condutor')).toBe('o trânsito seguro.\n\nArt. 2º O condutor');
   });
 });

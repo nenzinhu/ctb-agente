@@ -115,65 +115,163 @@ async function parseDocx(filePath: string): Promise<string> {
   }
 }
 
+// pdfjs needs these data files for two very common kinds of PDF: CMaps for
+// CID-keyed fonts (what Word/LibreOffice emit for most non-ASCII text —
+// without them the text layer of a Portuguese document can come out empty
+// or garbled) and the standard 14 font metrics for PDFs that reference
+// Helvetica/Times without embedding them (typical of government PDFs).
+// They're resolved from node_modules at runtime; next.config.ts traces them
+// into the deployed function via outputFileTracingIncludes.
+const PDFJS_DIR = path.join(process.cwd(), 'node_modules', 'pdfjs-dist');
+
+function pdfjsDataDir(name: string): string | undefined {
+  const dir = path.join(PDFJS_DIR, name);
+  return fs.existsSync(dir) ? dir + path.sep : undefined;
+}
+
+interface PdfTextItem {
+  str: string;
+  transform: number[];
+  width: number;
+  height: number;
+  hasEOL?: boolean;
+}
+
+/**
+ * Rebuilds a page's reading text from pdfjs text items.
+ *
+ * pdfjs hands back positioned fragments, not lines: a word can be split in
+ * several items (kerning) and many PDFs never set `hasEOL`. Joining with ''
+ * glued words together and joining with ' ' split words apart, and neither
+ * produced line/paragraph breaks — so an entire page reached the chunker as
+ * one run-on paragraph. Using each item's position instead: a vertical move
+ * starts a new line (a bigger-than-usual gap starts a new paragraph), and a
+ * horizontal gap between fragments on the same line becomes a space.
+ */
+export function pageItemsToText(items: PdfTextItem[]): string {
+  let out = '';
+  let lastY: number | undefined;
+  let lastEndX = 0;
+  let lastHeight = 0;
+
+  for (const item of items) {
+    if (typeof item.str !== 'string') continue; // marked-content markers
+
+    const [, , , scaleY, x, y] = item.transform ?? [];
+    const height = Math.abs(item.height || scaleY || 0) || lastHeight || 10;
+
+    if (lastY !== undefined && typeof y === 'number') {
+      const dy = Math.abs(y - lastY);
+      if (dy > Math.max(height, lastHeight) * 0.5) {
+        out = out.replace(/[ \t]+$/, '');
+        out += dy > Math.max(height, lastHeight) * 1.9 ? '\n\n' : '\n';
+      } else if (typeof x === 'number' && x - lastEndX > height * 0.15 && !/\s$/.test(out) && !/^\s/.test(item.str)) {
+        out += ' ';
+      }
+    }
+
+    out += item.str;
+
+    if (typeof y === 'number') {
+      lastY = y;
+      lastEndX = (typeof x === 'number' ? x : lastEndX) + (item.width || 0);
+    } else if (item.hasEOL) {
+      out += '\n';
+    }
+    if (item.str.trim()) lastHeight = height;
+  }
+
+  return out;
+}
+
+/**
+ * Normalizes extracted PDF text so the chunker can find real boundaries:
+ * rejoins words hyphenated across lines and forces a paragraph break before
+ * every article/paragraph/chapter heading, which legal PDFs usually set
+ * with uniform line spacing (no visual blank line to detect).
+ */
+export function normalizePdfText(text: string): string {
+  return text
+    .replace(/\r\n?/g, '\n')
+    .replace(/[ \t ]+/g, ' ')
+    .replace(/ *\n */g, '\n')
+    .replace(/(\p{L})-\n(\p{Ll})/gu, '$1$2')
+    .replace(/\n(?=(?:Art\.?|Artigo|§|CAP[IÍ]TULO|T[IÍ]TULO|SE[CÇ][AÃ]O|Se[cç][aã]o)\s)/g, '\n\n')
+    .replace(/\n{3,}/g, '\n\n')
+    .trim();
+}
+
 /**
  * Parses a PDF file using pdfjs-dist
  */
 async function parsePdf(filePath: string): Promise<{ text: string; pageCount: number }> {
+  // pdfjs-dist rejects a Node Buffer even though Buffer is technically a
+  // Uint8Array subclass — it checks the exact constructor. A plain
+  // Uint8Array view over the same bytes passes that check without a copy.
+  const pdfBuffer = fs.readFileSync(filePath);
+  const data = new Uint8Array(pdfBuffer.buffer, pdfBuffer.byteOffset, pdfBuffer.byteLength);
+
+  let pdf: Awaited<ReturnType<typeof pdfjsLib.getDocument>['promise']>;
   try {
-    // pdfjs-dist rejects a Node Buffer even though Buffer is technically a
-    // Uint8Array subclass — it checks the exact constructor. Copy into a
-    // plain Uint8Array before handing it over.
-    const pdfBuffer = fs.readFileSync(filePath);
-    const data = new Uint8Array(pdfBuffer.buffer, pdfBuffer.byteOffset, pdfBuffer.byteLength);
-
     // The legacy Node build detects it isn't running in a browser and
-    // falls back to an in-process "fake worker" automatically — no
-    // GlobalWorkerOptions.workerSrc needed, which avoids resolving a
-    // worker script path across bundlers/hosts (a source of failures on
-    // its own).
-    const pdf = await pdfjsLib.getDocument({ data }).promise;
+    // falls back to an in-process "fake worker" (registered at the top of
+    // this file) — no GlobalWorkerOptions.workerSrc needed.
+    pdf = await pdfjsLib.getDocument({
+      data,
+      cMapUrl: pdfjsDataDir('cmaps'),
+      cMapPacked: true,
+      standardFontDataUrl: pdfjsDataDir('standard_fonts'),
+      isEvalSupported: false,
+      disableFontFace: true,
+      useSystemFonts: false,
+    }).promise;
+  } catch (error) {
+    const name = error instanceof Error ? error.name : '';
+    if (name === 'PasswordException') {
+      throw new Error('o PDF está protegido por senha. Remova a senha e envie novamente.');
+    }
+    if (name === 'InvalidPDFException') {
+      throw new Error('o arquivo não é um PDF válido ou está corrompido.');
+    }
+    throw new Error(`Failed to parse PDF file: ${error instanceof Error ? error.message : String(error)}`);
+  }
 
-    let fullText = '';
+  try {
     const pageCount = pdf.numPages;
+    const pages: string[] = [];
+    let failedPages = 0;
 
-    // Extract text from each page
     for (let i = 1; i <= pageCount; i++) {
       try {
         const page = await pdf.getPage(i);
         const textContent = await page.getTextContent();
-
-        // Combine text items into a coherent string. pdfjs gives each word
-        // (or run of words) as a separate item with no separator between
-        // them — joining with '' glues words together ("ArtigosdoCódigo").
-        // A space between items plus a real line break wherever pdfjs marks
-        // hasEOL keeps words and lines apart, which the chunker below
-        // depends on to find paragraph/sentence boundaries instead of
-        // treating an entire page (or the whole document) as one run-on
-        // paragraph.
-        const pageText = textContent.items
-          .map((item: any) => (item.str ? item.str + (item.hasEOL ? '\n' : ' ') : ''))
-          .join('');
-
-        // Blank line between pages so the chunker sees a paragraph break at
-        // every page boundary, not just wherever the last "." happens to be.
-        fullText += pageText + '\n\n';
+        pages.push(pageItemsToText(textContent.items as PdfTextItem[]));
+        page.cleanup();
       } catch (pageError) {
+        failedPages++;
         console.warn(`Failed to extract text from page ${i}:`, pageError);
-        continue;
       }
     }
 
-    // Clean up text
-    const cleanedText = fullText
-      .replace(/\r\n/g, '\n')
-      .replace(/\n{3,}/g, '\n\n')
-      .trim();
+    if (failedPages === pageCount) {
+      throw new Error('não foi possível ler o texto de nenhuma página do PDF.');
+    }
 
-    return { text: cleanedText, pageCount };
-  } catch (error) {
-    throw new Error(
-      `Failed to parse PDF file: ${error instanceof Error ? error.message : String(error)}`,
-    );
+    // Blank line between pages so the chunker sees a paragraph break at
+    // every page boundary.
+    const text = normalizePdfText(pages.join('\n\n'));
+
+    // A scanned PDF is just page images: pdfjs finds (almost) no text. Say
+    // so instead of the generic "no text content" error further down.
+    if (text.replace(/\s/g, '').length < pageCount * 5) {
+      throw new Error(
+        'o PDF não tem texto selecionável (parece ser digitalizado/escaneado). Passe um OCR no arquivo antes de enviar.',
+      );
+    }
+
+    return { text, pageCount };
+  } finally {
+    await pdf.destroy().catch(() => undefined);
   }
 }
 
@@ -188,7 +286,10 @@ export async function parseDocument(
   validateFile({
     filePath,
     fileName,
-    maxSizeBytes: 50 * 1024 * 1024, // 50MB
+    // Storage caps the *uploaded* bytes at 50MB, but the admin panel may
+    // gzip a file first, so the restored original can be larger — matches
+    // MAX_DECOMPRESSED_BYTES in lib/ingestion/decompress.ts.
+    maxSizeBytes: 100 * 1024 * 1024, // 100MB
   });
 
   const ext = path.extname(fileName).toLowerCase().slice(1);
@@ -221,7 +322,7 @@ export async function parseDocument(
     };
   } catch (error) {
     throw new Error(
-      `Document parsing failed: ${error instanceof Error ? error.message : String(error)}`,
+      `Falha ao ler o documento: ${error instanceof Error ? error.message : String(error)}`,
     );
   }
 }

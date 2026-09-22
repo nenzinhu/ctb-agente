@@ -42,6 +42,16 @@ export class MistralProvider implements AIProvider {
   }
 }
 
+// Statuses worth retrying: rate limiting (the free tier allows very few
+// requests per second — a document upload hits it immediately) and
+// transient upstream failures.
+const RETRYABLE_STATUS = new Set([429, 500, 502, 503, 504]);
+const MAX_ATTEMPTS = 4;
+
+function sleep(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
 export class MistralEmbedding implements EmbeddingProvider {
   name = 'Mistral Embed';
   private apiKey: string;
@@ -52,23 +62,61 @@ export class MistralEmbedding implements EmbeddingProvider {
   }
 
   async embed(text: string): Promise<number[]> {
-    const response = await fetchWithTimeout(`${this.baseUrl}/embeddings`, {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${this.apiKey}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        model: 'mistral-embed',
-        input: text,
-      }),
-    });
+    const [embedding] = await this.embedBatch([text]);
+    return embedding;
+  }
 
-    if (!response.ok) {
-      throw new Error(`Mistral Embed API error: ${response.statusText}`);
+  /**
+   * Embeds several texts in one request (the endpoint accepts an array).
+   * One call per chunk turned a single law into hundreds of requests, which
+   * tripped Mistral's rate limit and ran past the function timeout.
+   */
+  async embedBatch(texts: string[]): Promise<number[][]> {
+    if (texts.length === 0) return [];
+    if (!this.apiKey) {
+      throw new Error('MISTRAL_API_KEY não configurada.');
     }
 
-    const data = await response.json();
-    return data.data[0]?.embedding || [];
+    for (let attempt = 1; ; attempt++) {
+      const response = await fetchWithTimeout(
+        `${this.baseUrl}/embeddings`,
+        {
+          method: 'POST',
+          headers: {
+            Authorization: `Bearer ${this.apiKey}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ model: 'mistral-embed', input: texts }),
+        },
+        30_000
+      );
+
+      if (response.ok) {
+        const data = (await response.json()) as { data?: { index?: number; embedding?: number[] }[] };
+        const items = [...(data.data ?? [])].sort((a, b) => (a.index ?? 0) - (b.index ?? 0));
+        const embeddings = items.map((item) => item.embedding ?? []);
+        if (embeddings.length !== texts.length || embeddings.some((e) => e.length === 0)) {
+          throw new Error(
+            `Mistral Embed devolveu ${embeddings.length} embedding(s) para ${texts.length} texto(s)`
+          );
+        }
+        return embeddings;
+      }
+
+      if (RETRYABLE_STATUS.has(response.status) && attempt < MAX_ATTEMPTS) {
+        const retryAfter = Number(response.headers.get('retry-after'));
+        const delay = Number.isFinite(retryAfter) && retryAfter > 0 ? retryAfter * 1000 : 1000 * 2 ** (attempt - 1);
+        await sleep(Math.min(delay, 10_000));
+        continue;
+      }
+
+      // statusText is empty over HTTP/2, which is what the old
+      // "Mistral Embed API error: " (with nothing after it) came from — the
+      // body is where Mistral actually says what went wrong.
+      const body = await response.text().catch(() => '');
+      throw new Error(
+        `Mistral Embed API error ${response.status}${response.statusText ? ` ${response.statusText}` : ''}${body ? `: ${body.slice(0, 300)}` : ''}`
+      );
+    }
   }
 }

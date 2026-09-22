@@ -20,4 +20,6 @@ export interface AIProvider {
 export interface EmbeddingProvider {
   name: string;
   embed(text: string): Promise<number[]>;
+  /** Embeds many texts in one request, returned in input order. */
+  embedBatch?(texts: string[]): Promise<number[][]>;
 }

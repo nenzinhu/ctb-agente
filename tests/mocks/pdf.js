@@ -14,8 +14,10 @@ module.exports = {
           )
         : Promise.resolve({
             numPages: 1,
+            destroy: jest.fn(() => Promise.resolve()),
             getPage: jest.fn(() =>
               Promise.resolve({
+                cleanup: jest.fn(),
                 getTextContent: jest.fn(() =>
                   Promise.resolve({
                     items: [{ str: 'Mock PDF text' }],

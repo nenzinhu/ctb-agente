@@ -13,11 +13,21 @@ export class EmbeddingChain implements EmbeddingProvider {
   }
 
   async embed(text: string): Promise<number[]> {
+    const [embedding] = await this.embedBatch([text]);
+    return embedding;
+  }
+
+  async embedBatch(texts: string[]): Promise<number[][]> {
     let lastError: Error | null = null;
 
     for (const provider of this.providers) {
       try {
-        return await provider.embed(text);
+        if (provider.embedBatch) {
+          return await provider.embedBatch(texts);
+        }
+        const out: number[][] = [];
+        for (const text of texts) out.push(await provider.embed(text));
+        return out;
       } catch (error) {
         lastError = error instanceof Error ? error : new Error(String(error));
         console.warn(`${provider.name} failed:`, error);
