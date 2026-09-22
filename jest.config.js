@@ -6,8 +6,13 @@ const createJestConfig = nextJest({
 
 const config = {
   coverageProvider: 'v8',
-  testEnvironment: 'node',
+  testEnvironment: 'jsdom',
   roots: ['<rootDir>/tests', '<rootDir>/app', '<rootDir>/lib'],
+  testMatch: [
+    '**/__tests__/**/*.[jt]s?(x)',
+    '**/?(*.)+(spec|test).[jt]s?(x)',
+  ],
+  setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],
   // Mock problematic ES modules
   moduleNameMapper: {
     '^pdfjs-dist/build/pdf$': '<rootDir>/tests/mocks/pdf.js',

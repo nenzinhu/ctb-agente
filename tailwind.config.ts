@@ -8,6 +8,7 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
+        'ctb-green': '#1a5f3f',
         primary: {
           50: '#f0fdf4',
           100: '#dcfce7',

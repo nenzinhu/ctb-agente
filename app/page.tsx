@@ -2,16 +2,26 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
 export default function Home() {
   const [showForm, setShowForm] = useState(false);
+  const [query, setQuery] = useState('');
+  const router = useRouter();
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (query.trim()) {
+      router.push(`/consulta?q=${encodeURIComponent(query)}`);
+    }
+  };
 
   if (showForm) {
     return (
       <main className="min-h-screen bg-gradient-to-b from-white to-gray-50 dark:from-gray-900 dark:to-gray-800 p-4">
         <div className="max-w-2xl mx-auto py-12">
           <div className="mb-8">
-            <Link href="/" onClick={() => setShowForm(false)} className="text-green-600 hover:text-green-700 font-semibold">
+            <Link href="/" onClick={() => setShowForm(false)} className="text-ctb-green hover:text-opacity-80 font-semibold">
               ← Voltar
             </Link>
           </div>
@@ -24,21 +34,23 @@ export default function Home() {
               Digite um código de infração, número de artigo ou descreva a situação
             </p>
 
-            <form className="space-y-6">
+            <form onSubmit={handleSubmit} className="space-y-6">
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Sua consulta
                 </label>
                 <textarea
+                  value={query}
+                  onChange={(e) => setQuery(e.target.value)}
                   placeholder="Ex: 516-91 ou art. 165 ou dirigir acima do limite de velocidade"
-                  className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 focus:ring-2 focus:ring-green-600 focus:border-transparent"
+                  className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 focus:ring-2 focus:ring-ctb-green focus:border-transparent"
                   rows={4}
                 />
               </div>
 
               <button
                 type="submit"
-                className="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors"
+                className="w-full bg-ctb-green hover:bg-opacity-90 text-white font-semibold py-3 px-6 rounded-lg transition-colors"
               >
                 Consultar
               </button>
@@ -75,14 +87,14 @@ export default function Home() {
 
         <button
           onClick={() => setShowForm(true)}
-          className="inline-block bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-8 rounded-lg transition-colors text-lg"
+          className="inline-block bg-ctb-green hover:bg-opacity-90 text-white font-semibold py-3 px-8 rounded-lg transition-colors text-lg"
         >
           Iniciar Consulta
         </button>
 
         <div className="mt-16 text-sm text-gray-600 dark:text-gray-400">
           <p className="mb-4">Para agentes de trânsito (PM, PC, PRF, polícia municipal)</p>
-          <p>⚠️ App em desenvolvimento - Fase 2/7 completa</p>
+          <p>⚠️ App em desenvolvimento - Fase 3/7 em progresso</p>
         </div>
       </div>
     </main>
