@@ -2,19 +2,11 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import ConsultaForm from '@/components/ConsultaForm';
+import RecentQueries from '@/components/RecentQueries';
 
 export default function Home() {
   const [showForm, setShowForm] = useState(false);
-  const [query, setQuery] = useState('');
-  const router = useRouter();
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (query.trim()) {
-      router.push(`/consulta?q=${encodeURIComponent(query)}`);
-    }
-  };
 
   if (showForm) {
     return (
@@ -34,27 +26,8 @@ export default function Home() {
               Digite um código de infração, número de artigo ou descreva a situação
             </p>
 
-            <form onSubmit={handleSubmit} className="space-y-6">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  Sua consulta
-                </label>
-                <textarea
-                  value={query}
-                  onChange={(e) => setQuery(e.target.value)}
-                  placeholder="Ex: 516-91 ou art. 165 ou dirigir acima do limite de velocidade"
-                  className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 focus:ring-2 focus:ring-ctb-green focus:border-transparent"
-                  rows={4}
-                />
-              </div>
-
-              <button
-                type="submit"
-                className="w-full bg-ctb-green hover:bg-opacity-90 text-white font-semibold py-3 px-6 rounded-lg transition-colors"
-              >
-                Consultar
-              </button>
-            </form>
+            <ConsultaForm autoFocus={true} />
+            <RecentQueries />
 
             <div className="mt-12 pt-8 border-t border-gray-200 dark:border-gray-700">
               <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4">
