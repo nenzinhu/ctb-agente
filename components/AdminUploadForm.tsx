@@ -54,7 +54,14 @@ export default function AdminUploadForm({ onUploadSuccess }: UploadFormProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isDragging, setIsDragging] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
-  const [progress, setProgress] = useState(0);
+  // { current, total } file being processed. There's no per-chunk progress
+  // from the server (it's one request per file that blocks until every
+  // chunk is embedded and inserted), so this can only track which file is
+  // active, not how far along it is — the bar below is intentionally
+  // indeterminate rather than a fake percentage.
+  const [fileProgress, setFileProgress] = useState<{ current: number; total: number } | null>(
+    null
+  );
   const [normaId, setNormaId] = useState('');
   const [documentType, setDocumentType] = useState<(typeof DOCUMENT_TYPES)[number]['value']>('lei');
   const [message, setMessage] = useState<{
@@ -145,12 +152,13 @@ export default function AdminUploadForm({ onUploadSuccess }: UploadFormProps) {
 
     try {
       setIsUploading(true);
-      setProgress(0);
+      setFileProgress({ current: 1, total: files.length });
       setMessage(null);
 
       // For now, we'll upload files one by one
       for (let i = 0; i < files.length; i++) {
         const file = files[i];
+        setFileProgress({ current: i + 1, total: files.length });
 
         // Validate file type and size
         if (!isValidFile(file)) {
@@ -166,8 +174,6 @@ export default function AdminUploadForm({ onUploadSuccess }: UploadFormProps) {
 
         try {
           await uploadOne(file);
-
-          setProgress(((i + 1) / files.length) * 100);
 
           if (i === files.length - 1) {
             setMessage({
@@ -193,6 +199,7 @@ export default function AdminUploadForm({ onUploadSuccess }: UploadFormProps) {
       }
     } finally {
       setIsUploading(false);
+      setFileProgress(null);
     }
   };
 
@@ -296,15 +303,21 @@ export default function AdminUploadForm({ onUploadSuccess }: UploadFormProps) {
       {isUploading && (
         <div className="mt-4">
           <div className="flex items-center justify-between mb-2">
-            <p className="text-sm font-medium text-gray-700">Enviando…</p>
-            <p className="text-sm text-gray-500">{Math.round(progress)}%</p>
+            <p className="text-sm font-medium text-gray-700">
+              Processando{fileProgress && fileProgress.total > 1 ? ` arquivo ${fileProgress.current} de ${fileProgress.total}` : ''}…
+            </p>
           </div>
+          {/* Indeterminate: the server does one blocking request per file
+              with no per-chunk progress reporting, so a real percentage
+              isn't available — a document with hundreds of trechos can take
+              up to a minute, and a fake bar stuck at a fixed width reads as
+              broken. */}
           <div className="w-full h-2 bg-gray-200 rounded-full overflow-hidden">
-            <div
-              className="h-full bg-green-600 transition-all duration-300"
-              style={{ width: `${progress}%` }}
-            />
+            <div className="h-full w-full bg-green-600 rounded-full animate-pulse" />
           </div>
+          <p className="text-xs text-gray-400 mt-1">
+            Documentos grandes podem levar até um minuto — não feche esta aba.
+          </p>
         </div>
       )}
 

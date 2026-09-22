@@ -28,6 +28,13 @@ export interface ProcessingResult {
   insertedIds: string[];
 }
 
+// A real document now produces hundreds of chunks (see the parser/chunker
+// fix). Processing them one at a time — one embedding call, then one insert,
+// then the next — made a full law take minutes and risked running past
+// Vercel's function timeout. This bounds how many chunks are in flight at
+// once instead of capping at 1.
+const CONCURRENCY = 5;
+
 /**
  * Processes chunks by generating embeddings and inserting into database
  */
@@ -46,8 +53,7 @@ export async function processChunks(input: ProcessorInput): Promise<ProcessingRe
   const dataPublicacao = validated.dataPublicacao || now;
   const dataVigenciaInicio = validated.dataVigenciaInicio || now;
 
-  // Process each chunk
-  for (let i = 0; i < validated.chunks.length; i++) {
+  async function processOne(i: number): Promise<void> {
     const chunk = validated.chunks[i];
 
     try {
@@ -62,7 +68,7 @@ export async function processChunks(input: ProcessorInput): Promise<ProcessingRe
           chunkIndex: i,
           error: `Embedding generation failed: ${embedError instanceof Error ? embedError.message : String(embedError)}`,
         });
-        continue;
+        return;
       }
 
       // Prepare dispositivo record
@@ -93,7 +99,7 @@ export async function processChunks(input: ProcessorInput): Promise<ProcessingRe
           chunkIndex: i,
           error: `Database insert failed: ${error.message}`,
         });
-        continue;
+        return;
       }
 
       if (data && data.length > 0) {
@@ -115,6 +121,21 @@ export async function processChunks(input: ProcessorInput): Promise<ProcessingRe
       });
     }
   }
+
+  // Bounded-concurrency worker pool: each worker pulls the next index off
+  // the shared cursor until none are left. Plain number increments/array
+  // pushes on `result` are safe here — JS never interleaves mid-statement,
+  // only at `await` points.
+  let nextIndex = 0;
+  async function worker(): Promise<void> {
+    while (nextIndex < validated.chunks.length) {
+      const i = nextIndex++;
+      await processOne(i);
+    }
+  }
+
+  const workerCount = Math.min(CONCURRENCY, validated.chunks.length);
+  await Promise.all(Array.from({ length: workerCount }, worker));
 
   return result;
 }

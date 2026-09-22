@@ -60,7 +60,11 @@ export function chunkText(
   const chunks: TextChunk[] = [];
   let currentChunk = '';
   let chunkOrder = 0;
-  let lastDispositivoNumber: string | undefined;
+  // The dispositivo number for whatever text is currently in `currentChunk`
+  // — set from a paragraph only once that paragraph has actually been
+  // folded in below, so a flush always labels the chunk it holds, not
+  // whichever article comes next in the document.
+  let currentChunkDispositivo: string | undefined;
 
   // Split by paragraphs (double line breaks)
   const paragraphs = text
@@ -69,23 +73,27 @@ export function chunkText(
     .filter((p) => p.length > 0);
 
   for (const paragraph of paragraphs) {
-    // Check if this paragraph starts with a dispositivo number
-    const dispositivoNumber = extractDispositivoNumber(paragraph);
-    if (dispositivoNumber) {
-      lastDispositivoNumber = dispositivoNumber;
-    }
-
-    // If current chunk + paragraph would exceed target size, save current chunk
+    // If current chunk + paragraph would exceed target size, save current
+    // chunk BEFORE looking at this paragraph's own article number — it
+    // belongs to the *next* chunk, not this one.
     if (
       currentChunk.length > 0 &&
       currentChunk.length + paragraph.length > targetChunkSize
     ) {
       chunks.push({
         text: currentChunk.trim(),
-        numero_dispositivo: lastDispositivoNumber,
+        numero_dispositivo: currentChunkDispositivo,
         order: chunkOrder++,
       });
       currentChunk = '';
+      currentChunkDispositivo = undefined;
+    }
+
+    // Now that the paragraph is (about to be) part of currentChunk, its
+    // article number — if any — becomes this chunk's label.
+    const dispositivoNumber = extractDispositivoNumber(paragraph);
+    if (dispositivoNumber) {
+      currentChunkDispositivo = dispositivoNumber;
     }
 
     // Add paragraph to current chunk
@@ -102,10 +110,13 @@ export function chunkText(
         // Save up to the last period
         chunks.push({
           text: currentChunk.substring(0, lastPeriodIndex + 1).trim(),
-          numero_dispositivo: lastDispositivoNumber,
+          numero_dispositivo: currentChunkDispositivo,
           order: chunkOrder++,
         });
         currentChunk = currentChunk.substring(lastPeriodIndex + 1).trim();
+        // The remainder after the cut still belongs to the same article
+        // unless a later paragraph introduces a new one — leave
+        // currentChunkDispositivo as-is rather than clearing it.
       }
     }
   }
@@ -114,7 +125,7 @@ export function chunkText(
   if (currentChunk.trim().length > 0) {
     chunks.push({
       text: currentChunk.trim(),
-      numero_dispositivo: lastDispositivoNumber,
+      numero_dispositivo: currentChunkDispositivo,
       order: chunkOrder++,
     });
   }
