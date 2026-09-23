@@ -97,6 +97,17 @@ typecheck, testes e build em cada push.
 
 ## 5. Verificação pós-deploy
 
+A checagem é automática: o job `smoke` do CI (`node scripts/check-health.ts`)
+aguarda o commit do push aparecer no `/api/health` e confere as rotas públicas,
+falhando quando o deploy não subiu, ficou `degraded` ou alguma rota mudou de
+status. Para rodar na mão:
+
+```bash
+npm run check:health                                   # produção padrão
+npm run check:health -- --base=https://outro.dominio   # outro alvo
+npm run check:health -- --versao=<sha> --espera=60     # exigir um commit, com prazo
+```
+
 | Passo | Como checar |
 |---|---|
 | Healthcheck | `curl -s https://SEU-DOMINIO/api/health` → `status: ok` |

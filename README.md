@@ -100,6 +100,7 @@ npm run seed
 | `npm run test:e2e` | Fluxos end-to-end (Playwright, porta 3210) |
 | `npm run seed` | Popula o corpus inicial |
 | `npm run icons` | (Re)gera os ícones PWA sem dependências |
+| `npm run check:health` | Smoke check do deploy (health + rotas públicas) |
 
 ## ⏰ Cron
 
