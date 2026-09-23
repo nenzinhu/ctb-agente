@@ -143,6 +143,27 @@ describe('ConsultaResult', () => {
     expect(screen.queryByText('516-91')).not.toBeInTheDocument();
   });
 
+  it('offers save and share actions for a successful card', () => {
+    render(<ConsultaResult card={mockCard} />);
+
+    expect(screen.getByRole('button', { name: /Salvar/ })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /Compartilhar/ })).toBeInTheDocument();
+  });
+
+  it('hides the actions when nothing was found', () => {
+    const vazio: CartaoEstruturado = {
+      ...mockCard,
+      sucesso: false,
+      enquadramento: null,
+      normas: [],
+      citacoes: [],
+    };
+
+    render(<ConsultaResult card={vazio} />);
+
+    expect(screen.queryByRole('button', { name: /Salvar/ })).not.toBeInTheDocument();
+  });
+
   it('flags cached answers', () => {
     render(<ConsultaResult card={{ ...mockCard, cache_hit: true }} />);
     expect(screen.getByText(/Resposta do cache/)).toBeInTheDocument();

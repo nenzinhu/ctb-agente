@@ -490,8 +490,8 @@ Rodada a cada mudança de modelo ou prompt. Métrica: acerto ≥ 95%.
 - Jurisprudência integrada (master enriquece a base).
 - Monitor de PLs em tramitação.
 - Avaliação automática (50 testes).
-- Favoritos salvos no aparelho.
-- Compartilhamento de cartão.
+- ✅ Favoritos salvos no aparelho (`/favoritos`, localStorage).
+- ✅ Compartilhamento de cartão (texto + link, share sheet nativo ou cópia).
 
 ---
 

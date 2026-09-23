@@ -3,6 +3,7 @@ import TemaToggle from './TemaToggle';
 
 const LINKS = [
   { href: '/', label: 'Consulta' },
+  { href: '/favoritos', label: 'Favoritos' },
   { href: '/gerador-pdf', label: 'Gerar PDF' },
   // The panel is behind the auth middleware: prefetching it while the visitor is
   // anonymous caches the redirect to /admin/login in the client router, and the

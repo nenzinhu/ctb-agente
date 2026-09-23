@@ -8,6 +8,7 @@ import CartaoSimples from './CartaoSimples';
 import CitacaoEvidencia from './CitacaoEvidencia';
 import NormasAplicaveis from './NormasAplicaveis';
 import JurisprudenciaBloco from './JurisprudenciaBloco';
+import BotoesCartao from './BotoesCartao';
 
 interface ConsultaResultProps {
   card: CartaoEstruturado;
@@ -45,11 +46,17 @@ export default function ConsultaResult({ card }: ConsultaResultProps) {
 
   return (
     <div className="max-w-4xl mx-auto py-8 px-4">
-      {card.cache_hit && (
-        <p className="mb-4 text-xs uppercase tracking-wide text-gray-500 dark:text-gray-400">
-          ⚡ Resposta do cache (base inalterada)
-        </p>
-      )}
+      <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
+        {card.cache_hit && (
+          <p className="text-xs uppercase tracking-wide text-gray-500 dark:text-gray-400">
+            ⚡ Resposta do cache (base inalterada)
+          </p>
+        )}
+
+        <div className="ml-auto">
+          <BotoesCartao card={card} />
+        </div>
+      </div>
 
       <div className="flex gap-2 mb-8 border-b border-gray-200 dark:border-gray-700">
         <button

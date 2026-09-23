@@ -17,6 +17,8 @@ Aplicativo PWA que permite consulta interativa da legislação de trânsito (Có
 - Dossiê temático em PDF (`@react-pdf/renderer`), cacheado por 1 semana
 - Ditado por voz (Groq Whisper) para uso no campo
 - Modo sol (alto contraste) para leitura sob luz do dia
+- Favoritos no aparelho (`/favoritos`), guardados em localStorage — nada vai para o servidor
+- Compartilhamento de cartão como texto + link, pela folha nativa do celular ou cópia
 - Rate limiting por IP + Turnstile anti-bot + filtro PII (placas, CPF, CNPJ)
 - Suporte a múltiplos LLMs em cadeia de fallback (Groq, NVIDIA, Nous, OrcaRouter, AnyAPI, OpenRouter, Mistral)
 - Painel master com documentos, enquadramentos, provedores, uso e limites
@@ -41,8 +43,9 @@ Aplicativo PWA que permite consulta interativa da legislação de trânsito (Có
 - **Batch 6 ✅:** E2E tests (Playwright)
 - **Batch 7 ✅:** Deployment (Vercel + CI)
 
-Roadmap v1.1+: monitor de PLs por push, conjunto de avaliação automático (50 perguntas),
-favoritos no aparelho, compartilhamento de cartão.
+- **v1.1 ✅:** favoritos no aparelho e compartilhamento de cartão
+
+Roadmap v1.1+: monitor de PLs por push, conjunto de avaliação automático (50 perguntas).
 
 ## 🚀 Quick Start
 
