@@ -2,58 +2,68 @@
 
 import { useEffect, useState } from 'react';
 import { CartaoEstruturado } from '@/lib/response/response-types';
-import { formatarCartaoParaTexto, linkDoCartao } from '@/lib/response/share';
+import { formatarCartaoParaTexto, linkDoCartao } from '@/lib/share/card';
+import { compartilharTexto, type ResultadoCompartilhamento } from '@/lib/share/send';
 import { isFavorite, toggleFavorite } from '@/lib/favorites/favorites';
+
+/** Message shown after sharing. `null` means there is nothing worth saying. */
+const AVISO_COMPARTILHAR: Record<ResultadoCompartilhamento, string | null> = {
+  compartilhado: 'Cartão compartilhado.',
+  copiado: 'Cartão copiado para a área de transferência.',
+  cancelado: null,
+  indisponivel: 'Este navegador não permite compartilhar. Copie o link manualmente.',
+  falhou: 'Não foi possível compartilhar o cartão.',
+};
 
 interface BotoesCartaoProps {
   card: CartaoEstruturado;
-  /** Called after the favorite state changes, with the new state. */
-  onChange?: (favorito: boolean) => void;
+  /** Called after the card was saved or removed on this device. */
+  onChange?: () => void;
 }
 
 /**
  * Save and share actions for a result card.
- * Saving is device-local; sharing uses the native share sheet when available
- * and falls back to copying the text to the clipboard.
+ * Saving is device-local; sharing is delegated to `lib/share/send`, so this
+ * component only owns the button state and the wording of the feedback.
  */
 export default function BotoesCartao({ card, onChange }: BotoesCartaoProps) {
   const [favorito, setFavorito] = useState(false);
   const [aviso, setAviso] = useState<string | null>(null);
 
+  // Favorites live in localStorage, which does not exist while server rendering,
+  // so the button settles on mount instead of during render.
   useEffect(() => {
     setFavorito(isFavorite(card));
   }, [card]);
 
   const alternarFavorito = () => {
-    const agora = toggleFavorite(card);
-    setFavorito(agora);
-    setAviso(agora ? 'Salvo nos favoritos deste aparelho.' : 'Removido dos favoritos.');
-    onChange?.(agora);
+    const resultado = toggleFavorite(card);
+
+    if (resultado === 'falhou') {
+      // The storage refused the write, so re-read it instead of guessing.
+      setFavorito(isFavorite(card));
+      setAviso('Não foi possível salvar no aparelho.');
+      return;
+    }
+
+    setFavorito(resultado === 'salvo');
+    setAviso(
+      resultado === 'salvo'
+        ? 'Salvo nos favoritos deste aparelho.'
+        : 'Removido dos favoritos.'
+    );
+    onChange?.();
   };
 
   const compartilhar = async () => {
-    const url = linkDoCartao(card, window.location.origin);
-    const texto = formatarCartaoParaTexto(card, url);
+    const link = linkDoCartao(card, window.location.origin);
+    const resultado = await compartilharTexto(
+      formatarCartaoParaTexto(card, link),
+      'CTB Agente'
+    );
 
-    try {
-      if (typeof navigator.share === 'function') {
-        await navigator.share({ title: 'CTB Agente', text: texto });
-        setAviso('Cartão compartilhado.');
-        return;
-      }
-
-      if (typeof navigator.clipboard?.writeText !== 'function') {
-        setAviso('Este navegador não permite compartilhar. Copie o link manualmente.');
-        return;
-      }
-
-      await navigator.clipboard.writeText(texto);
-      setAviso('Cartão copiado para a área de transferência.');
-    } catch (err) {
-      // Closing the native share sheet throws AbortError: not a failure.
-      if (err instanceof DOMException && err.name === 'AbortError') return;
-      setAviso('Não foi possível compartilhar o cartão.');
-    }
+    const mensagem = AVISO_COMPARTILHAR[resultado];
+    if (mensagem) setAviso(mensagem);
   };
 
   return (

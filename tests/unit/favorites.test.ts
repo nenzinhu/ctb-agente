@@ -7,7 +7,6 @@ import {
   favoriteId,
   getFavorites,
   isFavorite,
-  removeFavorite,
   toggleFavorite,
 } from '@/lib/favorites/favorites';
 
@@ -74,11 +73,11 @@ describe('favorites', () => {
   it('saves and removes through the toggle', () => {
     const c = card({ enquadramento: enquadramento() });
 
-    expect(toggleFavorite(c)).toBe(true);
+    expect(toggleFavorite(c)).toBe('salvo');
     expect(isFavorite(c)).toBe(true);
     expect(getFavorites()).toHaveLength(1);
 
-    expect(toggleFavorite(c)).toBe(false);
+    expect(toggleFavorite(c)).toBe('removido');
     expect(isFavorite(c)).toBe(false);
     expect(getFavorites()).toHaveLength(0);
   });
@@ -110,15 +109,6 @@ describe('favorites', () => {
     expect(salvos[0].card.consulta).toBe(`consulta ${MAX_FAVORITES + 4}`);
   });
 
-  it('removes a single favorite by id', () => {
-    toggleFavorite(card({ consulta: 'a' }));
-    toggleFavorite(card({ consulta: 'b' }));
-
-    removeFavorite('consulta:a');
-
-    expect(getFavorites().map((f) => f.card.consulta)).toEqual(['b']);
-  });
-
   it('clears every favorite', () => {
     toggleFavorite(card({ consulta: 'a' }));
     clearFavorites();
@@ -131,9 +121,22 @@ describe('favorites', () => {
     localStorage.setItem(FAVORITES_STORAGE_KEY, '{not json');
 
     expect(getFavorites()).toEqual([]);
-    expect(toggleFavorite(card({ consulta: 'a' }))).toBe(true);
+    expect(toggleFavorite(card({ consulta: 'a' }))).toBe('salvo');
 
     expect(erroSilenciado).toHaveBeenCalled();
+    erroSilenciado.mockRestore();
+  });
+
+  it('reports a write the device refused', () => {
+    const erroSilenciado = jest.spyOn(console, 'error').mockImplementation(() => {});
+    const escrita = jest.spyOn(Storage.prototype, 'setItem').mockImplementation(() => {
+      throw new Error('QuotaExceededError');
+    });
+
+    expect(toggleFavorite(card({ consulta: 'a' }))).toBe('falhou');
+    expect(getFavorites()).toEqual([]);
+
+    escrita.mockRestore();
     erroSilenciado.mockRestore();
   });
 

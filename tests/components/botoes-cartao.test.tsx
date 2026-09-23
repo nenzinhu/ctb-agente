@@ -2,8 +2,15 @@ import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import BotoesCartao from '@/components/BotoesCartao';
 import { getFavorites } from '@/lib/favorites/favorites';
+import { compartilharTexto } from '@/lib/share/send';
 import { Enquadramento } from '@/lib/db/schema';
 import { CartaoEstruturado } from '@/lib/response/response-types';
+
+// The device transport has its own unit tests; here we only care that the
+// component calls it and words the outcome correctly.
+jest.mock('../../lib/share/send');
+
+const compartilharMock = compartilharTexto as jest.MockedFunction<typeof compartilharTexto>;
 
 function enquadramento(overrides: Partial<Enquadramento> = {}): Enquadramento {
   return {
@@ -46,15 +53,11 @@ const card: CartaoEstruturado = {
   tempo_ms: 42,
 };
 
-// NOTE: user-event installs its own navigator.clipboard stub during setup(),
-// so any stub has to be defined *after* userEvent.setup().
-function definir(nome: string, valor: unknown): void {
-  Object.defineProperty(navigator, nome, { value: valor, configurable: true });
-}
-
 describe('BotoesCartao', () => {
   beforeEach(() => {
     localStorage.clear();
+    compartilharMock.mockReset();
+    compartilharMock.mockResolvedValue('copiado');
   });
 
   it('saves the card on the device and persists it', async () => {
@@ -82,7 +85,7 @@ describe('BotoesCartao', () => {
     expect(screen.getByRole('button', { name: /Salvo/ })).toHaveAttribute('aria-pressed', 'true');
   });
 
-  it('reports the new state through onChange', async () => {
+  it('tells the parent after saving and after removing', async () => {
     const usuario = userEvent.setup();
     const onChange = jest.fn();
     render(<BotoesCartao card={card} onChange={onChange} />);
@@ -90,72 +93,66 @@ describe('BotoesCartao', () => {
     await usuario.click(screen.getByRole('button', { name: /Salvar/ }));
     await usuario.click(screen.getByRole('button', { name: /Salvo/ }));
 
-    expect(onChange.mock.calls).toEqual([[true], [false]]);
+    expect(onChange).toHaveBeenCalledTimes(2);
   });
 
-  it('shares through the native share sheet when available', async () => {
+  it('re-reads the store when the device refuses the write', async () => {
+    const erroSilenciado = jest.spyOn(console, 'error').mockImplementation(() => {});
+    const escrita = jest.spyOn(Storage.prototype, 'setItem').mockImplementation(() => {
+      throw new Error('QuotaExceededError');
+    });
+
     const usuario = userEvent.setup();
-    const share = jest.fn().mockResolvedValue(undefined);
-    definir('share', share);
+    const onChange = jest.fn();
+    render(<BotoesCartao card={card} onChange={onChange} />);
 
-    render(<BotoesCartao card={card} />);
-    await usuario.click(screen.getByRole('button', { name: /Compartilhar/ }));
+    await usuario.click(screen.getByRole('button', { name: /Salvar/ }));
 
-    await waitFor(() => expect(share).toHaveBeenCalledTimes(1));
-    const enviado = share.mock.calls[0][0];
-    expect(enviado.title).toBe('CTB Agente');
-    expect(enviado.text).toContain('516-91');
-    expect(enviado.text).toContain('http://localhost/consulta?q=516-91');
-    expect(screen.getByRole('status')).toHaveTextContent('compartilhado');
+    expect(screen.getByRole('button', { name: /Salvar/ })).toHaveAttribute('aria-pressed', 'false');
+    expect(screen.getByRole('status')).toHaveTextContent('Não foi possível salvar no aparelho');
+    expect(onChange).not.toHaveBeenCalled();
+
+    escrita.mockRestore();
+    erroSilenciado.mockRestore();
   });
 
-  it('copies the card when there is no share sheet', async () => {
+  it('hands the card text and its public link to the transport', async () => {
     const usuario = userEvent.setup();
-    const writeText = jest.fn().mockResolvedValue(undefined);
-    definir('share', undefined);
-    definir('clipboard', { writeText });
-
     render(<BotoesCartao card={card} />);
+
     await usuario.click(screen.getByRole('button', { name: /Compartilhar/ }));
 
-    await waitFor(() => expect(writeText).toHaveBeenCalledTimes(1));
-    expect(writeText.mock.calls[0][0]).toContain('Estacionar em local proibido');
+    await waitFor(() => expect(compartilharMock).toHaveBeenCalledTimes(1));
+
+    const [texto, titulo] = compartilharMock.mock.calls[0];
+    expect(titulo).toBe('CTB Agente');
+    expect(texto).toContain('Estacionar em local proibido');
+    expect(texto).toContain('http://localhost/consulta?q=516-91');
     expect(screen.getByRole('status')).toHaveTextContent('copiado para a área de transferência');
   });
 
-  it('explains when the browser cannot share at all', async () => {
-    const usuario = userEvent.setup();
-    definir('share', undefined);
-    definir('clipboard', undefined);
+  it.each([
+    ['compartilhado', 'Cartão compartilhado'],
+    ['indisponivel', 'não permite compartilhar'],
+    ['falhou', 'Não foi possível compartilhar'],
+  ] as const)('words the %s outcome', async (resultado, mensagem) => {
+    compartilharMock.mockResolvedValue(resultado);
 
+    const usuario = userEvent.setup();
     render(<BotoesCartao card={card} />);
     await usuario.click(screen.getByRole('button', { name: /Compartilhar/ }));
 
-    expect(screen.getByRole('status')).toHaveTextContent('não permite compartilhar');
+    await waitFor(() => expect(screen.getByRole('status')).toHaveTextContent(mensagem));
   });
 
-  it('stays quiet when the user cancels the native sheet', async () => {
-    const usuario = userEvent.setup();
-    definir(
-      'share',
-      jest.fn().mockRejectedValue(new DOMException('cancelled', 'AbortError'))
-    );
+  it('stays quiet when the user dismisses the share sheet', async () => {
+    compartilharMock.mockResolvedValue('cancelado');
 
+    const usuario = userEvent.setup();
     render(<BotoesCartao card={card} />);
     await usuario.click(screen.getByRole('button', { name: /Compartilhar/ }));
 
-    await waitFor(() => expect(screen.getByRole('status').textContent).toBe(''));
-  });
-
-  it('reports a share failure', async () => {
-    const usuario = userEvent.setup();
-    definir('share', jest.fn().mockRejectedValue(new Error('boom')));
-
-    render(<BotoesCartao card={card} />);
-    await usuario.click(screen.getByRole('button', { name: /Compartilhar/ }));
-
-    await waitFor(() =>
-      expect(screen.getByRole('status')).toHaveTextContent('Não foi possível compartilhar')
-    );
+    await waitFor(() => expect(compartilharMock).toHaveBeenCalled());
+    expect(screen.getByRole('status').textContent).toBe('');
   });
 });

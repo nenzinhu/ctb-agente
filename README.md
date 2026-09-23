@@ -33,6 +33,19 @@ Aplicativo PWA que permite consulta interativa da legislação de trânsito (Có
 - **LLM:** Pluggable em cadeia (Groq → NVIDIA → Nous → OrcaRouter → AnyAPI → OpenRouter → Mistral)
 - **Testes:** Jest (unit + componentes + rotas) e Playwright (E2E)
 
+## 🧱 Organização do código
+
+Camadas, de fora para dentro: `app/` → `components/` → `lib/`.
+
+- **`app/`** — rotas e páginas. Ex.: `app/favoritos/page.tsx` só lista o que está no aparelho.
+- **`components/`** — apresentação: estado de UI e textos. Não guarda regra de negócio.
+- **`lib/`** — domínio e engines, sem React; roda em teste e no servidor.
+  - `lib/favorites/favorites.ts` — cartões salvos no aparelho (localStorage), `toggleFavorite` devolve `salvo | removido | falhou`.
+  - `lib/share/card.ts` — como um cartão vira texto + link (puro).
+  - `lib/share/send.ts` — como o texto chega ao sistema (share nativo, com clipboard de reserva).
+
+`lib/` nunca importa de `components/` nem de `app/`.
+
 ## 📋 Roadmap
 
 - **Batch 1 ✅:** Infraestrutura (Next.js + Supabase)

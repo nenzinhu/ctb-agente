@@ -1,7 +1,6 @@
-// Plain-text rendering of a card, so it can be shared through WhatsApp, e-mail
-// or any other app the agent has on the phone.
-import type { CartaoEstruturado } from './response-types';
-import { formatarMulta, labelDocumento } from './format';
+// How a card becomes shareable content. Pure rendering: no DOM, no React.
+import type { CartaoEstruturado } from '@/lib/response/response-types';
+import { formatarMulta, labelDocumento } from '@/lib/response/format';
 
 /**
  * Public URL of a card: the consultation page that renders it

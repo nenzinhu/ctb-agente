@@ -1,6 +1,6 @@
 import { Enquadramento } from '@/lib/db/schema';
 import { CartaoEstruturado } from '@/lib/response/response-types';
-import { formatarCartaoParaTexto, linkDoCartao } from '@/lib/response/share';
+import { formatarCartaoParaTexto, linkDoCartao } from '@/lib/share/card';
 
 function enquadramento(overrides: Partial<Enquadramento> = {}): Enquadramento {
   return {

@@ -15,6 +15,12 @@ export interface CartaoFavorito {
 export const MAX_FAVORITES = 50;
 
 /**
+ * Outcome of toggling a card. `falhou` means the device refused the write, so
+ * nothing changed and the caller should not assume the card was saved.
+ */
+export type ResultadoFavorito = 'salvo' | 'removido' | 'falhou';
+
+/**
  * Stable id for a card, so saving the same infraction twice updates the entry
  * instead of duplicating it. Falls back to the raw query for cards without an
  * enquadramento (an article or a situation).
@@ -113,28 +119,20 @@ export function isFavorite(card: CartaoEstruturado): boolean {
 /**
  * Save the card when it is not saved, remove it when it is
  * @param card - Card to toggle
- * @returns Whether the card ended up saved
+ * @returns What happened to the card on this device
  */
-export function toggleFavorite(card: CartaoEstruturado): boolean {
+export function toggleFavorite(card: CartaoEstruturado): ResultadoFavorito {
   const id = favoriteId(card);
   const atual = getFavorites();
   const restante = atual.filter((item) => item.id !== id);
+  const estavaSalvo = restante.length !== atual.length;
 
-  if (restante.length !== atual.length) {
-    persist(restante);
-    return false;
-  }
+  const novo: CartaoFavorito[] = estavaSalvo
+    ? restante
+    : [{ id, salvo_em: new Date().toISOString(), card }, ...restante];
 
-  const novo: CartaoFavorito = { id, salvo_em: new Date().toISOString(), card };
-  return persist([novo, ...restante]);
-}
-
-/**
- * Drop a single favorite
- * @param id - Favorite id
- */
-export function removeFavorite(id: string): void {
-  persist(getFavorites().filter((item) => item.id !== id));
+  if (!persist(novo)) return 'falhou';
+  return estavaSalvo ? 'removido' : 'salvo';
 }
 
 /** Drop every favorite stored on this device. */
