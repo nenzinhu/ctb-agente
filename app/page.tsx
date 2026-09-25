@@ -1,87 +1,102 @@
-'use client';
-
-import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import ConsultaForm from '@/components/ConsultaForm';
 import RecentQueries from '@/components/RecentQueries';
+import Icone, { type NomeIcone } from '@/components/ui/Icone';
+
+const EXEMPLOS = ['516-91', 'art. 165', 'moto sem capacete', 'recusa do bafômetro', 'estacionar em vaga de idoso'];
+
+const TIPOS: { titulo: string; exemplo: string; texto: string }[] = [
+  { titulo: 'Código MBFT', exemplo: '516-91', texto: 'Enquadramento completo: gravidade, pontos, multa e medidas.' },
+  { titulo: 'Artigo', exemplo: 'art. 181, XVII', texto: 'O texto literal do dispositivo, com os relacionados.' },
+  { titulo: 'Situação', exemplo: 'dirigir usando celular', texto: 'Descreva o que viu: a busca encontra os artigos certos.' },
+];
+
+const ATALHOS: { href: string; titulo: string; texto: string; icone: NomeIcone }[] = [
+  {
+    href: '/pop',
+    titulo: 'POP-PMSC',
+    texto: 'Pergunte sobre os procedimentos operacionais padrão e veja a fonte.',
+    icone: 'escudo',
+  },
+  { href: '/gerador-pdf', titulo: 'Dossiê em PDF', texto: 'Normas, enquadramentos e checklist para levar à rua.', icone: 'arquivo' },
+  {
+    href: '/comprimir-pdf',
+    titulo: 'Comprimir PDF',
+    texto: 'Reduza PDFs no próprio aparelho — até "somente texto".',
+    icone: 'comprimir',
+  },
+];
 
 export default function Home() {
-  const [showForm, setShowForm] = useState(false);
-
-  // "Nova consulta" chega aqui como /?form=1 e abre o formulário direto,
-  // sem obrigar o agente a passar pela tela de abertura.
-  useEffect(() => {
-    if (new URLSearchParams(window.location.search).get('form') === '1') {
-      setShowForm(true);
-    }
-  }, []);
-
-  if (showForm) {
-    return (
-      <main className="min-h-screen bg-gradient-to-b from-white to-gray-50 dark:from-gray-900 dark:to-gray-800 p-4">
-        <div className="max-w-2xl mx-auto py-12">
-          <div className="mb-8">
-            <Link href="/" onClick={() => setShowForm(false)} className="inline-block py-2 text-ctb-green hover:text-opacity-80 font-semibold sm:py-0">
-              ← Voltar
-            </Link>
-          </div>
-
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-8">
-            <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
-              Consulta CTB
-            </h1>
-            <p className="text-gray-600 dark:text-gray-400 mb-8">
-              Digite um código de infração, número de artigo ou descreva a situação
-            </p>
-
-            <ConsultaForm autoFocus={true} />
-            <RecentQueries />
-
-            <div className="mt-12 pt-8 border-t border-gray-200 dark:border-gray-700">
-              <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4">
-                ℹ️ Informações
-              </h2>
-              <ul className="space-y-2 text-gray-600 dark:text-gray-400">
-                <li>• <strong>Código MBFT:</strong> 516-91 (código de infração)</li>
-                <li>• <strong>Artigo CTB:</strong> art. 165 (legislação específica)</li>
-                <li>• <strong>Situação:</strong> descrição da infração ou conduta</li>
-              </ul>
-            </div>
-          </div>
-        </div>
-      </main>
-    );
-  }
-
   return (
-    <main className="min-h-screen flex items-center justify-center bg-gradient-to-b from-white to-gray-50 dark:from-gray-900 dark:to-gray-800 p-4">
-      <div className="text-center">
-        <h1 className="text-5xl font-bold text-gray-900 dark:text-white mb-4">
-          CTB Agente
-        </h1>
-        <p className="text-xl text-gray-600 dark:text-gray-400 mb-8">
-          Consulta legislação de trânsito brasileira com IA
+    <main className="page">
+      <section className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#1f7a52] via-[#1a5f3f] to-[#0c2f20] px-5 py-8 text-white shadow-lg sm:px-10 sm:py-12">
+        <div
+          aria-hidden
+          className="pointer-events-none absolute -right-16 -top-16 h-64 w-64 rounded-full bg-white/10 blur-2xl"
+        />
+        <div
+          aria-hidden
+          className="pointer-events-none absolute -bottom-24 right-24 h-48 w-48 rounded-full bg-[#f5b301]/20 blur-2xl"
+        />
+        <p className="text-xs font-semibold uppercase tracking-[0.14em] text-white/70">Código de Trânsito Brasileiro</p>
+        <h1 className="mt-2 text-3xl font-bold tracking-tight sm:text-4xl">CTB Agente</h1>
+        <p className="mt-3 max-w-xl text-base text-white/85 sm:text-lg">
+          Enquadramentos, artigos e procedimentos em segundos — sempre com o texto da lei ao lado.
         </p>
-        <p className="text-sm text-gray-500 dark:text-gray-500 mb-12 max-w-md">
-          Responde com precisão cirúrgica sobre infrações, artigos, enquadramentos e jurisprudência
-        </p>
+      </section>
 
-        <button
-          onClick={() => setShowForm(true)}
-          className="inline-block bg-ctb-green hover:bg-opacity-90 text-white font-semibold py-3 px-8 rounded-lg transition-colors text-lg"
-        >
-          Iniciar Consulta
-        </button>
+      <section className="card card-pad -mt-6 mx-2 sm:mx-6 relative" aria-label="Consulta">
+        <ConsultaForm exemplos={EXEMPLOS} />
+        <RecentQueries />
+      </section>
 
-        <div className="mt-16 text-sm text-gray-600 dark:text-gray-400">
-          <p className="mb-4">Para agentes de trânsito (PM, PC, PRF, polícia municipal)</p>
-          <ul className="space-y-1">
-            <li>Consulta por código MBFT, artigo ou situação descrita</li>
-            <li>Dossiê temático em PDF para levar para a rua</li>
-            <li>Ditado por voz e modo sol (alto contraste)</li>
-          </ul>
-        </div>
-      </div>
+      <section className="mt-10" aria-labelledby="como-perguntar">
+        <h2 id="como-perguntar" className="section-title">
+          <Icone nome="info" tamanho={18} className="text-brand" />
+          Como perguntar
+        </h2>
+        <ul className="mt-3 grid gap-3 sm:grid-cols-3">
+          {TIPOS.map((tipo) => (
+            <li key={tipo.titulo} className="panel p-4">
+              <p className="text-sm font-semibold text-ink">{tipo.titulo}</p>
+              <p className="mt-1 font-mono text-sm text-brand">{tipo.exemplo}</p>
+              <p className="mt-2 text-sm text-muted">{tipo.texto}</p>
+            </li>
+          ))}
+        </ul>
+      </section>
+
+      <section className="mt-10" aria-labelledby="ferramentas">
+        <h2 id="ferramentas" className="section-title">
+          <Icone nome="faisca" tamanho={18} className="text-brand" />
+          Ferramentas
+        </h2>
+        <ul className="mt-3 grid gap-3 sm:grid-cols-3">
+          {ATALHOS.map((atalho) => (
+            <li key={atalho.href}>
+              <Link
+                href={atalho.href}
+                className="group card flex h-full flex-col gap-3 p-5 transition-shadow hover:shadow-md"
+              >
+                <span className="grid h-10 w-10 place-items-center rounded-xl bg-brand-soft text-brand">
+                  <Icone nome={atalho.icone} />
+                </span>
+                <span className="text-base font-semibold text-ink">{atalho.titulo}</span>
+                <span className="text-sm text-muted">{atalho.texto}</span>
+                <span className="mt-auto inline-flex items-center gap-1 text-sm font-semibold text-brand">
+                  Abrir
+                  <Icone nome="seta" tamanho={16} className="transition-transform group-hover:translate-x-0.5" />
+                </span>
+              </Link>
+            </li>
+          ))}
+        </ul>
+      </section>
+
+      <p className="mt-10 text-center text-xs text-muted">
+        Para agentes de trânsito (PM, PC, PRF e municipais). Confira sempre a redação vigente antes de lavrar o AIT.
+      </p>
     </main>
   );
 }

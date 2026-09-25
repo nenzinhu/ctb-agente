@@ -78,6 +78,16 @@ describe('POST /api/admin/documents/upload-url', () => {
     );
   });
 
+  it('accepts Word 97-2003 and Markdown files', async () => {
+    const doc = await POST(requisicao({ fileName: 'pop-1.01.doc', contentType: '' }));
+    expect(doc.status).toBe(200);
+    expect((await doc.json()).contentType).toBe('application/msword');
+
+    // Markdown travels as text/plain, accepted by the bucket before and after migration 008.
+    const md = await POST(requisicao({ fileName: 'pop.md', contentType: 'text/markdown' }));
+    expect((await md.json()).contentType).toBe('text/plain');
+  });
+
   it('mints a signed upload URL for an allowed file', async () => {
     const resposta = await POST(requisicao({ fileName: 'CTB completo (2026).pdf', contentType: 'application/pdf' }));
     expect(resposta.status).toBe(200);

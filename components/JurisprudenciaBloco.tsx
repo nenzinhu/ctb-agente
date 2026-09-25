@@ -1,6 +1,7 @@
 'use client';
 
 import type { Jurisprudencia } from '@/lib/db/schema';
+import Icone from './ui/Icone';
 
 interface JurisprudenciaBlocoProps {
   decisoes: Jurisprudencia[];
@@ -14,28 +15,26 @@ export default function JurisprudenciaBloco({ decisoes }: JurisprudenciaBlocoPro
   const lista = decisoes ?? [];
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-lg p-6">
-      <h3 className="font-bold text-gray-900 dark:text-white mb-2">⚖️ Jurisprudência</h3>
+    <section className="card card-pad" aria-labelledby="jurisprudencia">
+      <h3 id="jurisprudencia" className="section-title">
+        <Icone nome="balanca" tamanho={18} className="text-brand" />
+        Jurisprudência
+      </h3>
 
       {lista.length === 0 ? (
-        <p className="text-sm text-gray-600 dark:text-gray-300">
+        <p className="mt-2 text-sm text-muted">
           Nenhuma decisão cadastrada para este tema. O painel master pode cadastrar decisões
           para enriquecer as próximas consultas.
         </p>
       ) : (
-        <ul className="space-y-4">
+        <ul className="mt-4 space-y-4">
           {lista.map((decisao) => (
-            <li
-              key={decisao.id ?? decisao.numero}
-              className="border-l-4 border-ctb-green pl-4"
-            >
-              <p className="text-sm font-semibold text-gray-900 dark:text-white">
+            <li key={decisao.id ?? decisao.numero} className="border-l-4 border-brand pl-4">
+              <p className="text-sm font-semibold text-ink">
                 {decisao.tipo?.toUpperCase()} · {decisao.numero}
               </p>
-              <p className="text-sm text-gray-700 dark:text-gray-300 mt-1">
-                {decisao.resumo || decisao.ementa}
-              </p>
-              <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+              <p className="mt-1 text-sm text-ink">{decisao.resumo || decisao.ementa}</p>
+              <p className="mt-1 text-xs text-muted">
                 {decisao.data_decisao ? `Decisão de ${formatarData(decisao.data_decisao)}` : ''}
                 {decisao.tema ? ` · Tema: ${decisao.tema}` : ''}
               </p>
@@ -44,16 +43,17 @@ export default function JurisprudenciaBloco({ decisoes }: JurisprudenciaBlocoPro
                   href={decisao.link_oficial}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-xs text-ctb-green underline mt-1 inline-block"
+                  className="mt-1 inline-flex items-center gap-1 text-xs font-semibold text-brand underline"
                 >
                   Ver inteiro teor
+                  <Icone nome="seta" tamanho={12} />
                 </a>
               )}
             </li>
           ))}
         </ul>
       )}
-    </div>
+    </section>
   );
 }
 

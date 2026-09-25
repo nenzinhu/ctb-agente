@@ -4,6 +4,7 @@ import { useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import ConsultaResult from '@/components/ConsultaResult';
+import Icone from '@/components/ui/Icone';
 import { CartaoEstruturado } from '@/lib/response/response-types';
 
 const TURNSTILE_STORAGE_KEY = 'ctb-turnstile-token';
@@ -75,31 +76,19 @@ export default function ConsultaPageContent() {
   // Sem consulta na URL não há o que buscar: sem isso a página ficava em branco.
   if (!query) {
     return (
-      <main className="min-h-screen bg-gradient-to-b from-white to-gray-50 dark:from-gray-900 dark:to-gray-800 p-4">
-        <div className="max-w-4xl mx-auto py-8">
-          <Link
-            href="/?form=1"
-            className="text-ctb-green hover:text-opacity-80 font-semibold mb-4 inline-block py-2 sm:py-0"
-          >
-            ← Voltar
-          </Link>
+      <main className="page-narrow">
+        <VoltarLink />
+        <h1 className="page-title">Resultado da Consulta</h1>
 
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
-            Resultado da Consulta
-          </h1>
-
-          <div className="bg-amber-50 dark:bg-amber-900 border-l-4 border-amber-500 p-6 rounded">
-            <h2 className="font-bold text-amber-900 dark:text-amber-100 text-lg">
-              Informe uma consulta
-            </h2>
-            <p className="text-amber-900 dark:text-amber-100 text-sm mt-2">
+        <div className="alert-warn mt-6">
+          <Icone nome="info" className="mt-0.5 shrink-0 text-warn" />
+          <div>
+            <h2 className="font-semibold">Informe uma consulta</h2>
+            <p className="mt-1 text-muted">
               Digite um código de infração (ex.: 516-91), um artigo (ex.: art. 165) ou descreva a
               situação para receber o enquadramento.
             </p>
-            <Link
-              href="/?form=1"
-              className="inline-block mt-4 bg-ctb-green text-white font-semibold px-5 py-2 rounded-lg hover:bg-ctb-green/90"
-            >
+            <Link href="/?form=1" className="btn-primary mt-4">
               Fazer uma consulta
             </Link>
           </div>
@@ -109,44 +98,67 @@ export default function ConsultaPageContent() {
   }
 
   return (
-    <main className="min-h-screen bg-gradient-to-b from-white to-gray-50 dark:from-gray-900 dark:to-gray-800 p-4">
-      <div className="max-w-4xl mx-auto py-8">
-        <Link
-          href="/?form=1"
-          className="text-ctb-green hover:text-opacity-80 font-semibold mb-4 inline-block py-2 sm:py-0"
-        >
-          ← Voltar
-        </Link>
+    <main className="page-narrow">
+      <VoltarLink />
 
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
-          Resultado da Consulta
-        </h1>
-        <p className="text-gray-600 dark:text-gray-400 mb-8">
-          Busca:{' '}
-          <span className="font-mono bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded break-all">
-            {resumoConsulta(query)}
-          </span>
-        </p>
+      <h1 className="page-title">Resultado da Consulta</h1>
+      <p className="mt-2 flex flex-wrap items-center gap-2 text-sm text-muted">
+        Busca:
+        <span className="rounded-lg bg-surface-2 px-2.5 py-1 font-mono text-ink break-all">{resumoConsulta(query)}</span>
+      </p>
 
-        {loading && (
-          <div className="text-center py-12">
-            <div className="inline-block animate-spin">⏳</div>
-            <p className="text-gray-600 dark:text-gray-400 mt-4">Buscando informações...</p>
-          </div>
-        )}
+      {loading && <CarregandoResultado />}
 
-        {error && (
-          <div className="bg-red-100 dark:bg-red-900 border-l-4 border-red-500 p-6 rounded">
-            <p className="font-bold text-red-900 dark:text-red-100">Erro</p>
-            <p className="text-red-800 dark:text-red-200 text-sm mt-2">{error}</p>
-            <Link href="/?form=1" className="text-sm text-red-900 dark:text-red-100 underline mt-4 inline-block">
+      {error && (
+        <div className="alert-error mt-6" role="alert">
+          <Icone nome="alerta" className="mt-0.5 shrink-0 text-danger" />
+          <div>
+            <p className="font-semibold">Erro</p>
+            <p className="mt-1 text-muted">{error}</p>
+            <Link href="/?form=1" className="mt-3 inline-block font-semibold text-brand underline">
               Fazer nova consulta
             </Link>
           </div>
-        )}
+        </div>
+      )}
 
-        {result && <ConsultaResult card={result} />}
-      </div>
+      {result && <ConsultaResult card={result} />}
     </main>
+  );
+}
+
+function VoltarLink() {
+  return (
+    <Link href="/?form=1" className="btn-ghost btn-sm -ml-2 mb-4">
+      <Icone nome="voltar" tamanho={16} />
+      Nova consulta
+    </Link>
+  );
+}
+
+/**
+ * Placeholder with the shape of a card, so the page doesn't jump when the
+ * answer arrives.
+ */
+function CarregandoResultado() {
+  return (
+    <div className="mt-6 space-y-4" role="status" aria-live="polite">
+      <span className="sr-only">Buscando informações...</span>
+      <div className="card card-pad space-y-4">
+        <div className="skeleton h-6 w-2/3" />
+        <div className="grid grid-cols-3 gap-3">
+          <div className="skeleton h-16" />
+          <div className="skeleton h-16" />
+          <div className="skeleton h-16" />
+        </div>
+        <div className="skeleton h-4 w-full" />
+        <div className="skeleton h-4 w-5/6" />
+      </div>
+      <div className="card card-pad space-y-3">
+        <div className="skeleton h-5 w-1/3" />
+        <div className="skeleton h-12 w-full" />
+        <div className="skeleton h-12 w-full" />
+      </div>
+    </div>
   );
 }

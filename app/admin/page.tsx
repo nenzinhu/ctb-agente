@@ -1,16 +1,20 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import AdminUploadForm from '@/components/AdminUploadForm';
 import DocumentList from '@/components/DocumentList';
+import AcervoCard from '@/components/admin/AcervoCard';
 import AdminEnquadramentos from '@/components/admin/AdminEnquadramentos';
 import AdminProvedores from '@/components/admin/AdminProvedores';
 import AdminUso from '@/components/admin/AdminUso';
 import AdminLimites from '@/components/admin/AdminLimites';
+import Icone, { type NomeIcone } from '@/components/ui/Icone';
 
 /**
- * Master dashboard: documents, enforcement codes, AI providers, usage and limits
+ * Master dashboard: document bases (CTB and POP-PMSC), enforcement codes,
+ * AI providers, usage and limits
  */
 
 interface DashboardStats {
@@ -19,15 +23,34 @@ interface DashboardStats {
   lastUpdated: string | null;
 }
 
-type Aba = 'documentos' | 'enquadramentos' | 'provedores' | 'uso' | 'limites';
+type Aba = 'documentos' | 'pop' | 'enquadramentos' | 'provedores' | 'uso' | 'limites';
 
-const ABAS: { id: Aba; label: string }[] = [
-  { id: 'documentos', label: '📄 Documentos' },
-  { id: 'enquadramentos', label: '🧾 Enquadramentos' },
-  { id: 'provedores', label: '🤖 Provedores de IA' },
-  { id: 'uso', label: '📈 Uso' },
-  { id: 'limites', label: '🛡️ Limites' },
+const ABAS: { id: Aba; label: string; icone: NomeIcone }[] = [
+  { id: 'documentos', label: 'Base CTB', icone: 'livro' },
+  { id: 'pop', label: 'POP-PMSC', icone: 'escudo' },
+  { id: 'enquadramentos', label: 'Enquadramentos', icone: 'lista' },
+  { id: 'provedores', label: 'Provedores de IA', icone: 'faisca' },
+  { id: 'uso', label: 'Uso', icone: 'relogio' },
+  { id: 'limites', label: 'Limites', icone: 'engrenagem' },
 ];
+
+const ROTULO_TIPO: Record<string, string> = {
+  lei: 'Lei',
+  resolucao: 'Resolução',
+  portaria: 'Portaria',
+  manual: 'Manual',
+  jurisprudencia: 'Jurisprudência',
+};
+
+function Secao({ titulo, descricao, children }: { titulo: string; descricao?: string; children: React.ReactNode }) {
+  return (
+    <section className="card card-pad">
+      <h2 className="text-lg font-semibold text-ink">{titulo}</h2>
+      {descricao && <p className="mt-1 text-sm text-muted">{descricao}</p>}
+      <div className="mt-5">{children}</div>
+    </section>
+  );
+}
 
 export default function AdminDashboard() {
   const router = useRouter();
@@ -59,8 +82,7 @@ export default function AdminDashboard() {
       try {
         const response = await fetch('/api/admin/stats');
         if (response.ok) {
-          const data = await response.json();
-          setStats(data);
+          setStats(await response.json());
         }
       } catch (error) {
         console.error('Error fetching stats:', error);
@@ -83,85 +105,105 @@ export default function AdminDashboard() {
     }
   };
 
-  const handleUploadSuccess = () => {
-    setRefreshTrigger((prev) => prev + 1);
-  };
+  const atualizar = () => setRefreshTrigger((prev) => prev + 1);
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="text-gray-600">Loading...</div>
-      </div>
+      <main className="page" role="status">
+        <span className="sr-only">Carregando…</span>
+        <div className="skeleton h-10 w-64" />
+        <div className="skeleton mt-6 h-40" />
+      </main>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <header className="bg-white shadow-sm border-b border-gray-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900">Painel Master</h1>
-            <p className="text-gray-600 text-sm mt-1">
-              CTB Agente · base legal, provedores de IA e limites
-            </p>
-          </div>
-          <button
-            onClick={handleLogout}
-            className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg text-sm font-medium transition"
-          >
-            Sair
-          </button>
+    <main className="page max-w-6xl">
+      <div className="flex flex-wrap items-start justify-between gap-4">
+        <div>
+          <p className="eyebrow">Administração</p>
+          <h1 className="page-title">Painel Master</h1>
+          <p className="page-lead">Bases de documentos, enquadramentos, provedores de IA, uso e limites.</p>
         </div>
+        <button onClick={handleLogout} className="btn-secondary">
+          <Icone nome="sair" tamanho={18} />
+          Sair
+        </button>
+      </div>
 
-        <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8" aria-label="Seções do painel">
-          <ul className="flex flex-wrap gap-1">
-            {ABAS.map((item) => (
-              <li key={item.id}>
-                <button
-                  onClick={() => setAba(item.id)}
-                  aria-current={aba === item.id ? 'page' : undefined}
-                  className={`px-4 py-3 text-sm font-semibold border-b-2 transition ${
-                    aba === item.id
-                      ? 'border-ctb-green text-ctb-green'
-                      : 'border-transparent text-gray-600 hover:text-gray-900'
-                  }`}
-                >
-                  {item.label}
-                </button>
-              </li>
-            ))}
-          </ul>
-        </nav>
-      </header>
+      <nav className="mt-6 -mx-4 overflow-x-auto px-4 sm:mx-0 sm:px-0" aria-label="Seções do painel">
+        <ul className="flex w-max gap-1 rounded-2xl border border-line bg-surface-2 p-1">
+          {ABAS.map((item) => (
+            <li key={item.id}>
+              <button
+                onClick={() => setAba(item.id)}
+                aria-current={aba === item.id ? 'page' : undefined}
+                className={`flex min-h-[40px] items-center gap-1.5 whitespace-nowrap rounded-xl px-3.5 text-sm font-semibold transition-colors ${
+                  aba === item.id ? 'bg-surface text-ink shadow-sm' : 'text-muted hover:text-ink'
+                }`}
+              >
+                <Icone nome={item.icone} tamanho={16} />
+                {item.label}
+              </button>
+            </li>
+          ))}
+        </ul>
+      </nav>
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {stats && (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-            <div className="bg-white rounded-lg shadow p-6">
-              <p className="text-gray-600 text-sm font-medium">Total de documentos</p>
-              <p className="text-4xl font-bold text-gray-900 mt-2">{stats.totalDocuments}</p>
-            </div>
-
-            {Object.entries(stats.byType).map(([type, count]) => (
-              <div key={type} className="bg-white rounded-lg shadow p-6">
-                <p className="text-gray-600 text-sm font-medium capitalize">{type}</p>
-                <p className="text-4xl font-bold text-gray-900 mt-2">{count}</p>
-              </div>
-            ))}
-          </div>
-        )}
-
+      <div className="mt-6 space-y-6">
         {aba === 'documentos' && (
           <>
-            <div className="bg-white rounded-lg shadow p-6 mb-8">
-              <h2 className="text-2xl font-bold text-gray-900 mb-6">Upload de documento</h2>
-              <AdminUploadForm onUploadSuccess={handleUploadSuccess} />
-            </div>
+            {stats && (
+              <dl className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+                <div className="stat bg-surface">
+                  <dt className="stat-label">Trechos do CTB</dt>
+                  <dd className="stat-value">{stats.totalDocuments.toLocaleString('pt-BR')}</dd>
+                </div>
+                {Object.entries(stats.byType).map(([type, count]) => (
+                  <div key={type} className="stat bg-surface">
+                    <dt className="stat-label">{ROTULO_TIPO[type] ?? type}</dt>
+                    <dd className="stat-value">{count.toLocaleString('pt-BR')}</dd>
+                  </div>
+                ))}
+              </dl>
+            )}
 
-            <div className="bg-white rounded-lg shadow p-6">
-              <h2 className="text-2xl font-bold text-gray-900 mb-6">Documentos</h2>
-              <DocumentList refreshTrigger={refreshTrigger} />
-            </div>
+            <Secao
+              titulo="Acervo incluído no app"
+              descricao="Documentos que já vêm com o CTB Agente. Um clique coloca o texto na base de consulta."
+            >
+              <AcervoCard onIndexado={atualizar} />
+            </Secao>
+
+            <Secao
+              titulo="Enviar documentos"
+              descricao="Leis, resoluções, portarias e manuais. A indexação corta por artigo e mantém só a redação vigente."
+            >
+              <AdminUploadForm colecao="ctb" onUploadSuccess={atualizar} />
+            </Secao>
+
+            <Secao titulo="Documentos indexados">
+              <DocumentList colecao="ctb" refreshTrigger={refreshTrigger} onChange={atualizar} />
+            </Secao>
+          </>
+        )}
+
+        {aba === 'pop' && (
+          <>
+            <Secao
+              titulo="Enviar POPs"
+              descricao="Procedimentos Operacionais Padrão da PMSC. A indexação corta por seção (finalidade, sequência das ações…) e guarda a página de cada trecho."
+            >
+              <AdminUploadForm colecao="pop" onUploadSuccess={atualizar} />
+            </Secao>
+
+            <Secao titulo="POPs indexados">
+              <DocumentList colecao="pop" refreshTrigger={refreshTrigger} onChange={atualizar} />
+              <Link href="/pop" className="btn-ghost btn-sm mt-4">
+                Testar a consulta aos POPs
+                <Icone nome="seta" tamanho={16} />
+              </Link>
+            </Secao>
           </>
         )}
 
@@ -169,7 +211,7 @@ export default function AdminDashboard() {
         {aba === 'provedores' && <AdminProvedores />}
         {aba === 'uso' && <AdminUso />}
         {aba === 'limites' && <AdminLimites />}
-      </main>
-    </div>
+      </div>
+    </main>
   );
 }

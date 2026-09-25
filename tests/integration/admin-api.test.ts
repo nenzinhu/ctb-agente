@@ -38,6 +38,8 @@ jest.mock('../../lib/db/client', () => {
     chain.order = () => chain;
     chain.limit = () => chain;
     chain.eq = () => chain;
+    chain.neq = () => chain;
+    chain.is = () => chain;
     chain.ilike = () => chain;
     chain.overlaps = () => chain;
     chain.gte = () => chain;
@@ -163,31 +165,58 @@ describe('Admin API', () => {
   });
 
   describe('GET /api/admin/documents', () => {
+    const listar = (query = '') => documentos(new NextRequest(`http://localhost/api/admin/documents${query}`));
+
     it('returns 401 when not authenticated', async () => {
-      const resposta = await documentos();
+      const resposta = await listar();
       expect(resposta.status).toBe(401);
     });
 
-    it('returns the document list when authenticated', async () => {
+    it('lists registered documents, legacy excerpt groups and pending vectors', async () => {
       await login(requisicao('/api/admin/login', { username: 'nenzinhu', password: 'x' }));
+      const documento = { id: 'd1', colecao: 'ctb', titulo: 'CTB compilado', trechos: 812, trechos_sem_vetor: 0 };
+      respostas.documentos = { data: [documento], error: null };
       respostas.dispositivos = {
-        data: [{ numero_dispositivo: 'art. 165', tipo: 'lei' }],
+        data: [
+          { norma_id: 'ctb', tipo: 'lei' },
+          { norma_id: 'ctb', tipo: 'lei' },
+          { norma_id: 'res-432', tipo: 'resolucao' },
+        ],
         error: null,
+        count: 3,
       };
 
-      const resposta = await documentos();
+      const resposta = await listar('?colecao=ctb');
       expect(resposta.status).toBe(200);
       await expect(resposta.json()).resolves.toMatchObject({
-        documents: [{ numero_dispositivo: 'art. 165', tipo: 'lei' }],
+        documentos: [documento],
+        legado: [
+          { norma_id: 'ctb', tipo: 'lei', trechos: 2 },
+          { norma_id: 'res-432', tipo: 'resolucao', trechos: 1 },
+        ],
+        pendentesVetor: 3,
+        migracaoPendente: false,
         bancoConfigurado: true,
       });
     });
 
+    it('flags a missing migration 008 instead of failing', async () => {
+      await login(requisicao('/api/admin/login', { username: 'nenzinhu', password: 'x' }));
+      respostas.documentos = {
+        data: null,
+        error: { code: 'PGRST205', message: "Could not find the table 'public.documentos' in the schema cache" },
+      };
+
+      const resposta = await listar();
+      expect(resposta.status).toBe(200);
+      await expect(resposta.json()).resolves.toMatchObject({ documentos: [], migracaoPendente: true });
+    });
+
     it('maps a database failure to 500', async () => {
       await login(requisicao('/api/admin/login', { username: 'nenzinhu', password: 'x' }));
-      respostas.dispositivos = { data: null, error: { message: 'boom' } };
+      respostas.documentos = { data: null, error: { message: 'boom' } };
 
-      const resposta = await documentos();
+      const resposta = await listar();
       expect(resposta.status).toBe(500);
     });
 
@@ -195,11 +224,11 @@ describe('Admin API', () => {
       await login(requisicao('/api/admin/login', { username: 'nenzinhu', password: 'x' }));
       dbConfigurado = false;
 
-      const resposta = await documentos();
+      const resposta = await listar();
       expect(resposta.status).toBe(200);
 
       const corpo = await resposta.json();
-      expect(corpo.documents).toEqual([]);
+      expect(corpo.documentos).toEqual([]);
       expect(corpo.bancoConfigurado).toBe(false);
     });
   });

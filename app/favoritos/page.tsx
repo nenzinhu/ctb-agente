@@ -3,6 +3,8 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import BotoesCartao from '@/components/BotoesCartao';
+import BadgeGravidade from '@/components/ui/BadgeGravidade';
+import Icone from '@/components/ui/Icone';
 import { formatarMulta } from '@/lib/response/format';
 import { clearFavorites, getFavorites, type CartaoFavorito } from '@/lib/favorites/favorites';
 
@@ -33,101 +35,93 @@ export default function FavoritosPage() {
   };
 
   return (
-    <main className="min-h-screen bg-gradient-to-b from-white to-gray-50 dark:from-gray-900 dark:to-gray-800 p-4">
-      <div className="mx-auto max-w-4xl py-8">
-        <div className="mb-8 flex flex-wrap items-start justify-between gap-3">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Favoritos</h1>
-            <p className="text-gray-600 dark:text-gray-400">
-              Cartões salvos neste aparelho. Nada é enviado para o servidor.
-            </p>
-          </div>
-
-          {favoritos && favoritos.length > 0 && (
-            <button
-              type="button"
-              onClick={limpar}
-              className="rounded-lg border border-gray-300 px-3 py-2 text-sm font-semibold text-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:text-gray-200 dark:hover:bg-gray-700"
-            >
-              Limpar tudo
-            </button>
-          )}
+    <main className="page-narrow">
+      <div className="flex flex-wrap items-end justify-between gap-3">
+        <div>
+          <p className="eyebrow">Seus cartões</p>
+          <h1 className="page-title">Favoritos</h1>
+          <p className="page-lead">Cartões salvos neste aparelho. Nada é enviado para o servidor.</p>
         </div>
 
-        {favoritos === null && (
-          <p className="py-12 text-center text-gray-500 dark:text-gray-400">Carregando…</p>
+        {favoritos && favoritos.length > 0 && (
+          <button type="button" onClick={limpar} className="btn-secondary btn-sm">
+            <Icone nome="lixeira" tamanho={16} />
+            Limpar tudo
+          </button>
         )}
+      </div>
 
-        {favoritos && favoritos.length === 0 && (
-          <div className="rounded border-l-4 border-amber-500 bg-amber-50 p-6 dark:bg-amber-900">
-            <h2 className="text-lg font-bold text-amber-900 dark:text-amber-100">
-              Nenhum favorito ainda
-            </h2>
-            <p className="mt-2 text-sm text-amber-900 dark:text-amber-100">
-              Depois de uma consulta, toque em “☆ Salvar” para guardar o cartão e encontrá-lo aqui.
-            </p>
-            <Link
-              href="/?form=1"
-              className="mt-4 inline-block rounded-lg bg-ctb-green px-5 py-2 font-semibold text-white hover:bg-ctb-green/90"
-            >
-              Fazer uma consulta
-            </Link>
-          </div>
-        )}
+      {favoritos === null && (
+        <div className="mt-6 space-y-3" role="status">
+          <span className="sr-only">Carregando…</span>
+          <div className="skeleton h-32" />
+          <div className="skeleton h-32" />
+        </div>
+      )}
 
-        <ul className="space-y-4">
-          {favoritos?.map(({ id, card, salvo_em }) => (
-            <li
-              key={id}
-              className="rounded-lg border border-gray-200 bg-white p-5 dark:border-gray-700 dark:bg-gray-800"
-            >
-              <Link
-                href={`/consulta?q=${encodeURIComponent(card.consulta)}`}
-                className="block hover:underline"
-              >
-                <h2 className="text-lg font-bold text-ctb-green">
+      {favoritos && favoritos.length === 0 && (
+        <div className="card card-pad mt-6 flex flex-col items-center py-12 text-center">
+          <span className="grid h-14 w-14 place-items-center rounded-2xl bg-brand-soft text-brand">
+            <Icone nome="estrela" tamanho={28} />
+          </span>
+          <h2 className="mt-4 text-lg font-semibold text-ink">Nenhum favorito ainda</h2>
+          <p className="mt-1 max-w-sm text-sm text-muted">
+            Depois de uma consulta, toque em “Salvar” no cartão para guardá-lo aqui, neste aparelho.
+          </p>
+          <Link href="/?form=1" className="btn-primary mt-5">
+            <Icone nome="busca" tamanho={18} />
+            Fazer uma consulta
+          </Link>
+        </div>
+      )}
+
+      {favoritos && favoritos.length > 0 && (
+        <ul className="mt-6 space-y-4">
+          {favoritos.map(({ id, card, salvo_em }) => (
+            <li key={id} className="card card-pad">
+              {card.enquadramento && (
+                <div className="mb-2 flex flex-wrap items-center gap-2">
+                  <span className="rounded-lg border border-line bg-surface-2 px-2 py-0.5 font-mono text-xs font-bold text-ink">
+                    {card.enquadramento.codigo_mbft}
+                  </span>
+                  <BadgeGravidade gravidade={card.enquadramento.gravidade} />
+                </div>
+              )}
+
+              <h2 className="text-lg font-semibold leading-snug">
+                <Link
+                  href={`/consulta?q=${encodeURIComponent(card.consulta)}`}
+                  className="rounded text-ink hover:text-brand hover:underline"
+                >
                   {card.enquadramento?.descricao ?? card.consulta}
-                </h2>
-              </Link>
+                </Link>
+              </h2>
 
               {card.enquadramento && (
-                <dl className="mt-2 flex flex-wrap gap-x-6 gap-y-1 text-sm text-gray-700 dark:text-gray-300">
-                  <div>
-                    <dt className="inline text-gray-500 dark:text-gray-400">Código: </dt>
-                    <dd className="inline font-mono font-semibold">
-                      {card.enquadramento.codigo_mbft}
-                    </dd>
+                <dl className="mt-3 grid grid-cols-2 gap-2 sm:max-w-sm">
+                  <div className="rounded-lg bg-surface-2 px-3 py-2">
+                    <dt className="stat-label">Pontos</dt>
+                    <dd className="font-semibold text-ink">{card.enquadramento.pontos}</dd>
                   </div>
-                  <div>
-                    <dt className="inline text-gray-500 dark:text-gray-400">Gravidade: </dt>
-                    <dd className="inline font-semibold">
-                      {card.enquadramento.gravidade.toUpperCase()}
-                    </dd>
-                  </div>
-                  <div>
-                    <dt className="inline text-gray-500 dark:text-gray-400">Pontos: </dt>
-                    <dd className="inline font-semibold">{card.enquadramento.pontos}</dd>
-                  </div>
-                  <div>
-                    <dt className="inline text-gray-500 dark:text-gray-400">Multa: </dt>
-                    <dd className="inline font-semibold">
-                      {formatarMulta(card.enquadramento.valor_multa)}
-                    </dd>
+                  <div className="rounded-lg bg-surface-2 px-3 py-2">
+                    <dt className="stat-label">Multa</dt>
+                    <dd className="font-semibold text-ink">{formatarMulta(card.enquadramento.valor_multa)}</dd>
                   </div>
                 </dl>
               )}
 
-              <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+              <p className="mt-3 flex items-center gap-1.5 text-xs text-muted">
+                <Icone nome="relogio" tamanho={14} className="shrink-0" />
                 Salvo em {formatarData(salvo_em)} · busca: {card.consulta}
               </p>
 
-              <div className="mt-4">
+              <div className="mt-4 border-t border-line pt-4">
                 <BotoesCartao card={card} onChange={atualizar} />
               </div>
             </li>
           ))}
         </ul>
-      </div>
+      )}
     </main>
   );
 }

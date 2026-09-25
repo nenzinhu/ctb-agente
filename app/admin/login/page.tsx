@@ -1,10 +1,11 @@
 'use client';
 
 import { useState } from 'react';
+import Icone from '@/components/ui/Icone';
 
 /**
  * Admin login page
- * Username: nenzinhu (hardcoded)
+ * Username: set on the server (hardcoded)
  * Password: hashed with bcrypt (from ADMIN_PASSWORD_HASH env var)
  */
 export default function LoginPage() {
@@ -49,66 +50,64 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-green-50 to-blue-50 px-4">
-      <div className="w-full max-w-md">
-        <div className="bg-white rounded-lg shadow-lg p-8">
-          <h1 className="text-3xl font-bold text-center text-gray-900 mb-2">
-            CTB Agente
-          </h1>
-          <p className="text-center text-gray-600 mb-8">Acesso do painel master</p>
+    <main className="mx-auto flex w-full max-w-md flex-col px-4 pb-28 pt-10 sm:pt-16">
+      <div className="card card-pad">
+        <span className="mx-auto grid h-12 w-12 place-items-center rounded-2xl bg-brand-soft text-brand">
+          <Icone nome="engrenagem" tamanho={24} />
+        </span>
+        <h1 className="mt-4 text-center text-2xl font-bold tracking-tight text-ink">Entrar no painel</h1>
+        <p className="mt-1 text-center text-sm text-muted">Acesso restrito ao master do CTB Agente.</p>
 
-          {error && (
-            <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-6">
-              {error}
-            </div>
-          )}
+        {error && (
+          <div className="alert-error mt-6" role="alert">
+            <Icone nome="alerta" className="mt-0.5 shrink-0 text-danger" />
+            <p>{error}</p>
+          </div>
+        )}
 
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <div>
-              <label htmlFor="username" className="block text-sm font-medium text-gray-700 mb-2">
-                Usuário
-              </label>
-              <input
-                id="username"
-                type="text"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-                disabled={isLoading}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none transition"
-                placeholder="nenzinhu"
-                autoFocus
-              />
-            </div>
+        <form onSubmit={handleSubmit} className="mt-6 space-y-4">
+          <div>
+            <label htmlFor="username" className="label">
+              Usuário
+            </label>
+            <input
+              id="username"
+              type="text"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              disabled={isLoading}
+              className="input"
+              autoComplete="username"
+              autoCapitalize="none"
+              spellCheck={false}
+              autoFocus
+            />
+          </div>
 
-            <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
-                Senha
-              </label>
-              <input
-                id="password"
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                disabled={isLoading}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none transition"
-                placeholder="••••••••"
-              />
-            </div>
+          <div>
+            <label htmlFor="password" className="label">
+              Senha
+            </label>
+            <input
+              id="password"
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              disabled={isLoading}
+              className="input"
+              autoComplete="current-password"
+            />
+          </div>
 
-            <button
-              type="submit"
-              disabled={isLoading || !username || !password}
-              className="w-full bg-green-600 hover:bg-green-700 disabled:bg-gray-400 text-white font-medium py-2 px-4 rounded-lg transition"
-            >
-              {isLoading ? 'Entrando…' : 'Entrar'}
-            </button>
-          </form>
+          <button type="submit" disabled={isLoading || !username || !password} className="btn-primary w-full text-base">
+            {isLoading ? 'Entrando…' : 'Entrar'}
+          </button>
+        </form>
 
-          <p className="text-center text-gray-500 text-sm mt-6">
-            A senha é definida por <code>ADMIN_PASSWORD_HASH</code> no servidor.
-          </p>
-        </div>
+        <p className="mt-6 text-center text-xs text-muted">
+          A senha é definida por <code className="font-mono">ADMIN_PASSWORD_HASH</code> no servidor.
+        </p>
       </div>
-    </div>
+    </main>
   );
 }

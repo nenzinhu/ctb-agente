@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
+import Icone from './ui/Icone';
 
 interface BotaoVozProps {
   onTranscricao: (texto: string) => void;
@@ -109,33 +110,27 @@ export default function BotaoVoz({ onTranscricao, maxSegundos = 60 }: BotaoVozPr
   const ocupado = estado === 'transcrevendo';
 
   return (
-    <div className="mt-2">
+    <div className="sm:w-auto">
       <button
         type="button"
         onClick={gravando ? parar : iniciar}
         disabled={ocupado}
         aria-pressed={gravando}
-        className={`w-full rounded-lg border-2 px-4 py-2 text-sm font-semibold transition-colors disabled:opacity-60 ${
-          gravando
-            ? 'border-red-600 bg-red-50 text-red-700'
-            : 'border-ctb-green text-ctb-green hover:bg-ctb-green/10'
-        }`}
+        className={`${gravando ? 'btn border border-danger bg-danger/10 text-danger' : 'btn-secondary'} w-full sm:w-auto`}
       >
-        {gravando
-          ? '⏹️ Parar e transcrever'
-          : ocupado
-            ? 'Transcrevendo…'
-            : '🎤 Ditar consulta por voz'}
+        <Icone nome={gravando ? 'x' : 'microfone'} tamanho={18} />
+        {gravando ? 'Parar e transcrever' : ocupado ? 'Transcrevendo…' : 'Ditar por voz'}
       </button>
 
       {gravando && (
-        <p className="mt-1 text-xs text-gray-600 dark:text-gray-300" role="status">
+        <p className="mt-1 flex items-center gap-1.5 text-xs text-danger" role="status">
+          <span className="h-2 w-2 animate-pulse rounded-full bg-danger" aria-hidden />
           Gravando… fale a consulta (máx. {maxSegundos}s).
         </p>
       )}
 
       {erro && (
-        <p className="mt-1 text-xs text-red-700" role="alert">
+        <p className="mt-1 text-xs text-danger" role="alert">
           {erro}
         </p>
       )}

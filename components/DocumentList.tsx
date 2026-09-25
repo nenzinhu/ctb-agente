@@ -1,318 +1,246 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { Dispositivo } from '@/lib/db/schema';
+import { useCallback, useEffect, useState } from 'react';
+import type { Colecao, DocumentoRegistro, DocumentosResposta, GrupoLegado } from '@/lib/ingestion/documents';
+import Icone from './ui/Icone';
 
 /**
- * Document list component with search, filter, and pagination
- * Displays documents from the dispositivos table
+ * Indexed documents of one collection: one row per uploaded file, with the
+ * actions that keep the base healthy (delete, legacy cleanup, vectors).
  */
 
 interface DocumentListProps {
+  colecao: Colecao;
   refreshTrigger?: number;
+  /** Called after anything that changes the base (delete). */
+  onChange?: () => void;
 }
 
-type SortField = 'numero_dispositivo' | 'data_publicacao' | 'tipo';
-type FilterType = '' | 'lei' | 'resolucao' | 'portaria' | 'jurisprudencia' | 'manual';
+function formatarData(iso: string): string {
+  const data = new Date(iso);
+  return Number.isNaN(data.getTime()) ? '' : data.toLocaleDateString('pt-BR');
+}
 
-export default function DocumentList({ refreshTrigger }: DocumentListProps) {
-  const [documents, setDocuments] = useState<Dispositivo[]>([]);
-  const [filteredDocuments, setFilteredDocuments] = useState<Dispositivo[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [filterType, setFilterType] = useState<FilterType>('');
-  const [sortField, setSortField] = useState<SortField>('data_publicacao');
-  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
-  const [bancoConfigurado, setBancoConfigurado] = useState(true);
+const FORMATO_ROTULO: Record<string, string> = { pdf: 'PDF', docx: 'DOCX', doc: 'DOC', md: 'MD', txt: 'TXT' };
 
-  const itemsPerPage = 20;
+export default function DocumentList({ colecao, refreshTrigger, onChange }: DocumentListProps) {
+  const [dados, setDados] = useState<DocumentosResposta | null>(null);
+  const [erro, setErro] = useState<string | null>(null);
+  const [aviso, setAviso] = useState<string | null>(null);
+  const [ocupado, setOcupado] = useState<string | null>(null);
+  const [busca, setBusca] = useState('');
+  const [vetores, setVetores] = useState<{ rodando: boolean; mensagem: string | null }>({ rodando: false, mensagem: null });
 
-  // Fetch documents
-  useEffect(() => {
-    const fetchDocuments = async () => {
-      try {
-        setIsLoading(true);
-        setError(null);
-
-        const response = await fetch('/api/admin/documents');
-        if (!response.ok) {
-          throw new Error('Failed to fetch documents');
-        }
-
-        const data = await response.json();
-        setDocuments(data.documents || []);
-        setBancoConfigurado(data.bancoConfigurado !== false);
-      } catch (err) {
-        console.error('Error fetching documents:', err);
-        setError('Não foi possível carregar os documentos.');
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchDocuments();
-  }, [refreshTrigger]);
-
-  // Filter and sort documents
-  useEffect(() => {
-    let filtered = [...documents];
-
-    // Apply search filter
-    if (searchTerm) {
-      const search = searchTerm.toLowerCase();
-      filtered = filtered.filter(
-        (doc) =>
-          doc.numero_dispositivo.toLowerCase().includes(search) ||
-          doc.texto.toLowerCase().includes(search)
-      );
-    }
-
-    // Apply type filter
-    if (filterType) {
-      filtered = filtered.filter((doc) => doc.tipo === filterType);
-    }
-
-    // Apply sorting
-    filtered.sort((a, b) => {
-      let aValue: string | number = '';
-      let bValue: string | number = '';
-
-      if (sortField === 'numero_dispositivo') {
-        aValue = a.numero_dispositivo;
-        bValue = b.numero_dispositivo;
-      } else if (sortField === 'data_publicacao') {
-        aValue = a.data_publicacao;
-        bValue = b.data_publicacao;
-      } else if (sortField === 'tipo') {
-        aValue = a.tipo;
-        bValue = b.tipo;
-      }
-
-      if (aValue < bValue) return sortOrder === 'asc' ? -1 : 1;
-      if (aValue > bValue) return sortOrder === 'asc' ? 1 : -1;
-      return 0;
-    });
-
-    setFilteredDocuments(filtered);
-    setCurrentPage(1); // Reset to first page when filtering
-  }, [documents, searchTerm, filterType, sortField, sortOrder]);
-
-  // Pagination
-  const totalPages = Math.ceil(filteredDocuments.length / itemsPerPage);
-  const startIndex = (currentPage - 1) * itemsPerPage;
-  const paginatedDocuments = filteredDocuments.slice(
-    startIndex,
-    startIndex + itemsPerPage
-  );
-
-  const handleSort = (field: SortField) => {
-    if (sortField === field) {
-      setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
-    } else {
-      setSortField(field);
-      setSortOrder('desc');
-    }
-  };
-
-  const formatDate = (dateString: string) => {
+  const carregar = useCallback(async () => {
     try {
-      return new Date(dateString).toLocaleDateString('pt-BR');
+      setErro(null);
+      const resposta = await fetch(`/api/admin/documents?colecao=${colecao}`);
+      if (!resposta.ok) throw new Error();
+      setDados((await resposta.json()) as DocumentosResposta);
     } catch {
-      return dateString;
+      setErro('Não foi possível carregar os documentos.');
+    }
+  }, [colecao]);
+
+  useEffect(() => {
+    void carregar();
+  }, [carregar, refreshTrigger]);
+
+  const excluir = async (alvo: { id: string; titulo: string } | GrupoLegado) => {
+    const ehDocumento = 'id' in alvo;
+    const nome = ehDocumento ? `"${alvo.titulo}"` : `os ${alvo.trechos} trechos antigos de "${alvo.norma_id}"`;
+    if (!window.confirm(`Excluir ${nome} da base? As consultas deixam de usar esse conteúdo.`)) return;
+
+    const chave = ehDocumento ? alvo.id : `legado:${alvo.norma_id}:${alvo.tipo}`;
+    setOcupado(chave);
+    setAviso(null);
+    try {
+      const query = ehDocumento
+        ? `id=${encodeURIComponent(alvo.id)}`
+        : `legado=${encodeURIComponent(alvo.norma_id)}&tipo=${encodeURIComponent(alvo.tipo)}`;
+      const resposta = await fetch(`/api/admin/documents?${query}`, { method: 'DELETE' });
+      const corpo = await resposta.json().catch(() => ({}));
+      if (!resposta.ok) throw new Error(corpo.message || corpo.error || 'Falha ao excluir.');
+      setAviso(`${ehDocumento ? alvo.titulo : `Trechos antigos de ${alvo.norma_id}`} excluído(s).`);
+      await carregar();
+      onChange?.();
+    } catch (error) {
+      setAviso(error instanceof Error ? error.message : 'Falha ao excluir.');
+    } finally {
+      setOcupado(null);
     }
   };
 
-  if (isLoading) {
+  const gerarVetores = async () => {
+    setVetores({ rodando: true, mensagem: 'Gerando vetores…' });
+    let total = 0;
+    try {
+      // Each call works ~40s; loop until nothing is left.
+      for (let rodada = 0; rodada < 50; rodada++) {
+        const resposta = await fetch('/api/admin/documents/vetores', { method: 'POST' });
+        const corpo = await resposta.json().catch(() => ({}));
+        total += Number(corpo.atualizados ?? 0);
+        if (!resposta.ok) throw new Error(corpo.message || corpo.erro || 'Falha ao gerar vetores.');
+        setVetores({ rodando: true, mensagem: `${total} vetor(es) gerado(s) · faltam ${corpo.restantes}` });
+        if (!corpo.restantes || Number(corpo.atualizados ?? 0) === 0) break;
+      }
+      setVetores({ rodando: false, mensagem: `${total} vetor(es) gerado(s).` });
+    } catch (error) {
+      setVetores({ rodando: false, mensagem: error instanceof Error ? error.message : 'Falha ao gerar vetores.' });
+    } finally {
+      await carregar();
+    }
+  };
+
+  if (erro) {
     return (
-      <div className="flex justify-center items-center py-12">
-        <div className="text-gray-600">Carregando documentos…</div>
+      <div className="alert-error" role="alert">
+        <Icone nome="alerta" className="mt-0.5 shrink-0 text-danger" />
+        <p>{erro}</p>
       </div>
     );
   }
 
-  if (error) {
+  if (!dados) {
     return (
-      <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
-        {error}
+      <div className="space-y-2" role="status">
+        <span className="sr-only">Carregando documentos…</span>
+        <div className="skeleton h-14" />
+        <div className="skeleton h-14" />
       </div>
     );
   }
+
+  const termo = busca.trim().toLowerCase();
+  const documentos: DocumentoRegistro[] = termo
+    ? dados.documentos.filter((d) => `${d.titulo} ${d.nome_arquivo} ${d.norma_id ?? ''}`.toLowerCase().includes(termo))
+    : dados.documentos;
 
   return (
-    <div className="w-full">
-      {!bancoConfigurado && (
-        <div className="mb-6 rounded-lg border border-amber-300 bg-amber-50 px-4 py-3 text-sm text-amber-900">
-          <strong>Banco de dados não configurado.</strong> Defina{' '}
-          <code>NEXT_PUBLIC_SUPABASE_URL</code>, <code>NEXT_PUBLIC_SUPABASE_ANON_KEY</code> e{' '}
-          <code>SUPABASE_SERVICE_ROLE_KEY</code> e aplique as migrations em{' '}
-          <code>scripts/migrations.sql</code> e <code>scripts/migrations-002-config.sql</code>.
+    <div className="space-y-4">
+      {!dados.bancoConfigurado && (
+        <div className="alert-warn">
+          <Icone nome="alerta" className="mt-0.5 shrink-0 text-warn" />
+          <p>
+            <strong>Banco de dados não configurado.</strong> Defina <code>NEXT_PUBLIC_SUPABASE_URL</code>,{' '}
+            <code>NEXT_PUBLIC_SUPABASE_ANON_KEY</code> e <code>SUPABASE_SERVICE_ROLE_KEY</code> e aplique as migrations em{' '}
+            <code>scripts/</code>.
+          </p>
         </div>
       )}
 
-      <div className="mb-6 space-y-4">
-        <div>
-          <label htmlFor="search" className="block text-sm font-medium text-gray-700 mb-2">
-            Buscar
-          </label>
+      {dados.migracaoPendente && (
+        <div className="alert-warn">
+          <Icone nome="base" className="mt-0.5 shrink-0 text-warn" />
+          <p>
+            <strong>Falta a migration 008.</strong> Rode <code>scripts/migrations-008-rag-indexacao.sql</code> no SQL Editor
+            do Supabase para listar e gerenciar documentos, corrigir a busca e habilitar a base de POPs.
+          </p>
+        </div>
+      )}
+
+      {dados.pendentesVetor > 0 && (
+        <div className="panel flex flex-col gap-3 p-4 sm:flex-row sm:items-center">
+          <Icone nome="faisca" className="shrink-0 text-brand" />
+          <p className="flex-1 text-sm text-ink">
+            <strong>{dados.pendentesVetor} trecho(s) sem vetor semântico.</strong>{' '}
+            <span className="text-muted">
+              A busca por palavras já os encontra; os vetores ajudam perguntas feitas com outras palavras.
+            </span>
+            {vetores.mensagem && <span className="mt-1 block text-xs text-muted" role="status">{vetores.mensagem}</span>}
+          </p>
+          <button type="button" className="btn-secondary btn-sm" onClick={gerarVetores} disabled={vetores.rodando}>
+            {vetores.rodando ? 'Gerando…' : 'Gerar vetores pendentes'}
+          </button>
+        </div>
+      )}
+
+      {aviso && (
+        <p className="text-sm text-muted" role="status">
+          {aviso}
+        </p>
+      )}
+
+      {dados.documentos.length > 5 && (
+        <label className="block">
+          <span className="sr-only">Buscar documento</span>
           <input
-            id="search"
-            type="text"
-            placeholder="Buscar por número do dispositivo ou conteúdo…"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none"
+            type="search"
+            value={busca}
+            onChange={(e) => setBusca(e.target.value)}
+            placeholder="Buscar por título, arquivo ou norma…"
+            className="input"
           />
+        </label>
+      )}
+
+      {documentos.length === 0 && dados.legado.length === 0 ? (
+        <div className="rounded-2xl border border-dashed border-line px-6 py-10 text-center">
+          <Icone nome="arquivo" tamanho={28} className="mx-auto text-muted" />
+          <p className="mt-2 font-semibold text-ink">Nenhum documento indexado ainda</p>
+          <p className="mt-1 text-sm text-muted">Envie um arquivo acima para começar.</p>
         </div>
+      ) : (
+        <ul className="divide-y divide-line overflow-hidden rounded-2xl border border-line">
+          {documentos.map((doc) => (
+            <li key={doc.id} className="flex flex-col gap-3 bg-surface p-4 sm:flex-row sm:items-center">
+              <span className="hidden h-10 w-10 shrink-0 place-items-center rounded-xl bg-brand-soft text-brand sm:grid">
+                <Icone nome="arquivo" />
+              </span>
+              <div className="min-w-0 flex-1">
+                <p className="truncate font-semibold text-ink" title={doc.titulo}>
+                  {doc.titulo}
+                </p>
+                <p className="mt-0.5 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted">
+                  <span className="badge-neutral">{FORMATO_ROTULO[doc.formato] ?? doc.formato}</span>
+                  {doc.norma_id && <span>norma: {doc.norma_id}</span>}
+                  {doc.paginas ? <span>{doc.paginas} pág.</span> : null}
+                  <span>{doc.trechos} trechos</span>
+                  {doc.trechos_sem_vetor > 0 && <span className="text-warn">{doc.trechos_sem_vetor} sem vetor</span>}
+                  <span>{formatarData(doc.criado_em)}</span>
+                </p>
+              </div>
+              <button
+                type="button"
+                className="btn-danger btn-sm self-start sm:self-auto"
+                onClick={() => excluir(doc)}
+                disabled={ocupado === doc.id}
+              >
+                <Icone nome="lixeira" tamanho={15} />
+                {ocupado === doc.id ? 'Excluindo…' : 'Excluir'}
+              </button>
+            </li>
+          ))}
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <label htmlFor="filter" className="block text-sm font-medium text-gray-700 mb-2">
-              Filtrar por tipo
-            </label>
-            <select
-              id="filter"
-              value={filterType}
-              onChange={(e) => setFilterType(e.target.value as FilterType)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none"
-            >
-              <option value="">Todos os tipos</option>
-              <option value="lei">Lei</option>
-              <option value="resolucao">Resolução</option>
-              <option value="portaria">Portaria</option>
-              <option value="jurisprudencia">Jurisprudência</option>
-              <option value="manual">Manual</option>
-            </select>
-          </div>
-
-          <div>
-            <label htmlFor="sort" className="block text-sm font-medium text-gray-700 mb-2">
-              Ordenar por
-            </label>
-            <select
-              id="sort"
-              value={sortField}
-              onChange={(e) => handleSort(e.target.value as SortField)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none"
-            >
-              <option value="numero_dispositivo">Número do dispositivo</option>
-              <option value="data_publicacao">Data de publicação</option>
-              <option value="tipo">Tipo</option>
-            </select>
-          </div>
-        </div>
-      </div>
-
-      <div className="bg-white rounded-lg shadow overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead className="bg-gray-50 border-b border-gray-200">
-              <tr>
-                <th
-                  className="px-6 py-3 text-left text-sm font-semibold text-gray-900 cursor-pointer hover:bg-gray-100"
-                  onClick={() => handleSort('numero_dispositivo')}
-                >
-                  <div className="flex items-center gap-2">
-                    Dispositivo
-                    {sortField === 'numero_dispositivo' && (
-                      <span>{sortOrder === 'asc' ? '↑' : '↓'}</span>
-                    )}
-                  </div>
-                </th>
-                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">
-                  Tipo
-                </th>
-                <th
-                  className="px-6 py-3 text-left text-sm font-semibold text-gray-900 cursor-pointer hover:bg-gray-100"
-                  onClick={() => handleSort('data_publicacao')}
-                >
-                  <div className="flex items-center gap-2">
-                    Publicação
-                    {sortField === 'data_publicacao' && (
-                      <span>{sortOrder === 'asc' ? '↑' : '↓'}</span>
-                    )}
-                  </div>
-                </th>
-                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">
-                  Vigência
-                </th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-200">
-              {paginatedDocuments.length === 0 ? (
-                <tr>
-                  <td colSpan={4} className="px-6 py-12 text-center text-gray-500">
-                    Nenhum documento encontrado
-                  </td>
-                </tr>
-              ) : (
-                paginatedDocuments.map((doc) => (
-                  <tr key={doc.id} className="hover:bg-gray-50">
-                    <td className="px-6 py-4 text-sm text-gray-900 font-medium">
-                      {doc.numero_dispositivo}
-                    </td>
-                    <td className="px-6 py-4 text-sm text-gray-600">
-                      <span className="inline-block px-2 py-1 bg-blue-100 text-blue-800 rounded text-xs font-medium">
-                        {doc.tipo}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 text-sm text-gray-600">
-                      {formatDate(doc.data_publicacao)}
-                    </td>
-                    <td className="px-6 py-4 text-sm text-gray-600">
-                      {formatDate(doc.data_vigencia_inicio)}
-                    </td>
-                  </tr>
-                ))
-              )}
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      {filteredDocuments.length > 0 && (
-        <div className="mt-6 flex items-center justify-between">
-          <div className="text-sm text-gray-600">
-            Mostrando {startIndex + 1} a{' '}
-            {Math.min(startIndex + itemsPerPage, filteredDocuments.length)} de{' '}
-            {filteredDocuments.length} documentos
-          </div>
-
-          <div className="flex gap-2">
-            <button
-              onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
-              disabled={currentPage === 1}
-              className="px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              Anterior
-            </button>
-
-            <div className="flex items-center gap-2">
-              {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+          {dados.legado.map((grupo) => {
+            const chave = `legado:${grupo.norma_id}:${grupo.tipo}`;
+            return (
+              <li key={chave} className="flex flex-col gap-3 bg-warn/5 p-4 sm:flex-row sm:items-center">
+                <span className="hidden h-10 w-10 shrink-0 place-items-center rounded-xl bg-warn/10 text-warn sm:grid">
+                  <Icone nome="alerta" />
+                </span>
+                <div className="min-w-0 flex-1">
+                  <p className="font-semibold text-ink">
+                    Trechos antigos · {grupo.norma_id} ({grupo.tipo})
+                  </p>
+                  <p className="mt-0.5 text-xs text-muted">
+                    {grupo.trechos} trechos indexados antes da correção (cortes no meio de artigos, rótulos errados). Exclua e
+                    reenvie o documento para usar a nova indexação.
+                  </p>
+                </div>
                 <button
-                  key={page}
-                  onClick={() => setCurrentPage(page)}
-                  className={`px-3 py-2 rounded-lg text-sm font-medium ${
-                    currentPage === page
-                      ? 'bg-green-600 text-white'
-                      : 'border border-gray-300 text-gray-700 hover:bg-gray-50'
-                  }`}
+                  type="button"
+                  className="btn-danger btn-sm self-start sm:self-auto"
+                  onClick={() => excluir(grupo)}
+                  disabled={ocupado === chave}
                 >
-                  {page}
+                  <Icone nome="lixeira" tamanho={15} />
+                  {ocupado === chave ? 'Excluindo…' : 'Excluir'}
                 </button>
-              ))}
-            </div>
-
-            <button
-              onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
-              disabled={currentPage === totalPages}
-              className="px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              Próxima
-            </button>
-          </div>
-        </div>
+              </li>
+            );
+          })}
+        </ul>
       )}
     </div>
   );

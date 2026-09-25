@@ -1,18 +1,49 @@
 import { databaseConfigured, supabase, supabaseAdmin } from './client';
 import type { Dispositivo, Enquadramento } from './schema';
+import { expandirSinonimos } from '@/lib/search/sinonimos';
 
 /**
  * Extract the "art. N" token from a free-text legal reference
- * @param referencia - e.g. "art. 181 XVII do CTB"
- * @returns Article token such as "art. 181", or null
+ * @param referencia - e.g. "art. 181 XVII do CTB", "art. 165-A"
+ * @returns Article token such as "art. 181" or "art. 165-a", or null
  */
 export function extractArtigo(referencia: string): string | null {
   const match = (referencia || '')
     .toLowerCase()
     .normalize('NFD')
     .replace(/[\u0300-\u036f]/g, '')
-    .match(/art\.?\s*\d+/);
-  return match ? match[0].replace(/\s+/g, ' ').replace(/art\.?\s*/, 'art. ') : null;
+    .match(/art\.?\s*(\d+)(?:-([a-z])(?![a-z]))?/);
+  return match ? `art. ${match[1]}${match[2] ? `-${match[2]}` : ''}` : null;
+}
+
+/** Escapes LIKE wildcards so a user-typed value matches literally. */
+function literalLike(valor: string): string {
+  return valor.replace(/[\\%_]/g, (c) => `\\${c}`);
+}
+
+/** "art. 165-B" → [165, "b"]; labels without an article number go last. */
+function chaveDoArtigo(numero: string): [number, string] {
+  const match = numero.toLowerCase().match(/(\d+)(?:-([a-z])(?![a-z]))?/);
+  return match ? [Number(match[1]), match[2] ?? ''] : [Number.MAX_SAFE_INTEGER, ''];
+}
+
+/**
+ * The law's reading order. Rows read from the table carry `ordem`
+ * (migration 008): among excerpts of the same article, the one that opens it
+ * is the canonical text. Search results and older rows have no order, so the
+ * label decides: art. 165 < art. 165-A < art. 165-B < art. 166.
+ */
+export function porOrdem(a: Dispositivo, b: Dispositivo): number {
+  const ordemA = (a as Dispositivo & { ordem?: number | null }).ordem ?? Number.MAX_SAFE_INTEGER;
+  const ordemB = (b as Dispositivo & { ordem?: number | null }).ordem ?? Number.MAX_SAFE_INTEGER;
+  if (ordemA !== ordemB) return ordemA - ordemB;
+  const [numeroA, letraA] = chaveDoArtigo(a.numero_dispositivo);
+  const [numeroB, letraB] = chaveDoArtigo(b.numero_dispositivo);
+  return (
+    numeroA - numeroB ||
+    letraA.localeCompare(letraB) ||
+    a.numero_dispositivo.length - b.numero_dispositivo.length
+  );
 }
 
 /**
@@ -45,14 +76,16 @@ export async function getEnquadramentoByCodigo(codigo: string): Promise<Enquadra
 export async function getDispositivoByNumero(numero: string): Promise<Dispositivo | null> {
   if (!databaseConfigured) return null;
   try {
+    // Case-insensitive ("art. 165-a" typed vs "art. 165-A" stored), and a long
+    // article may be split in several rows under the same label.
     const { data, error } = await supabase
       .from('dispositivos')
       .select('*')
-      .eq('numero_dispositivo', numero)
-      .maybeSingle();
+      .ilike('numero_dispositivo', literalLike(numero.trim()))
+      .limit(20);
 
-    if (error || !data) return null;
-    return data as Dispositivo;
+    if (error || !data || data.length === 0) return null;
+    return [...(data as Dispositivo[])].sort(porOrdem)[0];
   } catch (error) {
     console.error('getDispositivoByNumero failed:', error);
     return null;
@@ -77,27 +110,30 @@ export async function findDispositivoByReferencia(
     const { data, error } = await supabase
       .from('dispositivos')
       .select('*')
-      .ilike('numero_dispositivo', `%${artigo}%`)
+      .ilike('numero_dispositivo', `%${literalLike(artigo)}%`)
       .limit(50);
 
     if (error || !data || data.length === 0) return null;
 
-    const normalizado = referencia.toLowerCase();
-    const incisos = [...normalizado.matchAll(/\b(inciso\s+)?([ivxl]+)\b/g)].map((m) => m[2]);
+    // "art. 16" must not pick "art. 165", nor "art. 165" pick "art. 165-A".
+    const candidatos = (data as Dispositivo[]).filter((d) => extractArtigo(d.numero_dispositivo) === artigo);
+    if (candidatos.length === 0) return null;
 
-    const pontuado = (data as Dispositivo[]).map((d) => {
-      const numero = d.numero_dispositivo.toLowerCase();
+    const normalizado = referencia.toLowerCase().replace(/\bdo ctb\b/g, '');
+    const incisos = [...normalizado.matchAll(/\b(?:inciso\s+)?([ivxl]+)\b/g)].map((m) => m[1].toUpperCase());
+
+    const pontuado = candidatos.map((d) => {
       let pontos = 0;
-      if (numero.includes(artigo)) pontos += 10;
       for (const inciso of incisos) {
-        if (numero.includes(inciso)) pontos += 5;
+        // The label names the inciso an excerpt starts at ("art. 181 XVII");
+        // the text tells which incisos it contains ("XVII - em local…").
+        if (new RegExp(`\\s${inciso}$`).test(d.numero_dispositivo)) pontos += 10;
+        else if (new RegExp(`(^|\\n)${inciso}\\s*[-–—]`).test(d.texto)) pontos += 5;
       }
-      // Prefer the most specific row when nothing else distinguishes them
-      pontos += Math.min(numero.length, 60) / 100;
       return { dispositivo: d, pontos };
     });
 
-    pontuado.sort((a, b) => b.pontos - a.pontos);
+    pontuado.sort((a, b) => b.pontos - a.pontos || porOrdem(a.dispositivo, b.dispositivo));
     return pontuado[0]?.dispositivo ?? null;
   } catch (error) {
     console.error('findDispositivoByReferencia failed:', error);
@@ -115,7 +151,7 @@ export async function searchDispositivos(query: string, limit = 5): Promise<Disp
   if (!databaseConfigured) return [];
   try {
     const { data, error } = await supabase.rpc('search_dispositivos_tsvector', {
-      query_text: query,
+      query_text: expandirSinonimos(query),
       limit_count: limit,
     });
 

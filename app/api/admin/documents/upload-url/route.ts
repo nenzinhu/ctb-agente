@@ -7,29 +7,22 @@ import { z } from 'zod';
 import { validateSession } from '@/lib/auth/session';
 import { databaseConfigured, supabaseAdmin } from '@/lib/db/client';
 import { DOCUMENTS_BUCKET } from '@/lib/ingestion/storage';
-
-const TYPE_BY_EXTENSION: Record<string, string> = {
-  pdf: 'application/pdf',
-  docx: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-  txt: 'text/plain',
-};
-
-const ALLOWED_TYPES = Object.values(TYPE_BY_EXTENSION);
+import { FORMATOS_ACEITOS_TEXTO, mimeParaEnvio } from '@/lib/ingestion/formats';
 
 /**
- * The browser's MIME for a file is often empty or generic on Windows
- * (no registered handler for .docx, etc.). Trust a known extension then.
- * @returns An allowed content type, or null when neither source is accepted
+ * The content type is decided by the extension: the browser's MIME is often
+ * empty or generic on Windows (no registered handler for .docx), and the
+ * parser picks the format by extension/content anyway.
+ * @returns An allowed content type, or null when the file is not accepted
  */
-function resolveContentType(fileName: string, contentType: string): string | null {
-  if (ALLOWED_TYPES.includes(contentType)) return contentType;
-  const ext = fileName.toLowerCase().split('.').pop() ?? '';
-  return TYPE_BY_EXTENSION[ext] ?? null;
+function resolveContentType(fileName: string): string | null {
+  return mimeParaEnvio(fileName);
 }
 
 const RequestSchema = z.object({
   fileName: z.string().min(1).max(255),
-  contentType: z.string().min(1),
+  // Informational only: the extension decides (see resolveContentType).
+  contentType: z.string().optional(),
 });
 
 /**
@@ -83,12 +76,12 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  const contentType = resolveContentType(parsed.data.fileName, parsed.data.contentType);
+  const contentType = resolveContentType(parsed.data.fileName);
   if (!contentType) {
     return NextResponse.json(
       {
         error: 'invalid_type',
-        message: `Tipo não aceito: ${parsed.data.contentType}. Aceitos: PDF, DOCX, TXT.`,
+        message: `Tipo não aceito: "${parsed.data.fileName}". Aceitos: ${FORMATOS_ACEITOS_TEXTO}.`,
       },
       { status: 400 }
     );

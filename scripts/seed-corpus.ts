@@ -217,20 +217,38 @@ const JURISPRUDENCIA = [
 ];
 
 /**
- * Insert the sample corpus, replacing rows with the same key
+ * Insert the sample corpus: new provisions only, the other tables replaced by key
  */
 async function seed(): Promise<void> {
   console.log('⚠️  Populando a base com DADOS DE EXEMPLO. Revise códigos e valores antes de usar.');
 
-  const { error: erroDispositivos } = await supabase
+  // numero_dispositivo is no longer unique (migrations 007/008), so there is
+  // no ON CONFLICT target: insert only the labels the base doesn't have yet.
+  // Re-running is harmless, and a real text already indexed (e.g. the CTB
+  // from the panel) is never shadowed by a sample one.
+  const { data: existentes, error: erroLeitura } = await supabase
     .from('dispositivos')
-    .upsert(DISPOSITIVOS, { onConflict: 'numero_dispositivo' });
+    .select('numero_dispositivo')
+    .in(
+      'numero_dispositivo',
+      DISPOSITIVOS.map((d) => d.numero_dispositivo)
+    );
 
-  if (erroDispositivos) {
-    console.error('❌ Falha ao inserir dispositivos:', erroDispositivos.message);
+  if (erroLeitura) {
+    console.error('❌ Falha ao ler dispositivos:', erroLeitura.message);
     process.exit(1);
   }
-  console.log(`✅ ${DISPOSITIVOS.length} dispositivos inseridos/atualizados.`);
+
+  const jaExistem = new Set((existentes ?? []).map((d) => d.numero_dispositivo as string));
+  const novos = DISPOSITIVOS.filter((d) => !jaExistem.has(d.numero_dispositivo));
+  if (novos.length > 0) {
+    const { error: erroDispositivos } = await supabase.from('dispositivos').insert(novos);
+    if (erroDispositivos) {
+      console.error('❌ Falha ao inserir dispositivos:', erroDispositivos.message);
+      process.exit(1);
+    }
+  }
+  console.log(`✅ ${novos.length} dispositivos inseridos (${DISPOSITIVOS.length - novos.length} já existiam).`);
 
   const { error: erroEnquadramentos } = await supabase
     .from('enquadramentos')

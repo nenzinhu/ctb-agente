@@ -16,6 +16,8 @@ const nextConfig: NextConfig = {
       './node_modules/pdfjs-dist/cmaps/**/*',
       './node_modules/pdfjs-dist/standard_fonts/**/*',
     ],
+    // lib/ingestion/acervo.ts reads the bundled documents from disk.
+    '/api/admin/acervo': ['./data/acervo/**/*'],
   },
 };
 

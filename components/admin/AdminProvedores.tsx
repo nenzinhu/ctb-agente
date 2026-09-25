@@ -165,11 +165,11 @@ export default function AdminProvedores() {
   const nomePreferido = providers.find((p) => p.id === preferencia?.providerId)?.nome;
 
   return (
-    <div className="bg-white rounded-lg shadow p-6 space-y-4">
+    <div className="card p-6 space-y-4">
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div className="flex-1 min-w-[260px]">
-          <h2 className="text-xl font-bold text-gray-900">Provedores de IA (gratuitos)</h2>
-          <p className="text-sm text-gray-600 mt-1">
+          <h2 className="text-xl font-bold text-ink">Provedores de IA (gratuitos)</h2>
+          <p className="text-sm text-muted mt-1">
             Escolha o modelo que a IA usa primeiro. Se ele falhar, os outros provedores configurados
             assumem nesta ordem, cada um com o seu modelo padrão.
           </p>
@@ -177,14 +177,14 @@ export default function AdminProvedores() {
         <button
           onClick={testarTodos}
           disabled={progresso !== null}
-          className="px-4 py-2 rounded bg-ctb-green text-white text-sm font-semibold hover:opacity-90 disabled:opacity-60"
+          className="px-4 py-2 rounded bg-brand text-white text-sm font-semibold hover:opacity-90 disabled:opacity-60"
         >
           {progresso ? `Testando ${progresso.feitos}/${progresso.total}…` : 'Testar todos os modelos'}
         </button>
       </div>
 
-      <div className="rounded-lg border border-gray-200 bg-gray-50 p-3 text-sm flex flex-wrap items-center gap-3">
-        <span className="text-gray-700">
+      <div className="rounded-lg border border-line bg-surface-2 p-3 text-sm flex flex-wrap items-center gap-3">
+        <span className="text-muted">
           Em uso:{' '}
           <strong>
             {preferencia ? `${nomePreferido ?? preferencia.providerId} — ${preferencia.modelo}` : 'ordem padrão'}
@@ -193,7 +193,7 @@ export default function AdminProvedores() {
         {preferencia && (
           <button
             onClick={() => salvarPreferencia(null)}
-            className="text-xs underline text-gray-600 hover:text-gray-900"
+            className="text-xs underline text-muted hover:text-ink"
           >
             voltar à ordem padrão
           </button>
@@ -201,12 +201,12 @@ export default function AdminProvedores() {
       </div>
 
       {erro && (
-        <p className="text-sm text-red-700" role="alert">
+        <p className="text-sm text-danger" role="alert">
           {erro}
         </p>
       )}
       {aviso && (
-        <p className="text-sm text-green-700" role="status">
+        <p className="text-sm text-success" role="status">
           {aviso}
         </p>
       )}
@@ -223,14 +223,14 @@ export default function AdminProvedores() {
             .filter((p): p is PingResult => Boolean(p));
 
           return (
-            <li key={provider.id} className="border border-gray-200 rounded-lg p-4 space-y-3">
+            <li key={provider.id} className="border border-line rounded-lg p-4 space-y-3">
               <div className="flex flex-wrap items-center gap-3">
-                <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-ctb-green text-white font-bold">
+                <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-brand text-white font-bold">
                   {provider.ordem}
                 </span>
                 <div className="flex-1 min-w-[200px]">
-                  <p className="font-semibold text-gray-900">{provider.nome}</p>
-                  <p className="text-xs text-gray-500">
+                  <p className="font-semibold text-ink">{provider.nome}</p>
+                  <p className="text-xs text-muted">
                     {provider.papel} · variável {provider.envVar}
                     {provider.cadastro && (
                       <>
@@ -239,7 +239,7 @@ export default function AdminProvedores() {
                           href={provider.cadastro}
                           target="_blank"
                           rel="noreferrer"
-                          className="underline hover:text-gray-800"
+                          className="underline hover:text-ink"
                         >
                           criar chave grátis
                         </a>
@@ -247,11 +247,7 @@ export default function AdminProvedores() {
                     )}
                   </p>
                 </div>
-                <span
-                  className={`rounded px-2 py-1 text-xs font-semibold ${
-                    provider.configurado ? 'bg-green-100 text-green-800' : 'bg-gray-200 text-gray-700'
-                  }`}
-                >
+                <span className={provider.configurado ? 'badge bg-success/10 text-success' : 'badge-neutral'}>
                   {provider.configurado ? 'configurado' : 'sem chave'}
                 </span>
               </div>
@@ -264,7 +260,7 @@ export default function AdminProvedores() {
                   id={`modelo-${provider.id}`}
                   value={modelo}
                   onChange={(e) => setSelecionado((atual) => ({ ...atual, [provider.id]: e.target.value }))}
-                  className="flex-1 min-w-[220px] rounded-md border border-gray-300 px-2 py-1.5 text-sm"
+                  className="flex-1 min-w-[220px] rounded-md border border-line px-2 py-1.5 text-sm"
                 >
                   {opcoes.map((m) => (
                     <option key={m} value={m}>
@@ -275,7 +271,7 @@ export default function AdminProvedores() {
                 <button
                   onClick={() => testarModelo(provider.id, modelo)}
                   disabled={testando.has(chave(provider.id, modelo))}
-                  className="px-3 py-1.5 rounded border border-ctb-green text-ctb-green text-sm font-semibold hover:bg-ctb-green/10 disabled:opacity-60"
+                  className="px-3 py-1.5 rounded border border-brand text-brand text-sm font-semibold hover:bg-brand/10 disabled:opacity-60"
                 >
                   {testando.has(chave(provider.id, modelo)) ? 'Testando…' : 'Testar'}
                 </button>
@@ -283,14 +279,14 @@ export default function AdminProvedores() {
                   onClick={() => salvarPreferencia({ providerId: provider.id, modelo })}
                   disabled={!provider.configurado || emUso}
                   title={provider.configurado ? undefined : `Defina ${provider.envVar} primeiro`}
-                  className="px-3 py-1.5 rounded bg-ctb-green text-white text-sm font-semibold hover:opacity-90 disabled:opacity-50"
+                  className="px-3 py-1.5 rounded bg-brand text-white text-sm font-semibold hover:opacity-90 disabled:opacity-50"
                 >
                   {emUso ? 'Em uso' : 'Usar este'}
                 </button>
                 {provider.configurado && (
                   <button
                     onClick={() => verCatalogo(provider.id)}
-                    className="text-xs underline text-gray-600 hover:text-gray-900"
+                    className="text-xs underline text-muted hover:text-ink"
                   >
                     ver todos os modelos grátis
                   </button>
@@ -298,13 +294,13 @@ export default function AdminProvedores() {
               </div>
 
               {vivo && (
-                <p className={`text-xs ${vivo.erro ? 'text-red-700' : 'text-gray-500'}`}>
+                <p className={`text-xs ${vivo.erro ? 'text-danger' : 'text-muted'}`}>
                   {vivo.erro ?? `${vivo.modelos.length} modelos grátis no catálogo atual — escolha na lista acima.`}
                 </p>
               )}
 
               {ping && (
-                <p className={`text-sm ${ping.ok ? 'text-green-700' : 'text-red-700'}`} role="status">
+                <p className={`text-sm ${ping.ok ? 'text-success' : 'text-danger'}`} role="status">
                   {ping.ok
                     ? `✅ ${ping.modeloUsado} respondeu em ${ping.latenciaMs} ms ("${ping.resposta}")`
                     : `❌ ${ping.modeloUsado}: ${ping.erro}`}
@@ -314,7 +310,7 @@ export default function AdminProvedores() {
               {resultados.length > 1 && (
                 <ul className="text-xs space-y-0.5">
                   {resultados.map((r) => (
-                    <li key={r.modeloUsado} className={r.ok ? 'text-green-700' : 'text-red-700'}>
+                    <li key={r.modeloUsado} className={r.ok ? 'text-success' : 'text-danger'}>
                       {r.ok ? '✅' : '❌'} {r.modeloUsado} —{' '}
                       {r.ok ? `${r.latenciaMs} ms` : r.erro}
                     </li>

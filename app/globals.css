@@ -2,51 +2,242 @@
 @tailwind components;
 @tailwind utilities;
 
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
+/* ---- Design tokens ----
+   RGB channels so Tailwind can apply opacity (bg-brand/10). Light by
+   default, dark with the system preference, "modo sol" (high contrast for
+   use under sunlight) via data-tema="sol" on <html>. */
+:root {
+  --bg: 245 247 246;
+  --surface: 255 255 255;
+  --surface-2: 240 245 242;
+  --line: 222 229 225;
+  --ink: 14 26 21;
+  --muted: 84 100 93;
+  --brand: 26 95 63; /* #1a5f3f — verde CTB */
+  --brand-strong: 17 72 47;
+  --brand-soft: 226 243 234;
+  --brand-ink: 255 255 255;
+  --accent: 245 179 1; /* âmbar sinalização */
+  --danger: 190 38 38;
+  --warn: 180 110 0;
+  --info: 2 110 170;
+  --success: 22 128 72;
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-tema='sol']) {
+    --bg: 9 16 13;
+    --surface: 17 26 22;
+    --surface-2: 23 34 29;
+    --line: 36 50 44;
+    --ink: 231 239 235;
+    --muted: 150 168 160;
+    --brand: 74 190 132;
+    --brand-strong: 110 214 160;
+    --brand-soft: 20 48 35;
+    --brand-ink: 6 22 14;
+    --danger: 248 113 113;
+    --warn: 251 191 36;
+    --info: 96 190 240;
+    --success: 74 222 128;
+    color-scheme: dark;
+  }
+}
+
+[data-tema='sol'] {
+  --bg: 255 255 255;
+  --surface: 255 255 255;
+  --surface-2: 255 255 255;
+  --line: 0 0 0;
+  --ink: 0 0 0;
+  --muted: 0 0 0;
+  --brand: 0 70 40;
+  --brand-strong: 0 0 0;
+  --brand-soft: 255 255 255;
+  --brand-ink: 255 255 255;
+  color-scheme: light;
 }
 
 html {
   scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
 }
 
 body {
-  font-family: system-ui, -apple-system, sans-serif;
-  background-color: #ffffff;
-  color: #1a1a1a;
-}
-
-@media (prefers-color-scheme: dark) {
-  body {
-    background-color: #1a1a1a;
-    color: #ffffff;
-  }
+  background-color: rgb(var(--bg));
+  color: rgb(var(--ink));
+  font-feature-settings: 'cv11', 'ss01';
+  -webkit-font-smoothing: antialiased;
 }
 
 :focus-visible {
-  outline: 3px solid #1a5f3f;
+  outline: 3px solid rgb(var(--brand));
   outline-offset: 2px;
+}
+
+::selection {
+  background: rgb(var(--brand) / 0.2);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+@layer components {
+  /* Page frame: room at the bottom for the mobile tab bar. */
+  .page {
+    @apply mx-auto w-full max-w-5xl px-4 pb-28 pt-6 sm:px-6 sm:pt-10 lg:pb-16;
+  }
+  .page-narrow {
+    @apply mx-auto w-full max-w-3xl px-4 pb-28 pt-6 sm:px-6 sm:pt-10 lg:pb-16;
+  }
+
+  .eyebrow {
+    @apply text-xs font-semibold uppercase tracking-[0.12em] text-brand;
+  }
+  .page-title {
+    @apply text-2xl font-bold tracking-tight text-ink sm:text-3xl;
+  }
+  .page-lead {
+    @apply mt-2 max-w-2xl text-base text-muted;
+  }
+  .section-title {
+    @apply flex items-center gap-2 text-base font-semibold text-ink;
+  }
+
+  .card {
+    @apply rounded-2xl border border-line bg-surface shadow-[0_1px_2px_rgba(16,24,20,0.04),0_8px_24px_-12px_rgba(16,24,20,0.12)];
+  }
+  .card-pad {
+    @apply p-5 sm:p-6;
+  }
+  .panel {
+    @apply rounded-xl border border-line bg-surface-2;
+  }
+
+  .btn {
+    @apply inline-flex min-h-[44px] items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-50;
+  }
+  .btn-primary {
+    @apply btn bg-brand text-brand-ink shadow-sm hover:bg-brand-strong;
+  }
+  .btn-secondary {
+    @apply btn border border-line bg-surface text-ink hover:bg-surface-2;
+  }
+  .btn-ghost {
+    @apply btn text-muted hover:bg-surface-2 hover:text-ink;
+  }
+  .btn-danger {
+    @apply btn border border-danger/30 bg-surface text-danger hover:bg-danger/10;
+  }
+  .btn-sm {
+    @apply min-h-[36px] rounded-lg px-3 py-1.5 text-xs;
+  }
+
+  .label {
+    @apply mb-1.5 block text-sm font-medium text-ink;
+  }
+  .hint {
+    @apply mt-1 text-xs text-muted;
+  }
+  .input {
+    @apply block w-full rounded-xl border border-line bg-surface px-3.5 py-2.5 text-base text-ink placeholder:text-muted/70 focus:border-brand focus:outline-none focus:ring-4 focus:ring-brand/15 disabled:opacity-60 sm:text-sm;
+  }
+
+  .chip {
+    @apply inline-flex min-h-[36px] max-w-full items-center gap-1.5 truncate rounded-full border border-line bg-surface px-3 py-1.5 text-sm text-ink transition-colors hover:border-brand/40 hover:bg-brand-soft;
+  }
+
+  .badge {
+    @apply inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-semibold;
+  }
+  .badge-neutral {
+    @apply badge bg-surface-2 text-muted;
+  }
+  .badge-brand {
+    @apply badge bg-brand-soft text-brand;
+  }
+  .badge-leve {
+    @apply badge bg-sky-100 text-sky-800 dark:bg-sky-900/50 dark:text-sky-200;
+  }
+  .badge-media {
+    @apply badge bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-200;
+  }
+  .badge-grave {
+    @apply badge bg-orange-100 text-orange-800 dark:bg-orange-900/40 dark:text-orange-200;
+  }
+  .badge-gravissima {
+    @apply badge bg-red-100 text-red-800 dark:bg-red-900/40 dark:text-red-200;
+  }
+
+  .alert {
+    @apply flex gap-3 rounded-xl border px-4 py-3 text-sm;
+  }
+  .alert-info {
+    @apply alert border-info/25 bg-info/5 text-ink;
+  }
+  .alert-warn {
+    @apply alert border-warn/30 bg-warn/5 text-ink;
+  }
+  .alert-error {
+    @apply alert border-danger/30 bg-danger/5 text-ink;
+  }
+  .alert-success {
+    @apply alert border-success/30 bg-success/5 text-ink;
+  }
+
+  .stat {
+    @apply rounded-xl border border-line bg-surface-2 px-4 py-3;
+  }
+  .stat-label {
+    @apply text-[11px] font-semibold uppercase tracking-wider text-muted;
+  }
+  .stat-value {
+    @apply mt-0.5 text-xl font-bold text-ink;
+  }
+
+  .skeleton {
+    @apply animate-pulse rounded-lg bg-surface-2;
+  }
+
+  .tabs {
+    @apply inline-flex rounded-xl border border-line bg-surface-2 p-1;
+  }
+  .tab {
+    @apply min-h-[40px] rounded-lg px-4 text-sm font-semibold text-muted transition-colors hover:text-ink;
+  }
+  .tab-active {
+    @apply bg-surface text-ink shadow-sm;
+  }
 }
 
 /* ---- Modo sol (alto contraste para uso em via pública) ----
    Applied through `data-tema="sol"` set by components/TemaToggle.tsx.
-   Overrides win over both the light palette and the dark media query. */
+   The tokens above already turn every surface white and every text black;
+   these rules remove what tokens can't (gradients, shadows, soft tints). */
 [data-tema='sol'] body {
   background-color: #ffffff !important;
   color: #000000 !important;
 }
 
-@media (prefers-color-scheme: dark) {
-  [data-tema='sol'] body {
-    background-color: #ffffff !important;
-    color: #000000 !important;
-  }
-}
-
+[data-tema='sol'] header,
 [data-tema='sol'] nav {
   background-color: #000000 !important;
+  color: #ffffff !important;
+}
+
+[data-tema='sol'] header *,
+[data-tema='sol'] nav * {
   color: #ffffff !important;
 }
 
@@ -62,20 +253,17 @@ body {
 }
 
 /* Force readable text on the light surfaces used across the app */
-[data-tema='sol'] p,
-[data-tema='sol'] li,
-[data-tema='sol'] h1,
-[data-tema='sol'] h2,
-[data-tema='sol'] h3,
-[data-tema='sol'] span,
-[data-tema='sol'] label,
-[data-tema='sol'] strong {
+[data-tema='sol'] main p,
+[data-tema='sol'] main li,
+[data-tema='sol'] main h1,
+[data-tema='sol'] main h2,
+[data-tema='sol'] main h3,
+[data-tema='sol'] main span,
+[data-tema='sol'] main label,
+[data-tema='sol'] main strong,
+[data-tema='sol'] main dt,
+[data-tema='sol'] main dd {
   color: #000000 !important;
-}
-
-[data-tema='sol'] nav span,
-[data-tema='sol'] nav a {
-  color: #ffffff !important;
 }
 
 [data-tema='sol'] a {
@@ -91,6 +279,15 @@ body {
   font-weight: 600;
 }
 
+[data-tema='sol'] .btn-primary {
+  background-color: #000000 !important;
+  color: #ffffff !important;
+}
+
+[data-tema='sol'] .btn-primary * {
+  color: #ffffff !important;
+}
+
 [data-tema='sol'] :focus-visible {
   outline: 4px solid #d97706;
   outline-offset: 2px;
@@ -98,6 +295,7 @@ body {
 
 /* Printing a consultation should not waste ink on the shell */
 @media print {
+  header,
   nav,
   .print\:hidden {
     display: none !important;
@@ -106,5 +304,10 @@ body {
   body {
     background: #ffffff !important;
     color: #000000 !important;
+  }
+
+  .card {
+    box-shadow: none !important;
+    break-inside: avoid;
   }
 }

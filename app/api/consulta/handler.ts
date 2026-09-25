@@ -17,6 +17,7 @@ import {
   findDispositivoByReferencia,
   getDispositivoByNumero,
   getEnquadramentoByCodigo,
+  porOrdem,
   searchDispositivos,
 } from '@/lib/db/queries';
 import type { CartaoEstruturado, NormaAplicavel, TipoConsulta } from '@/lib/response/response-types';
@@ -161,13 +162,16 @@ async function buildAnswer(
   consulta: string,
   tipo: TipoConsulta
 ): Promise<CartaoEstruturado> {
-  const normalized = normalizeQuery(consulta);
+  // Only the PII-filtered text leaves this function — to the database and to
+  // the embedding provider. Accents stay: stripping them here made every
+  // accented word miss the full-text index ("habilitação" → "habilitacao").
   const filtered = filterPII(consulta).trim();
+  const normalized = normalizeQuery(filtered);
 
   if (tipo === 'codigo') {
     const enquadramento = await getEnquadramentoByCodigo(filtered);
     if (!enquadramento) {
-      const proximos = await searchDispositivos(normalized, 5);
+      const proximos = await searchDispositivos(filtered, 5);
       return buildCardFromNormas(proximos, consulta, 'codigo');
     }
 
@@ -180,18 +184,19 @@ async function buildAnswer(
       (await getDispositivoByNumero(normalized)) ?? (await findDispositivoByReferencia(filtered));
 
     if (dispositivo) {
-      const relacionadas = normalizeRelated(dispositivo, await searchDispositivos(normalized, 3));
+      // Read in the law's order (165-A before 165-B), not by search score.
+      const relacionadas = normalizeRelated(dispositivo, await searchDispositivos(filtered, 3)).sort(porOrdem);
       return buildCardFromNormas([dispositivo, ...relacionadas], consulta, 'artigo');
     }
   }
 
-  const resultados = await safeHybridSearch(normalized);
+  const resultados = await safeHybridSearch(filtered);
   if (resultados.length > 0) {
     return buildCardFromNormas(resultados, consulta, tipo);
   }
 
-  // Last resort for article lookups: full-text search on the normalized query
-  const texto = await searchDispositivos(normalized, 5);
+  // Last resort: full-text search alone
+  const texto = await searchDispositivos(filtered, 5);
   return buildCardFromNormas(texto, consulta, tipo);
 }
 
@@ -212,7 +217,7 @@ async function getNormasForEnquadramento(
     normas.push(dispositivoToNorma(principal));
   }
 
-  const relacionados = await searchDispositivos(normalizeQuery(descricao), 3);
+  const relacionados = await searchDispositivos(descricao, 3);
   for (const row of relacionados) {
     if (!normas.some((n) => n.numero_dispositivo === row.numero_dispositivo)) {
       normas.push(dispositivoToNorma(row));
