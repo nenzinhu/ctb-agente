@@ -41,7 +41,7 @@
     "test:watch": "jest --watch",
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui",
-    "seed": "node scripts/seed-corpus.ts",
+    "seed": "node --env-file-if-exists=.env.local scripts/seed-corpus.ts",
     "icons": "node scripts/generate-icons.js",
     "check:health": "node scripts/check-health.ts"
   }
