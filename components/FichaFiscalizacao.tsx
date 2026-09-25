@@ -72,8 +72,26 @@ function SimNao({ valor, fallback }: { valor: string | null; fallback: boolean }
  * Fields filled from the MBFT chunk text when present, from the
  * `enquadramentos` row otherwise; missing data renders as "—".
  */
-export default function FichaFiscalizacao({ card, campos }: FichaFiscalizacaoProps) {
+export default function FichaFiscalizacao({ card, campos: doMbft }: FichaFiscalizacaoProps) {
   const { enquadramento } = card;
+  const ia = card.ficha_ia ?? null;
+  // Base first; the AI draft only fills what the base doesn't have.
+  const campos: MbftFields | null = ia
+    ? {
+        tipificacao: doMbft?.tipificacao ?? ia.tipificacao,
+        infrator: doMbft?.infrator ?? ia.infrator,
+        competencia: doMbft?.competencia ?? ia.competencia,
+        constatacao: doMbft?.constatacao ?? ia.constatacao,
+        gravidade: doMbft?.gravidade ?? ia.gravidade,
+        penalidade: doMbft?.penalidade ?? ia.penalidade,
+        medidaAdministrativa: doMbft?.medidaAdministrativa ?? ia.medidaAdministrativa,
+        configuraCrime: doMbft?.configuraCrime ?? ia.configuraCrime,
+        quandoAutuar: doMbft?.quandoAutuar ?? ia.quandoAutuar,
+        quandoNaoAutuar: doMbft?.quandoNaoAutuar ?? ia.quandoNaoAutuar,
+        definicoes: doMbft?.definicoes ?? ia.definicoes,
+        exemplosObservacoes: doMbft?.exemplosObservacoes.length ? doMbft.exemplosObservacoes : ia.exemplosObservacoes,
+      }
+    : doMbft;
 
   return (
     <article className="card overflow-hidden" aria-labelledby="ficha-fiscalizacao">
@@ -93,9 +111,26 @@ export default function FichaFiscalizacao({ card, campos }: FichaFiscalizacaoPro
               <BadgeGravidade gravidade={enquadramento.gravidade} />
             </>
           ) : (
-            <span className="text-sm text-ds-subtle">Consulta: “{card.consulta}”</span>
+            <>
+              {ia?.codigoEnquadramento && (
+                <span className="rounded-md border-2 border-ds-border bg-ds-surface px-2.5 py-1 font-mono text-sm font-bold text-ds-text">
+                  {ia.codigoEnquadramento}
+                </span>
+              )}
+              <span className="text-sm text-ds-subtle">Consulta: “{card.consulta}”</span>
+            </>
           )}
         </div>
+        {ia && (
+          <p className="alert-warn mt-3" role="note">
+            <Icone nome="faisca" tamanho={16} className="mt-0.5 shrink-0 text-ds-warn" />
+            <span>
+              <strong>Gerada por IA</strong>
+              {card.ficha_ia_modelo ? ` (${card.ficha_ia_modelo})` : ''}: a base não tinha esta infração. Confira no MBFT e
+              no CTB antes de lavrar o AIT.
+            </span>
+          </p>
+        )}
       </header>
 
       <div className="space-y-6 p-4 sm:p-6">
@@ -103,17 +138,17 @@ export default function FichaFiscalizacao({ card, campos }: FichaFiscalizacaoPro
           <SecaoTitulo>Identificação da Infração</SecaoTitulo>
           <dl className="mt-2">
             <Linha rotulo="Tipificação Resumida:">
-              <Valor>{enquadramento?.descricao ?? campos?.tipificacao}</Valor>
+              <Valor>{enquadramento?.descricao ?? ia?.tipificacaoResumida ?? campos?.tipificacao}</Valor>
             </Linha>
             <Linha rotulo="Código de Enquadramento:">
               <Valor>
                 {enquadramento
                   ? `${enquadramento.codigo_mbft}${enquadramento.desdobramento > 0 ? `-${enquadramento.desdobramento}` : ''}`
-                  : null}
+                  : ia?.codigoEnquadramento}
               </Valor>
             </Linha>
             <Linha rotulo="Amparo Legal:">
-              <Valor>{enquadramento?.amparo_legal}</Valor>
+              <Valor>{enquadramento?.amparo_legal ?? ia?.amparoLegal}</Valor>
             </Linha>
             <Linha rotulo="Tipificação do Enquadramento:">
               <Valor>{campos?.tipificacao}</Valor>
@@ -139,7 +174,7 @@ export default function FichaFiscalizacao({ card, campos }: FichaFiscalizacaoPro
               <dd>{enquadramento ? <BadgeGravidade gravidade={enquadramento.gravidade} /> : <Valor>{campos?.gravidade}</Valor>}</dd>
             </Linha>
             <Linha rotulo="Pontuação:">
-              <Valor>{enquadramento ? `${enquadramento.pontos} ponto(s)` : null}</Valor>
+              <Valor>{enquadramento ? `${enquadramento.pontos} ponto(s)` : ia?.pontuacao ? `${ia.pontuacao} ponto(s)` : null}</Valor>
             </Linha>
             <Linha rotulo="Penalidade:">
               <Valor>
@@ -228,6 +263,11 @@ export default function FichaFiscalizacao({ card, campos }: FichaFiscalizacaoPro
             <Linha rotulo="Normas relacionadas:">
               <Valor>{card.normas_relacionadas.length > 0 ? card.normas_relacionadas.join(' · ') : null}</Valor>
             </Linha>
+            {ia?.informacoesComplementares && (
+              <Linha rotulo="Observações:">
+                <Valor>{ia.informacoesComplementares}</Valor>
+              </Linha>
+            )}
             <Linha rotulo="Concurso de infrações:">
               <Valor>{card.concurso_infracoes.length > 0 ? card.concurso_infracoes.join(' · ') : null}</Valor>
             </Linha>

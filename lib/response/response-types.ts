@@ -1,5 +1,6 @@
 // Response card and related types
 import type { Enquadramento, Jurisprudencia } from '@/lib/db/schema';
+import type { FichaIA } from '@/lib/rag/ficha-ia';
 
 /**
  * Citation object within a response
@@ -48,4 +49,8 @@ export interface CartaoEstruturado {
   citacoes: ResponseCitation[];
   cache_hit: boolean;
   tempo_ms: number;
+  /** Sheet drafted by AI when the base had nothing; always shown as such. */
+  ficha_ia?: FichaIA | null;
+  /** "provider · model" that drafted ficha_ia */
+  ficha_ia_modelo?: string;
 }

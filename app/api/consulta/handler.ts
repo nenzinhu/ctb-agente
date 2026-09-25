@@ -9,6 +9,8 @@ import {
   emptyCard,
 } from '@/lib/response/card-builder';
 import { getCachedCard, setCachedCard } from '@/lib/response/cache';
+import { ProviderChain } from '@/lib/ai/providers/chain';
+import { interpretarFicha, montarPromptFicha } from '@/lib/rag/ficha-ia';
 import { validateCitations } from '@/lib/response/validator';
 import { isBackedByNormas } from '@/lib/response/card-builder';
 import { checkRateLimit, recordQuery } from '@/lib/ratelimit/limiter';
@@ -124,14 +126,20 @@ export async function handleConsulta(
     const card = await buildAnswer(consulta, tipo);
     const validated = validateCard(card);
     const tempo = Date.now() - startTime;
-    const finalCard: CartaoEstruturado = { ...validated, tempo_ms: tempo, cache_hit: false };
+    let finalCard: CartaoEstruturado = { ...validated, tempo_ms: tempo, cache_hit: false };
+
+    // Nothing in the base: let the AI models draft the sheet (flagged as such).
+    if (!finalCard.sucesso) {
+      const ia = await gerarFichaIA(consultaFiltrada);
+      if (ia) finalCard = { ...finalCard, ficha_ia: ia.ficha, ficha_ia_modelo: ia.modelo, tempo_ms: Date.now() - startTime };
+    }
 
     await recordQuery(ipAddress, consultaFiltrada, {
       tipo,
       cacheHit: false,
       sucesso: finalCard.sucesso,
       tempoMs: tempo,
-      modelo: 'database',
+      modelo: finalCard.ficha_ia_modelo ?? 'database',
     }, limit.registroId);
 
     if (finalCard.sucesso) {
@@ -302,4 +310,33 @@ function dropInvalidCitations(texto: string, invalidas: Set<string>): string {
     resultado = resultado.replace(new RegExp(`${escapado}(?![\\d])\\s*,?\\s*`, 'gi'), '');
   }
   return resultado;
+}
+
+const TEMPO_FICHA_IA_MS = 25_000;
+
+/**
+ * Ask the provider chain for the Ficha de Fiscalização
+ * @param consulta - PII-filtered query
+ * @returns Sheet and the model that wrote it, or null when no AI is configured or it failed
+ */
+async function gerarFichaIA(consulta: string) {
+  const chain = new ProviderChain();
+  if (chain.ativos.length === 0) return null;
+
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  try {
+    const resultado = await Promise.race([
+      chain.generateDetailed(montarPromptFicha(consulta), 1400, 0.1),
+      new Promise<never>((_, reject) => {
+        timer = setTimeout(() => reject(new Error('tempo esgotado')), TEMPO_FICHA_IA_MS);
+      }),
+    ]);
+    const ficha = interpretarFicha(resultado.texto);
+    return ficha ? { ficha, modelo: `${resultado.provedor} · ${resultado.modelo}` } : null;
+  } catch (error) {
+    console.warn('AI ficha generation failed:', error);
+    return null;
+  } finally {
+    if (timer) clearTimeout(timer);
+  }
 }
