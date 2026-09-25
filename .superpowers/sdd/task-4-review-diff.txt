@@ -1,0 +1,908 @@
+diff --git a/app/api/consulta/handler.ts b/app/api/consulta/handler.ts
+new file mode 100644
+index 0000000..67a057d
+--- /dev/null
++++ b/app/api/consulta/handler.ts
+@@ -0,0 +1,66 @@
++// Main handler for consultation queries
++import { identifyQueryType, normalizeQuery } from '@/lib/query/router';
++import { filterPII } from '@/lib/query/pii-filter';
++import { hybridSearch } from '@/lib/search/hybrid';
++import { buildCard } from '@/lib/response/card-builder';
++import { checkRateLimit, recordQuery } from '@/lib/ratelimit/limiter';
++import { verifyTurnstile } from '@/lib/ratelimit/turnstile';
++import { supabase } from '@/lib/db/client';
++
++/**
++ * Handle a consultation query end-to-end
++ * 1. Check rate limit
++ * 2. Verify Turnstile (if needed)
++ * 3. Identify query type
++ * 4. Filter PII
++ * 5. Search (direct lookup or hybrid search)
++ * 6. Build response card
++ * 7. Record usage
++ * @param consulta - User query
++ * @param ipAddress - Client IP address
++ * @param turnstileToken - Optional Turnstile token
++ * @returns Response object or error
++ */
++export async function handleConsulta(
++  consulta: string,
++  ipAddress: string,
++  turnstileToken?: string
++) {
++  // Rate limit check
++  const { allowed, remaining } = await checkRateLimit(ipAddress);
++  if (!allowed) {
++    return { error: 'Rate limit exceeded', remaining };
++  }
++
++  // Turnstile check (if suspicious)
++  if (remaining < 5 && turnstileToken) {
++    const turnstileValid = await verifyTurnstile(turnstileToken);
++    if (!turnstileValid) {
++      return { error: 'Turnstile verification failed' };
++    }
++  }
++
++  // Identify query type
++  const queryType = identifyQueryType(consulta);
++  const normalized = normalizeQuery(consulta);
++  const filtered = filterPII(consulta);
++
++  // Handle code or article lookups directly
++  if (queryType === 'code') {
++    const { data: enquadramento } = await supabase
++      .from('enquadramentos')
++      .select('*')
++      .eq('codigo_mbft', filtered)
++      .single();
++
++    await recordQuery(ipAddress, consulta);
++    return { enquadramento, type: 'code' };
++  }
++
++  // Hybrid search for situations
++  const results = await hybridSearch(normalized, 5);
++  const card = await buildCard(results[0]?.numero_dispositivo || '', results);
++
++  await recordQuery(ipAddress, consulta);
++  return { card, type: 'situation' };
++}
+diff --git a/app/api/consulta/route.ts b/app/api/consulta/route.ts
+new file mode 100644
+index 0000000..d61b8f6
+--- /dev/null
++++ b/app/api/consulta/route.ts
+@@ -0,0 +1,34 @@
++// POST /api/consulta endpoint
++import { NextRequest, NextResponse } from 'next/server';
++import { ConsultaRequestSchema } from './types';
++import { handleConsulta } from './handler';
++
++/**
++ * POST /api/consulta
++ * Main consultation endpoint
++ * Accepts query and returns structured response card
++ * @example
++ * POST /api/consulta
++ * { "consulta": "516-91" }
++ * @returns { enquadramento, type } or { error }
++ */
++export async function POST(request: NextRequest) {
++  try {
++    const body = await request.json();
++    const { consulta, turnstileToken } = ConsultaRequestSchema.parse(body);
++
++    const ipAddress =
++      request.headers.get('x-forwarded-for') ||
++      request.headers.get('x-real-ip') ||
++      'unknown';
++    const result = await handleConsulta(consulta, ipAddress, turnstileToken);
++
++    return NextResponse.json(result, { status: 200 });
++  } catch (error) {
++    console.error('Consulta error:', error);
++    return NextResponse.json(
++      { error: 'Internal server error' },
++      { status: 500 }
++    );
++  }
++}
+diff --git a/app/api/consulta/types.ts b/app/api/consulta/types.ts
+new file mode 100644
+index 0000000..06a6a10
+--- /dev/null
++++ b/app/api/consulta/types.ts
+@@ -0,0 +1,13 @@
++// Types for /api/consulta endpoint
++import { z } from 'zod';
++
++/**
++ * Request schema for consultation endpoint
++ * @example { "consulta": "516-91", "turnstileToken": "..." }
++ */
++export const ConsultaRequestSchema = z.object({
++  consulta: z.string().min(3).max(1000),
++  turnstileToken: z.string().optional(),
++});
++
++export type ConsultaRequest = z.infer<typeof ConsultaRequestSchema>;
+diff --git a/lib/query/pii-filter.ts b/lib/query/pii-filter.ts
+new file mode 100644
+index 0000000..f373dcf
+--- /dev/null
++++ b/lib/query/pii-filter.ts
+@@ -0,0 +1,24 @@
++// PII (Personally Identifiable Information) filtering
++/**
++ * Filter sensitive information from text
++ * Masks plate numbers, CPF, and CNPJ
++ * @param text - Text to filter
++ * @returns Text with PII masked
++ */
++export function filterPII(text: string): string {
++  let filtered = text;
++
++  // Mask plate (ABC-1234 or ABC1234)
++  filtered = filtered.replace(/[A-Z]{3}-?\d{4}/gi, '****');
++
++  // Mask CPF (XXX.XXX.XXX-XX or XXXXXXXXXXX)
++  filtered = filtered.replace(/\d{3}\.\d{3}\.\d{3}-\d{2}|\d{11}/g, '***-****');
++
++  // Mask CNPJ (XX.XXX.XXX/XXXX-XX)
++  filtered = filtered.replace(/\d{2}\.\d{3}\.\d{3}\/\d{4}-\d{2}/g, '****-****');
++
++  // Mask proper names (optional, keep for now)
++  // This is more complex; skip for MVP
++
++  return filtered;
++}
+diff --git a/lib/query/router.ts b/lib/query/router.ts
+new file mode 100644
+index 0000000..d1cef67
+--- /dev/null
++++ b/lib/query/router.ts
+@@ -0,0 +1,36 @@
++// Query type identification and normalization
++export type QueryType = 'code' | 'article' | 'situation';
++
++/**
++ * Identify the type of query based on its format
++ * @param query - User input query
++ * @returns 'code' for MBFT codes (XXX-XX), 'article' for legal references, 'situation' for natural language
++ */
++export function identifyQueryType(query: string): QueryType {
++  const trimmed = query.trim();
++
++  // Check for code format: XXX-XX
++  if (/^\d{3}-\d{2}$/.test(trimmed)) {
++    return 'code';
++  }
++
++  // Check for article format: "art", "artigo", "§", "inc", "alínea"
++  if (/^(art|artigo|art\.|§|inc|alínea|inciso)/i.test(trimmed)) {
++    return 'article';
++  }
++
++  return 'situation';
++}
++
++/**
++ * Normalize query for searching (lowercase, remove accents)
++ * @param query - User input query
++ * @returns Normalized query string
++ */
++export function normalizeQuery(query: string): string {
++  return query
++    .trim()
++    .toLowerCase()
++    .normalize('NFD')
++    .replace(/[̀-ͯ]/g, ''); // Remove accents for searching
++}
+diff --git a/lib/ratelimit/limiter.ts b/lib/ratelimit/limiter.ts
+new file mode 100644
+index 0000000..ee0a090
+--- /dev/null
++++ b/lib/ratelimit/limiter.ts
+@@ -0,0 +1,47 @@
++// Rate limiting logic
++import { supabase } from '@/lib/db/client';
++
++const RATE_LIMIT_QUERIES_PER_HOUR = parseInt(
++  process.env.RATE_LIMIT_QUERIES_PER_HOUR || '30'
++);
++
++/**
++ * Check if an IP address is within rate limit
++ * @param ipAddress - Client IP address
++ * @returns Object with allowed flag and remaining queries
++ */
++export async function checkRateLimit(
++  ipAddress: string
++): Promise<{ allowed: boolean; remaining: number }> {
++  const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000);
++
++  // Count queries in the last hour
++  const { count, error } = await supabase
++    .from('uso_diario')
++    .select('*', { count: 'exact' })
++    .eq('ip_endereco', ipAddress)
++    .gte('timestamp', oneHourAgo.toISOString());
++
++  if (error) throw error;
++
++  const queryCount = count || 0;
++  const remaining = Math.max(0, RATE_LIMIT_QUERIES_PER_HOUR - queryCount);
++
++  return {
++    allowed: queryCount < RATE_LIMIT_QUERIES_PER_HOUR,
++    remaining,
++  };
++}
++
++/**
++ * Record a query in the usage log
++ * @param ipAddress - Client IP address
++ * @param consulta - Original query text (optional, for logging)
++ */
++export async function recordQuery(ipAddress: string, _consulta: string): Promise<void> {
++  await supabase.from('uso_diario').insert({
++    ip_endereco: ipAddress,
++    tipo_consulta: 'situacao',
++    timestamp: new Date().toISOString(),
++  });
++}
+diff --git a/lib/ratelimit/turnstile.ts b/lib/ratelimit/turnstile.ts
+new file mode 100644
+index 0000000..019f75b
+--- /dev/null
++++ b/lib/ratelimit/turnstile.ts
+@@ -0,0 +1,25 @@
++// Cloudflare Turnstile bot protection
++/**
++ * Verify Turnstile CAPTCHA token with Cloudflare
++ * @param token - Turnstile token from client
++ * @returns True if verification succeeds
++ */
++export async function verifyTurnstile(token: string): Promise<boolean> {
++  const secretKey = process.env.TURNSTILE_SECRET_KEY;
++  if (!secretKey) return true; // Skip if not configured
++
++  const response = await fetch(
++    'https://challenges.cloudflare.com/turnstile/validate',
++    {
++      method: 'POST',
++      headers: { 'Content-Type': 'application/json' },
++      body: JSON.stringify({
++        secret: secretKey,
++        response: token,
++      }),
++    }
++  );
++
++  const data = await response.json();
++  return data.success;
++}
+diff --git a/lib/response/card-builder.ts b/lib/response/card-builder.ts
+new file mode 100644
+index 0000000..51af0a0
+--- /dev/null
++++ b/lib/response/card-builder.ts
+@@ -0,0 +1,112 @@
++// Build structured response cards
++import { supabase } from '@/lib/db/client';
++import type { Enquadramento } from '@/lib/db/schema';
++import type { CartaoEstruturado } from './response-types';
++
++/**
++ * Build a structured response card for an enforcement code
++ * Queries database for infraction details and generates supporting content
++ * @param codigoMBFT - MBFT enforcement code (e.g., "516-91")
++ * @param retrievedChunks - Relevant legal text chunks retrieved from search
++ * @returns Structured response card
++ */
++export async function buildCard(
++  codigoMBFT: string,
++  retrievedChunks: any[]
++): Promise<CartaoEstruturado> {
++  const { data: enquadramento, error } = await supabase
++    .from('enquadramentos')
++    .select('*')
++    .eq('codigo_mbft', codigoMBFT)
++    .single();
++
++  if (error || !enquadramento) {
++    return {
++      tipo: 'enquadramento',
++      sucesso: false,
++      enquadramento: null,
++      checklist_ait: [],
++      erros_comuns: [],
++      concurso_infrações: [],
++      crime_transito: false,
++      categoria_cnh_exigida: 'desconhecida',
++      normas_relacionadas: [],
++      jurisprudencia: [],
++      explicacao_simples: 'Enquadramento não encontrado.',
++      exemplo_dia_a_dia: '',
++      citacoes: [],
++    };
++  }
++
++  return {
++    tipo: 'enquadramento',
++    sucesso: true,
++    enquadramento,
++    checklist_ait: generateChecklistAIT(codigoMBFT),
++    erros_comuns: generateErrosComuns(codigoMBFT),
++    concurso_infrações: [],
++    crime_transito: checkCrimeTransito(enquadramento),
++    categoria_cnh_exigida: getCategoriaCNH(codigoMBFT),
++    normas_relacionadas: [],
++    jurisprudencia: [],
++    explicacao_simples: '',
++    exemplo_dia_a_dia: '',
++    citacoes: extractCitations(retrievedChunks),
++  };
++}
++
++/**
++ * Generate AIT (Auto de Infração de Trânsito) checklist items
++ * @param _codigo - MBFT code
++ * @returns Array of checklist items
++ */
++function generateChecklistAIT(_codigo: string): string[] {
++  // TODO: Create a mapping of código → checklist items
++  return [
++    '[ ] Descrever a conduta exata',
++    '[ ] Anotar hora e data',
++    '[ ] Fotografar evidências',
++  ];
++}
++
++/**
++ * Generate common mistakes for this violation
++ * @param _codigo - MBFT code
++ * @returns Array of common mistake descriptions
++ */
++function generateErrosComuns(_codigo: string): string[] {
++  // TODO: Create a mapping of código → common mistakes
++  return ['❌ NÃO fazer X', '⚠️ Cuidado com Y'];
++}
++
++/**
++ * Check if this infraction might constitute a traffic crime
++ * @param enquadramento - Infraction details
++ * @returns True if gravíssima (gravest level)
++ */
++function checkCrimeTransito(enquadramento: Enquadramento): boolean {
++  return enquadramento.gravidade === 'gravíssima';
++}
++
++/**
++ * Get driver's license category required for violation
++ * @param _codigo - MBFT code
++ * @returns CNH category string
++ */
++function getCategoriaCNH(_codigo: string): string {
++  // TODO: Create a mapping of código → CNH category
++  return 'qualquer';
++}
++
++/**
++ * Extract citations from retrieved chunks
++ * @param chunks - Retrieved legal text chunks
++ * @returns Array of citations
++ */
++function extractCitations(chunks: any[]) {
++  return chunks.map((c) => ({
++    trecho: c.texto.substring(0, 100) + '...',
++    dispositivo: c.numero_dispositivo,
++    validada: true,
++  }));
++}
+diff --git a/lib/response/response-types.ts b/lib/response/response-types.ts
+new file mode 100644
+index 0000000..d8ce33b
+--- /dev/null
++++ b/lib/response/response-types.ts
+@@ -0,0 +1,30 @@
++// Response card and related types
++import type { Enquadramento } from '@/lib/db/schema';
++
++/**
++ * Citation object within a response
++ */
++export interface ResponseCitation {
++  trecho: string;
++  dispositivo: string;
++  validada: boolean;
++}
++
++/**
++ * Structured response card for enforcement situations
++ */
++export interface CartaoEstruturado {
++  tipo: 'enquadramento';
++  sucesso: boolean;
++  enquadramento: Enquadramento | null;
++  checklist_ait: string[];
++  erros_comuns: string[];
++  concurso_infrações: string[];
++  crime_transito: boolean;
++  categoria_cnh_exigida: string;
++  normas_relacionadas: string[];
++  jurisprudencia: any[];
++  explicacao_simples: string;
++  exemplo_dia_a_dia: string;
++  citacoes: ResponseCitation[];
++}
+diff --git a/lib/response/validator.ts b/lib/response/validator.ts
+new file mode 100644
+index 0000000..682d0cb
+--- /dev/null
++++ b/lib/response/validator.ts
+@@ -0,0 +1,39 @@
++// Citation validation logic
++export interface CitationValidation {
++  valid: boolean;
++  issues: string[];
++}
++
++/**
++ * Validate that citations in response text actually exist in retrieved chunks
++ * Prevents hallucinated references to non-existent articles
++ * @param responseText - Generated response text
++ * @param retrievedChunks - Array of chunks retrieved from database
++ * @returns Validation result with any issues found
++ */
++export function validateCitations(
++  responseText: string,
++  retrievedChunks: any[]
++): CitationValidation {
++  const issues: string[] = [];
++  const citationRegex =
++    /art\.?\s*(\d+)(?:\s*§\s*(\d+))?(?:\s*(?:inciso|inc|i|III|IV|V|VI|VII|VIII|IX|X))?/gi;
++
++  const citations = [...responseText.matchAll(citationRegex)];
++
++  for (const [match, artNum, parNum] of citations) {
++    const articleKey = `art. ${artNum}${parNum ? ` § ${parNum}` : ''}`;
++    const found = retrievedChunks.some((chunk) =>
++      chunk.numero_dispositivo.includes(articleKey)
++    );
++
++    if (!found) {
++      issues.push(`Citation not found: "${match.trim()}"`);
++    }
++  }
++
++  return {
++    valid: issues.length === 0,
++    issues,
++  };
++}
+diff --git a/lib/search/bm25.ts b/lib/search/bm25.ts
+new file mode 100644
+index 0000000..d97a11b
+--- /dev/null
++++ b/lib/search/bm25.ts
+@@ -0,0 +1,30 @@
++// BM25 full-text search using PostgreSQL tsvector
++import { supabase } from '@/lib/db/client';
++
++/**
++ * Search dispositivos using BM25 (tsvector) in Portuguese
++ * Requires RPC function in Supabase:
++ * CREATE FUNCTION search_dispositivos_tsvector(query_text TEXT, limit_count INT DEFAULT 10)
++ * RETURNS TABLE (id UUID, numero_dispositivo TEXT, texto TEXT, rank REAL) AS $$
++ * BEGIN
++ *   RETURN QUERY
++ *   SELECT d.id, d.numero_dispositivo, d.texto, ts_rank(d.tsvector_pt, plainto_tsquery('portuguese', query_text)) as rank
++ *   FROM dispositivos d
++ *   WHERE d.tsvector_pt @@ plainto_tsquery('portuguese', query_text)
++ *   ORDER BY rank DESC
++ *   LIMIT limit_count;
++ * END;
++ * $$ LANGUAGE plpgsql;
++ * @param query - Search query
++ * @param limit - Maximum number of results
++ * @returns Array of search results with rank
++ */
++export async function searchByTsvector(query: string, limit = 10) {
++  const { data, error } = await supabase.rpc('search_dispositivos_tsvector', {
++    query_text: query,
++    limit_count: limit,
++  });
++
++  if (error) throw error;
++  return data || [];
++}
+diff --git a/lib/search/hybrid.ts b/lib/search/hybrid.ts
+new file mode 100644
+index 0000000..78d4dbf
+--- /dev/null
++++ b/lib/search/hybrid.ts
+@@ -0,0 +1,38 @@
++// Hybrid search combining BM25 and pgvector
++import { searchByTsvector } from './bm25';
++import { searchByVector } from './vector';
++import { rerank, type RankedResult } from './reranker';
++
++/**
++ * Perform hybrid search combining BM25 (full-text) and vector (semantic) search
++ * Fetches results from both methods, merges, deduplicates, reranks, and returns top results
++ * @param query - Search query
++ * @param limit - Maximum number of top results to return
++ * @returns Sorted array of top ranked results
++ */
++export async function hybridSearch(
++  query: string,
++  limit = 5
++): Promise<RankedResult[]> {
++  try {
++    const [bm25Results, vectorResults] = await Promise.all([
++      searchByTsvector(query, 20),
++      searchByVector(query, 20),
++    ]);
++
++    // Merge and deduplicate by ID
++    const merged = new Map();
++    [...bm25Results, ...vectorResults].forEach((r) => {
++      if (!merged.has(r.id)) {
++        merged.set(r.id, r);
++      }
++    });
++
++    const combined = Array.from(merged.values());
++    const reranked = rerank(combined, query);
++    return reranked.slice(0, limit);
++  } catch (error) {
++    console.error('Hybrid search failed:', error);
++    throw error;
++  }
++}
+diff --git a/lib/search/reranker.ts b/lib/search/reranker.ts
+new file mode 100644
+index 0000000..4ede0eb
+--- /dev/null
++++ b/lib/search/reranker.ts
+@@ -0,0 +1,67 @@
++// Result reranking logic (score + recency + citability)
++export interface RankedResult {
++  id: string;
++  numero_dispositivo: string;
++  texto: string;
++  score: number;
++}
++
++/**
++ * Rerank search results by composite score
++ * Factors: BM25/embedding rank, recency, citability (number of citations)
++ * @param results - Raw search results
++ * @param query - Original query (for context)
++ * @param recencyWeight - Weight for recency (0-1)
++ * @param citabilityWeight - Weight for citability (0-1)
++ * @returns Sorted ranked results
++ */
++export function rerank(
++  results: any[],
++  query: string,
++  recencyWeight = 0.1,
++  citabilityWeight = 0.2
++): RankedResult[] {
++  return results
++    .map((r) => ({
++      id: r.id,
++      numero_dispositivo: r.numero_dispositivo,
++      texto: r.texto,
++      score: calculateScore(r, query, recencyWeight, citabilityWeight),
++    }))
++    .sort((a, b) => b.score - a.score);
++}
++
++/**
++ * Calculate composite score for a single result
++ * @param result - Individual search result
++ * @param _query - Original query
++ * @param recencyWeight - Weight for recency
++ * @param citabilityWeight - Weight for citability
++ * @returns Composite score
++ */
++function calculateScore(
++  result: any,
++  _query: string,
++  recencyWeight: number,
++  citabilityWeight: number
++): number {
++  let score = 0;
++
++  // BM25 or embedding rank (primary signal)
++  score += result.rank || result.similarity || 0;
++
++  // Recency (newer documents score higher)
++  if (result.data_publicacao) {
++    const daysOld =
++      (new Date().getTime() - new Date(result.data_publicacao).getTime()) /
++      (1000 * 60 * 60 * 24);
++    score += (1 - Math.min(daysOld / 365, 1)) * recencyWeight;
++  }
++
++  // Citability (articles cited more often score higher)
++  if (result.citacoes_dentro?.length) {
++    score += Math.min(result.citacoes_dentro.length / 10, 1) * citabilityWeight;
++  }
++
++  return score;
++}
+diff --git a/lib/search/vector.ts b/lib/search/vector.ts
+new file mode 100644
+index 0000000..a07a948
+--- /dev/null
++++ b/lib/search/vector.ts
+@@ -0,0 +1,33 @@
++// Vector similarity search using pgvector
++import { supabase } from '@/lib/db/client';
++import { embeddingChain } from '@/lib/ai/embeddings';
++
++/**
++ * Search dispositivos using vector embeddings (pgvector)
++ * Requires RPC function in Supabase:
++ * CREATE FUNCTION search_dispositivos_vector(query_embedding VECTOR, limit_count INT DEFAULT 10)
++ * RETURNS TABLE (id UUID, numero_dispositivo TEXT, texto TEXT, similarity REAL) AS $$
++ * BEGIN
++ *   RETURN QUERY
++ *   SELECT d.id, d.numero_dispositivo, d.texto, (d.embedding <=> query_embedding) as similarity
++ *   FROM dispositivos d
++ *   WHERE d.embedding IS NOT NULL
++ *   ORDER BY d.embedding <=> query_embedding
++ *   LIMIT limit_count;
++ * END;
++ * $$ LANGUAGE plpgsql;
++ * @param query - Search query
++ * @param limit - Maximum number of results
++ * @returns Array of search results with similarity score
++ */
++export async function searchByVector(query: string, limit = 10) {
++  const embedding = await embeddingChain.embed(query);
++
++  const { data, error } = await supabase.rpc('search_dispositivos_vector', {
++    query_embedding: embedding,
++    limit_count: limit,
++  });
++
++  if (error) throw error;
++  return data || [];
++}
+diff --git a/tests/unit/query-router.test.ts b/tests/unit/query-router.test.ts
+new file mode 100644
+index 0000000..75d2575
+--- /dev/null
++++ b/tests/unit/query-router.test.ts
+@@ -0,0 +1,61 @@
++// Unit tests for query routing
++import { identifyQueryType, normalizeQuery } from '@/lib/query/router';
++
++describe('Query Router', () => {
++  describe('identifyQueryType', () => {
++    it('should identify code query (XXX-XX format)', () => {
++      expect(identifyQueryType('516-91')).toBe('code');
++      expect(identifyQueryType('200-00')).toBe('code');
++    });
++
++    it('should not match code for non-matching patterns', () => {
++      expect(identifyQueryType('51691')).not.toBe('code');
++      expect(identifyQueryType('5-16-91')).not.toBe('code');
++    });
++
++    it('should identify article query', () => {
++      expect(identifyQueryType('art. 165')).toBe('article');
++      expect(identifyQueryType('Art. 165')).toBe('article');
++      expect(identifyQueryType('artigo 165')).toBe('article');
++      expect(identifyQueryType('§ 1º')).toBe('article');
++      expect(identifyQueryType('inc')).toBe('article');
++      expect(identifyQueryType('alínea')).toBe('article');
++    });
++
++    it('should identify situation query', () => {
++      expect(identifyQueryType('moto sem retrovisor')).toBe('situation');
++      expect(identifyQueryType('carro estacionado de forma irregular')).toBe(
++        'situation'
++      );
++      expect(identifyQueryType('multa por excesso de velocidade')).toBe(
++        'situation'
++      );
++    });
++
++    it('should be case insensitive for articles', () => {
++      expect(identifyQueryType('ART. 165')).toBe('article');
++      expect(identifyQueryType('Article 165')).toBe('article');
++    });
++  });
++
++  describe('normalizeQuery', () => {
++    it('should lowercase the query', () => {
++      expect(normalizeQuery('HELLO World')).toBe('hello world');
++    });
++
++    it('should remove accents', () => {
++      expect(normalizeQuery('café')).toBe('cafe');
++      expect(normalizeQuery('açúcar')).toBe('acucar');
++      expect(normalizeQuery('direção')).toBe('direcao');
++    });
++
++    it('should trim whitespace', () => {
++      expect(normalizeQuery('  hello  ')).toBe('hello');
++    });
++
++    it('should handle Portuguese text', () => {
++      const result = normalizeQuery('Está disponível');
++      expect(result).toBe('esta disponivel');
++    });
++  });
++});
+diff --git a/tests/unit/search.test.ts b/tests/unit/search.test.ts
+new file mode 100644
+index 0000000..61f1ff8
+--- /dev/null
++++ b/tests/unit/search.test.ts
+@@ -0,0 +1,81 @@
++// Unit tests for search and reranking
++import { rerank } from '@/lib/search/reranker';
++
++describe('Reranker', () => {
++  it('should rank results by score', () => {
++    const results = [
++      {
++        id: '1',
++        numero_dispositivo: 'art. 165',
++        texto: 'text1',
++        rank: 0.5,
++      },
++      {
++        id: '2',
++        numero_dispositivo: 'art. 181',
++        texto: 'text2',
++        rank: 0.8,
++      },
++    ];
++
++    const ranked = rerank(results, 'test query');
++    expect(ranked[0].id).toBe('2'); // Higher rank should come first
++  });
++
++  it('should handle empty results', () => {
++    const results: any[] = [];
++    const ranked = rerank(results, 'test query');
++    expect(ranked).toEqual([]);
++  });
++
++  it('should consider recency in scoring', () => {
++    const today = new Date();
++    const oneYearAgo = new Date(today.getTime() - 365 * 24 * 60 * 60 * 1000);
++
++    const results = [
++      {
++        id: '1',
++        numero_dispositivo: 'art. 165',
++        texto: 'text1',
++        rank: 0.5,
++        data_publicacao: oneYearAgo.toISOString(),
++        citacoes_dentro: [],
++      },
++      {
++        id: '2',
++        numero_dispositivo: 'art. 181',
++        texto: 'text2',
++        rank: 0.5,
++        data_publicacao: today.toISOString(),
++        citacoes_dentro: [],
++      },
++    ];
++
++    const ranked = rerank(results, 'test query', 0.1, 0.2);
++    // More recent should rank higher when other scores equal
++    expect(ranked[0].numero_dispositivo).toBe('art. 181');
++  });
++
++  it('should consider citability in scoring', () => {
++    const results = [
++      {
++        id: '1',
++        numero_dispositivo: 'art. 165',
++        texto: 'text1',
++        rank: 0.5,
++        citacoes_dentro: [],
++      },
++      {
++        id: '2',
++        numero_dispositivo: 'art. 181',
++        texto: 'text2',
++        rank: 0.5,
++        citacoes_dentro: ['art. 165', 'art. 200', 'art. 250'],
++      },
++    ];
++
++    const ranked = rerank(results, 'test query', 0.1, 0.2);
++    // More cited should rank higher when other scores equal
++    expect(ranked[0].numero_dispositivo).toBe('art. 181');
++  });
++});
+diff --git a/tests/unit/validator.test.ts b/tests/unit/validator.test.ts
+new file mode 100644
+index 0000000..476adfe
+--- /dev/null
++++ b/tests/unit/validator.test.ts
+@@ -0,0 +1,70 @@
++// Unit tests for citation validator
++import { validateCitations } from '@/lib/response/validator';
++
++describe('Citation Validator', () => {
++  it('should validate citations in response', () => {
++    const response = 'Art. 165 proíbe o estacionamento...';
++    const chunks = [{ numero_dispositivo: 'art. 165' }];
++    const result = validateCitations(response, chunks);
++
++    expect(result.valid).toBe(true);
++    expect(result.issues.length).toBe(0);
++  });
++
++  it('should detect invalid citations', () => {
++    const response = 'Art. 999 proíbe...';
++    const chunks = [{ numero_dispositivo: 'art. 165' }];
++    const result = validateCitations(response, chunks);
++
++    expect(result.valid).toBe(false);
++    expect(result.issues.length).toBeGreaterThan(0);
++  });
++
++  it('should handle paragraph references', () => {
++    const response = 'Art. 165 § 1º menciona...';
++    const chunks = [{ numero_dispositivo: 'art. 165 § 1º' }];
++    const result = validateCitations(response, chunks);
++
++    expect(result.valid).toBe(true);
++  });
++
++  it('should handle multiple citations', () => {
++    const response =
++      'Art. 165 e Art. 181 estabelecem penalidades...';
++    const chunks = [
++      { numero_dispositivo: 'art. 165' },
++      { numero_dispositivo: 'art. 181' },
++    ];
++    const result = validateCitations(response, chunks);
++
++    expect(result.valid).toBe(true);
++    expect(result.issues.length).toBe(0);
++  });
++
++  it('should handle mixed valid and invalid citations', () => {
++    const response = 'Art. 165 e Art. 999 mencionam...';
++    const chunks = [{ numero_dispositivo: 'art. 165' }];
++    const result = validateCitations(response, chunks);
++
++    expect(result.valid).toBe(false);
++    expect(result.issues.length).toBe(1);
++  });
++
++  it('should handle empty response', () => {
++    const response = '';
++    const chunks = [{ numero_dispositivo: 'art. 165' }];
++    const result = validateCitations(response, chunks);
++
++    expect(result.valid).toBe(true);
++    expect(result.issues.length).toBe(0);
++  });
++
++  it('should handle empty chunks', () => {
++    const response = 'Art. 165 proíbe...';
++    const chunks: any[] = [];
++    const result = validateCitations(response, chunks);
++
++    expect(result.valid).toBe(false);
++    expect(result.issues.length).toBeGreaterThan(0);
++  });
++});

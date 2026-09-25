@@ -1,0 +1,25 @@
+node_modules/
+.next/
+.env.local
+.env.local.backup
+.env*.local
+*.tsbuildinfo
+dist/
+out/
+*.log
+.DS_Store
+.idea/
+*.swp
+.vscode/settings.json
+
+.vercel
+.freebuff
+
+# Playwright
+playwright-report/
+test-results/
+blob-report/
+.playwright/
+
+# Hermes
+.claude/

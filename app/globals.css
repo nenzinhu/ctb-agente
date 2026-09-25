@@ -1,0 +1,391 @@
+/* ============================================================
+   Design System — Policia Militar Rodovia de Santa Catarina
+   Paleta institucional + Tailwind extensão
+   ============================================================ */
+
+/* ---- Design tokens (RGB channels para opacity no Tailwind) ---- */
+:root {
+  /* Primary: Verde escuro #0F623F */
+  --primary: 15 98 63;
+  --primary-strong: 13 82 54;
+  --primary-soft: 220 237 226;
+  --primary-ink: 255 255 255;
+
+  /* Primary Accent / Active: Verde vibrante #1DA860 */
+  --primary-accent: 29 168 96;
+  --primary-accent-strong: 23 140 79;
+  --primary-accent-soft: 214 245 228;
+
+  /* Page Background: #EDF3EE com grid sutil */
+  --page-bg: 237 243 238;
+  --page-bg-grid: 220 233 225;
+
+  /* Card / Container: #FFFFFF, borda #BDD3C5, border-radius 12-16px */
+  --surface: 255 255 255;
+  --surface-border: 189 211 197;
+  --surface-shadow: 15 98 63;
+
+  /* Typography */
+  --ink: 15 30 22;
+  --ink-strong: 10 22 16;
+  --muted: 100 120 108;
+
+  /* Semantic (mantidos para compatibilidade) */
+  --danger: 180 38 38;
+  --warning: 180 110 0;
+  --info: 2 110 170;
+  --success: 29 168 96;
+
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-tema='sol']) {
+    --page-bg: 12 22 16;
+    --page-bg-grid: 18 28 22;
+    --surface: 18 28 22;
+    --surface-border: 36 52 44;
+    --ink: 225 235 228;
+    --ink-strong: 10 22 16;
+    --muted: 140 160 150;
+    --primary: 74 190 132;
+    --primary-strong: 90 200 145;
+    --primary-soft: 20 50 36;
+    --primary-ink: 10 22 16;
+    --primary-accent: 110 214 160;
+    --primary-accent-strong: 90 180 135;
+    --primary-accent-soft: 20 50 36;
+    --danger: 240 110 110;
+    --warning: 250 195 36;
+    --info: 96 190 240;
+    --success: 110 214 160;
+    color-scheme: dark;
+  }
+}
+
+[data-tema='sol'] {
+  --page-bg: 255 255 255;
+  --page-bg-grid: 245 248 244;
+  --surface: 255 255 255;
+  --surface-border: 0 0 0;
+  --ink: 0 0 0;
+  --muted: 60 60 60;
+  --primary: 0 70 40;
+  --primary-strong: 0 0 0;
+  --primary-soft: 255 255 255;
+  --primary-ink: 255 255 255;
+  --primary-accent: 0 50 30;
+  --primary-accent-strong: 0 0 0;
+  --primary-accent-soft: 255 255 255;
+  color-scheme: light;
+}
+
+/* ============================================================
+   Base
+   ============================================================ */
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 5rem;
+  -webkit-text-size-adjust: 100%;
+}
+
+@media (min-width: 640px) {
+  html {
+    scroll-padding-top: 6rem;
+  }
+}
+
+body {
+  background-color: rgb(var(--page-bg));
+  color: rgb(var(--ink));
+  font-family: 'Inter', 'Roboto', 'Segoe UI', system-ui, -apple-system, sans-serif;
+  font-feature-settings: 'cv11', 'ss01';
+  -webkit-font-smoothing: antialiased;
+  text-transform: none;
+}
+
+/* Padrão de grade sutil no background da página */
+body {
+  background-image:
+    linear-gradient(rgb(var(--page-bg-grid)) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(var(--page-bg-grid)) 1px, transparent 1px);
+  background-size: 32px 32px;
+}
+
+/* Foco e seleção */
+:focus-visible {
+  outline: 3px solid rgb(var(--primary-accent));
+  outline-offset: 2px;
+}
+
+::selection {
+  background: rgb(var(--primary) / 0.2);
+}
+
+/* Reduzir animações para acessibilidade */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ============================================================
+   @layer components — Design System CTB Agente / PMRV-SC
+   ============================================================ */
+@layer components {
+
+  /* ---- TÍTULOS ---- */
+  .titulo-principal {
+    @apply text-2xl sm:text-3xl font-bold uppercase tracking-tight text-ink-strong;
+  }
+  .titulo-secundario {
+    @apply text-lg sm:text-xl font-bold uppercase tracking-wide text-ink-strong;
+  }
+  .titulo-terciario {
+    @apply text-base font-semibold uppercase tracking-wide text-ink;
+  }
+
+  /* ---- CARDS ---- */
+  .card {
+    @apply rounded-xl border border-surface-border bg-surface shadow-[0_1px_3px_rgba(15,98,63,0.06),0_4px_12px_-4px_rgba(15,98,63,0.10)];
+  }
+  .card-pad {
+    @apply p-5 sm:p-6;
+  }
+  .card-title {
+    @apply card-pad text-lg font-bold uppercase tracking-wide text-ink-strong border-b border-surface-border pb-3;
+  }
+
+  /* ---- HEADER / BARRA SUPERIOR ---- */
+  .header {
+    @apply sticky top-0 z-40 border-b border-surface-border bg-surface/90 backdrop-blur supports-[backdrop-filter]:bg-surface/70 print:hidden;
+  }
+  .header-logo {
+    @apply flex items-center gap-3;
+  }
+  .header-logo-img {
+    @apply h-10 w-auto rounded-lg;
+  }
+  .header-logo-text {
+    @apply text-sm font-bold uppercase tracking-wide text-ink-strong leading-tight;
+  }
+  .header-nav-link {
+    @apply flex items-center gap-1.5 whitespace-nowrap rounded-lg px-3 py-2 text-sm font-semibold uppercase transition-colors;
+  }
+  .header-nav-link-ativo {
+    @apply bg-primary-soft text-primary;
+  }
+  .header-nav-link-inativo {
+    @apply text-muted hover:bg-primary-soft/50 hover:text-primary;
+  }
+
+  /* ---- BOTÕES ---- */
+  .btn {
+    @apply inline-flex min-h-[44px] items-center justify-center gap-2 rounded-lg px-5 py-2.5 text-sm font-bold uppercase tracking-wide transition-all duration-200 disabled:cursor-not-allowed disabled:opacity-50;
+  }
+  .btn-primary {
+    @apply btn bg-primary text-primary-ink shadow-md hover:bg-primary-strong hover:shadow-lg hover:-translate-y-0.5 active:translate-y-0 active:shadow-md;
+  }
+  .btn-primary-accent {
+    @apply btn bg-primary-accent text-white shadow-md hover:bg-primary-accent-strong hover:shadow-lg hover:-translate-y-0.5 active:translate-y-0 active:shadow-md;
+  }
+  .btn-secondary {
+    @apply btn border-2 border-surface-border bg-surface text-ink hover:bg-primary-soft hover:border-primary hover:text-primary-strong;
+  }
+  .btn-ghost {
+    @apply btn text-muted hover:bg-primary-soft hover:text-primary;
+  }
+  .btn-danger {
+    @apply btn border-2 border-danger/30 bg-surface text-danger hover:bg-danger/10 hover:border-danger/50;
+  }
+  .btn-sm {
+    @apply min-h-[36px] rounded-md px-3 py-1.5 text-xs;
+  }
+  .btn-lg {
+    @apply min-h-[50px] rounded-lg px-6 py-3 text-base;
+  }
+  .btn-icon {
+    @apply p-2.5 rounded-lg bg-surface border border-surface-border hover:bg-primary-soft hover:border-primary;
+  }
+
+  /* ---- SELECT / DROPDOWN ---- */
+  .select-label {
+    @apply mb-1.5 block text-sm font-semibold uppercase tracking-wide text-ink-strong;
+  }
+  .select-wrap {
+    @apply relative;
+  }
+  .select {
+    @apply block w-full appearance-none rounded-lg border-2 border-surface-border bg-surface px-3.5 py-2.5 text-base font-semibold uppercase text-ink shadow-sm;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%230F623F' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 3.5rem center;
+    padding-right: 2.5rem;
+  }
+  .select:focus {
+    @apply outline-none ring-4 ring-primary/20 border-primary;
+  }
+  .select:disabled {
+    @apply opacity-50 cursor-not-allowed bg-surface/50;
+  }
+
+  /* Cascata de select (dropdown menu) */
+  .select-menu {
+    @apply absolute top-full left-0 right-0 z-50 mt-1 rounded-lg border border-surface-border bg-surface shadow-[0_8px_24px_-8px_rgba(15,98,63,0.25)] overflow-hidden;
+  }
+  .select-menu-item {
+    @apply flex items-center gap-2 px-4 py-2.5 text-sm font-semibold uppercase transition-colors cursor-pointer;
+  }
+  .select-menu-item:hover,
+  .select-menu-item-ativo {
+    @apply bg-primary-soft text-primary;
+  }
+  .select-menu-item-inativo {
+    @apply text-muted;
+  }
+
+  /* ---- CHIPS / BADGES ---- */
+  .chip {
+    @apply inline-flex min-h-[36px] max-w-full items-center gap-1.5 truncate rounded-full border-2 border-surface-border bg-surface px-3.5 py-1.5 text-sm font-semibold uppercase;
+  }
+  .chip-primary {
+    @apply chip bg-primary-soft border-primary text-primary;
+  }
+  .chip-accent {
+    @apply chip bg-primary-accent-soft border-primary-accent text-primary-accent-strong;
+  }
+  .chip-neutral {
+    @apply chip bg-surface border-surface-border text-muted;
+  }
+
+  /* ---- ALERTAS ---- */
+  .alert {
+    @apply flex gap-3 rounded-lg border-2 px-4 py-3 text-sm font-semibold;
+  }
+  .alert-info {
+    @apply alert border-info/40 bg-info/5 text-ink;
+  }
+  .alert-warn {
+    @apply alert border-warning/40 bg-warning/5 text-ink;
+  }
+  .alert-error {
+    @apply alert border-danger/40 bg-danger/5 text-ink;
+  }
+  .alert-success {
+    @apply alert border-primary-accent/40 bg-primary-accent-soft text-primary-accent-strong;
+  }
+
+  /* ---- STAT / METRICS ---- */
+  .stat {
+    @apply rounded-lg border-2 border-surface-border bg-surface-2 px-4 py-3;
+  }
+  .stat-label {
+    @apply text-[11px] font-bold uppercase tracking-wider text-muted;
+  }
+  .stat-value {
+    @apply mt-0.5 text-xl font-bold text-ink-strong;
+  }
+  .stat-value-primary {
+    @apply text-primary;
+  }
+
+  /* ---- TABS ---- */
+  .tabs {
+    @apply inline-flex rounded-lg border-2 border-surface-border bg-surface p-1;
+  }
+  .tab {
+    @apply min-h-[40px] rounded-md px-4 text-sm font-bold uppercase transition-colors text-muted;
+  }
+  .tab-ativo {
+    @apply bg-primary text-primary-ink shadow-sm;
+  }
+  .tab-inativo {
+    @apply hover:bg-primary-soft hover:text-primary;
+  }
+
+  /* ---- SKELETON LOADING ---- */
+  .skeleton {
+    @apply animate-pulse rounded-lg bg-surface-border;
+  }
+
+  /* ---- LAYOUT UTILITÁRIOS ---- */
+  .container-centro {
+    @apply mx-auto max-w-5xl px-4 py-6 sm:px-6 sm:py-10;
+  }
+  .grid-fundo {
+    /* Grid sutil de fundo já aplicado no body; usado para sections */
+    background-image:
+      linear-gradient(rgb(var(--page-bg-grid)) 1px, transparent 1px),
+      linear-gradient(90deg, rgb(var(--page-bg-grid)) 1px, transparent 1px);
+    background-size: 32px 32px;
+  }
+  .grid-fundo-card {
+    /* Grid mais forte dentro de cards para destaque */
+    background-image:
+      linear-gradient(rgb(var(--surface-border)) 1px, transparent 1px),
+      linear-gradient(90deg, rgb(var(--surface-border)) 1px, transparent 1px);
+    background-size: 20px 20px;
+    opacity: 0.4;
+  }
+
+  /* ---- MODO SOL (high contrast) ---- */
+  [data-tema='sol'] body {
+    background-color: #ffffff !important;
+    color: #000000 !important;
+  }
+  [data-tema='sol'] .header {
+    background-color: #000000 !important;
+    color: #ffffff !important;
+  }
+  [data-tema='sol'] .header * {
+    color: #ffffff !important;
+  }
+  [data-tema='sol'] main,
+  [data-tema='sol'] section {
+    background-image: none !important;
+  }
+  [data-tema='sol'] .card {
+    border-color: #000000 !important;
+    box-shadow: none !important;
+  }
+  [data-tema='sol'] .btn-primary,
+  [data-tema='sol'] .btn-primary-accent {
+    background-color: #000000 !important;
+    color: #ffffff !important;
+    border: 2px solid #000000 !important;
+  }
+  [data-tema='sol'] .select {
+    border: 2px solid #000000 !important;
+    font-weight: 700;
+  }
+  [data-tema='sol'] :focus-visible {
+    outline: 4px solid #1DA860;
+    outline-offset: 2px;
+  }
+
+  /* ---- PRINT ---- */
+  @media print {
+    .header,
+    nav,
+    .print\\:hidden {
+      display: none !important;
+    }
+    body {
+      background: #ffffff !important;
+      color: #000000 !important;
+      background-image: none !important;
+    }
+    .card {
+      box-shadow: none !important;
+      border: 1px solid #000 !important;
+      break-inside: avoid;
+    }
+  }
+}
