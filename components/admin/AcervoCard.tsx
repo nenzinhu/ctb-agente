@@ -71,16 +71,16 @@ export default function AcervoCard({ onIndexado }: AcervoCardProps) {
   return (
     <div className="space-y-3">
       {itens.map((item) => (
-        <div key={item.id} className="flex flex-col gap-4 rounded-2xl border border-line bg-surface-2 p-4 sm:flex-row sm:items-center">
-          <span className="grid h-12 w-12 shrink-0 place-items-center rounded-xl bg-brand text-brand-ink">
+        <div key={item.id} className="flex flex-col gap-4 rounded-control border border-ds-line bg-ds-muted p-4 sm:flex-row sm:items-center">
+          <span className="grid h-12 w-12 shrink-0 place-items-center rounded-xl bg-ds-primary text-ds-on-solid">
             <Icone nome="livro" tamanho={22} />
           </span>
           <div className="min-w-0 flex-1">
-            <p className="font-semibold text-ink">{item.titulo}</p>
-            <p className="mt-0.5 text-sm text-muted">{item.descricao}</p>
-            <p className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted">
+            <p className="font-semibold text-ds-text">{item.titulo}</p>
+            <p className="mt-0.5 text-sm text-ds-subtle">{item.descricao}</p>
+            <p className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-ds-subtle">
               <span>{item.paginas} páginas</span>
-              <a href={item.fonte} target="_blank" rel="noopener noreferrer" className="font-medium text-brand underline">
+              <a href={item.fonte} target="_blank" rel="noopener noreferrer" className="font-medium text-ds-primary underline">
                 Fonte oficial
               </a>
               {item.indexado && item.documento && <span>{item.documento.trechos} trechos na base</span>}
@@ -108,7 +108,7 @@ export default function AcervoCard({ onIndexado }: AcervoCardProps) {
         <div className={mensagem.tipo === 'ok' ? 'alert-success' : 'alert-error'} role={mensagem.tipo === 'ok' ? 'status' : 'alert'}>
           <Icone
             nome={mensagem.tipo === 'ok' ? 'check' : 'alerta'}
-            className={`mt-0.5 shrink-0 ${mensagem.tipo === 'ok' ? 'text-success' : 'text-danger'}`}
+            className={`mt-0.5 shrink-0 ${mensagem.tipo === 'ok' ? 'text-ds-success' : 'text-ds-danger'}`}
           />
           <p>{mensagem.texto}</p>
         </div>

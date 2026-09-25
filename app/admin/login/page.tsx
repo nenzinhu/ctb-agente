@@ -1,7 +1,9 @@
 'use client';
 
 import { useState } from 'react';
+import Field from '@/components/ui/Field';
 import Icone from '@/components/ui/Icone';
+import PrimaryButton from '@/components/ui/PrimaryButton';
 
 /**
  * Admin login page
@@ -50,61 +52,59 @@ export default function LoginPage() {
   };
 
   return (
-    <main className="mx-auto flex w-full max-w-md flex-col px-4 pb-28 pt-10 sm:pt-16">
+    <main className="mx-auto flex w-full max-w-md flex-col px-4 pb-16 pt-10 sm:pt-16">
       <div className="card card-pad">
-        <span className="mx-auto grid h-12 w-12 place-items-center rounded-2xl bg-brand-soft text-brand">
-          <Icone nome="engrenagem" tamanho={24} />
-        </span>
-        <h1 className="mt-4 text-center text-2xl font-bold tracking-tight text-ink">Entrar no painel</h1>
-        <p className="mt-1 text-center text-sm text-muted">Acesso restrito ao master do CTB Agente.</p>
+        <div className="card-head justify-center text-center">
+          <h1 className="section-title">
+            <Icone nome="engrenagem" tamanho={18} className="shrink-0" />
+            Entrar no painel
+          </h1>
+        </div>
+        <p className="text-center text-sm text-ds-subtle">Acesso restrito ao master do CTB Agente.</p>
 
         {error && (
           <div className="alert-error mt-6" role="alert">
-            <Icone nome="alerta" className="mt-0.5 shrink-0 text-danger" />
+            <Icone nome="alerta" className="mt-0.5 shrink-0 text-ds-danger" />
             <p>{error}</p>
           </div>
         )}
 
         <form onSubmit={handleSubmit} className="mt-6 space-y-4">
-          <div>
-            <label htmlFor="username" className="label">
-              Usuário
-            </label>
-            <input
-              id="username"
-              type="text"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              disabled={isLoading}
-              className="input"
-              autoComplete="username"
-              autoCapitalize="none"
-              spellCheck={false}
-              autoFocus
-            />
-          </div>
+          <Field
+            id="username"
+            label="Usuário"
+            type="text"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            disabled={isLoading}
+            autoComplete="username"
+            autoCapitalize="none"
+            spellCheck={false}
+            autoFocus
+          />
 
-          <div>
-            <label htmlFor="password" className="label">
-              Senha
-            </label>
-            <input
-              id="password"
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              disabled={isLoading}
-              className="input"
-              autoComplete="current-password"
-            />
-          </div>
+          <Field
+            id="password"
+            label="Senha"
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            disabled={isLoading}
+            autoComplete="current-password"
+          />
 
-          <button type="submit" disabled={isLoading || !username || !password} className="btn-primary w-full text-base">
-            {isLoading ? 'Entrando…' : 'Entrar'}
-          </button>
+          <PrimaryButton
+            type="submit"
+            carregando={isLoading}
+            textoCarregando="Entrando…"
+            disabled={!username || !password}
+            className="w-full text-base"
+          >
+            Entrar
+          </PrimaryButton>
         </form>
 
-        <p className="mt-6 text-center text-xs text-muted">
+        <p className="mt-6 text-center text-xs text-ds-subtle">
           A senha é definida por <code className="font-mono">ADMIN_PASSWORD_HASH</code> no servidor.
         </p>
       </div>

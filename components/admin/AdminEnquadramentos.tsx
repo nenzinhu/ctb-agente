@@ -117,14 +117,14 @@ export default function AdminEnquadramentos() {
     <div className="space-y-6">
       <form onSubmit={salvar} className="card p-6 space-y-4">
         <div className="flex items-center justify-between">
-          <h2 className="text-xl font-bold text-ink">
+          <h2 className="text-xl font-bold text-ds-text">
             {form.id ? `Editar ${form.codigo_mbft}` : 'Novo enquadramento'}
           </h2>
           {form.id && (
             <button
               type="button"
               onClick={() => setForm(VAZIO)}
-              className="text-sm text-muted underline"
+              className="text-sm text-ds-subtle underline"
             >
               Cancelar edição
             </button>
@@ -254,7 +254,7 @@ export default function AdminEnquadramentos() {
         </div>
 
         <div className="flex flex-wrap gap-6">
-          <label className="flex items-center gap-2 text-sm text-muted">
+          <label className="flex items-center gap-2 text-sm text-ds-subtle">
             <input
               type="checkbox"
               checked={Boolean(form.retem_veiculo)}
@@ -262,7 +262,7 @@ export default function AdminEnquadramentos() {
             />
             Retém veículo
           </label>
-          <label className="flex items-center gap-2 text-sm text-muted">
+          <label className="flex items-center gap-2 text-sm text-ds-subtle">
             <input
               type="checkbox"
               checked={Boolean(form.remove_veiculo)}
@@ -273,21 +273,21 @@ export default function AdminEnquadramentos() {
         </div>
 
         {erro && (
-          <p className="text-sm text-danger" role="alert">
+          <p className="text-sm text-ds-danger" role="alert">
             {erro}
           </p>
         )}
         {aviso && !erro && (
-          <p className="text-sm text-warn" role="status">
+          <p className="text-sm text-ds-warn" role="status">
             {aviso}
           </p>
         )}
-        {mensagem && <p className="text-sm text-success">{mensagem}</p>}
+        {mensagem && <p className="text-sm text-ds-success">{mensagem}</p>}
 
         <button
           type="submit"
           disabled={salvando}
-          className="bg-brand hover:bg-brand/90 disabled:opacity-60 text-white font-semibold px-6 py-2 rounded-lg"
+          className="btn-primary"
         >
           {salvando ? 'Salvando…' : 'Salvar enquadramento'}
         </button>
@@ -295,7 +295,7 @@ export default function AdminEnquadramentos() {
 
       <div className="card p-6">
         <div className="flex flex-wrap items-center justify-between gap-4 mb-4">
-          <h2 className="text-xl font-bold text-ink">
+          <h2 className="text-xl font-bold text-ds-text">
             Enquadramentos cadastrados ({itens.length})
           </h2>
           <input
@@ -307,13 +307,13 @@ export default function AdminEnquadramentos() {
         </div>
 
         {carregando ? (
-          <p className="text-muted">Carregando…</p>
+          <p className="text-ds-subtle">Carregando…</p>
         ) : filtrados.length === 0 ? (
-          <p className="text-muted">Nenhum enquadramento encontrado.</p>
+          <p className="text-ds-subtle">Nenhum enquadramento encontrado.</p>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
-              <thead className="bg-surface-2 text-left">
+              <thead className="bg-ds-muted text-left">
                 <tr>
                   <th className="px-3 py-2">Código</th>
                   <th className="px-3 py-2">Descrição</th>
@@ -324,7 +324,7 @@ export default function AdminEnquadramentos() {
                   <th className="px-3 py-2">Ações</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-line">
+              <tbody className="divide-y divide-ds-line">
                 {filtrados.map((item) => (
                   <tr key={item.codigo_mbft}>
                     <td className="px-3 py-2 font-mono">{item.codigo_mbft}</td>
@@ -332,7 +332,7 @@ export default function AdminEnquadramentos() {
                     <td className="px-3 py-2">{item.gravidade}</td>
                     <td className="px-3 py-2">{item.pontos}</td>
                     <td className="px-3 py-2">{formatarMulta(item.valor_multa)}</td>
-                    <td className="px-3 py-2 text-xs text-muted">
+                    <td className="px-3 py-2 text-xs text-ds-subtle">
                       {[
                         item.retem_veiculo ? 'retenção' : null,
                         item.remove_veiculo ? 'remoção' : null,
@@ -346,13 +346,13 @@ export default function AdminEnquadramentos() {
                       <div className="flex gap-3">
                         <button
                           onClick={() => editar(item)}
-                          className="text-brand underline"
+                          className="text-ds-primary underline"
                         >
                           Editar
                         </button>
                         <button
                           onClick={() => remover(item.codigo_mbft)}
-                          className="text-danger underline"
+                          className="text-ds-danger underline"
                         >
                           Excluir
                         </button>
@@ -378,7 +378,7 @@ const inputClass = 'input';
 function Campo({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <label className="block">
-      <span className="block text-sm font-medium text-muted mb-1">{label}</span>
+      <span className="block text-sm font-medium text-ds-subtle mb-1">{label}</span>
       {children}
     </label>
   );

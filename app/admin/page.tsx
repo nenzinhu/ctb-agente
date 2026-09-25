@@ -11,6 +11,8 @@ import AdminProvedores from '@/components/admin/AdminProvedores';
 import AdminUso from '@/components/admin/AdminUso';
 import AdminLimites from '@/components/admin/AdminLimites';
 import Icone, { type NomeIcone } from '@/components/ui/Icone';
+import SectionCard from '@/components/ui/SectionCard';
+import TitleCard from '@/components/ui/TitleCard';
 
 /**
  * Master dashboard: document bases (CTB and POP-PMSC), enforcement codes,
@@ -44,11 +46,10 @@ const ROTULO_TIPO: Record<string, string> = {
 
 function Secao({ titulo, descricao, children }: { titulo: string; descricao?: string; children: React.ReactNode }) {
   return (
-    <section className="card card-pad">
-      <h2 className="text-lg font-semibold text-ink">{titulo}</h2>
-      {descricao && <p className="mt-1 text-sm text-muted">{descricao}</p>}
-      <div className="mt-5">{children}</div>
-    </section>
+    <SectionCard titulo={titulo}>
+      {descricao && <p className="-mt-1 mb-5 text-sm text-ds-subtle">{descricao}</p>}
+      {children}
+    </SectionCard>
   );
 }
 
@@ -119,28 +120,26 @@ export default function AdminDashboard() {
 
   return (
     <main className="page max-w-6xl">
-      <div className="flex flex-wrap items-start justify-between gap-4">
-        <div>
-          <p className="eyebrow">Administração</p>
-          <h1 className="page-title">Painel Master</h1>
-          <p className="page-lead">Bases de documentos, enquadramentos, provedores de IA, uso e limites.</p>
-        </div>
-        <button onClick={handleLogout} className="btn-secondary">
-          <Icone nome="sair" tamanho={18} />
+      <TitleCard
+        titulo="Painel Master"
+        icone="engrenagem"
+        subtitulo="Bases de documentos, enquadramentos, provedores de IA, uso e limites."
+      >
+        <button type="button" onClick={handleLogout} className="btn-secondary btn-sm mt-4">
+          <Icone nome="sair" tamanho={16} />
           Sair
         </button>
-      </div>
+      </TitleCard>
 
-      <nav className="mt-6 -mx-4 overflow-x-auto px-4 sm:mx-0 sm:px-0" aria-label="Seções do painel">
-        <ul className="flex w-max gap-1 rounded-2xl border border-line bg-surface-2 p-1">
+      <nav className="-mx-4 mt-6 overflow-x-auto px-4 pb-1 sm:mx-0 sm:px-0" aria-label="Seções do painel">
+        <ul className="tabs w-max">
           {ABAS.map((item) => (
             <li key={item.id}>
               <button
+                type="button"
                 onClick={() => setAba(item.id)}
                 aria-current={aba === item.id ? 'page' : undefined}
-                className={`flex min-h-[40px] items-center gap-1.5 whitespace-nowrap rounded-xl px-3.5 text-sm font-semibold transition-colors ${
-                  aba === item.id ? 'bg-surface text-ink shadow-sm' : 'text-muted hover:text-ink'
-                }`}
+                className={`tab ${aba === item.id ? 'tab-active' : ''}`}
               >
                 <Icone nome={item.icone} tamanho={16} />
                 {item.label}
@@ -155,12 +154,12 @@ export default function AdminDashboard() {
           <>
             {stats && (
               <dl className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-                <div className="stat bg-surface">
+                <div className="stat bg-ds-surface">
                   <dt className="stat-label">Trechos do CTB</dt>
                   <dd className="stat-value">{stats.totalDocuments.toLocaleString('pt-BR')}</dd>
                 </div>
                 {Object.entries(stats.byType).map(([type, count]) => (
-                  <div key={type} className="stat bg-surface">
+                  <div key={type} className="stat bg-ds-surface">
                     <dt className="stat-label">{ROTULO_TIPO[type] ?? type}</dt>
                     <dd className="stat-value">{count.toLocaleString('pt-BR')}</dd>
                   </div>

@@ -23,7 +23,7 @@ export default function NormasAplicaveis({ normas }: NormasAplicaveisProps) {
   return (
     <section className="card card-pad" aria-labelledby="normas-aplicaveis">
       <h3 id="normas-aplicaveis" className="section-title">
-        <Icone nome="livro" tamanho={18} className="text-brand" />
+        <Icone nome="livro" tamanho={18} className="text-ds-primary" />
         Normas aplicáveis
       </h3>
 
@@ -31,28 +31,28 @@ export default function NormasAplicaveis({ normas }: NormasAplicaveisProps) {
         {normas.map((norma) => {
           const expandida = aberta === norma.numero_dispositivo;
           return (
-            <li key={norma.numero_dispositivo} className="overflow-hidden rounded-xl border border-line">
+            <li key={norma.numero_dispositivo} className="overflow-hidden rounded-xl border border-ds-line">
               <button
                 type="button"
                 onClick={() => setAberta(expandida ? null : norma.numero_dispositivo)}
                 aria-expanded={expandida}
-                className="flex w-full items-center justify-between gap-3 px-4 py-3 text-left transition-colors hover:bg-surface-2"
+                className="flex w-full items-center justify-between gap-3 px-4 py-3 text-left transition-colors hover:bg-ds-muted"
               >
                 <span className="min-w-0">
-                  <span className="block font-mono text-sm font-semibold text-brand">{norma.numero_dispositivo}</span>
-                  <span className="mt-0.5 block text-xs text-muted">
+                  <span className="block font-mono text-sm font-semibold text-ds-primary">{norma.numero_dispositivo}</span>
+                  <span className="mt-0.5 block text-xs text-ds-subtle">
                     {norma.tipo} · {norma.vigente ? 'vigente' : 'com vigência encerrada'}
                   </span>
                 </span>
                 <Icone
                   nome="chevron"
                   tamanho={18}
-                  className={`shrink-0 text-muted transition-transform ${expandida ? 'rotate-180' : ''}`}
+                  className={`shrink-0 text-ds-subtle transition-transform ${expandida ? 'rotate-180' : ''}`}
                 />
               </button>
 
               {expandida && (
-                <p className="whitespace-pre-line border-t border-line bg-surface-2 px-4 py-3 text-sm leading-relaxed text-ink">
+                <p className="whitespace-pre-line border-t border-ds-line bg-ds-muted px-4 py-3 text-sm leading-relaxed text-ds-text">
                   {norma.texto || 'Texto não cadastrado na base.'}
                 </p>
               )}

@@ -4,7 +4,10 @@ import { useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import ConsultaResult from '@/components/ConsultaResult';
+import { ETAPAS_CONSULTA } from '@/components/etapas';
 import Icone from '@/components/ui/Icone';
+import Stepper from '@/components/ui/Stepper';
+import TitleCard from '@/components/ui/TitleCard';
 import { CartaoEstruturado } from '@/lib/response/response-types';
 
 const TURNSTILE_STORAGE_KEY = 'ctb-turnstile-token';
@@ -78,13 +81,13 @@ export default function ConsultaPageContent() {
     return (
       <main className="page-narrow">
         <VoltarLink />
-        <h1 className="page-title">Resultado da Consulta</h1>
+        <TitleCard titulo="Resultado da Consulta" icone="lista" />
 
         <div className="alert-warn mt-6">
-          <Icone nome="info" className="mt-0.5 shrink-0 text-warn" />
+          <Icone nome="info" className="mt-0.5 shrink-0 text-ds-warn" />
           <div>
             <h2 className="font-semibold">Informe uma consulta</h2>
-            <p className="mt-1 text-muted">
+            <p className="mt-1 text-ds-subtle">
               Digite um código de infração (ex.: 516-91), um artigo (ex.: art. 165) ou descreva a
               situação para receber o enquadramento.
             </p>
@@ -101,21 +104,26 @@ export default function ConsultaPageContent() {
     <main className="page-narrow">
       <VoltarLink />
 
-      <h1 className="page-title">Resultado da Consulta</h1>
-      <p className="mt-2 flex flex-wrap items-center gap-2 text-sm text-muted">
-        Busca:
-        <span className="rounded-lg bg-surface-2 px-2.5 py-1 font-mono text-ink break-all">{resumoConsulta(query)}</span>
-      </p>
+      <TitleCard titulo="Resultado da Consulta" icone="lista">
+        <p className="mt-3 flex flex-wrap items-center justify-center gap-2 text-sm text-ds-subtle">
+          <span className="font-mono text-xs font-semibold uppercase tracking-[0.08em]">Busca:</span>
+          <span className="min-w-0 break-all rounded-lg border border-ds-line bg-ds-muted px-2.5 py-1 font-mono text-ds-text">
+            {resumoConsulta(query)}
+          </span>
+        </p>
+      </TitleCard>
+
+      <Stepper etapas={ETAPAS_CONSULTA} atual={1} rotulo="Etapas da consulta" className="mt-6 print:hidden" />
 
       {loading && <CarregandoResultado />}
 
       {error && (
         <div className="alert-error mt-6" role="alert">
-          <Icone nome="alerta" className="mt-0.5 shrink-0 text-danger" />
+          <Icone nome="alerta" className="mt-0.5 shrink-0 text-ds-danger" />
           <div>
             <p className="font-semibold">Erro</p>
-            <p className="mt-1 text-muted">{error}</p>
-            <Link href="/?form=1" className="mt-3 inline-block font-semibold text-brand underline">
+            <p className="mt-1 text-ds-subtle">{error}</p>
+            <Link href="/?form=1" className="mt-3 inline-block font-semibold text-ds-ink underline">
               Fazer nova consulta
             </Link>
           </div>
@@ -129,7 +137,7 @@ export default function ConsultaPageContent() {
 
 function VoltarLink() {
   return (
-    <Link href="/?form=1" className="btn-ghost btn-sm -ml-2 mb-4">
+    <Link href="/?form=1" className="btn-ghost btn-sm -ml-2 mb-4 print:hidden">
       <Icone nome="voltar" tamanho={16} />
       Nova consulta
     </Link>

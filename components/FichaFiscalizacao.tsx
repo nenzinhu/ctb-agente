@@ -20,15 +20,15 @@ function Valor({ children }: { children: ReactNode }) {
     children === '' ||
     (Array.isArray(children) && children.length === 0)
   ) {
-    return <dd className="text-sm text-muted">—</dd>;
+    return <dd className="text-sm text-ds-subtle">—</dd>;
   }
-  return <dd className="whitespace-pre-line text-sm leading-relaxed text-ink">{children}</dd>;
+  return <dd className="whitespace-pre-line text-sm leading-relaxed text-ds-text">{children}</dd>;
 }
 
 function Linha({ rotulo, children }: { rotulo: string; children: ReactNode }) {
   return (
-    <div className="grid grid-cols-1 gap-1 border-b border-line py-3 last:border-b-0 sm:grid-cols-[minmax(11rem,16rem)_1fr] sm:gap-4">
-      <dt className="text-sm font-semibold text-muted">{rotulo}</dt>
+    <div className="grid grid-cols-1 gap-1 border-b border-ds-line py-3 last:border-b-0 sm:grid-cols-[minmax(11rem,16rem)_1fr] sm:gap-4">
+      <dt className="text-sm font-semibold text-ds-subtle">{rotulo}</dt>
       {children}
     </div>
   );
@@ -45,7 +45,7 @@ function emItens(valor: string): string[] {
 
 function SecaoTitulo({ children }: { children: ReactNode }) {
   return (
-    <h3 className="border-b-2 border-brand/40 pb-1.5 text-sm font-bold uppercase tracking-wider text-brand">
+    <h3 className="border-b-2 border-ds-text pb-1.5 font-mono text-xs font-bold uppercase tracking-[0.08em] text-ds-primary sm:text-sm">
       {children}
     </h3>
   );
@@ -60,7 +60,7 @@ function SimNao({ valor, fallback }: { valor: string | null; fallback: boolean }
         : 'NÃO';
   const nao = /^n[ãa]o\b/i.test(texto);
   return (
-    <span className={`inline-flex items-center gap-1.5 font-semibold ${nao ? 'text-ink' : 'text-danger'}`}>
+    <span className={`inline-flex items-center gap-1.5 font-semibold ${nao ? 'text-ds-text' : 'text-ds-danger'}`}>
       <Icone nome={nao ? 'x' : 'alerta'} tamanho={14} />
       {texto}
     </span>
@@ -77,14 +77,14 @@ export default function FichaFiscalizacao({ card, campos }: FichaFiscalizacaoPro
 
   return (
     <article className="card overflow-hidden" aria-labelledby="ficha-fiscalizacao">
-      <header className="border-b border-line bg-brand-soft/60 px-5 py-5 sm:px-6">
-        <h2 id="ficha-fiscalizacao" className="text-lg font-black uppercase tracking-wide text-ink sm:text-xl">
+      <header className="border-b-2 border-ds-border bg-ds-primary-soft px-4 py-5 sm:px-6">
+        <h2 id="ficha-fiscalizacao" className="font-mono text-base font-bold uppercase tracking-[0.08em] text-ds-text sm:text-lg">
           Ficha de Fiscalização
         </h2>
         <div className="mt-3 flex flex-wrap items-center gap-2">
           {enquadramento ? (
             <>
-              <span className="rounded-lg border border-line bg-surface px-2.5 py-1 font-mono text-sm font-bold text-ink">
+              <span className="rounded-md border-2 border-ds-border bg-ds-surface px-2.5 py-1 font-mono text-sm font-bold text-ds-text">
                 {enquadramento.codigo_mbft}
               </span>
               {enquadramento.desdobramento > 0 && (
@@ -93,12 +93,12 @@ export default function FichaFiscalizacao({ card, campos }: FichaFiscalizacaoPro
               <BadgeGravidade gravidade={enquadramento.gravidade} />
             </>
           ) : (
-            <span className="text-sm text-muted">Consulta: “{card.consulta}”</span>
+            <span className="text-sm text-ds-subtle">Consulta: “{card.consulta}”</span>
           )}
         </div>
       </header>
 
-      <div className="space-y-6 p-5 sm:p-6">
+      <div className="space-y-6 p-4 sm:p-6">
         <section aria-labelledby="identificacao-infracao">
           <SecaoTitulo>Identificação da Infração</SecaoTitulo>
           <dl className="mt-2">
@@ -163,34 +163,34 @@ export default function FichaFiscalizacao({ card, campos }: FichaFiscalizacaoPro
         <section aria-labelledby="criterios-autuacao" className="space-y-4">
           <SecaoTitulo>Critérios de Autuação</SecaoTitulo>
           <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
-            <div className="card card-pad bg-surface-2">
-              <h4 className="flex items-center gap-2 text-sm font-bold text-ink">
-                <Icone nome="check" tamanho={16} className="text-brand" />
+            <div className="panel p-4">
+              <h4 className="flex items-center gap-2 font-mono text-xs font-bold uppercase tracking-[0.06em] text-ds-text">
+                <Icone nome="check" tamanho={16} className="text-ds-primary" />
                 Quando Autuar
               </h4>
               {campos?.quandoAutuar ? (
-                <ul className="mt-2 list-inside list-disc space-y-1 text-sm text-ink">
+                <ul className="mt-2 list-inside list-disc space-y-1 text-sm text-ds-text">
                   {emItens(campos.quandoAutuar).map((item, i) => (
                     <li key={i}>{item}</li>
                   ))}
                 </ul>
               ) : (
-                <p className="mt-2 text-sm text-muted">—</p>
+                <p className="mt-2 text-sm text-ds-subtle">—</p>
               )}
             </div>
-            <div className="card card-pad bg-surface-2">
-              <h4 className="flex items-center gap-2 text-sm font-bold text-ink">
-                <Icone nome="x" tamanho={16} className="text-danger" />
+            <div className="panel p-4">
+              <h4 className="flex items-center gap-2 font-mono text-xs font-bold uppercase tracking-[0.06em] text-ds-text">
+                <Icone nome="x" tamanho={16} className="text-ds-danger" />
                 Quando NÃO Autuar
               </h4>
               {campos?.quandoNaoAutuar ? (
-                <ul className="mt-2 list-inside list-disc space-y-1 text-sm text-ink">
+                <ul className="mt-2 list-inside list-disc space-y-1 text-sm text-ds-text">
                   {emItens(campos.quandoNaoAutuar).map((item, i) => (
                     <li key={i}>{item}</li>
                   ))}
                 </ul>
               ) : (
-                <p className="mt-2 text-sm text-muted">—</p>
+                <p className="mt-2 text-sm text-ds-subtle">—</p>
               )}
             </div>
           </div>
@@ -204,7 +204,7 @@ export default function FichaFiscalizacao({ card, campos }: FichaFiscalizacaoPro
         <section aria-labelledby="exemplos-observacoes">
           <SecaoTitulo>Exemplos do Campo de Observações do AIT</SecaoTitulo>
           {campos?.exemplosObservacoes && campos.exemplosObservacoes.length > 0 ? (
-            <ol className="mt-2 list-inside list-decimal space-y-2 text-sm leading-relaxed text-ink">
+            <ol className="mt-2 list-inside list-decimal space-y-2 text-sm leading-relaxed text-ds-text">
               {campos.exemplosObservacoes.map((exemplo, i) => (
                 <li key={i} className="whitespace-pre-line">
                   {exemplo.replace(/^\d+\.\s*/, '')}
@@ -212,7 +212,7 @@ export default function FichaFiscalizacao({ card, campos }: FichaFiscalizacaoPro
               ))}
             </ol>
           ) : (
-            <p className="mt-2 text-sm text-muted">Nenhum exemplo cadastrado para este enquadramento.</p>
+            <p className="mt-2 text-sm text-ds-subtle">Nenhum exemplo cadastrado para este enquadramento.</p>
           )}
         </section>
 
@@ -232,7 +232,7 @@ export default function FichaFiscalizacao({ card, campos }: FichaFiscalizacaoPro
               <Valor>{card.concurso_infracoes.length > 0 ? card.concurso_infracoes.join(' · ') : null}</Valor>
             </Linha>
           </dl>
-          <p className="mt-3 text-xs text-muted">
+          <p className="mt-3 text-xs text-ds-subtle">
             Ficha gerada a partir do MBFT e da base cadastrada — confirme a redação vigente antes de
             lavrar o AIT.
           </p>

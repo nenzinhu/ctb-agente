@@ -95,7 +95,7 @@ export default function DocumentList({ colecao, refreshTrigger, onChange }: Docu
   if (erro) {
     return (
       <div className="alert-error" role="alert">
-        <Icone nome="alerta" className="mt-0.5 shrink-0 text-danger" />
+        <Icone nome="alerta" className="mt-0.5 shrink-0 text-ds-danger" />
         <p>{erro}</p>
       </div>
     );
@@ -120,7 +120,7 @@ export default function DocumentList({ colecao, refreshTrigger, onChange }: Docu
     <div className="space-y-4">
       {!dados.bancoConfigurado && (
         <div className="alert-warn">
-          <Icone nome="alerta" className="mt-0.5 shrink-0 text-warn" />
+          <Icone nome="alerta" className="mt-0.5 shrink-0 text-ds-warn" />
           <p>
             <strong>Banco de dados não configurado.</strong> Defina <code>NEXT_PUBLIC_SUPABASE_URL</code>,{' '}
             <code>NEXT_PUBLIC_SUPABASE_ANON_KEY</code> e <code>SUPABASE_SERVICE_ROLE_KEY</code> e aplique as migrations em{' '}
@@ -131,7 +131,7 @@ export default function DocumentList({ colecao, refreshTrigger, onChange }: Docu
 
       {dados.migracaoPendente && (
         <div className="alert-warn">
-          <Icone nome="base" className="mt-0.5 shrink-0 text-warn" />
+          <Icone nome="base" className="mt-0.5 shrink-0 text-ds-warn" />
           <p>
             <strong>Falta a migration 008.</strong> Rode <code>scripts/migrations-008-rag-indexacao.sql</code> no SQL Editor
             do Supabase para listar e gerenciar documentos, corrigir a busca e habilitar a base de POPs.
@@ -141,13 +141,13 @@ export default function DocumentList({ colecao, refreshTrigger, onChange }: Docu
 
       {dados.pendentesVetor > 0 && (
         <div className="panel flex flex-col gap-3 p-4 sm:flex-row sm:items-center">
-          <Icone nome="faisca" className="shrink-0 text-brand" />
-          <p className="flex-1 text-sm text-ink">
+          <Icone nome="faisca" className="shrink-0 text-ds-primary" />
+          <p className="flex-1 text-sm text-ds-text">
             <strong>{dados.pendentesVetor} trecho(s) sem vetor semântico.</strong>{' '}
-            <span className="text-muted">
+            <span className="text-ds-subtle">
               A busca por palavras já os encontra; os vetores ajudam perguntas feitas com outras palavras.
             </span>
-            {vetores.mensagem && <span className="mt-1 block text-xs text-muted" role="status">{vetores.mensagem}</span>}
+            {vetores.mensagem && <span className="mt-1 block text-xs text-ds-subtle" role="status">{vetores.mensagem}</span>}
           </p>
           <button type="button" className="btn-secondary btn-sm" onClick={gerarVetores} disabled={vetores.rodando}>
             {vetores.rodando ? 'Gerando…' : 'Gerar vetores pendentes'}
@@ -156,7 +156,7 @@ export default function DocumentList({ colecao, refreshTrigger, onChange }: Docu
       )}
 
       {aviso && (
-        <p className="text-sm text-muted" role="status">
+        <p className="text-sm text-ds-subtle" role="status">
           {aviso}
         </p>
       )}
@@ -175,28 +175,28 @@ export default function DocumentList({ colecao, refreshTrigger, onChange }: Docu
       )}
 
       {documentos.length === 0 && dados.legado.length === 0 ? (
-        <div className="rounded-2xl border border-dashed border-line px-6 py-10 text-center">
-          <Icone nome="arquivo" tamanho={28} className="mx-auto text-muted" />
-          <p className="mt-2 font-semibold text-ink">Nenhum documento indexado ainda</p>
-          <p className="mt-1 text-sm text-muted">Envie um arquivo acima para começar.</p>
+        <div className="rounded-control border-2 border-dashed border-ds-line px-6 py-10 text-center">
+          <Icone nome="arquivo" tamanho={28} className="mx-auto text-ds-subtle" />
+          <p className="mt-2 font-semibold text-ds-text">Nenhum documento indexado ainda</p>
+          <p className="mt-1 text-sm text-ds-subtle">Envie um arquivo acima para começar.</p>
         </div>
       ) : (
-        <ul className="divide-y divide-line overflow-hidden rounded-2xl border border-line">
+        <ul className="divide-y divide-ds-line overflow-hidden rounded-control border border-ds-line">
           {documentos.map((doc) => (
-            <li key={doc.id} className="flex flex-col gap-3 bg-surface p-4 sm:flex-row sm:items-center">
-              <span className="hidden h-10 w-10 shrink-0 place-items-center rounded-xl bg-brand-soft text-brand sm:grid">
+            <li key={doc.id} className="flex flex-col gap-3 bg-ds-surface p-4 sm:flex-row sm:items-center">
+              <span className="hidden h-10 w-10 shrink-0 place-items-center rounded-control border-2 border-ds-primary text-ds-primary sm:grid">
                 <Icone nome="arquivo" />
               </span>
               <div className="min-w-0 flex-1">
-                <p className="truncate font-semibold text-ink" title={doc.titulo}>
+                <p className="truncate font-semibold text-ds-text" title={doc.titulo}>
                   {doc.titulo}
                 </p>
-                <p className="mt-0.5 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted">
+                <p className="mt-0.5 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-ds-subtle">
                   <span className="badge-neutral">{FORMATO_ROTULO[doc.formato] ?? doc.formato}</span>
                   {doc.norma_id && <span>norma: {doc.norma_id}</span>}
                   {doc.paginas ? <span>{doc.paginas} pág.</span> : null}
                   <span>{doc.trechos} trechos</span>
-                  {doc.trechos_sem_vetor > 0 && <span className="text-warn">{doc.trechos_sem_vetor} sem vetor</span>}
+                  {doc.trechos_sem_vetor > 0 && <span className="text-ds-warn">{doc.trechos_sem_vetor} sem vetor</span>}
                   <span>{formatarData(doc.criado_em)}</span>
                 </p>
               </div>
@@ -215,15 +215,15 @@ export default function DocumentList({ colecao, refreshTrigger, onChange }: Docu
           {dados.legado.map((grupo) => {
             const chave = `legado:${grupo.norma_id}:${grupo.tipo}`;
             return (
-              <li key={chave} className="flex flex-col gap-3 bg-warn/5 p-4 sm:flex-row sm:items-center">
-                <span className="hidden h-10 w-10 shrink-0 place-items-center rounded-xl bg-warn/10 text-warn sm:grid">
+              <li key={chave} className="flex flex-col gap-3 bg-ds-warn/5 p-4 sm:flex-row sm:items-center">
+                <span className="hidden h-10 w-10 shrink-0 place-items-center rounded-xl bg-ds-warn/10 text-ds-warn sm:grid">
                   <Icone nome="alerta" />
                 </span>
                 <div className="min-w-0 flex-1">
-                  <p className="font-semibold text-ink">
+                  <p className="font-semibold text-ds-text">
                     Trechos antigos · {grupo.norma_id} ({grupo.tipo})
                   </p>
-                  <p className="mt-0.5 text-xs text-muted">
+                  <p className="mt-0.5 text-xs text-ds-subtle">
                     {grupo.trechos} trechos indexados antes da correção (cortes no meio de artigos, rótulos errados). Exclua e
                     reenvie o documento para usar a nova indexação.
                   </p>

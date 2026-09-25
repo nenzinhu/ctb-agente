@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import dynamic from 'next/dynamic';
 import Icone from '../ui/Icone';
+import SectionCard from '../ui/SectionCard';
 
 // Only the master attaches POPs: visitors never download the form.
 const AdminUploadForm = dynamic(() => import('../AdminUploadForm'), {
@@ -65,19 +66,15 @@ export default function PopBiblioteca() {
   };
 
   return (
-    <section className="card card-pad" aria-labelledby="biblioteca-pop">
-      <div className="flex items-center justify-between gap-2">
-        <h2 id="biblioteca-pop" className="section-title">
-          <Icone nome="livro" tamanho={18} className="text-brand" />
-          Biblioteca de POPs
-        </h2>
-        {dados && dados.documentos.length > 0 && <span className="badge-neutral">{dados.documentos.length}</span>}
-      </div>
-
-      {erro && <p className="mt-3 text-sm text-danger">Não foi possível carregar a biblioteca.</p>}
+    <SectionCard
+      titulo="Biblioteca de POPs"
+      icone="livro"
+      acao={dados && dados.documentos.length > 0 && <span className="badge-neutral">{dados.documentos.length}</span>}
+    >
+      {erro && <p className="text-sm text-ds-danger">Não foi possível carregar a biblioteca.</p>}
 
       {!dados && !erro && (
-        <div className="mt-4 space-y-2" role="status">
+        <div className="space-y-2" role="status">
           <span className="sr-only">Carregando…</span>
           <div className="skeleton h-12" />
           <div className="skeleton h-12" />
@@ -85,25 +82,25 @@ export default function PopBiblioteca() {
       )}
 
       {dados?.migracaoPendente && (
-        <p className="mt-3 text-sm text-muted">
+        <p className="text-sm text-ds-subtle">
           A base de POPs ainda não foi criada no banco. {master ? 'Aplique a migration 008 no Supabase.' : 'Fale com o master.'}
         </p>
       )}
 
       {dados && !dados.migracaoPendente && dados.documentos.length === 0 && (
-        <p className="mt-3 text-sm text-muted">
+        <p className="text-sm text-ds-subtle">
           Nenhum POP indexado ainda.{master ? ' Anexe os arquivos abaixo.' : ' O master pode anexá-los pelo painel.'}
         </p>
       )}
 
       {dados && dados.documentos.length > 0 && (
-        <ul className="mt-4 space-y-2">
+        <ul className="space-y-2">
           {dados.documentos.map((doc) => (
-            <li key={doc.id} className="flex items-start gap-3 rounded-xl border border-line p-3">
-              <Icone nome="arquivo" tamanho={18} className="mt-0.5 shrink-0 text-brand" />
+            <li key={doc.id} className="flex items-start gap-3 rounded-xl border border-ds-line p-3">
+              <Icone nome="arquivo" tamanho={18} className="mt-0.5 shrink-0 text-ds-primary" />
               <div className="min-w-0 flex-1">
-                <p className="break-words text-sm font-semibold text-ink">{doc.titulo}</p>
-                <p className="mt-0.5 text-xs text-muted">
+                <p className="break-words text-sm font-semibold text-ds-text">{doc.titulo}</p>
+                <p className="mt-0.5 text-xs text-ds-subtle">
                   {doc.formato.toUpperCase()}
                   {doc.paginas ? ` · ${doc.paginas} pág.` : ''} · {doc.trechos} trechos
                 </p>
@@ -111,7 +108,7 @@ export default function PopBiblioteca() {
               {master && (
                 <button
                   type="button"
-                  className="btn-ghost btn-sm !min-h-[32px] !px-2 text-danger"
+                  className="btn-ghost btn-sm !min-h-[32px] !px-2 text-ds-danger"
                   onClick={() => excluir(doc)}
                   disabled={excluindo === doc.id}
                   aria-label={`Remover ${doc.titulo}`}
@@ -125,7 +122,7 @@ export default function PopBiblioteca() {
       )}
 
       {master && (
-        <div className="mt-5 border-t border-line pt-5">
+        <div className="mt-5 border-t border-ds-line pt-5">
           {anexando ? (
             <AdminUploadForm
               colecao="pop"
@@ -142,6 +139,6 @@ export default function PopBiblioteca() {
           )}
         </div>
       )}
-    </section>
+    </SectionCard>
   );
 }

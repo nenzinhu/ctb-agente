@@ -2,82 +2,218 @@
 @tailwind components;
 @tailwind utilities;
 
-/* ---- Design tokens ----
-   RGB channels so Tailwind can apply opacity (bg-brand/10). Light by
-   default, dark with the system preference, "modo sol" (high contrast for
-   use under sunlight) via data-tema="sol" on <html>. */
+/* ===========================================================================
+   Design system — tokens
+   Every color, shadow and radius in the app comes from here. Components reach
+   them through Tailwind (tailwind.config.ts maps --ds-* to `ds-*` classes) or
+   through the component classes further down; there is no hex in components.
+
+   Themes
+   - light: default;
+   - dark: `.dark` on <html> (system preference or the header toggle);
+   - "modo sol": data-tema="sol" on <html>, high contrast for reading under
+     direct sunlight. It always wins over dark.
+   Contrast (WCAG AA) was checked for every text/background pair in use.
+   ========================================================================= */
 :root {
-  --bg: 245 247 246;
-  --surface: 255 255 255;
-  --surface-2: 240 245 242;
-  --line: 222 229 225;
-  --ink: 14 26 21;
-  --muted: 84 100 93;
-  --brand: 26 95 63; /* #1a5f3f — verde CTB */
-  --brand-strong: 17 72 47;
-  --brand-soft: 226 243 234;
-  --brand-ink: 255 255 255;
-  --accent: 245 179 1; /* âmbar sinalização */
-  --danger: 190 38 38;
-  --warn: 180 110 0;
-  --info: 2 110 170;
-  --success: 22 128 72;
+  /* Palette */
+  --ds-bg: #eaf2fb; /* page background, ice blue */
+  --ds-surface: #ffffff; /* cards and inputs */
+  --ds-text: #1e293b; /* main text (slate-800) */
+  --ds-border: #1e293b; /* thick borders */
+  --ds-primary: #008448; /* institutional green: header, CTA, titles */
+  --ds-gold: #c8933f; /* gold: decorative details */
+  --ds-accent: #fbbf24; /* highlight yellow */
+  --ds-ink: #2b6cb0; /* links and information */
+  --ds-muted: #dbeafe; /* soft backgrounds */
+  --ds-danger: #dc2626;
+
+  /* Derived tokens the palette needs to stay readable */
+  --ds-subtle: #475569; /* secondary text: 7.6:1 on surface */
+  --ds-line: color-mix(in srgb, var(--ds-border) 16%, transparent); /* hairlines */
+  --ds-border-input: var(--ds-border); /* form control outline, >= 3:1 */
+  --ds-primary-strong: #01713d; /* CTA hover; green text on tinted fills */
+  --ds-primary-soft: color-mix(in srgb, var(--ds-primary) 12%, var(--ds-surface));
+  --ds-gold-strong: #946420; /* gold as TEXT: --ds-gold is only 2.7:1 on white */
+  --ds-on-solid: #ffffff; /* text on solid fills (primary, status) */
+  --ds-on-accent: #1e293b; /* text on the yellow accent, in every theme */
+  --ds-warn: #b45309;
+  --ds-success: var(--ds-primary);
+  --ds-focus: var(--ds-primary);
+  --ds-focus-width: 2px;
+
+  /* Infraction severity (CTB art. 258) */
+  --ds-sev-leve: var(--ds-ink);
+  --ds-sev-media: var(--ds-warn);
+  --ds-sev-grave: #c2410c;
+  --ds-sev-gravissima: var(--ds-danger);
+
+  /* Header: the gradient is drawn under a scrim so small white text keeps
+     >= 5:1 across the whole bar (the bare gradient drops to 3.5:1). */
+  --ds-header-from: #01713d;
+  --ds-header-via: #008448;
+  --ds-header-to: #1d8c45;
+  --ds-header-scrim: rgb(0 0 0 / 0.25);
+  --ds-header-line: rgb(255 255 255 / 0.14);
+  --ds-header-pill: rgb(255 255 255 / 0.12);
+  --ds-header-pill-hover: rgb(255 255 255 / 0.16);
+  --ds-header-pill-border: rgb(255 255 255 / 0.3);
+  --ds-on-header: #ffffff;
+  --ds-on-header-soft: rgb(255 255 255 / 0.85);
+  --ds-header-shadow: 0 12px 40px rgb(0 0 0 / 0.22);
+
+  /* Shadows and radii */
+  --ds-shadow-color: rgb(30 41 59 / 0.55);
+  --ds-shadow-solid: 3px 3px 0 var(--ds-shadow-color);
+  --ds-shadow-pressed: 1px 1px 0 var(--ds-shadow-color);
+  --ds-shadow-overlay: 0 12px 40px rgb(0 0 0 / 0.22);
+  --ds-radius-control: 12px;
+  --ds-radius-card: 16px;
+  --ds-radius-pill: 9999px;
+
+  /* Page background layers */
+  --ds-grid-line: color-mix(in srgb, var(--ds-text) 5%, transparent);
+  --ds-grid-size: 32px;
+  --ds-blob-green: color-mix(in srgb, var(--ds-header-via) 55%, transparent);
+  --ds-blob-gold: color-mix(in srgb, var(--ds-gold) 45%, transparent);
+  --ds-vignette: rgb(0 0 0 / 0.18);
+
   color-scheme: light;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root:not([data-tema='sol']) {
-    --bg: 9 16 13;
-    --surface: 17 26 22;
-    --surface-2: 23 34 29;
-    --line: 36 50 44;
-    --ink: 231 239 235;
-    --muted: 150 168 160;
-    --brand: 74 190 132;
-    --brand-strong: 110 214 160;
-    --brand-soft: 20 48 35;
-    --brand-ink: 6 22 14;
-    --danger: 248 113 113;
-    --warn: 251 191 36;
-    --info: 96 190 240;
-    --success: 74 222 128;
+/* Screen only: a printout always uses the light tokens. */
+@media screen {
+  :root.dark {
+    --ds-bg: #0f172a;
+    --ds-surface: #1e293b;
+    --ds-text: #eaeaea;
+    --ds-border: #334155;
+    --ds-primary: #22c55e;
+    --ds-ink: #60a5fa;
+    --ds-muted: #1e293b;
+    --ds-danger: #f87171;
+    --ds-accent: #fbbf24;
+
+    --ds-subtle: #94a3b8;
+    --ds-line: var(--ds-border);
+    --ds-border-input: #64748b; /* #334155 would be 1.4:1 on the surface */
+    --ds-primary-strong: #4ade80;
+    --ds-primary-soft: color-mix(in srgb, var(--ds-primary) 16%, var(--ds-surface));
+    --ds-gold-strong: var(--ds-gold);
+    --ds-on-solid: #0f172a; /* white on #22c55e would be 2.3:1 */
+    --ds-warn: #fbbf24;
+    --ds-sev-grave: #fb923c;
+
+    --ds-shadow-color: rgb(0 0 0 / 0.6);
+    --ds-grid-line: color-mix(in srgb, var(--ds-text) 4%, transparent);
+    --ds-blob-green: color-mix(in srgb, var(--ds-header-via) 30%, transparent);
+    --ds-blob-gold: color-mix(in srgb, var(--ds-gold) 18%, transparent);
+    --ds-vignette: rgb(0 0 0 / 0.35);
+
     color-scheme: dark;
   }
 }
 
-[data-tema='sol'] {
-  --bg: 255 255 255;
-  --surface: 255 255 255;
-  --surface-2: 255 255 255;
-  --line: 0 0 0;
-  --ink: 0 0 0;
-  --muted: 0 0 0;
-  --brand: 0 70 40;
-  --brand-strong: 0 0 0;
-  --brand-soft: 255 255 255;
-  --brand-ink: 255 255 255;
+/* Modo sol: pure black on white, no decoration. Declared after .dark and
+   with the same specificity, so it wins when both are present. */
+:root[data-tema='sol'] {
+  --ds-bg: #ffffff;
+  --ds-surface: #ffffff;
+  --ds-text: #000000;
+  --ds-border: #000000;
+  --ds-primary: #004628;
+  --ds-gold: #000000;
+  --ds-accent: #fbbf24;
+  --ds-ink: #00306e;
+  --ds-muted: #ffffff;
+  --ds-danger: #a30000;
+
+  --ds-subtle: #000000;
+  --ds-line: #000000;
+  --ds-border-input: #000000;
+  --ds-primary-strong: #000000;
+  --ds-primary-soft: #ffffff;
+  --ds-gold-strong: #000000;
+  --ds-on-solid: #ffffff;
+  --ds-warn: #6b3a00;
+  --ds-sev-grave: #8a2a00;
+  --ds-focus: #d97706;
+  --ds-focus-width: 4px;
+
+  --ds-header-from: #000000;
+  --ds-header-via: #000000;
+  --ds-header-to: #000000;
+  --ds-header-scrim: transparent;
+  --ds-header-line: #ffffff;
+  --ds-header-pill: transparent;
+  --ds-header-pill-hover: rgb(255 255 255 / 0.2);
+  --ds-header-pill-border: #ffffff;
+  --ds-on-header-soft: #ffffff;
+  --ds-header-shadow: none;
+
+  --ds-shadow-color: transparent;
+  --ds-shadow-overlay: none;
+  --ds-grid-line: transparent;
+  --ds-blob-green: transparent;
+  --ds-blob-gold: transparent;
+  --ds-vignette: transparent;
+
   color-scheme: light;
 }
 
+/* ===========================================================================
+   Base
+   ========================================================================= */
 html {
   scroll-behavior: smooth;
+  /* Anchors land below the sticky header */
+  scroll-padding-top: 7rem;
   -webkit-text-size-adjust: 100%;
 }
 
 body {
-  background-color: rgb(var(--bg));
-  color: rgb(var(--ink));
-  font-feature-settings: 'cv11', 'ss01';
+  background-color: var(--ds-bg);
+  color: var(--ds-text);
   -webkit-font-smoothing: antialiased;
+  /* Own stacking context, so the fixed background layer below sits above the
+     body color and under the content. */
+  isolation: isolate;
+}
+
+/* Layered page background, fixed to the viewport: two soft glows in opposite
+   corners, a 32px technical grid and a vignette. Gradients instead of
+   filter: blur(), so it is painted once and costs nothing while scrolling. */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: -1;
+  width: 100%;
+  height: 100vh;
+  height: 100lvh;
+  pointer-events: none;
+  background-image:
+    radial-gradient(ellipse at center, transparent 45%, var(--ds-vignette) 100%),
+    linear-gradient(to right, var(--ds-grid-line) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--ds-grid-line) 1px, transparent 1px),
+    radial-gradient(circle at 0% 0%, var(--ds-blob-green) 0, var(--ds-blob-green) 5rem, transparent min(34rem, 75vw)),
+    radial-gradient(circle at 100% 100%, var(--ds-blob-gold) 0, var(--ds-blob-gold) 4rem, transparent min(30rem, 70vw));
+  background-size:
+    auto,
+    var(--ds-grid-size) var(--ds-grid-size),
+    var(--ds-grid-size) var(--ds-grid-size),
+    auto,
+    auto;
 }
 
 :focus-visible {
-  outline: 3px solid rgb(var(--brand));
+  outline: var(--ds-focus-width) solid var(--ds-focus);
   outline-offset: 2px;
 }
 
 ::selection {
-  background: rgb(var(--brand) / 0.2);
+  background: color-mix(in srgb, var(--ds-primary) 22%, transparent);
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -93,217 +229,317 @@ body {
   }
 }
 
+/* ===========================================================================
+   Components
+   ========================================================================= */
 @layer components {
-  /* Page frame: room at the bottom for the mobile tab bar. */
+  /* ---- Page frame (16px gutter on phones) ---- */
   .page {
-    @apply mx-auto w-full max-w-5xl px-4 pb-28 pt-6 sm:px-6 sm:pt-10 lg:pb-16;
+    @apply mx-auto w-full max-w-5xl px-4 pb-16 pt-5 sm:px-6 sm:pt-8;
   }
   .page-narrow {
-    @apply mx-auto w-full max-w-3xl px-4 pb-28 pt-6 sm:px-6 sm:pt-10 lg:pb-16;
+    @apply mx-auto w-full max-w-3xl px-4 pb-16 pt-5 sm:px-6 sm:pt-8;
   }
 
+  /* ---- Type: IBM Plex Mono, uppercase, for titles, labels and controls ---- */
   .eyebrow {
-    @apply text-xs font-semibold uppercase tracking-[0.12em] text-brand;
+    @apply font-mono text-xs font-semibold uppercase tracking-[0.12em] text-ds-gold-strong;
   }
   .page-title {
-    @apply text-2xl font-bold tracking-tight text-ink sm:text-3xl;
+    @apply font-mono text-xl font-bold uppercase tracking-[0.06em] text-ds-text sm:text-2xl;
   }
   .page-lead {
-    @apply mt-2 max-w-2xl text-base text-muted;
+    @apply mt-2 max-w-2xl text-base text-ds-subtle;
   }
   .section-title {
-    @apply flex items-center gap-2 text-base font-semibold text-ink;
+    @apply flex min-w-0 items-center gap-2 font-mono text-sm font-bold uppercase tracking-[0.08em] text-ds-primary;
   }
-
-  .card {
-    @apply rounded-2xl border border-line bg-surface shadow-[0_1px_2px_rgba(16,24,20,0.04),0_8px_24px_-12px_rgba(16,24,20,0.12)];
+  .section-number {
+    @apply text-ds-gold-strong;
   }
-  .card-pad {
-    @apply p-5 sm:p-6;
-  }
-  .panel {
-    @apply rounded-xl border border-line bg-surface-2;
-  }
-
-  .btn {
-    @apply inline-flex min-h-[44px] items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-50;
-  }
-  .btn-primary {
-    @apply btn bg-brand text-brand-ink shadow-sm hover:bg-brand-strong;
-  }
-  .btn-secondary {
-    @apply btn border border-line bg-surface text-ink hover:bg-surface-2;
-  }
-  .btn-ghost {
-    @apply btn text-muted hover:bg-surface-2 hover:text-ink;
-  }
-  .btn-danger {
-    @apply btn border border-danger/30 bg-surface text-danger hover:bg-danger/10;
-  }
-  .btn-sm {
-    @apply min-h-[36px] rounded-lg px-3 py-1.5 text-xs;
-  }
-
   .label {
-    @apply mb-1.5 block text-sm font-medium text-ink;
+    @apply mb-1.5 block font-mono text-xs font-semibold uppercase tracking-[0.08em] text-ds-text;
   }
   .hint {
-    @apply mt-1 text-xs text-muted;
+    @apply mt-1.5 text-xs text-ds-subtle;
   }
+  .field-error {
+    @apply mt-1.5 text-xs font-semibold text-ds-danger;
+  }
+
+  /* ---- Cards ---- */
+  .card {
+    @apply rounded-card border-2 border-ds-border bg-ds-surface shadow-solid;
+  }
+  .card-pad {
+    @apply p-4 sm:p-6;
+  }
+  /* Card title row with the 2px divider below it */
+  .card-head {
+    @apply mb-4 flex flex-wrap items-center justify-between gap-x-3 gap-y-2 border-b-2 border-ds-text pb-3;
+  }
+  /* Soft box inside a card */
+  .panel {
+    @apply rounded-control border border-ds-line bg-ds-muted;
+  }
+  /* Highlight / page title card */
+  .card-destaque {
+    @apply rounded-control border-2 border-ds-primary bg-ds-surface px-4 py-4 text-center sm:px-6;
+  }
+  .card-destaque-titulo {
+    @apply inline-flex items-center justify-center gap-2 font-mono text-lg font-bold uppercase tracking-[0.1em] text-ds-primary sm:text-xl;
+  }
+  .card-destaque-sub {
+    @apply mx-auto mt-1.5 max-w-2xl text-sm text-ds-subtle;
+  }
+
+  /* ---- Buttons ---- */
+  .btn {
+    @apply inline-flex min-h-[44px] items-center justify-center gap-2 rounded-control px-4 py-2.5 text-center font-mono text-sm font-semibold uppercase tracking-[0.06em] transition-[transform,box-shadow,background-color,border-color,color] duration-150 disabled:cursor-not-allowed disabled:opacity-50;
+  }
+  /* Solid offset shadow that "sinks" on press */
+  .btn-primary {
+    @apply btn bg-ds-primary text-ds-on-solid shadow-solid hover:bg-ds-primary-strong active:translate-x-0.5 active:translate-y-0.5 active:shadow-pressed;
+  }
+  .btn-secondary {
+    @apply btn border-2 border-ds-border bg-ds-surface text-ds-text shadow-solid hover:bg-ds-muted active:translate-x-0.5 active:translate-y-0.5 active:shadow-pressed;
+  }
+  .btn-ghost {
+    @apply btn text-ds-subtle hover:bg-ds-muted hover:text-ds-text;
+  }
+  .btn-danger {
+    @apply btn border-2 border-ds-danger bg-ds-surface text-ds-danger hover:bg-ds-danger/10;
+  }
+  .btn-sm {
+    @apply min-h-[36px] px-3 py-1.5 text-xs;
+  }
+  .icon-btn {
+    @apply inline-grid h-10 w-10 shrink-0 place-items-center rounded-control border-2 border-ds-primary bg-ds-surface text-ds-primary transition-colors hover:bg-ds-primary-soft disabled:cursor-not-allowed disabled:opacity-50;
+  }
+  .icon-btn-perigo {
+    @apply border-ds-danger bg-ds-danger/10 text-ds-danger hover:bg-ds-danger/15;
+  }
+
+  /* ---- Form controls ---- */
   .input {
-    @apply block w-full rounded-xl border border-line bg-surface px-3.5 py-2.5 text-base text-ink placeholder:text-muted/70 focus:border-brand focus:outline-none focus:ring-4 focus:ring-brand/15 disabled:opacity-60 sm:text-sm;
+    @apply block min-h-[48px] w-full rounded-control border-2 border-ds-border-input bg-ds-surface px-3.5 py-2.5 font-mono text-base text-ds-text placeholder:text-ds-subtle/80 disabled:cursor-not-allowed disabled:opacity-60 aria-[invalid=true]:border-ds-danger;
   }
 
   .chip {
-    @apply inline-flex min-h-[36px] max-w-full items-center gap-1.5 truncate rounded-full border border-line bg-surface px-3 py-1.5 text-sm text-ink transition-colors hover:border-brand/40 hover:bg-brand-soft;
+    @apply inline-flex min-h-[36px] max-w-full items-center gap-1.5 truncate rounded-full border-2 border-ds-border bg-ds-surface px-3 py-1 font-mono text-[13px] text-ds-text transition-colors hover:bg-ds-muted;
   }
 
+  /* ---- Badges: solid fills keep >= 4.5:1 in both themes ---- */
   .badge {
-    @apply inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-semibold;
+    @apply inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 font-mono text-[11px] font-bold uppercase tracking-[0.06em];
   }
   .badge-neutral {
-    @apply badge bg-surface-2 text-muted;
+    @apply badge border border-ds-line bg-ds-muted text-ds-text;
   }
   .badge-brand {
-    @apply badge bg-brand-soft text-brand;
+    @apply badge bg-ds-primary-soft text-ds-primary-strong;
   }
   .badge-leve {
-    @apply badge bg-sky-100 text-sky-800 dark:bg-sky-900/50 dark:text-sky-200;
+    @apply badge bg-ds-sev-leve text-ds-on-solid;
   }
   .badge-media {
-    @apply badge bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-200;
+    @apply badge bg-ds-sev-media text-ds-on-solid;
   }
   .badge-grave {
-    @apply badge bg-orange-100 text-orange-800 dark:bg-orange-900/40 dark:text-orange-200;
+    @apply badge bg-ds-sev-grave text-ds-on-solid;
   }
   .badge-gravissima {
-    @apply badge bg-red-100 text-red-800 dark:bg-red-900/40 dark:text-red-200;
+    @apply badge bg-ds-sev-gravissima text-ds-on-solid;
   }
 
+  /* ---- Alerts: opaque tint over the surface, so the grid never shows through ---- */
   .alert {
-    @apply flex gap-3 rounded-xl border px-4 py-3 text-sm;
+    @apply flex gap-3 rounded-control border-2 px-4 py-3 text-sm text-ds-text;
   }
   .alert-info {
-    @apply alert border-info/25 bg-info/5 text-ink;
+    @apply alert border-ds-ink;
+    background-color: color-mix(in srgb, var(--ds-ink) 7%, var(--ds-surface));
   }
   .alert-warn {
-    @apply alert border-warn/30 bg-warn/5 text-ink;
+    @apply alert border-ds-warn;
+    background-color: color-mix(in srgb, var(--ds-warn) 7%, var(--ds-surface));
   }
   .alert-error {
-    @apply alert border-danger/30 bg-danger/5 text-ink;
+    @apply alert border-ds-danger;
+    background-color: color-mix(in srgb, var(--ds-danger) 7%, var(--ds-surface));
   }
   .alert-success {
-    @apply alert border-success/30 bg-success/5 text-ink;
+    @apply alert border-ds-success;
+    background-color: color-mix(in srgb, var(--ds-success) 7%, var(--ds-surface));
   }
 
+  /* ---- Figures ---- */
   .stat {
-    @apply rounded-xl border border-line bg-surface-2 px-4 py-3;
+    @apply rounded-control border border-ds-line bg-ds-muted px-4 py-3;
   }
   .stat-label {
-    @apply text-[11px] font-semibold uppercase tracking-wider text-muted;
+    @apply font-mono text-[11px] font-semibold uppercase tracking-[0.08em] text-ds-subtle;
   }
   .stat-value {
-    @apply mt-0.5 text-xl font-bold text-ink;
+    @apply mt-0.5 font-mono text-xl font-bold text-ds-text;
   }
 
   .skeleton {
-    @apply animate-pulse rounded-lg bg-surface-2;
+    @apply animate-pulse rounded-control bg-ds-text/10;
   }
 
+  /* ---- Segmented tabs (result views, admin sections) ---- */
   .tabs {
-    @apply inline-flex rounded-xl border border-line bg-surface-2 p-1;
+    @apply inline-flex max-w-full gap-1 rounded-control border-2 border-ds-border bg-ds-surface p-1;
   }
   .tab {
-    @apply min-h-[40px] rounded-lg px-4 text-sm font-semibold text-muted transition-colors hover:text-ink;
+    @apply inline-flex min-h-[40px] items-center gap-1.5 whitespace-nowrap rounded-lg px-3 font-mono text-xs font-semibold uppercase tracking-[0.06em] text-ds-subtle transition-colors hover:bg-ds-muted hover:text-ds-text;
   }
   .tab-active {
-    @apply bg-surface text-ink shadow-sm;
+    @apply bg-ds-primary text-ds-on-solid hover:bg-ds-primary hover:text-ds-on-solid;
+  }
+
+  /* ---- Stepper: squares joined by a 2px line ---- */
+  .stepper {
+    @apply flex items-start;
+  }
+  .step {
+    @apply relative flex min-w-0 flex-1 flex-col items-center gap-1.5 text-center;
+  }
+  .step + .step::before {
+    content: '';
+    position: absolute;
+    top: 13px;
+    left: calc(-50% + 20px);
+    right: calc(50% + 20px);
+    height: 2px;
+    background-color: var(--ds-text);
+  }
+  .step[data-estado='feita'] + .step::before {
+    background-color: var(--ds-primary);
+  }
+  .step-box {
+    @apply grid h-7 w-7 place-items-center rounded-md bg-ds-text font-mono text-xs font-bold text-ds-surface;
+  }
+  .step[data-estado='feita'] .step-box,
+  .step[data-estado='atual'] .step-box {
+    @apply bg-ds-primary text-ds-on-solid;
+  }
+  .step[data-estado='atual'] .step-box {
+    outline: 2px solid var(--ds-gold);
+    outline-offset: 2px;
+  }
+  .step-label {
+    @apply max-w-full break-words font-mono text-[10px] font-semibold uppercase leading-tight tracking-[0.08em] text-ds-text sm:text-[11px];
+  }
+  .step[data-estado='atual'] .step-label {
+    @apply font-bold;
+  }
+
+  /* ---- Header ---- */
+  .ds-header {
+    color: var(--ds-on-header);
+    background-image:
+      linear-gradient(var(--ds-header-scrim), var(--ds-header-scrim)),
+      linear-gradient(165deg, var(--ds-header-from) 0%, var(--ds-header-via) 58%, var(--ds-header-to) 100%);
+    box-shadow: var(--ds-header-shadow);
+  }
+  /* Green focus would vanish on the green bar */
+  .ds-header :focus-visible {
+    outline-color: var(--ds-accent);
+  }
+  .header-mark {
+    @apply grid h-9 w-9 shrink-0 place-items-center rounded-control border;
+    background-color: var(--ds-header-pill);
+    border-color: var(--ds-header-pill-border);
+  }
+  .header-title {
+    @apply min-w-0 truncate font-mono text-[15px] font-bold uppercase leading-none tracking-[0.1em] sm:text-lg sm:tracking-[0.14em];
+  }
+  .header-sub {
+    @apply mt-1 font-mono text-[10px] font-semibold uppercase leading-none tracking-[0.14em];
+    color: var(--ds-on-header-soft);
+  }
+  .header-pill {
+    @apply inline-flex min-h-[38px] min-w-[38px] items-center justify-center gap-1.5 rounded-full border px-2 font-mono text-[11px] font-semibold uppercase tracking-[0.08em] transition-colors md:px-3;
+    background-color: var(--ds-header-pill);
+    border-color: var(--ds-header-pill-border);
+    color: var(--ds-on-header);
+  }
+  .header-pill:hover {
+    background-color: var(--ds-header-pill-hover);
+  }
+  .header-pill[aria-pressed='true'] {
+    background-color: var(--ds-accent);
+    border-color: var(--ds-accent);
+    color: var(--ds-on-accent);
+  }
+  .header-strip {
+    border-top: 1px solid var(--ds-header-line);
+  }
+  /* Phones: a horizontally scrolling strip, faded at the right edge */
+  .nav-tabs {
+    @apply relative -mx-1 flex gap-1 overflow-x-auto px-1 py-1.5 pr-8 md:pr-1;
+    scrollbar-width: none;
+    mask-image: linear-gradient(to right, black calc(100% - 2rem), transparent);
+  }
+  .nav-tabs::-webkit-scrollbar {
+    display: none;
+  }
+  .nav-tab {
+    @apply flex min-h-[34px] items-center gap-1.5 whitespace-nowrap rounded-full border border-transparent px-3 font-mono text-[11px] font-semibold uppercase tracking-[0.08em] transition-colors;
+    color: var(--ds-on-header-soft);
+  }
+  .nav-tab:hover {
+    color: var(--ds-on-header);
+    background-color: var(--ds-header-pill);
+  }
+  .nav-tab[aria-current='page'] {
+    color: var(--ds-on-header);
+    background-color: var(--ds-header-pill);
+    border-color: var(--ds-header-pill-border);
   }
 }
 
-/* ---- Modo sol (alto contraste para uso em via pública) ----
-   Applied through `data-tema="sol"` set by components/TemaToggle.tsx.
-   The tokens above already turn every surface white and every text black;
-   these rules remove what tokens can't (gradients, shadows, soft tints). */
-[data-tema='sol'] body {
-  background-color: #ffffff !important;
-  color: #000000 !important;
+@media (min-width: 768px) {
+  .nav-tabs {
+    mask-image: none;
+  }
 }
 
-[data-tema='sol'] header,
-[data-tema='sol'] nav {
-  background-color: #000000 !important;
-  color: #ffffff !important;
+/* ===========================================================================
+   Modo sol extras — what tokens alone can't express
+   ========================================================================= */
+:root[data-tema='sol'] body::before,
+:root[data-tema='sol'] .oculto-no-sol {
+  display: none;
 }
 
-[data-tema='sol'] header *,
-[data-tema='sol'] nav * {
-  color: #ffffff !important;
-}
-
-[data-tema='sol'] main,
-[data-tema='sol'] section {
-  background-image: none !important;
-}
-
-[data-tema='sol'] * {
-  border-color: #000000 !important;
-  box-shadow: none !important;
-  text-shadow: none !important;
-}
-
-/* Force readable text on the light surfaces used across the app */
-[data-tema='sol'] main p,
-[data-tema='sol'] main li,
-[data-tema='sol'] main h1,
-[data-tema='sol'] main h2,
-[data-tema='sol'] main h3,
-[data-tema='sol'] main span,
-[data-tema='sol'] main label,
-[data-tema='sol'] main strong,
-[data-tema='sol'] main dt,
-[data-tema='sol'] main dd {
-  color: #000000 !important;
-}
-
-[data-tema='sol'] a {
+:root[data-tema='sol'] main a {
   text-decoration: underline;
   text-decoration-thickness: 2px;
 }
 
-[data-tema='sol'] button,
-[data-tema='sol'] input,
-[data-tema='sol'] textarea,
-[data-tema='sol'] select {
-  border: 2px solid #000000 !important;
+:root[data-tema='sol'] button,
+:root[data-tema='sol'] input,
+:root[data-tema='sol'] textarea,
+:root[data-tema='sol'] select {
   font-weight: 600;
 }
 
-[data-tema='sol'] .btn-primary {
-  background-color: #000000 !important;
-  color: #ffffff !important;
-}
-
-[data-tema='sol'] .btn-primary * {
-  color: #ffffff !important;
-}
-
-[data-tema='sol'] :focus-visible {
-  outline: 4px solid #d97706;
-  outline-offset: 2px;
-}
-
-/* Printing a consultation should not waste ink on the shell */
+/* ===========================================================================
+   Print: no chrome, no ink on backgrounds
+   ========================================================================= */
 @media print {
-  header,
+  body::before,
+  .ds-header,
   nav,
   .print\:hidden {
     display: none !important;
   }
 
   body {
-    background: #ffffff !important;
-    color: #000000 !important;
+    background: none !important;
   }
 
   .card {

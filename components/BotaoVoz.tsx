@@ -1,20 +1,31 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import Icone from './ui/Icone';
+import IconButton from './ui/IconButton';
 
-interface BotaoVozProps {
+type Estado = 'idle' | 'gravando' | 'transcrevendo' | 'erro';
+
+export interface Ditado {
+  /** False when the browser has no MediaRecorder: the controls stay hidden */
+  suportado: boolean;
+  estado: Estado;
+  erro: string | null;
+  maxSegundos: number;
+  /** Start recording, or stop and transcribe */
+  alternar: () => void;
+}
+
+interface OpcoesDitado {
   onTranscricao: (texto: string) => void;
   maxSegundos?: number;
 }
 
-type Estado = 'idle' | 'gravando' | 'transcrevendo' | 'erro';
-
 /**
- * Push-to-talk button: records the agent's voice and returns the transcript.
- * Hidden when the browser has no MediaRecorder support.
+ * Push-to-talk dictation: records the agent's voice and hands back the
+ * transcript. The state lives here so the microphone can sit beside a field
+ * (BotaoVoz) while the status is shown under it (AvisoVoz).
  */
-export default function BotaoVoz({ onTranscricao, maxSegundos = 60 }: BotaoVozProps) {
+export function useDitado({ onTranscricao, maxSegundos = 60 }: OpcoesDitado): Ditado {
   const [suportado, setSuportado] = useState(false);
   const [estado, setEstado] = useState<Estado>('idle');
   const [erro, setErro] = useState<string | null>(null);
@@ -104,36 +115,62 @@ export default function BotaoVoz({ onTranscricao, maxSegundos = 60 }: BotaoVozPr
     }
   };
 
-  if (!suportado) return null;
+  return {
+    suportado,
+    estado,
+    erro,
+    maxSegundos,
+    alternar: () => (estado === 'gravando' ? parar() : void iniciar()),
+  };
+}
 
-  const gravando = estado === 'gravando';
-  const ocupado = estado === 'transcrevendo';
+/**
+ * Microphone toggle for a field's action slot. Stays pressed (and red) while
+ * recording; a second tap stops and transcribes.
+ */
+export default function BotaoVoz({ ditado }: { ditado: Ditado }) {
+  if (!ditado.suportado) return null;
+
+  const gravando = ditado.estado === 'gravando';
+  const ocupado = ditado.estado === 'transcrevendo';
 
   return (
-    <div className="sm:w-auto">
-      <button
-        type="button"
-        onClick={gravando ? parar : iniciar}
-        disabled={ocupado}
-        aria-pressed={gravando}
-        className={`${gravando ? 'btn border border-danger bg-danger/10 text-danger' : 'btn-secondary'} w-full sm:w-auto`}
-      >
-        <Icone nome={gravando ? 'x' : 'microfone'} tamanho={18} />
-        {gravando ? 'Parar e transcrever' : ocupado ? 'Transcrevendo…' : 'Ditar por voz'}
-      </button>
+    <IconButton
+      icone={gravando ? 'x' : 'microfone'}
+      rotulo="Ditar por voz"
+      title={gravando ? 'Parar e transcrever' : 'Ditar por voz'}
+      tom={gravando ? 'perigo' : 'primario'}
+      aria-pressed={gravando}
+      aria-busy={ocupado || undefined}
+      disabled={ocupado}
+      onClick={ditado.alternar}
+    />
+  );
+}
 
-      {gravando && (
-        <p className="mt-1 flex items-center gap-1.5 text-xs text-danger" role="status">
-          <span className="h-2 w-2 animate-pulse rounded-full bg-danger" aria-hidden />
-          Gravando… fale a consulta (máx. {maxSegundos}s).
+/**
+ * Recording status and dictation errors, announced to screen readers. The
+ * status region is always rendered so its changes are read out.
+ */
+export function AvisoVoz({ ditado }: { ditado: Ditado }) {
+  if (!ditado.suportado) return null;
+
+  return (
+    <>
+      <p role="status" aria-live="polite" className="hint flex items-center gap-1.5 empty:mt-0">
+        {ditado.estado === 'gravando' && (
+          <>
+            <span className="h-2 w-2 shrink-0 animate-pulse rounded-full bg-ds-danger" aria-hidden />
+            Gravando… fale agora (máx. {ditado.maxSegundos}s). Toque no microfone para parar.
+          </>
+        )}
+        {ditado.estado === 'transcrevendo' && 'Transcrevendo o áudio…'}
+      </p>
+      {ditado.erro && (
+        <p className="field-error" role="alert">
+          {ditado.erro}
         </p>
       )}
-
-      {erro && (
-        <p className="mt-1 text-xs text-danger" role="alert">
-          {erro}
-        </p>
-      )}
-    </div>
+    </>
   );
 }

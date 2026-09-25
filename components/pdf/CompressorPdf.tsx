@@ -5,6 +5,7 @@ import { baixarArquivo } from '@/lib/download';
 import { formatBytes } from '@/lib/ingestion/compress-client';
 import type { NivelCompressao, ResultadoCompressao } from '@/lib/pdf-tools/compressor';
 import Icone from '../ui/Icone';
+import SectionCard from '../ui/SectionCard';
 
 const NIVEIS: { valor: NivelCompressao; titulo: string; texto: string; destaque?: string }[] = [
   {
@@ -83,12 +84,13 @@ export default function CompressorPdf() {
     <div className="space-y-5">
       {!suportado && (
         <div className="alert-warn">
-          <Icone nome="alerta" className="mt-0.5 shrink-0 text-warn" />
+          <Icone nome="alerta" className="mt-0.5 shrink-0 text-ds-warn" />
           <p>Este navegador não consegue processar PDFs localmente. Use uma versão recente do Chrome, Edge, Firefox ou Safari.</p>
         </div>
       )}
 
-      <section className="card card-pad space-y-5">
+      <SectionCard numero={1} titulo="Arquivo e nível">
+        <div className="space-y-5">
         <div
           onDragOver={(e) => {
             e.preventDefault();
@@ -100,8 +102,8 @@ export default function CompressorPdf() {
             setArrastando(false);
             if (!processando) escolher(e.dataTransfer.files);
           }}
-          className={`flex flex-col items-center gap-3 rounded-2xl border-2 border-dashed px-6 py-8 text-center transition-colors ${
-            arrastando ? 'border-brand bg-brand-soft/60' : 'border-line bg-surface-2/60'
+          className={`flex flex-col items-center gap-3 rounded-control border-2 border-dashed px-6 py-8 text-center transition-colors ${
+            arrastando ? 'border-ds-primary bg-ds-primary-soft' : 'border-ds-border-input bg-ds-muted'
           }`}
         >
           <input
@@ -112,18 +114,18 @@ export default function CompressorPdf() {
             onChange={(e) => escolher(e.currentTarget.files)}
             aria-label="Selecionar PDF"
           />
-          <span className="grid h-12 w-12 place-items-center rounded-2xl bg-surface text-brand shadow-sm">
+          <span className="grid h-12 w-12 place-items-center rounded-control border-2 border-ds-primary bg-ds-surface text-ds-primary">
             <Icone nome="comprimir" tamanho={24} />
           </span>
           {arquivo ? (
             <div>
-              <p className="break-all font-semibold text-ink">{arquivo.name}</p>
-              <p className="mt-0.5 text-sm text-muted">{formatBytes(arquivo.size)}</p>
+              <p className="break-all font-semibold text-ds-text">{arquivo.name}</p>
+              <p className="mt-0.5 text-sm text-ds-subtle">{formatBytes(arquivo.size)}</p>
             </div>
           ) : (
             <div>
-              <p className="font-semibold text-ink">Arraste um PDF para cá</p>
-              <p className="mt-0.5 text-sm text-muted">O arquivo não sai do seu aparelho.</p>
+              <p className="font-semibold text-ds-text">Arraste um PDF para cá</p>
+              <p className="mt-0.5 text-sm text-ds-subtle">O arquivo não sai do seu aparelho.</p>
             </div>
           )}
           <button
@@ -142,8 +144,8 @@ export default function CompressorPdf() {
             {NIVEIS.map((opcao) => (
               <label
                 key={opcao.valor}
-                className={`relative flex cursor-pointer flex-col gap-1 rounded-xl border p-4 transition-colors ${
-                  nivel === opcao.valor ? 'border-brand bg-brand-soft/60 ring-2 ring-brand/20' : 'border-line hover:bg-surface-2'
+                className={`relative flex cursor-pointer flex-col gap-1 rounded-control border-2 p-4 transition-colors ${
+                  nivel === opcao.valor ? 'border-ds-primary bg-ds-primary-soft' : 'border-ds-line hover:bg-ds-muted'
                 }`}
               >
                 <span className="flex items-center gap-2">
@@ -154,12 +156,12 @@ export default function CompressorPdf() {
                     checked={nivel === opcao.valor}
                     onChange={() => setNivel(opcao.valor)}
                     disabled={processando}
-                    className="accent-[rgb(var(--brand))]"
+                    className="accent-ds-primary"
                   />
-                  <span className="font-semibold text-ink">{opcao.titulo}</span>
+                  <span className="font-semibold text-ds-text">{opcao.titulo}</span>
                 </span>
                 {opcao.destaque && <span className="badge-brand w-fit">{opcao.destaque}</span>}
-                <span className="text-sm text-muted">{opcao.texto}</span>
+                <span className="text-sm text-ds-subtle">{opcao.texto}</span>
               </label>
             ))}
           </div>
@@ -178,40 +180,36 @@ export default function CompressorPdf() {
         {processando && (
           <div role="status" aria-live="polite">
             <div className="flex justify-between text-sm">
-              <span className="text-ink">
+              <span className="text-ds-text">
                 {progresso && progresso.total > 0 ? `Página ${progresso.feito} de ${progresso.total}` : 'Abrindo o PDF…'}
               </span>
-              <span className="text-muted">{porcentagem}%</span>
+              <span className="text-ds-subtle">{porcentagem}%</span>
             </div>
             <div
-              className="mt-2 h-2 w-full overflow-hidden rounded-full bg-line"
+              className="mt-2 h-2 w-full overflow-hidden rounded-full bg-ds-line"
               role="progressbar"
               aria-valuemin={0}
               aria-valuemax={100}
               aria-valuenow={porcentagem}
               aria-label="Progresso da compressão"
             >
-              <div className="h-full rounded-full bg-brand transition-[width]" style={{ width: `${porcentagem}%` }} />
+              <div className="h-full rounded-full bg-ds-primary transition-[width]" style={{ width: `${porcentagem}%` }} />
             </div>
           </div>
         )}
 
         {erro && (
           <div className="alert-error" role="alert">
-            <Icone nome="alerta" className="mt-0.5 shrink-0 text-danger" />
+            <Icone nome="alerta" className="mt-0.5 shrink-0 text-ds-danger" />
             <p>{erro}</p>
           </div>
         )}
-      </section>
+        </div>
+      </SectionCard>
 
       {resultado && (
-        <section className="card card-pad" aria-labelledby="resultado-compressao">
-          <h2 id="resultado-compressao" className="section-title">
-            <Icone nome="check" tamanho={18} className="text-success" />
-            {resultado.semGanho ? 'Este PDF já estava compacto' : 'PDF comprimido'}
-          </h2>
-
-          <dl className="mt-4 grid grid-cols-3 gap-3">
+        <SectionCard numero={2} titulo={resultado.semGanho ? 'Este PDF já estava compacto' : 'PDF comprimido'}>
+          <dl className="grid grid-cols-3 gap-3">
             <div className="stat">
               <dt className="stat-label">Antes</dt>
               <dd className="stat-value text-base sm:text-xl">{formatBytes(resultado.bytesOriginais)}</dd>
@@ -222,14 +220,14 @@ export default function CompressorPdf() {
             </div>
             <div className="stat">
               <dt className="stat-label">Redução</dt>
-              <dd className={`stat-value text-base sm:text-xl ${reducao > 0 ? 'text-success' : 'text-muted'}`}>
+              <dd className={`stat-value text-base sm:text-xl ${reducao > 0 ? 'text-ds-success' : 'text-ds-subtle'}`}>
                 {reducao > 0 ? `−${reducao}%` : '0%'}
               </dd>
             </div>
           </dl>
 
           {resultado.semGanho && (
-            <p className="mt-3 text-sm text-muted">
+            <p className="mt-3 text-sm text-ds-subtle">
               Refazer as {resultado.paginas} páginas como imagem deixaria o arquivo maior. Para reduzir de verdade, use a
               compressão <strong>Máxima — somente texto</strong>.
             </p>
@@ -258,7 +256,7 @@ export default function CompressorPdf() {
               </button>
             )}
           </div>
-        </section>
+        </SectionCard>
       )}
     </div>
   );

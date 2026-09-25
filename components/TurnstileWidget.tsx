@@ -82,7 +82,7 @@ export default function TurnstileWidget({ onToken, theme = 'auto' }: TurnstileWi
       />
       <div ref={containerRef} className="mb-2" aria-label="Verificação anti-bot" />
       <noscript>
-        <p className="text-sm text-red-700">
+        <p className="text-sm text-ds-danger">
           A verificação anti-bot requer JavaScript. Ative o JavaScript para consultar.
         </p>
       </noscript>

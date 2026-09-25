@@ -54,8 +54,8 @@ jobs:
   smoke:
     name: Checagem de saúde (produção)
     needs: quality
-    # Only meaningful after a production deploy, which Vercel triggers on push.
-    if: github.event_name == 'workflow_dispatch' || github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main'
+    # Only meaningful after a production deploy: Vercel promotes master only.
+    if: github.event_name == 'workflow_dispatch' || github.ref == 'refs/heads/master'
     runs-on: ubuntu-latest
     env:
       # Override with the repository variable SMOKE_BASE_URL when the domain changes.

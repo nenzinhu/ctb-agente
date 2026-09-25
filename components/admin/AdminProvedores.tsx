@@ -168,8 +168,8 @@ export default function AdminProvedores() {
     <div className="card p-6 space-y-4">
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div className="flex-1 min-w-[260px]">
-          <h2 className="text-xl font-bold text-ink">Provedores de IA (gratuitos)</h2>
-          <p className="text-sm text-muted mt-1">
+          <h2 className="text-xl font-bold text-ds-text">Provedores de IA (gratuitos)</h2>
+          <p className="text-sm text-ds-subtle mt-1">
             Escolha o modelo que a IA usa primeiro. Se ele falhar, os outros provedores configurados
             assumem nesta ordem, cada um com o seu modelo padrão.
           </p>
@@ -177,14 +177,14 @@ export default function AdminProvedores() {
         <button
           onClick={testarTodos}
           disabled={progresso !== null}
-          className="px-4 py-2 rounded bg-brand text-white text-sm font-semibold hover:opacity-90 disabled:opacity-60"
+          className="btn-primary btn-sm"
         >
           {progresso ? `Testando ${progresso.feitos}/${progresso.total}…` : 'Testar todos os modelos'}
         </button>
       </div>
 
-      <div className="rounded-lg border border-line bg-surface-2 p-3 text-sm flex flex-wrap items-center gap-3">
-        <span className="text-muted">
+      <div className="rounded-lg border border-ds-line bg-ds-muted p-3 text-sm flex flex-wrap items-center gap-3">
+        <span className="text-ds-subtle">
           Em uso:{' '}
           <strong>
             {preferencia ? `${nomePreferido ?? preferencia.providerId} — ${preferencia.modelo}` : 'ordem padrão'}
@@ -193,7 +193,7 @@ export default function AdminProvedores() {
         {preferencia && (
           <button
             onClick={() => salvarPreferencia(null)}
-            className="text-xs underline text-muted hover:text-ink"
+            className="text-xs underline text-ds-subtle hover:text-ds-text"
           >
             voltar à ordem padrão
           </button>
@@ -201,12 +201,12 @@ export default function AdminProvedores() {
       </div>
 
       {erro && (
-        <p className="text-sm text-danger" role="alert">
+        <p className="text-sm text-ds-danger" role="alert">
           {erro}
         </p>
       )}
       {aviso && (
-        <p className="text-sm text-success" role="status">
+        <p className="text-sm text-ds-success" role="status">
           {aviso}
         </p>
       )}
@@ -223,14 +223,14 @@ export default function AdminProvedores() {
             .filter((p): p is PingResult => Boolean(p));
 
           return (
-            <li key={provider.id} className="border border-line rounded-lg p-4 space-y-3">
+            <li key={provider.id} className="border border-ds-line rounded-lg p-4 space-y-3">
               <div className="flex flex-wrap items-center gap-3">
-                <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-brand text-white font-bold">
+                <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-ds-primary font-mono font-bold text-ds-on-solid">
                   {provider.ordem}
                 </span>
                 <div className="flex-1 min-w-[200px]">
-                  <p className="font-semibold text-ink">{provider.nome}</p>
-                  <p className="text-xs text-muted">
+                  <p className="font-semibold text-ds-text">{provider.nome}</p>
+                  <p className="text-xs text-ds-subtle">
                     {provider.papel} · variável {provider.envVar}
                     {provider.cadastro && (
                       <>
@@ -239,7 +239,7 @@ export default function AdminProvedores() {
                           href={provider.cadastro}
                           target="_blank"
                           rel="noreferrer"
-                          className="underline hover:text-ink"
+                          className="underline hover:text-ds-text"
                         >
                           criar chave grátis
                         </a>
@@ -247,7 +247,7 @@ export default function AdminProvedores() {
                     )}
                   </p>
                 </div>
-                <span className={provider.configurado ? 'badge bg-success/10 text-success' : 'badge-neutral'}>
+                <span className={provider.configurado ? 'badge bg-ds-success/10 text-ds-success' : 'badge-neutral'}>
                   {provider.configurado ? 'configurado' : 'sem chave'}
                 </span>
               </div>
@@ -260,7 +260,7 @@ export default function AdminProvedores() {
                   id={`modelo-${provider.id}`}
                   value={modelo}
                   onChange={(e) => setSelecionado((atual) => ({ ...atual, [provider.id]: e.target.value }))}
-                  className="flex-1 min-w-[220px] rounded-md border border-line px-2 py-1.5 text-sm"
+                  className="input min-h-[40px] min-w-[200px] flex-1 py-1.5 text-sm"
                 >
                   {opcoes.map((m) => (
                     <option key={m} value={m}>
@@ -271,7 +271,7 @@ export default function AdminProvedores() {
                 <button
                   onClick={() => testarModelo(provider.id, modelo)}
                   disabled={testando.has(chave(provider.id, modelo))}
-                  className="px-3 py-1.5 rounded border border-brand text-brand text-sm font-semibold hover:bg-brand/10 disabled:opacity-60"
+                  className="btn-secondary btn-sm"
                 >
                   {testando.has(chave(provider.id, modelo)) ? 'Testando…' : 'Testar'}
                 </button>
@@ -279,14 +279,14 @@ export default function AdminProvedores() {
                   onClick={() => salvarPreferencia({ providerId: provider.id, modelo })}
                   disabled={!provider.configurado || emUso}
                   title={provider.configurado ? undefined : `Defina ${provider.envVar} primeiro`}
-                  className="px-3 py-1.5 rounded bg-brand text-white text-sm font-semibold hover:opacity-90 disabled:opacity-50"
+                  className="btn-primary btn-sm"
                 >
                   {emUso ? 'Em uso' : 'Usar este'}
                 </button>
                 {provider.configurado && (
                   <button
                     onClick={() => verCatalogo(provider.id)}
-                    className="text-xs underline text-muted hover:text-ink"
+                    className="text-xs underline text-ds-subtle hover:text-ds-text"
                   >
                     ver todos os modelos grátis
                   </button>
@@ -294,13 +294,13 @@ export default function AdminProvedores() {
               </div>
 
               {vivo && (
-                <p className={`text-xs ${vivo.erro ? 'text-danger' : 'text-muted'}`}>
+                <p className={`text-xs ${vivo.erro ? 'text-ds-danger' : 'text-ds-subtle'}`}>
                   {vivo.erro ?? `${vivo.modelos.length} modelos grátis no catálogo atual — escolha na lista acima.`}
                 </p>
               )}
 
               {ping && (
-                <p className={`text-sm ${ping.ok ? 'text-success' : 'text-danger'}`} role="status">
+                <p className={`text-sm ${ping.ok ? 'text-ds-success' : 'text-ds-danger'}`} role="status">
                   {ping.ok
                     ? `✅ ${ping.modeloUsado} respondeu em ${ping.latenciaMs} ms ("${ping.resposta}")`
                     : `❌ ${ping.modeloUsado}: ${ping.erro}`}
@@ -310,7 +310,7 @@ export default function AdminProvedores() {
               {resultados.length > 1 && (
                 <ul className="text-xs space-y-0.5">
                   {resultados.map((r) => (
-                    <li key={r.modeloUsado} className={r.ok ? 'text-success' : 'text-danger'}>
+                    <li key={r.modeloUsado} className={r.ok ? 'text-ds-success' : 'text-ds-danger'}>
                       {r.ok ? '✅' : '❌'} {r.modeloUsado} —{' '}
                       {r.ok ? `${r.latenciaMs} ms` : r.erro}
                     </li>

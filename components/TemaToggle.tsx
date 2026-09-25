@@ -61,12 +61,10 @@ export default function TemaToggle() {
       aria-pressed={ativo}
       aria-label={ativo ? 'Modo sol: ativo' : 'Modo sol'}
       title="Alto contraste para ler sob luz do sol"
-      className={`inline-flex min-h-[40px] items-center gap-1.5 rounded-full px-3 text-sm font-semibold transition-colors ${
-        ativo ? 'bg-accent text-black ring-2 ring-black' : 'text-muted hover:bg-surface-2 hover:text-ink'
-      }`}
+      className="header-pill"
     >
-      <Icone nome="sol" tamanho={18} />
-      <span className="hidden sm:inline">{ativo ? 'Sol: ativo' : 'Modo sol'}</span>
+      <Icone nome="sol" tamanho={17} />
+      <span className="hidden md:inline">{ativo ? 'Sol: ativo' : 'Modo sol'}</span>
     </button>
   );
 }

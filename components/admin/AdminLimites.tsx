@@ -95,16 +95,16 @@ export default function AdminLimites() {
   };
 
   if (!dados) {
-    return <p className="text-muted">Carregando limites…</p>;
+    return <p className="text-ds-subtle">Carregando limites…</p>;
   }
 
   return (
     <div className="space-y-6">
       <div className="card p-6 space-y-6">
-        <h2 className="text-xl font-bold text-ink">Limites de uso</h2>
+        <h2 className="text-xl font-bold text-ds-text">Limites de uso</h2>
 
         <div>
-          <label htmlFor="limite" className="block text-sm font-medium text-muted mb-2">
+          <label htmlFor="limite" className="block text-sm font-medium text-ds-subtle mb-2">
             Consultas por IP por hora: <strong>{limite}</strong>
           </label>
           <input
@@ -114,9 +114,9 @@ export default function AdminLimites() {
             max={200}
             value={limite}
             onChange={(e) => setLimite(Number(e.target.value))}
-            className="w-full"
+            className="w-full accent-ds-primary"
           />
-          <p className="text-xs text-muted mt-1">
+          <p className="text-xs text-ds-subtle mt-1">
             Padrão da especificação: 30 consultas/IP/hora.
           </p>
         </div>
@@ -127,11 +127,11 @@ export default function AdminLimites() {
             type="checkbox"
             checked={turnstile}
             onChange={(e) => setTurnstile(e.target.checked)}
-            className="mt-1"
+            className="mt-1 h-4 w-4 accent-ds-primary"
           />
-          <label htmlFor="turnstile" className="text-sm text-muted">
+          <label htmlFor="turnstile" className="text-sm text-ds-subtle">
             <span className="font-medium">Turnstile ativo</span>
-            <span className="block text-xs text-muted">
+            <span className="block text-xs text-ds-subtle">
               {dados.turnstileConfigurado
                 ? 'Secret configurada no servidor.'
                 : 'TURNSTILE_SECRET_KEY ausente: a verificação é ignorada.'}{' '}
@@ -143,24 +143,24 @@ export default function AdminLimites() {
         </div>
 
         {erro && (
-          <p className="text-sm text-danger" role="alert">
+          <p className="text-sm text-ds-danger" role="alert">
             {erro}
           </p>
         )}
-        {mensagem && <p className="text-sm text-success">{mensagem}</p>}
+        {mensagem && <p className="text-sm text-ds-success">{mensagem}</p>}
 
         <button
           onClick={salvar}
           disabled={salvando}
-          className="bg-brand hover:bg-brand/90 disabled:opacity-60 text-white font-semibold px-6 py-2 rounded-lg"
+          className="btn-primary"
         >
           {salvando ? 'Salvando…' : 'Salvar limites'}
         </button>
       </div>
 
       <div className="card p-6 space-y-4">
-        <h2 className="text-xl font-bold text-ink">Exceções de IP</h2>
-        <p className="text-sm text-muted">
+        <h2 className="text-xl font-bold text-ds-text">Exceções de IP</h2>
+        <p className="text-sm text-ds-subtle">
           IPs bloqueados recebem 403 e não consomem cota.
         </p>
 
@@ -169,30 +169,30 @@ export default function AdminLimites() {
             value={novoIp}
             onChange={(e) => setNovoIp(e.target.value)}
             placeholder="203.0.113.10"
-            className="px-3 py-2 border border-line rounded-lg"
+            className="input"
           />
           <input
             value={motivo}
             onChange={(e) => setMotivo(e.target.value)}
             placeholder="Motivo (opcional)"
-            className="px-3 py-2 border border-line rounded-lg"
+            className="input"
           />
           <button
             onClick={bloquear}
-            className="border border-red-600 text-danger font-semibold rounded-lg px-4 py-2 hover:bg-danger/10"
+            className="btn-danger"
           >
             Bloquear IP
           </button>
         </div>
 
         {dados.ipBloqueados.length === 0 ? (
-          <p className="text-sm text-muted">Nenhum IP bloqueado.</p>
+          <p className="text-sm text-ds-subtle">Nenhum IP bloqueado.</p>
         ) : (
-          <ul className="divide-y divide-line">
+          <ul className="divide-y divide-ds-line">
             {dados.ipBloqueados.map((ip) => (
               <li key={ip} className="flex items-center justify-between py-2 text-sm">
                 <span className="font-mono">{ip}</span>
-                <button onClick={() => desbloquear(ip)} className="text-brand underline">
+                <button onClick={() => desbloquear(ip)} className="text-ds-primary underline">
                   Desbloquear
                 </button>
               </li>

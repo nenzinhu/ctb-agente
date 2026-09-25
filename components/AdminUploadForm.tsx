@@ -198,7 +198,7 @@ export default function AdminUploadForm({ onUploadSuccess, colecao = 'ctb', comp
             <label
               key={opcao.value}
               className={`flex cursor-pointer gap-2.5 rounded-xl border p-3 text-sm transition-colors ${
-                compressao === opcao.value ? 'border-brand bg-brand-soft/60' : 'border-line hover:bg-surface-2'
+                compressao === opcao.value ? 'border-ds-primary bg-ds-primary-soft' : 'border-ds-line hover:bg-ds-muted'
               }`}
             >
               <input
@@ -208,11 +208,11 @@ export default function AdminUploadForm({ onUploadSuccess, colecao = 'ctb', comp
                 checked={compressao === opcao.value}
                 onChange={() => setCompressao(opcao.value)}
                 disabled={isUploading || (opcao.value === 'gzip' && !compressionSupported())}
-                className="mt-0.5 accent-[rgb(var(--brand))]"
+                className="mt-0.5 accent-ds-primary"
               />
               <span>
-                <span className="block font-semibold text-ink">{opcao.label}</span>
-                <span className="mt-0.5 block text-xs text-muted">{opcao.ajuda}</span>
+                <span className="block font-semibold text-ds-text">{opcao.label}</span>
+                <span className="mt-0.5 block text-xs text-ds-subtle">{opcao.ajuda}</span>
               </span>
             </label>
           ))}
@@ -233,8 +233,8 @@ export default function AdminUploadForm({ onUploadSuccess, colecao = 'ctb', comp
           setIsDragging(false);
           if (!isUploading && e.dataTransfer.files.length > 0) void uploadFiles(e.dataTransfer.files);
         }}
-        className={`flex flex-col items-center gap-3 rounded-2xl border-2 border-dashed px-6 py-8 text-center transition-colors ${
-          isDragging ? 'border-brand bg-brand-soft/60' : 'border-line bg-surface-2/60'
+        className={`flex flex-col items-center gap-3 rounded-control border-2 border-dashed px-6 py-8 text-center transition-colors ${
+          isDragging ? 'border-ds-primary bg-ds-primary-soft' : 'border-ds-border-input bg-ds-muted'
         } ${isUploading ? 'opacity-60' : ''}`}
       >
         <input
@@ -250,12 +250,12 @@ export default function AdminUploadForm({ onUploadSuccess, colecao = 'ctb', comp
           className="hidden"
           aria-label="Selecionar documentos"
         />
-        <span className="grid h-12 w-12 place-items-center rounded-2xl bg-surface text-brand shadow-sm">
+        <span className="grid h-12 w-12 place-items-center rounded-control border-2 border-ds-primary bg-ds-surface text-ds-primary">
           <Icone nome="upload" tamanho={24} />
         </span>
         <div>
-          <p className="font-semibold text-ink">Arraste os arquivos para cá</p>
-          <p className="mt-0.5 text-sm text-muted">
+          <p className="font-semibold text-ds-text">Arraste os arquivos para cá</p>
+          <p className="mt-0.5 text-sm text-ds-subtle">
             {FORMATOS_ACEITOS_TEXTO} · vários de uma vez
           </p>
         </div>
@@ -271,7 +271,7 @@ export default function AdminUploadForm({ onUploadSuccess, colecao = 'ctb', comp
 
       {isUploading && (
         <div className="panel p-4" role="status" aria-live="polite">
-          <p className="text-sm font-medium text-ink">
+          <p className="text-sm font-medium text-ds-text">
             {stage ?? 'Processando'}
             {fileProgress && fileProgress.total > 1 ? ` · arquivo ${fileProgress.current} de ${fileProgress.total}` : ''}…
           </p>
@@ -279,8 +279,8 @@ export default function AdminUploadForm({ onUploadSuccess, colecao = 'ctb', comp
               with no per-chunk progress reporting, so a real percentage
               isn't available — a fake bar stuck at a fixed width reads as
               broken. */}
-          <div className="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-line">
-            <div className="h-full w-1/3 animate-pulse rounded-full bg-brand" />
+          <div className="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-ds-line">
+            <div className="h-full w-1/3 animate-pulse rounded-full bg-ds-primary" />
           </div>
           <p className="hint">Documentos grandes podem levar até um minuto — não feche esta aba.</p>
         </div>
@@ -288,13 +288,13 @@ export default function AdminUploadForm({ onUploadSuccess, colecao = 'ctb', comp
 
       {sucesso && (
         <div className="alert-success" role="status">
-          <Icone nome="check" className="mt-0.5 shrink-0 text-success" />
+          <Icone nome="check" className="mt-0.5 shrink-0 text-ds-success" />
           <div className="min-w-0">
             <p className="font-semibold">{sucesso}</p>
-            <ul className="mt-1 space-y-1 text-muted">
+            <ul className="mt-1 space-y-1 text-ds-subtle">
               {resultados.map((r) => (
                 <li key={r.fileName} className="break-words">
-                  <span className="font-medium text-ink">{r.titulo ?? r.fileName}</span>:{' '}
+                  <span className="font-medium text-ds-text">{r.titulo ?? r.fileName}</span>:{' '}
                   {r.duplicado
                     ? 'já estava indexado, nada mudou'
                     : `${r.trechos} trechos indexados${r.substituidos > 0 ? ', versão anterior substituída' : ''}`}
@@ -314,7 +314,7 @@ export default function AdminUploadForm({ onUploadSuccess, colecao = 'ctb', comp
 
       {erros.map((erro) => (
         <div key={erro} className="alert-error" role="alert">
-          <Icone nome="alerta" className="mt-0.5 shrink-0 text-danger" />
+          <Icone nome="alerta" className="mt-0.5 shrink-0 text-ds-danger" />
           <p className="min-w-0 break-words">{erro}</p>
         </div>
       ))}

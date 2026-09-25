@@ -1,9 +1,17 @@
 import type { Metadata, Viewport } from 'next';
-import { Inter } from 'next/font/google';
+import { IBM_Plex_Mono, IBM_Plex_Sans } from 'next/font/google';
 import './globals.css';
-import NavBar from '@/components/NavBar';
+import Header from '@/components/Header';
 
-const inter = Inter({ subsets: ['latin'], display: 'swap', variable: '--font-sans' });
+// Running text in Plex Sans (variable, one file); titles, labels, controls
+// and navigation in Plex Mono.
+const plexSans = IBM_Plex_Sans({ subsets: ['latin'], display: 'swap', variable: '--font-sans' });
+const plexMono = IBM_Plex_Mono({
+  subsets: ['latin'],
+  weight: ['400', '600', '700'],
+  display: 'swap',
+  variable: '--font-mono',
+});
 
 export const metadata: Metadata = {
   title: { default: 'CTB Agente', template: '%s · CTB Agente' },
@@ -25,15 +33,15 @@ export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
   viewportFit: 'cover',
-  themeColor: [
-    { media: '(prefers-color-scheme: light)', color: '#1a5f3f' },
-    { media: '(prefers-color-scheme: dark)', color: '#09100d' },
-  ],
+  // Meta tags can't read CSS variables: this is the top of the header,
+  // --ds-header-from under --ds-header-scrim (app/globals.css).
+  themeColor: '#01552e',
 };
 
-// Applies the saved "modo sol" before the first paint, so the page never
-// flashes the default palette under the sun. Mirrors components/TemaToggle.tsx.
-const TEMA_SALVO = `try{if(localStorage.getItem('ctb-tema')==='sol'){document.documentElement.dataset.tema='sol'}}catch(e){}`;
+// Applies the saved themes before the first paint, so the page never flashes
+// the wrong palette: "modo sol" (components/TemaToggle.tsx) and the dark theme
+// (components/TemaEscuroToggle.tsx, which follows the system until chosen).
+const TEMA_SALVO = `(function(){var d=document.documentElement,t=null,e=null;try{t=localStorage.getItem('ctb-tema');e=localStorage.getItem('ctb-escuro')}catch(x){}if(t==='sol')d.dataset.tema='sol';if(e==='1'||(e!=='0'&&window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches))d.classList.add('dark')})()`;
 
 export default function RootLayout({
   children,
@@ -41,18 +49,18 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="pt-BR" className={inter.variable} suppressHydrationWarning>
+    <html lang="pt-BR" className={`${plexSans.variable} ${plexMono.variable}`} suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: TEMA_SALVO }} />
       </head>
       <body className="min-h-screen font-sans">
         <a
           href="#conteudo"
-          className="sr-only focus:not-sr-only focus:fixed focus:left-3 focus:top-3 focus:z-[60] focus:rounded-lg focus:bg-surface focus:px-4 focus:py-2 focus:text-ink focus:shadow-lg"
+          className="sr-only focus:not-sr-only focus:fixed focus:left-3 focus:top-3 focus:z-[60] focus:rounded-control focus:bg-ds-surface focus:px-4 focus:py-2 focus:font-mono focus:text-sm focus:font-semibold focus:uppercase focus:text-ds-text focus:shadow-overlay"
         >
           Pular para o conteúdo
         </a>
-        <NavBar />
+        <Header />
         <div id="conteudo" tabIndex={-1} className="outline-none">
           {children}
         </div>

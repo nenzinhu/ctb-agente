@@ -85,7 +85,7 @@ export default function BotoesCartao({ card, onChange }: BotoesCartaoProps) {
         Compartilhar
       </button>
 
-      <span role="status" aria-live="polite" className="text-xs text-muted">
+      <span role="status" aria-live="polite" className="text-xs text-ds-subtle">
         {aviso}
       </span>
     </div>

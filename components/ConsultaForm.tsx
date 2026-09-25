@@ -4,13 +4,20 @@ import { useRouter } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 import { saveQuery } from '@/lib/search/local-storage';
 import TurnstileWidget, { turnstileConfigurado } from './TurnstileWidget';
-import BotaoVoz from './BotaoVoz';
-import Icone from './ui/Icone';
+import BotaoVoz, { AvisoVoz, useDitado } from './BotaoVoz';
+import Field from './ui/Field';
+import PrimaryButton from './ui/PrimaryButton';
 
 interface ConsultaFormProps {
   autoFocus?: boolean;
   /** Ready-made questions shown as chips; a tap runs the consultation. */
   exemplos?: string[];
+}
+
+/** A message for the agent; `doCampo` when it is about what was typed. */
+interface Erro {
+  mensagem: string;
+  doCampo: boolean;
 }
 
 export const TURNSTILE_STORAGE_KEY = 'ctb-turnstile-token';
@@ -22,9 +29,15 @@ export default function ConsultaForm({ autoFocus = false, exemplos = [] }: Consu
   const [query, setQuery] = useState('');
   const [loading, setLoading] = useState(false);
   const [token, setToken] = useState<string | null>(null);
-  const [erro, setErro] = useState<string | null>(null);
+  const [erro, setErro] = useState<Erro | null>(null);
   const campoRef = useRef<HTMLTextAreaElement>(null);
   const router = useRouter();
+  const ditado = useDitado({
+    onTranscricao: (texto) => {
+      setQuery((atual) => (atual ? `${atual} ${texto}` : texto));
+      setErro(null);
+    },
+  });
 
   // "Nova consulta" links land here as /?form=1: jump straight to the field.
   // Not on every visit — on a phone that would pop the keyboard over the page.
@@ -37,12 +50,12 @@ export default function ConsultaForm({ autoFocus = false, exemplos = [] }: Consu
     if (!texto) return;
 
     if (texto.length > LIMITE_CONSULTA) {
-      setErro(`Consulta muito longa: o limite é de ${LIMITE_CONSULTA} caracteres.`);
+      setErro({ mensagem: `Consulta muito longa: o limite é de ${LIMITE_CONSULTA} caracteres.`, doCampo: true });
       return;
     }
 
     if (turnstileConfigurado && !token) {
-      setErro('Aguarde a verificação anti-bot e tente novamente.');
+      setErro({ mensagem: 'Aguarde a verificação anti-bot e tente novamente.', doCampo: false });
       return;
     }
 
@@ -69,14 +82,13 @@ export default function ConsultaForm({ autoFocus = false, exemplos = [] }: Consu
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-3">
-      <label htmlFor="consulta" className="label">
-        Sua consulta
-      </label>
-      <div className="relative">
-        <textarea
+    <form onSubmit={handleSubmit} className="space-y-4">
+      <div>
+        <Field
+          as="textarea"
           id="consulta"
           ref={campoRef}
+          label="Sua consulta"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           onKeyDown={(e) => {
@@ -91,38 +103,36 @@ export default function ConsultaForm({ autoFocus = false, exemplos = [] }: Consu
           autoFocus={autoFocus}
           enterKeyHint="search"
           rows={3}
-          className="input min-h-[96px] resize-none pr-4 text-base"
-          aria-describedby="consulta-dica"
+          controlClassName="min-h-[96px] resize-none"
+          hint="Código MBFT, artigo ou a situação com suas palavras. Enter para consultar."
+          erro={erro?.doCampo ? erro.mensagem : null}
+          acao={<BotaoVoz ditado={ditado} />}
         />
+        <AvisoVoz ditado={ditado} />
       </div>
-      <p id="consulta-dica" className="hint">
-        Código MBFT, artigo ou a situação com suas palavras. Enter para consultar.
-      </p>
 
-      <div className="flex flex-col gap-2 sm:flex-row">
-        <button type="submit" disabled={loading || !query.trim()} className="btn-primary flex-1 text-base">
-          <Icone nome="busca" tamanho={18} />
-          {loading ? 'Consultando...' : 'Consultar'}
-        </button>
-        <BotaoVoz
-          onTranscricao={(texto) => {
-            setQuery((atual) => (atual ? `${atual} ${texto}` : texto));
-            setErro(null);
-          }}
-        />
-      </div>
+      <PrimaryButton
+        type="submit"
+        icone="busca"
+        carregando={loading}
+        textoCarregando="Consultando..."
+        disabled={!query.trim()}
+        className="w-full text-base"
+      >
+        Consultar
+      </PrimaryButton>
 
       <TurnstileWidget onToken={setToken} />
 
-      {erro && (
-        <p className="text-sm font-medium text-danger" role="alert">
-          {erro}
+      {erro && !erro.doCampo && (
+        <p className="field-error" role="alert">
+          {erro.mensagem}
         </p>
       )}
 
       {exemplos.length > 0 && (
-        <div className="pt-2">
-          <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-muted">Experimente</p>
+        <div className="pt-1">
+          <p className="label">Experimente</p>
           <div className="flex flex-wrap gap-2">
             {exemplos.map((exemplo) => (
               <button
