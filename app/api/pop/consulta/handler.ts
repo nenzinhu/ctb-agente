@@ -8,7 +8,7 @@ import { buscarTrechos } from '@/lib/search/trechos';
 import { MigrationPendingError } from '@/lib/ingestion/documents';
 import { ProviderChain } from '@/lib/ai/providers/chain';
 import { getCachedValue, setCachedValue } from '@/lib/response/cache';
-import { ehSemResposta, montarPrompt, validarCitacoes, type FontePop, type RespostaPop } from '@/lib/rag/pop';
+import { ehSemResposta, montarPrompt, montarPromptGeral, validarCitacoes, type FontePop, type RespostaPop } from '@/lib/rag/pop';
 
 export type PopErro = 'rate_limit_exceeded' | 'ip_blocked' | 'turnstile_failed' | 'migration_pending' | 'internal_error';
 
@@ -20,15 +20,15 @@ export interface ResultadoPop {
 
 const LIMITE_FONTES = 6;
 // The route has 60s; a slow free model must not take the excerpts down with it.
-const TEMPO_IA_MS = 30_000;
+// Per AI call; the grounded answer and the general fallback each get one.
+const TEMPO_IA_MS = 18_000;
 
 function chaveCache(pergunta: string): string {
   return `pop:${pergunta.toLowerCase().replace(/\s+/g, ' ').trim()}`;
 }
 
 async function gerarResposta(
-  pergunta: string,
-  fontes: FontePop[]
+  prompt: string
 ): Promise<{ texto: string; modelo: string } | { erro: string } | null> {
   const chain = new ProviderChain();
   if (chain.ativos.length === 0) return null;
@@ -36,7 +36,7 @@ async function gerarResposta(
   let timer: ReturnType<typeof setTimeout> | undefined;
   try {
     const resultado = await Promise.race([
-      chain.generateDetailed(montarPrompt(pergunta, fontes), 900, 0.2),
+      chain.generateRapido(prompt, 800, 0.2),
       new Promise<never>((_, reject) => {
         timer = setTimeout(() => reject(new Error('tempo esgotado')), TEMPO_IA_MS);
       }),
@@ -106,9 +106,11 @@ export async function responderPop(pergunta: string, ip: string, turnstileToken?
     let aviso: string | undefined;
     let semResposta = fontes.length === 0;
 
+    let semIA = false;
     if (fontes.length > 0) {
-      const gerada = await gerarResposta(filtrada, fontes);
+      const gerada = await gerarResposta(montarPrompt(filtrada, fontes));
       if (gerada === null) {
+        semIA = true;
         aviso = 'Nenhum provedor de IA configurado: veja abaixo os trechos mais relevantes dos POPs.';
       } else if ('erro' in gerada) {
         aviso = 'A IA não respondeu agora. Os trechos mais relevantes dos POPs estão abaixo.';
@@ -119,6 +121,19 @@ export async function responderPop(pergunta: string, ip: string, turnstileToken?
       }
     }
 
+    // The POPs don't cover it: answer from the models' general knowledge,
+    // flagged as such in the UI.
+    let geral = false;
+    if (semResposta && !semIA) {
+      const gerada = await gerarResposta(montarPromptGeral(filtrada));
+      if (gerada && !('erro' in gerada) && gerada.texto.trim()) {
+        resposta = validarCitacoes(gerada.texto, 0).texto;
+        modelo = gerada.modelo;
+        geral = true;
+        semResposta = false;
+      }
+    }
+
     const final: RespostaPop = {
       pergunta: filtrada,
       resposta,
@@ -126,6 +141,7 @@ export async function responderPop(pergunta: string, ip: string, turnstileToken?
       fontes,
       modelo,
       aviso,
+      geral,
       cache_hit: false,
       tempo_ms: Date.now() - inicio,
     };

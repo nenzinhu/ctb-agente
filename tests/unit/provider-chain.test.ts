@@ -75,6 +75,28 @@ describe('ProviderChain', () => {
     }
   });
 
+  it('generateRapido keeps the first model that answers', async () => {
+    for (const p of PROVIDERS) delete process.env[p.envVar];
+    process.env.GROQ_API_KEY = 'k';
+    process.env.MISTRAL_API_KEY = 'k';
+
+    const originalFetch = global.fetch;
+    (global as { fetch: unknown }).fetch = jest.fn(async (url: string) => {
+      // Groq is slow, Mistral answers at once
+      if (url.includes('groq')) await new Promise((r) => setTimeout(r, 200));
+      const content = url.includes('groq') ? 'lenta' : 'rápida';
+      return { ok: true, json: async () => ({ choices: [{ message: { content } }] }) };
+    });
+
+    try {
+      const resultado = await new ProviderChain().generateRapido('x', 8);
+      expect(resultado.texto).toBe('rápida');
+      expect(resultado.provedor).toBe('Mistral');
+    } finally {
+      (global as { fetch: unknown }).fetch = originalFetch;
+    }
+  });
+
   it('explains itself when no provider is configured', async () => {
     for (const p of PROVIDERS) delete process.env[p.envVar];
 

@@ -20,6 +20,7 @@ export interface TrechoEncontrado {
 type Linha = Omit<TrechoEncontrado, 'score'>;
 
 const CANDIDATOS = 20;
+const TEMPO_EMBEDDING_MS = 4_000;
 
 async function porTexto(consulta: string, colecao: Colecao): Promise<Linha[]> {
   const { data, error } = await supabaseAdmin.rpc('search_trechos_texto', {
@@ -38,7 +39,14 @@ async function porTexto(consulta: string, colecao: Colecao): Promise<Linha[]> {
 async function porVetor(consulta: string, colecao: Colecao): Promise<Linha[]> {
   if (!process.env.MISTRAL_API_KEY) return [];
   try {
-    const embedding = await embeddingChain.embed(consulta);
+    // Word search answers in ~1s: don't let a slow embedding hold it back.
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    const embedding = await Promise.race([
+      embeddingChain.embed(consulta),
+      new Promise<never>((_, reject) => {
+        timer = setTimeout(() => reject(new Error('embedding demorou demais')), TEMPO_EMBEDDING_MS);
+      }),
+    ]).finally(() => clearTimeout(timer));
     const { data, error } = await supabaseAdmin.rpc('search_trechos_vetor', {
       query_embedding: embedding,
       p_colecao: colecao,

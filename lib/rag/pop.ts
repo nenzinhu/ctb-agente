@@ -22,6 +22,8 @@ export interface RespostaPop {
   /** "Provedor · modelo" that wrote the answer. */
   modelo: string | null;
   aviso?: string;
+  /** Written from the model's general knowledge: the indexed POPs had nothing. */
+  geral?: boolean;
   cache_hit: boolean;
   tempo_ms: number;
 }
@@ -54,6 +56,27 @@ export function montarPrompt(pergunta: string, fontes: FontePop[]): string {
     '',
     'TRECHOS:',
     trechos,
+    '',
+    `PERGUNTA: ${pergunta}`,
+    '',
+    'RESPOSTA:',
+  ].join('\n');
+}
+
+/**
+ * Prompt for when the indexed POPs have nothing on the question: the model
+ * answers from general police doctrine, without pretending to quote a POP.
+ */
+export function montarPromptGeral(pergunta: string): string {
+  return [
+    'Você é um instrutor de procedimentos operacionais da Polícia Militar (Brasil).',
+    'Os POPs indexados da PMSC não trazem a resposta para a PERGUNTA abaixo.',
+    'Responda com o procedimento padrão usual na doutrina policial brasileira e na legislação aplicável.',
+    '',
+    'Regras:',
+    '1. Não diga que a resposta vem de um POP e não invente número de POP, seção ou página.',
+    '2. Cite leis apenas quando tiver certeza (ex.: CTB, CPP, Súmula Vinculante 11).',
+    '3. Use passos numerados curtos; no máximo 12 linhas, em português do Brasil, sem saudações.',
     '',
     `PERGUNTA: ${pergunta}`,
     '',

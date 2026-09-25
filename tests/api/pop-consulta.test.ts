@@ -30,7 +30,7 @@ jest.mock('../../lib/ai/providers/chain', () => ({
     get ativos() {
       return provedores;
     },
-    generateDetailed: (...args: unknown[]) => generateDetailed(...args),
+    generateRapido: (...args: unknown[]) => generateDetailed(...args),
   })),
 }));
 
@@ -110,12 +110,34 @@ describe('POST /api/pop/consulta', () => {
     expect(corpo.aviso).toMatch(/não respondeu/);
   });
 
-  it('reports "not found" and logs it as unanswered when nothing matches', async () => {
+  it('answers from the models, flagged as general, when the POPs have nothing', async () => {
     buscarTrechos.mockResolvedValue([]);
+    generateDetailed.mockResolvedValue({ texto: '1. Isole o local.', provedor: 'Groq', modelo: 'llama' });
+    const corpo = await (await perguntar('Pergunta sem relação')).json();
+
+    expect(corpo.geral).toBe(true);
+    expect(corpo.semResposta).toBe(false);
+    expect(corpo.resposta).toBe('1. Isole o local.');
+    expect(generateDetailed.mock.calls[0][0]).toMatch(/não trazem a resposta/);
+  });
+
+  it('also falls back to the general answer when the excerpts do not answer', async () => {
+    generateDetailed
+      .mockResolvedValueOnce({ texto: 'Não encontrei essa informação nos POPs indexados.', provedor: 'Groq', modelo: 'llama' })
+      .mockResolvedValueOnce({ texto: 'Procedimento geral [3].', provedor: 'Groq', modelo: 'llama' });
+    const corpo = await (await perguntar('Como abordar uma pessoa?')).json();
+
+    expect(corpo.geral).toBe(true);
+    expect(corpo.resposta).toBe('Procedimento geral.');
+    expect(corpo.fontes).toHaveLength(2);
+  });
+
+  it('reports "not found" and logs it as unanswered when nothing matches and the AI fails', async () => {
+    buscarTrechos.mockResolvedValue([]);
+    generateDetailed.mockRejectedValue(new Error('All providers failed'));
     const corpo = await (await perguntar('Pergunta sem relação')).json();
 
     expect(corpo.semResposta).toBe(true);
-    expect(generateDetailed).not.toHaveBeenCalled();
     expect(recordQuery).toHaveBeenCalledWith('10.0.0.1', 'Pergunta sem relação', expect.objectContaining({ tipo: 'pop', sucesso: false }), 'r1');
   });
 

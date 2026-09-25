@@ -88,4 +88,61 @@ export class ProviderChain implements AIProvider {
 
     throw new Error(`All providers failed. Last error: ${lastError?.message}`);
   }
+
+  /**
+   * Like generateDetailed, but asks the first `paralelos` attempts at once and
+   * keeps the first answer: one slow free model no longer holds the agent for
+   * its whole timeout. The remaining attempts run one by one if all of those fail.
+   */
+  async generateRapido(
+    prompt: string,
+    maxTokens: number,
+    temperature = 0.7,
+    paralelos = 3
+  ): Promise<{ texto: string; provedor: string; modelo: string }> {
+    if (this.elos.length === 0) {
+      throw new Error('Nenhum provedor de IA configurado — defina ao menos uma API key (ver .env.local.example).');
+    }
+
+    const tentativas = this.tentativas(await getAIPreference());
+    const tentar = async ({ elo, modelo }: { elo: Elo; modelo: string }) => {
+      const texto = await elo.provider.generate(prompt, modelo, maxTokens, temperature);
+      if (!texto.trim()) throw new Error(`${elo.provider.name} (${modelo}) respondeu vazio`);
+      return { texto, provedor: elo.provider.name, modelo };
+    };
+
+    try {
+      return await primeiraQueResolver(tentativas.slice(0, paralelos).map(tentar));
+    } catch (error) {
+      console.warn('First AI attempts failed, trying the rest in order...', error);
+    }
+
+    let lastError: unknown = null;
+    for (const tentativa of tentativas.slice(paralelos)) {
+      try {
+        return await tentar(tentativa);
+      } catch (error) {
+        lastError = error;
+      }
+    }
+    throw new Error(`All providers failed. Last error: ${lastError instanceof Error ? lastError.message : 'sem resposta'}`);
+  }
+}
+
+/**
+ * First promise to fulfil wins; rejects only when all of them reject
+ * (Promise.any, which the ES2020 target doesn't type).
+ */
+function primeiraQueResolver<T>(promessas: Promise<T>[]): Promise<T> {
+  return new Promise((resolve, reject) => {
+    if (promessas.length === 0) return reject(new Error('Nenhuma tentativa'));
+    let falhas = 0;
+    let ultimoErro: unknown;
+    for (const promessa of promessas) {
+      promessa.then(resolve, (erro) => {
+        ultimoErro = erro;
+        if (++falhas === promessas.length) reject(ultimoErro);
+      });
+    }
+  });
 }

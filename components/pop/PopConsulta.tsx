@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import type { FontePop, RespostaPop } from '@/lib/rag/pop';
 import { referenciaDaFonte } from '@/lib/rag/pop';
 import TurnstileWidget, { turnstileConfigurado } from '../TurnstileWidget';
@@ -44,6 +44,19 @@ function Fonte({ fonte }: { fonte: FontePop }) {
   );
 }
 
+/** Seconds since `ativo` turned on, so a long wait shows it is still working. */
+function useSegundos(ativo: boolean): number {
+  const [segundos, setSegundos] = useState(0);
+  useEffect(() => {
+    setSegundos(0);
+    if (!ativo) return undefined;
+    const inicio = Date.now();
+    const id = setInterval(() => setSegundos(Math.floor((Date.now() - inicio) / 1000)), 1000);
+    return () => clearInterval(id);
+  }, [ativo]);
+  return segundos;
+}
+
 /**
  * Ask the POP-PMSC base: the answer (when AI is available) cites the
  * excerpts it came from, and the excerpts are always shown.
@@ -54,6 +67,7 @@ export default function PopConsulta() {
   const [carregando, setCarregando] = useState(false);
   const [erro, setErro] = useState<string | null>(null);
   const [resultado, setResultado] = useState<RespostaPop | null>(null);
+  const segundos = useSegundos(carregando);
   const ditado = useDitado({ onTranscricao: (texto) => setPergunta((atual) => (atual ? `${atual} ${texto}` : texto)) });
 
   const perguntar = async (entrada: string) => {
@@ -149,7 +163,11 @@ export default function PopConsulta() {
 
       {carregando && (
         <div className="card card-pad space-y-3" role="status" aria-live="polite">
-          <span className="sr-only">Consultando os POPs…</span>
+          <p className="flex items-center gap-2 font-mono text-xs font-semibold uppercase tracking-[0.08em] text-ds-subtle">
+            <span className="h-2 w-2 shrink-0 animate-pulse rounded-full bg-ds-primary" aria-hidden />
+            {segundos < 2 ? 'Buscando nos POPs…' : 'Gerando a resposta com IA…'}
+            {segundos >= 2 && <span aria-hidden>{segundos}s</span>}
+          </p>
           <div className="skeleton h-5 w-1/3" />
           <div className="skeleton h-4 w-full" />
           <div className="skeleton h-4 w-11/12" />
@@ -172,15 +190,28 @@ export default function PopConsulta() {
               titulo="Resposta"
               acao={
                 <span className="badge-neutral" title={resultado.modelo ?? undefined}>
-                  {resultado.cache_hit ? 'do cache' : 'gerada por IA'} a partir dos POPs
+                  {resultado.cache_hit ? 'do cache' : 'gerada por IA'}
+                  {resultado.geral ? ' · sem fonte nos POPs' : ' a partir dos POPs'}
                 </span>
               }
             >
+              {resultado.geral && (
+                <div className="alert-warn mb-4" role="note">
+                  <Icone nome="alerta" className="mt-0.5 shrink-0 text-ds-warn" />
+                  <p>
+                    <strong>Os POPs indexados não tratam disso.</strong> Resposta geral da IA
+                    {resultado.modelo ? ` (${resultado.modelo})` : ''}, sem fonte oficial: confirme com o POP vigente ou o
+                    comando antes de agir.
+                  </p>
+                </div>
+              )}
               <RespostaFormatada texto={resultado.resposta} />
-              <p className="mt-4 flex items-start gap-1.5 border-t border-ds-line pt-3 text-xs text-ds-subtle">
-                <Icone nome="info" tamanho={14} className="mt-0.5 shrink-0" />
-                Texto gerado automaticamente com base nos trechos abaixo. Confira sempre a fonte antes de agir.
-              </p>
+              {!resultado.geral && (
+                <p className="mt-4 flex items-start gap-1.5 border-t border-ds-line pt-3 text-xs text-ds-subtle">
+                  <Icone nome="info" tamanho={14} className="mt-0.5 shrink-0" />
+                  Texto gerado automaticamente com base nos trechos abaixo. Confira sempre a fonte antes de agir.
+                </p>
+              )}
             </SectionCard>
           )}
 
