@@ -1,4 +1,3 @@
-# CTB Agente
 
 Consulta a legislação de trânsito brasileira (CTB) e os POPs da PMSC com RAG + IA, sempre com a fonte ao lado.
 
