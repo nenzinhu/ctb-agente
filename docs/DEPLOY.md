@@ -35,8 +35,10 @@ No SQL Editor do Supabase, aplique **nesta ordem**:
    invalidação do cache (opcional)
 8. `scripts/migrations-008-rag-indexacao.sql` — busca sem acento e com
    palavras em OR, índices HNSW, tabelas `documentos` e `documento_trechos`
-   (base da aba POP-PMSC) e bucket aceitando DOC e Markdown. Idempotente:
-   pode ser reaplicada sem perder dados.
+   (base da aba POP-PMSC), bucket aceitando DOC e Markdown e
+   `numero_dispositivo` sem UNIQUE (a mesma correção da
+   `migrations-007-drop-numero-dispositivo-unique.sql`, que então pode ser
+   pulada). Idempotente: pode ser reaplicada sem perder dados.
 
 Depois da 008: `/admin` → Base CTB → **Indexar agora** carrega o CTB
 compilado que acompanha o app (`data/acervo/`). Trechos indexados antes

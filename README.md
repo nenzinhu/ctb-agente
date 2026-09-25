@@ -93,6 +93,10 @@ A migration 007 é opcional: sem ela o app continua funcionando (rate limit
 legado e invalidação via fallback), mas perde a atomicidade anti-rajada e a
 limpeza por TTL individual.
 
+A `migrations-007-drop-numero-dispositivo-unique.sql` não precisa ser
+aplicada: a 008 inclui a mesma correção (o mesmo "art. 1" pode existir em
+normas diferentes).
+
 A migration 008 é necessária para a aba POP-PMSC e para a busca nova. Depois
 dela, entre em `/admin` → Base CTB → **Indexar agora** para carregar o CTB
 compilado, e use "Gerar vetores pendentes" quando houver `MISTRAL_API_KEY`

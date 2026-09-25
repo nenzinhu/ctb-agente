@@ -19,7 +19,10 @@
 --   5) documentos (um registro por arquivo enviado) + documento_trechos, com
 --      exclusão em cascata, deduplicação por hash e reenvio que substitui.
 --   6) dispositivos.documento_id/ordem para o CTB saber de qual arquivo veio
---      cada trecho (listar, substituir e excluir documentos no painel).
+--      cada trecho (listar, substituir e excluir documentos no painel), e
+--      numero_dispositivo sem UNIQUE (o mesmo "art. 1" existe em normas
+--      diferentes; igual à migrations-007-drop-numero-dispositivo-unique.sql,
+--      repetido aqui para esta migration bastar sozinha).
 --   7) O bucket de envio passa a aceitar .doc (Word 97-2003) e .md.
 --
 -- Idempotente: pode ser executada de novo sem erro.
@@ -275,6 +278,11 @@ $$;
 ALTER TABLE dispositivos ADD COLUMN IF NOT EXISTS documento_id UUID REFERENCES documentos(id) ON DELETE CASCADE;
 ALTER TABLE dispositivos ADD COLUMN IF NOT EXISTS ordem INT;
 CREATE INDEX IF NOT EXISTS idx_dispositivos_documento ON dispositivos (documento_id, ordem);
+
+-- Sem isto, indexar o CTB falha com "duplicate key" assim que um rótulo
+-- repete o de um trecho antigo ou de outra norma.
+ALTER TABLE dispositivos DROP CONSTRAINT IF EXISTS dispositivos_numero_dispositivo_key;
+CREATE INDEX IF NOT EXISTS dispositivos_numero_dispositivo_idx ON dispositivos (numero_dispositivo);
 
 -- ---------------------------------------------------------------------------
 -- 7) Envio: aceitar .doc (Word 97-2003) e .md
