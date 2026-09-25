@@ -8,6 +8,9 @@ import { databaseConfigured, supabaseAdmin } from '@/lib/db/client';
 import { getSettings, isIpBlocked } from '@/lib/config/settings';
 import type { TipoConsulta } from '@/lib/response/response-types';
 
+/** What was consulted: the CTB card flows, or the POP-PMSC base. */
+export type TipoUso = TipoConsulta | 'pop';
+
 export interface RateLimitResult {
   allowed: boolean;
   remaining: number;
@@ -58,7 +61,7 @@ interface RpcLimitResult {
  */
 export async function checkRateLimit(
   ipAddress: string,
-  attempt: { tipo?: TipoConsulta; pergunta?: string } = {}
+  attempt: { tipo?: TipoUso; pergunta?: string } = {}
 ): Promise<RateLimitResult> {
   const settings = await getSettings();
   const limite = settings.consultas_por_hora;
@@ -175,7 +178,7 @@ function isMissingRpcError(error: unknown): boolean {
 }
 
 export interface QueryDetails {
-  tipo?: TipoConsulta;
+  tipo?: TipoUso;
   cacheHit?: boolean;
   sucesso?: boolean;
   tempoMs?: number;

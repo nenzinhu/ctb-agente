@@ -1,4 +1,4 @@
-// Document parser for PDF, DOCX, and TXT files
+// Document parser: PDF, Word (DOCX and 97-2003 DOC), Markdown and TXT
 import * as fs from 'fs';
 import * as path from 'path';
 import { z } from 'zod';
@@ -10,8 +10,16 @@ import { z } from 'zod';
 import * as pdfjsLib from 'pdfjs-dist/legacy/build/pdf.mjs';
 import { WorkerMessageHandler } from 'pdfjs-dist/legacy/build/pdf.worker.mjs';
 
-// For DOCX parsing
+// DOCX (mammoth keeps paragraph breaks) and DOC (Word 97-2003 binary format)
 import mammoth from 'mammoth';
+import WordExtractor from 'word-extractor';
+
+import { FORMATOS, formatoDoArquivo, type FormatoDocumento } from './formats';
+import { joinPdfPages, pageItemsToText, stripPageMarkers, type PdfTextItem } from './pdf-text';
+import { convertReadablePageMarkers, decodeTextBytes, markdownToText, normalizeLineBreaks } from './plain-text';
+
+// Kept here for callers that already import them from the parser.
+export { pageItemsToText, normalizePdfText } from './pdf-text';
 
 // Without this, pdfjs falls back to `await import(workerSrc)` at parse
 // time to find its worker code. That works in a plain node_modules
@@ -26,21 +34,22 @@ import mammoth from 'mammoth';
 };
 
 export interface ParsedDocument {
+  /** Extracted text. PDFs carry page markers (see lib/ingestion/pdf-text.ts). */
   text: string;
   fileName: string;
-  fileType: 'pdf' | 'docx' | 'txt';
+  fileType: FormatoDocumento;
   pageCount?: number;
   extractedAt: string;
 }
+
+const EXTENSOES_ACEITAS = (Object.keys(FORMATOS) as FormatoDocumento[]).flatMap((f) => FORMATOS[f].extensoes);
 
 // Schema for file validation
 const FileValidationSchema = z.object({
   filePath: z.string(),
   fileName: z.string(),
   maxSizeBytes: z.number().default(50 * 1024 * 1024), // 50MB default
-  allowedTypes: z
-    .array(z.enum(['pdf', 'docx', 'txt']))
-    .default(['pdf', 'docx', 'txt']),
+  allowedTypes: z.array(z.string()).default(EXTENSOES_ACEITAS),
 });
 
 export type FileValidationInput = z.infer<typeof FileValidationSchema>;
@@ -66,53 +75,47 @@ export function validateFile(input: Partial<FileValidationInput>): void {
 
   // Check file type
   const ext = path.extname(validated.fileName).toLowerCase().slice(1);
-  if (!validated.allowedTypes.includes(ext as any)) {
+  if (!validated.allowedTypes.includes(ext)) {
     throw new Error(
       `File type not allowed: ${ext}. Allowed: ${validated.allowedTypes.join(', ')}`,
     );
   }
 }
 
+type Conteudo = 'pdf' | 'zip' | 'ole' | 'rtf' | 'texto';
+
 /**
- * Parses a TXT file
+ * What the bytes really are, whatever the extension says: a .doc that is
+ * really a .docx (or the other way round) is common when files are renamed.
  */
-async function parseTxt(filePath: string): Promise<string> {
-  try {
-    const content = fs.readFileSync(filePath, 'utf-8');
-    // Clean up excessive whitespace and normalize line breaks
-    return content
-      .replace(/\r\n/g, '\n')
-      .replace(/\n{3,}/g, '\n\n')
-      .trim();
-  } catch (error) {
-    throw new Error(
-      `Failed to parse TXT file: ${error instanceof Error ? error.message : String(error)}`,
-    );
-  }
+function detectContent(bytes: Buffer): Conteudo {
+  const head = bytes.subarray(0, 8);
+  if (head.subarray(0, 4).toString('latin1') === '%PDF') return 'pdf';
+  if (head[0] === 0x50 && head[1] === 0x4b && head[2] === 0x03 && head[3] === 0x04) return 'zip';
+  if (head.equals(Buffer.from([0xd0, 0xcf, 0x11, 0xe0, 0xa1, 0xb1, 0x1a, 0xe1]))) return 'ole';
+  if (head.subarray(0, 5).toString('latin1') === '{\\rtf') return 'rtf';
+  return 'texto';
 }
 
 /**
  * Parses a DOCX file using mammoth
  */
-async function parseDocx(filePath: string): Promise<string> {
-  try {
-    const fileBuffer = fs.readFileSync(filePath);
-    const result = await mammoth.extractRawText({ buffer: fileBuffer });
-
-    if (result.messages && result.messages.length > 0) {
-      console.warn('DOCX parsing warnings:', result.messages);
-    }
-
-    // Clean up excessive whitespace
-    return result.value
-      .replace(/\r\n/g, '\n')
-      .replace(/\n{3,}/g, '\n\n')
-      .trim();
-  } catch (error) {
-    throw new Error(
-      `Failed to parse DOCX file: ${error instanceof Error ? error.message : String(error)}`,
-    );
+async function parseDocx(bytes: Buffer): Promise<string> {
+  const result = await mammoth.extractRawText({ buffer: bytes });
+  if (result.messages && result.messages.length > 0) {
+    console.warn('DOCX parsing warnings:', result.messages);
   }
+  return normalizeLineBreaks(result.value);
+}
+
+/**
+ * Parses a Word 97-2003 (.doc) file. word-extractor ends each paragraph with
+ * a single "\n"; the chunker reads a single newline as a wrapped line, so
+ * paragraphs are turned into blank-line separated blocks.
+ */
+async function parseDoc(bytes: Buffer): Promise<string> {
+  const document = await new WordExtractor().extract(bytes);
+  return normalizeLineBreaks(document.getBody().replace(/\n/g, '\n\n'));
 }
 
 // pdfjs needs these data files for two very common kinds of PDF: CMaps for
@@ -129,87 +132,14 @@ function pdfjsDataDir(name: string): string | undefined {
   return fs.existsSync(dir) ? dir + path.sep : undefined;
 }
 
-interface PdfTextItem {
-  str: string;
-  transform: number[];
-  width: number;
-  height: number;
-  hasEOL?: boolean;
-}
-
-/**
- * Rebuilds a page's reading text from pdfjs text items.
- *
- * pdfjs hands back positioned fragments, not lines: a word can be split in
- * several items (kerning) and many PDFs never set `hasEOL`. Joining with ''
- * glued words together and joining with ' ' split words apart, and neither
- * produced line/paragraph breaks — so an entire page reached the chunker as
- * one run-on paragraph. Using each item's position instead: a vertical move
- * starts a new line (a bigger-than-usual gap starts a new paragraph), and a
- * horizontal gap between fragments on the same line becomes a space.
- */
-export function pageItemsToText(items: PdfTextItem[]): string {
-  let out = '';
-  let lastY: number | undefined;
-  let lastEndX = 0;
-  let lastHeight = 0;
-
-  for (const item of items) {
-    if (typeof item.str !== 'string') continue; // marked-content markers
-
-    const [, , , scaleY, x, y] = item.transform ?? [];
-    const height = Math.abs(item.height || scaleY || 0) || lastHeight || 10;
-
-    if (lastY !== undefined && typeof y === 'number') {
-      const dy = Math.abs(y - lastY);
-      if (dy > Math.max(height, lastHeight) * 0.5) {
-        out = out.replace(/[ \t]+$/, '');
-        out += dy > Math.max(height, lastHeight) * 1.9 ? '\n\n' : '\n';
-      } else if (typeof x === 'number' && x - lastEndX > height * 0.15 && !/\s$/.test(out) && !/^\s/.test(item.str)) {
-        out += ' ';
-      }
-    }
-
-    out += item.str;
-
-    if (typeof y === 'number') {
-      lastY = y;
-      lastEndX = (typeof x === 'number' ? x : lastEndX) + (item.width || 0);
-    } else if (item.hasEOL) {
-      out += '\n';
-    }
-    if (item.str.trim()) lastHeight = height;
-  }
-
-  return out;
-}
-
-/**
- * Normalizes extracted PDF text so the chunker can find real boundaries:
- * rejoins words hyphenated across lines and forces a paragraph break before
- * every article/paragraph/chapter heading, which legal PDFs usually set
- * with uniform line spacing (no visual blank line to detect).
- */
-export function normalizePdfText(text: string): string {
-  return text
-    .replace(/\r\n?/g, '\n')
-    .replace(/[ \t ]+/g, ' ')
-    .replace(/ *\n */g, '\n')
-    .replace(/(\p{L})-\n(\p{Ll})/gu, '$1$2')
-    .replace(/\n(?=(?:Art\.?|Artigo|§|CAP[IÍ]TULO|T[IÍ]TULO|SE[CÇ][AÃ]O|Se[cç][aã]o)\s)/g, '\n\n')
-    .replace(/\n{3,}/g, '\n\n')
-    .trim();
-}
-
 /**
  * Parses a PDF file using pdfjs-dist
  */
-async function parsePdf(filePath: string): Promise<{ text: string; pageCount: number }> {
+async function parsePdf(bytes: Buffer): Promise<{ text: string; pageCount: number }> {
   // pdfjs-dist rejects a Node Buffer even though Buffer is technically a
   // Uint8Array subclass — it checks the exact constructor. A plain
   // Uint8Array view over the same bytes passes that check without a copy.
-  const pdfBuffer = fs.readFileSync(filePath);
-  const data = new Uint8Array(pdfBuffer.buffer, pdfBuffer.byteOffset, pdfBuffer.byteLength);
+  const data = new Uint8Array(bytes.buffer, bytes.byteOffset, bytes.byteLength);
 
   let pdf: Awaited<ReturnType<typeof pdfjsLib.getDocument>['promise']>;
   try {
@@ -249,6 +179,7 @@ async function parsePdf(filePath: string): Promise<{ text: string; pageCount: nu
         page.cleanup();
       } catch (pageError) {
         failedPages++;
+        pages.push('');
         console.warn(`Failed to extract text from page ${i}:`, pageError);
       }
     }
@@ -257,13 +188,12 @@ async function parsePdf(filePath: string): Promise<{ text: string; pageCount: nu
       throw new Error('não foi possível ler o texto de nenhuma página do PDF.');
     }
 
-    // Blank line between pages so the chunker sees a paragraph break at
-    // every page boundary.
-    const text = normalizePdfText(pages.join('\n\n'));
+    // Running headers/footers removed, one page marker per page.
+    const text = joinPdfPages(pages);
 
     // A scanned PDF is just page images: pdfjs finds (almost) no text. Say
     // so instead of the generic "no text content" error further down.
-    if (text.replace(/\s/g, '').length < pageCount * 5) {
+    if (stripPageMarkers(text).replace(/\s/g, '').length < pageCount * 5) {
       throw new Error(
         'o PDF não tem texto selecionável (parece ser digitalizado/escaneado). Passe um OCR no arquivo antes de enviar.',
       );
@@ -276,7 +206,8 @@ async function parsePdf(filePath: string): Promise<{ text: string; pageCount: nu
 }
 
 /**
- * Main parsing function - handles PDF, DOCX, and TXT files
+ * Main parsing function — picks the extractor by the file's real content,
+ * falling back to its extension for plain text (TXT/Markdown).
  */
 export async function parseDocument(
   filePath: string,
@@ -292,31 +223,43 @@ export async function parseDocument(
     maxSizeBytes: 100 * 1024 * 1024, // 100MB
   });
 
-  const ext = path.extname(fileName).toLowerCase().slice(1);
+  const declarado = formatoDoArquivo(fileName) ?? 'txt';
+  let fileType: FormatoDocumento = declarado;
   let text: string;
   let pageCount: number | undefined;
 
   try {
-    if (ext === 'pdf') {
-      const result = await parsePdf(filePath);
+    const bytes = fs.readFileSync(filePath);
+    const conteudo = detectContent(bytes);
+
+    if (conteudo === 'pdf') {
+      const result = await parsePdf(bytes);
       text = result.text;
       pageCount = result.pageCount;
-    } else if (ext === 'docx') {
-      text = await parseDocx(filePath);
-    } else if (ext === 'txt') {
-      text = await parseTxt(filePath);
+      fileType = 'pdf';
+    } else if (conteudo === 'zip') {
+      text = await parseDocx(bytes);
+      fileType = 'docx';
+    } else if (conteudo === 'ole') {
+      text = await parseDoc(bytes);
+      fileType = 'doc';
+    } else if (conteudo === 'rtf') {
+      throw new Error('o arquivo é RTF. Abra no Word ou LibreOffice e salve como .docx ou .pdf.');
+    } else if (declarado === 'pdf' || declarado === 'docx' || declarado === 'doc') {
+      throw new Error(`o conteúdo não é um ${FORMATOS[declarado].rotulo} válido (arquivo corrompido ou renomeado).`);
     } else {
-      throw new Error(`Unsupported file type: ${ext}`);
+      const decoded = decodeTextBytes(bytes);
+      text = convertReadablePageMarkers(declarado === 'md' ? markdownToText(decoded) : normalizeLineBreaks(decoded));
     }
 
-    if (!text || text.length === 0) {
+    if (!text || stripPageMarkers(text).length === 0) {
       throw new Error('No text content extracted from file');
     }
 
     return {
       text,
       fileName,
-      fileType: ext as 'pdf' | 'docx' | 'txt',
+      fileType,
       pageCount,
       extractedAt: new Date().toISOString(),
     };

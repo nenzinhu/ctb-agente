@@ -8,6 +8,8 @@ export const ROTAS_PUBLICAS: ReadonlyArray<{ caminho: string; status: number }> 
   { caminho: '/favoritos', status: 200 },
   { caminho: '/consulta', status: 200 },
   { caminho: '/gerador-pdf', status: 200 },
+  { caminho: '/pop', status: 200 },
+  { caminho: '/comprimir-pdf', status: 200 },
   // The master panel sits behind the auth middleware, so it redirects.
   { caminho: '/admin', status: 307 },
 ];

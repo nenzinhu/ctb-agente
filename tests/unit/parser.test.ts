@@ -1,3 +1,6 @@
+/**
+ * @jest-environment node
+ */
 // Unit tests for document ingestion system
 import * as fs from 'fs';
 import * as path from 'path';
@@ -90,6 +93,50 @@ describe('Document Parser', () => {
         pdfjsWorker?: { WorkerMessageHandler: unknown };
       };
       expect(globalWithWorker.pdfjsWorker?.WorkerMessageHandler).toBeDefined();
+    });
+  });
+
+  describe('Word 97-2003 and content sniffing', () => {
+    it('reads a real .doc file (Word 97-2003 binary format)', async () => {
+      const fixture = path.join(__dirname, '..', 'fixtures', 'pop-exemplo.doc');
+      const result = await parseDocument(fixture, 'pop-exemplo.doc');
+
+      expect(result.fileType).toBe('doc');
+      expect(result.text).toContain('3. SEQUÊNCIA DAS AÇÕES');
+      // One paragraph per block, so the chunker can see each step.
+      expect(result.text).toMatch(/\n\n1\. Informar à central/);
+    });
+
+    it('trusts the content over the extension (a .docx renamed to .doc)', async () => {
+      const testFile = path.join(tempDir, 'renomeado.doc');
+      fs.writeFileSync(testFile, Buffer.from([0x50, 0x4b, 0x03, 0x04, 0x00, 0x00]));
+
+      const result = await parseDocument(testFile, 'renomeado.doc');
+      expect(result.fileType).toBe('docx'); // routed to mammoth (mocked here)
+    });
+
+    it('explains what to do with an RTF saved as .doc', async () => {
+      const testFile = path.join(tempDir, 'antigo.doc');
+      fs.writeFileSync(testFile, '{\\rtf1\\ansi Texto}');
+
+      await expect(parseDocument(testFile, 'antigo.doc')).rejects.toThrow(/RTF/);
+    });
+
+    it('rejects a .pdf whose content is not a PDF', async () => {
+      const testFile = path.join(tempDir, 'falso.pdf');
+      fs.writeFileSync(testFile, 'apenas texto');
+
+      await expect(parseDocument(testFile, 'falso.pdf')).rejects.toThrow(/não é um PDF válido/);
+    });
+
+    it('reads Markdown without its markup and a Windows-1252 text file with its accents', async () => {
+      const md = path.join(tempDir, 'pop.md');
+      fs.writeFileSync(md, '# POP 2.03\n\nUse o **etilômetro** conforme o [art. 165](https://x).');
+      expect((await parseDocument(md, 'pop.md')).text).toBe('# POP 2.03\n\nUse o etilômetro conforme o art. 165.');
+
+      const txt = path.join(tempDir, 'latin1.txt');
+      fs.writeFileSync(txt, Buffer.from('Infração gravíssima', 'latin1'));
+      expect((await parseDocument(txt, 'latin1.txt')).text).toBe('Infração gravíssima');
     });
   });
 

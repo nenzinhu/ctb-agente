@@ -57,6 +57,18 @@ export class ProviderChain implements AIProvider {
    * The model comes from the admin preference or each provider's default.
    */
   async generate(prompt: string, _model: string, maxTokens: number, temperature = 0.7): Promise<string> {
+    return (await this.generateDetailed(prompt, maxTokens, temperature)).texto;
+  }
+
+  /**
+   * Same as generate, also telling which provider/model answered (shown next
+   * to AI-written answers so the agent knows where they came from).
+   */
+  async generateDetailed(
+    prompt: string,
+    maxTokens: number,
+    temperature = 0.7
+  ): Promise<{ texto: string; provedor: string; modelo: string }> {
     if (this.elos.length === 0) {
       throw new Error(
         'Nenhum provedor de IA configurado — defina ao menos uma API key (ver .env.local.example).'
@@ -66,7 +78,8 @@ export class ProviderChain implements AIProvider {
     let lastError: Error | null = null;
     for (const { elo, modelo } of this.tentativas(await getAIPreference())) {
       try {
-        return await elo.provider.generate(prompt, modelo, maxTokens, temperature);
+        const texto = await elo.provider.generate(prompt, modelo, maxTokens, temperature);
+        return { texto, provedor: elo.provider.name, modelo };
       } catch (error) {
         lastError = error instanceof Error ? error : new Error(String(error));
         console.warn(`Provider ${elo.provider.name} (${modelo}) failed, trying next...`, error);

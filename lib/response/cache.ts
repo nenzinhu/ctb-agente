@@ -20,6 +20,61 @@ export function hashPergunta(consulta: string): string {
 }
 
 /**
+ * Generic cached JSON (e.g. POP-PMSC answers), in the same table and with
+ * the same invalidation as the cards. Namespace the key ("pop:…") so it can
+ * never collide with a CTB consultation.
+ * @param chave - Namespaced, PII-filtered key
+ * @returns The stored value, or null when missing/expired
+ */
+export async function getCachedValue<T>(chave: string): Promise<T | null> {
+  if (!databaseConfigured) return null;
+  try {
+    const { data, error } = await supabase
+      .from('cache_respostas')
+      .select('resposta_completa, ttl_dias, data_ultimo_acesso')
+      .eq('hash_pergunta', hashPergunta(chave))
+      .maybeSingle();
+    if (error || !data) return null;
+
+    const idadeDias = (Date.now() - new Date(data.data_ultimo_acesso as string).getTime()) / 86_400_000;
+    if (idadeDias > Number(data.ttl_dias ?? DEFAULT_TTL_DIAS)) return null;
+    return (data.resposta_completa as T) ?? null;
+  } catch (error) {
+    console.warn('Cache lookup failed:', error);
+    return null;
+  }
+}
+
+/**
+ * Stores a generic cached JSON value (best-effort).
+ */
+export async function setCachedValue(
+  chave: string,
+  valor: unknown,
+  meta: { pergunta: string; modelo: string; tempoMs: number }
+): Promise<void> {
+  if (!databaseConfigured) return;
+  try {
+    const { error } = await supabaseAdmin.from('cache_respostas').upsert(
+      {
+        hash_pergunta: hashPergunta(chave),
+        pergunta_original: meta.pergunta,
+        resposta_completa: valor,
+        modelo_usado: meta.modelo,
+        tempo_geracao_ms: meta.tempoMs,
+        citacoes_validadas: true,
+        data_ultimo_acesso: new Date().toISOString(),
+        ttl_dias: DEFAULT_TTL_DIAS,
+      },
+      { onConflict: 'hash_pergunta' }
+    );
+    if (error) console.warn('Failed to cache value:', error.message);
+  } catch (error) {
+    console.warn('Cache write failed:', error);
+  }
+}
+
+/**
  * Look up a cached card for a query
  * @param consulta - Raw user query
  * @returns Cached card or null when missing/expired
