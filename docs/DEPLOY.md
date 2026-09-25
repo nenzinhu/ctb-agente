@@ -31,6 +31,17 @@ No SQL Editor do Supabase, aplique **nesta ordem**:
 6. `scripts/migrations-006-documents-storage-bucket.sql` — cria o bucket
    privado `documentos-pendentes` usado pelo upload de documentos
    (`/api/admin/documents/upload-url` + `/api/ingestion/upload`)
+7. `scripts/migrations-007-ratelimit-cache.sql` — rate limit atômico e
+   invalidação do cache (opcional)
+8. `scripts/migrations-008-rag-indexacao.sql` — busca sem acento e com
+   palavras em OR, índices HNSW, tabelas `documentos` e `documento_trechos`
+   (base da aba POP-PMSC) e bucket aceitando DOC e Markdown. Idempotente:
+   pode ser reaplicada sem perder dados.
+
+Depois da 008: `/admin` → Base CTB → **Indexar agora** carrega o CTB
+compilado que acompanha o app (`data/acervo/`). Trechos indexados antes
+da correção aparecem em "Documentos indexados" como **Trechos antigos** e
+podem ser excluídos ali.
 
 Confira se as tabelas existem:
 
@@ -72,7 +83,7 @@ Settings → Environment Variables, marcadas para **Production** (e Preview, se 
 | `GROQ_API_KEY` | Groq Console | Provedor 1 (resposta rápida) / voz |
 | `NVIDIA_API_KEY` | NVIDIA NIM | Provedor 2 |
 | `OPENROUTER_API_KEY` | OpenRouter | Provedor 3 |
-| `MISTRAL_API_KEY` | Mistral | Provedor 4 + embeddings |
+| `MISTRAL_API_KEY` | Mistral | Provedor 4 + embeddings (vetores semânticos; sem ela a busca usa só palavras) |
 | `NEXT_PUBLIC_TURNSTILE_SITE_KEY` | Cloudflare Turnstile | Exibe o widget |
 | `TURNSTILE_SECRET_KEY` | Cloudflare Turnstile | Valida o token no servidor |
 | `RATE_LIMIT_QUERIES_PER_HOUR` | você | Limite inicial (depois ajustável no painel) |
@@ -111,11 +122,13 @@ npm run check:health -- --versao=<sha> --espera=60     # exigir um commit, com p
 | Passo | Como checar |
 |---|---|
 | Healthcheck | `curl -s https://SEU-DOMINIO/api/health` → `status: ok` |
-| Home | abre com a navegação (Consulta, Gerar PDF, Painel) |
+| Home | abre com a navegação (Consulta, POP, Favoritos, Dossiê, Comprimir) |
 | Consulta por código | `516-91` → cartão com gravidade, pontos, multa e checklist |
 | Consulta por artigo | `art. 165` → normas aplicáveis e citações validadas |
 | Dossiê | `/gerador-pdf` → escolher tema → "Baixar PDF" gera arquivo |
-| Painel | `/admin` → login → abas Documentos, Enquadramentos, Provedores, Uso, Limites |
+| POP-PMSC | `/pop` → pergunta → resposta com trechos (POP, seção e página) |
+| Comprimir PDF | `/comprimir-pdf` → Máxima → "Baixar PDF" e "Baixar .txt" |
+| Painel | `/admin` → login → abas Base CTB, POP-PMSC, Enquadramentos, Provedores de IA, Uso, Limites |
 | Voz | no formulário, "Ditar consulta por voz" (requer `GROQ_API_KEY` e HTTPS) |
 | Modo sol | botão no topo alterna o alto contraste e persiste |
 

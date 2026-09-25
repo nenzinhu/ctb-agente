@@ -1,6 +1,6 @@
 # CTB Agente
 
-Consulta legislação de trânsito brasileira (CTB) com precisão cirúrgica usando RAG + IA.
+Consulta a legislação de trânsito brasileira (CTB) e os POPs da PMSC com RAG + IA, sempre com a fonte ao lado.
 
 **Público:** Agentes de trânsito (PM, PC, polícia municipal, PRF)
 
@@ -10,6 +10,11 @@ Aplicativo PWA que permite consulta interativa da legislação de trânsito (Có
 
 **Recursos:**
 - Busca por código de infração (516-91), artigos (art. 165), ou situação descritiva
+- Busca sem depender de acento nem de todas as palavras (`habilitacao` acha "habilitação"), com gírias de campo expandidas (ex.: "bafômetro" → etilômetro)
+- CTB compilado (Lei 9.503/97, 93 páginas) incluído no app: um clique em Painel → Base CTB → "Indexar agora"
+- Aba **POP-PMSC** (`/pop`): perguntas sobre os Procedimentos Operacionais Padrão respondidas só com os trechos indexados, citando POP, seção e página
+- Anexo de documentos em PDF, DOC, DOCX, MD e TXT (vários de uma vez), com indexação por artigo/seção e página
+- **Comprimir PDF** (`/comprimir-pdf`) no próprio aparelho: Leve, Forte ou Máxima (somente texto, sem design, + `.txt`)
 - Respostas estruturadas com enquadramento legal, gravidade, pontos, multa
 - Checklist AIT, erros comuns, normas aplicáveis e jurisprudência cadastrada
 - Validação de citações (não exibe referência inventada como verificada)
@@ -21,7 +26,7 @@ Aplicativo PWA que permite consulta interativa da legislação de trânsito (Có
 - Compartilhamento de cartão como texto + link, pela folha nativa do celular ou cópia
 - Rate limiting por IP + Turnstile anti-bot + filtro PII (placas, CPF, CNPJ)
 - Suporte a múltiplos LLMs em cadeia de fallback (Groq, NVIDIA, Nous, OrcaRouter, AnyAPI, OpenRouter, Mistral)
-- Painel master com documentos, enquadramentos, provedores, uso e limites
+- Painel master com base CTB, POP-PMSC, enquadramentos, provedores, uso e limites
 
 ## 🏗️ Stack
 
@@ -43,6 +48,10 @@ Camadas, de fora para dentro: `app/` → `components/` → `lib/`.
   - `lib/favorites/favorites.ts` — cartões salvos no aparelho (localStorage), `toggleFavorite` devolve `salvo | removido | falhou`.
   - `lib/share/card.ts` — como um cartão vira texto + link (puro).
   - `lib/share/send.ts` — como o texto chega ao sistema (share nativo, com clipboard de reserva).
+  - `lib/ingestion/` — leitura dos formatos (`parser.ts`), corte estrutural por artigo/seção com página (`chunker.ts`) e indexação (`indexar.ts`).
+  - `lib/search/` — busca híbrida (palavras + vetores) unida por Reciprocal Rank Fusion (`fusion.ts`).
+  - `lib/rag/pop.ts` — recuperação e resposta fundamentada da aba POP-PMSC.
+  - `lib/pdf-tools/` — compressor de PDF que roda no navegador (pdf.js + gravador de PDF mínimo).
 
 `lib/` nunca importa de `components/` nem de `app/`.
 
@@ -78,10 +87,16 @@ Aplicar as migrations no Supabase (SQL Editor), na ordem:
 5. `scripts/migrations-005-pin-function-search-path.sql`
 6. `scripts/migrations-006-documents-storage-bucket.sql`
 7. `scripts/migrations-007-ratelimit-cache.sql` (rate limit atômico + invalidação do cache)
+8. `scripts/migrations-008-rag-indexacao.sql` (busca sem acento/OR, índice HNSW, base de POPs e novos formatos no bucket)
 
 A migration 007 é opcional: sem ela o app continua funcionando (rate limit
 legado e invalidação via fallback), mas perde a atomicidade anti-rajada e a
 limpeza por TTL individual.
+
+A migration 008 é necessária para a aba POP-PMSC e para a busca nova. Depois
+dela, entre em `/admin` → Base CTB → **Indexar agora** para carregar o CTB
+compilado, e use "Gerar vetores pendentes" quando houver `MISTRAL_API_KEY`
+(sem vetores, a busca por palavras já funciona).
 
 Depois, popular a base com dados de exemplo:
 
