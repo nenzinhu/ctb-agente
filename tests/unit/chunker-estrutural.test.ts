@@ -195,11 +195,11 @@ describe('chunkText — sections mode (POP)', () => {
   ].join('\n');
   const chunks = chunkText(pop, 1200, 'secoes');
 
-  it('cuts at section headings and names each section with its parent heading', () => {
+  it('cuts at section headings and names each section with its POP and parent heading', () => {
     expect(chunks.map((c) => c.section)).toEqual([
       'POP 1.01 - ABORDAGEM A PESSOAS › 1. FINALIDADE',
       'POP 1.01 - ABORDAGEM A PESSOAS › 3. SEQUÊNCIA DAS AÇÕES',
-      '3. SEQUÊNCIA DAS AÇÕES › 3.1 Da busca pessoal',
+      'POP 1.01 - ABORDAGEM A PESSOAS › 3. SEQUÊNCIA DAS AÇÕES › 3.1 Da busca pessoal',
     ]);
   });
 

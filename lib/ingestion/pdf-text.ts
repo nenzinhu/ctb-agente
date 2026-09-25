@@ -147,6 +147,16 @@ const MENTIONS_PAGE_RE = /p[áa]g(?:ina)?\.?\s*\d|\bpage\s*\d|\d+\s*(?:de|\/)\s*
 const exactKey = (line: string) => line.toLowerCase().replace(/\s+/g, ' ').trim();
 const digitKey = (line: string) => exactKey(line).replace(/\d+/g, '#');
 
+// A line ending in "POP" / "POP nº": the next line is the POP's number.
+const POP_ROTULO_RE = /\bPOP(?:\s*n[º°o]\.?)?$/i;
+
+function anteriorPreenchida(lines: string[], i: number): string {
+  for (let j = i - 1; j >= 0; j--) {
+    if (lines[j].trim()) return lines[j].trim();
+  }
+  return '';
+}
+
 /**
  * Drops running headers/footers — lines repeated at the top or bottom of
  * most pages ("Página 3 de 120", the site URL and print date on a Planalto
@@ -187,6 +197,8 @@ export function removeRunningHeaders(pages: string[]): string[] {
         .filter(({ i, pos }) => {
           const line = lines[i].trim();
           if (LEGAL_LINE_RE.test(line) || hasReadablePageMarkers(line)) return false;
+          // "POP" / "002": the POP's number in its header box, not a page number.
+          if (POP_ROTULO_RE.test(anteriorPreenchida(lines, i))) return false;
           return (
             PAGE_NUMBER_RE.test(digitKey(line)) ||
             repeated(`${pos}|${exactKey(line)}`) ||

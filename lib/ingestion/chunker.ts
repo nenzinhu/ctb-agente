@@ -11,6 +11,7 @@
 // headings ("SEQUÊNCIA DAS AÇÕES", "3.1 Da abordagem", "# Título") and
 // packed up to the size limit inside each section.
 import { PAGE_MARKER_RE, joinWrappedLine } from './pdf-text';
+import { SECAO_POP_RE } from './pop-pmsc';
 
 export interface TextChunk {
   text: string;
@@ -56,6 +57,10 @@ const TITULO_RE =
   /^(?:t[íi]tulo|cap[íi]tulo|se[çc][ãa]o|subse[çc][ãa]o|livro|parte|anexo)(?:\s+(?:[IVXLCDM]+|\d+|[úu]nic[oa])\b|\s*$)/i;
 const MD_TITULO_RE = /^#{1,6}\s+(\S.*)$/;
 const TITULO_NUMERADO_RE = /^\d+(?:\.\d+)+\.?\s+[A-ZÀ-Ý]/;
+// "POP 002 — BUSCA PESSOAL", written by normalizarManualPop.
+const TITULO_POP_RE = /^POP(?:\s+\d+(?:\.\d+)*)?\s+—\s+\S/;
+// Procedural lists: "a. Se a busca…", "I. Posicionar…", "ii. Transmitir…".
+const ITEM_PROCEDIMENTO_RE = /^(?:[a-z]|[ivxlc]{1,6}|[IVXLC]{1,6})[.)]\s+\S/;
 const VETADO_RE = /^\(?\s*(?:vetad[oa]|revogad[oa])/i;
 
 /**
@@ -73,10 +78,17 @@ function classify(line: string, atParagraphStart: boolean, mode: ChunkMode): Uni
   if (ARTIGO_RE.test(line) && (atParagraphStart || ARTIGO_ESTRITO_RE.test(line))) {
     return mode === 'legal' ? 'artigo' : 'item';
   }
-  if ((TITULO_RE.test(line) && line.length <= 120) || MD_TITULO_RE.test(line)) return 'titulo';
+  if (
+    (TITULO_RE.test(line) && line.length <= 120 && (mode === 'legal' || (/^\p{Lu}/u.test(line) && !/[;,]$/.test(line)))) ||
+    MD_TITULO_RE.test(line)
+  ) {
+    return 'titulo';
+  }
+  if (mode === 'secoes' && (TITULO_POP_RE.test(line) || SECAO_POP_RE.test(line))) return 'titulo';
   if (PARAGRAFO_RE.test(line)) return 'paragrafo';
   if (INCISO_RE.test(line) && !/^\s*[-–—]/.test(line)) return 'inciso';
   if (ALINEA_RE.test(line)) return 'item';
+  if (mode === 'secoes' && ITEM_PROCEDIMENTO_RE.test(line)) return 'item';
   if (mode === 'secoes' && (isCapsHeading(line) || (TITULO_NUMERADO_RE.test(line) && line.length <= 90 && !/[.;:,]$/.test(line)))) {
     return 'titulo';
   }
@@ -138,8 +150,24 @@ function segment(text: string, mode: ChunkMode): Unit[] {
       continue;
     }
 
-    const kind = classify(line, atParagraphStart, mode);
     const open = current as Unit | null;
+    let kind = classify(line, atParagraphStart, mode);
+    // A heading-looking line right after an unfinished sentence is that
+    // sentence going on ("a. Todas as GUARNIÇÕES DEVERÃO REALIZAR" / "O SEU
+    // CADASTRO…", "Manual de Técnicas…" / "Capítulo III (item 5)"): taking
+    // it for a heading would drop it from the excerpt.
+    if (
+      mode === 'secoes' &&
+      kind === 'titulo' &&
+      open &&
+      open.kind !== 'titulo' &&
+      !SECAO_POP_RE.test(line) &&
+      !TITULO_POP_RE.test(line) &&
+      !MD_TITULO_RE.test(line) &&
+      !/[.;:!?]$/.test(open.text)
+    ) {
+      kind = 'texto';
+    }
 
     // "CAPÍTULO XV" + "DAS INFRAÇÕES", "Seção II" + "Da Composição e da
     // Competência…" (+ "(Incluído pela Lei…)"): one heading, not a heading
@@ -177,6 +205,10 @@ function cleanHeading(text: string): string {
     .trim();
 }
 
+// Above every other heading: an "ANEXO A" or a "Capítulo III" inside a POP
+// belongs to that POP.
+const NIVEL_POP = -1;
+
 /**
  * Nesting depth of a heading: a law nests Título > Capítulo > Seção >
  * Subseção; a POP nests its title > "3. SEQUÊNCIA" > "3.1 …"; Markdown by #.
@@ -189,7 +221,7 @@ function headingLevel(text: string): number {
   if (/^cap[íi]tulo\b/i.test(text)) return 2;
   if (/^se[çc][ãa]o\b/i.test(text)) return 3;
   if (/^subse[çc][ãa]o\b/i.test(text)) return 4;
-  if (/^(?:pop\b|procedimento operacional)/i.test(text)) return 5;
+  if (/^(?:pop\b|procedimento operacional)/i.test(text)) return NIVEL_POP;
   const numerado = /^(\d+(?:\.\d+)*)\.?\s/.exec(text);
   if (numerado) return 6 + numerado[1].split('.').length;
   return 6;
@@ -210,8 +242,11 @@ class HeadingPath {
   }
 
   get label(): string | undefined {
-    const ultimos = this.stack.slice(-2).map((h) => h.texto);
-    return ultimos.length > 0 ? ultimos.join(' › ') : undefined;
+    const ultimos = this.stack.slice(-2);
+    // Inside a POP the POP itself always leads: "POP 005 — ABORDAGEM… › SEQUÊNCIA… › Em veículos".
+    const pop = this.stack.find((h) => h.nivel === NIVEL_POP);
+    const partes = pop && !ultimos.includes(pop) ? [pop, ...ultimos] : ultimos;
+    return partes.length > 0 ? partes.map((h) => h.texto).join(' › ') : undefined;
   }
 }
 

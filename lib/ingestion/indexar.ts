@@ -2,6 +2,7 @@
 // (/api/ingestion/upload) or a document bundled with the app (/api/admin/acervo).
 // Text → excerpts → document registry → embeddings/insert → cache invalidation.
 import { chunkText } from './chunker';
+import { normalizarManualPop } from './pop-pmsc';
 import { stripPageMarkers } from './pdf-text';
 import { processChunks, processTrechos, type ProcessingResult } from './processor';
 import {
@@ -58,7 +59,7 @@ export async function indexarDocumento(entrada: IndexarEntrada): Promise<Indexar
 
   // Laws are cut by article; POPs and manuals by their section headings.
   const modo = colecao === 'pop' || entrada.documentType === 'manual' ? 'secoes' : 'legal';
-  const chunks = chunkText(entrada.texto, undefined, modo);
+  const chunks = chunkText(modo === 'secoes' ? normalizarManualPop(entrada.texto) : entrada.texto, undefined, modo);
   if (chunks.length === 0) return { status: 'vazio' };
 
   const textoPuro = stripPageMarkers(entrada.texto);
