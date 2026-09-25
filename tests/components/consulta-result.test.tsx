@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 import ConsultaResult from '@/components/ConsultaResult';
 import { CartaoEstruturado } from '@/lib/response/response-types';
 
@@ -35,7 +35,8 @@ const mockCard: CartaoEstruturado = {
     criado_em: new Date().toISOString(),
   },
   checklist_ait: ['[ ] Fotografar o veículo'],
-  erros_comuns: ['❌ Sem fotografia da sinalização'],    concurso_infracoes: [],
+  erros_comuns: ['❌ Sem fotografia da sinalização'],
+  concurso_infracoes: [],
   crime_transito: false,
   categoria_cnh_exigida: 'qualquer',
   normas_relacionadas: [],
@@ -51,35 +52,55 @@ const mockCard: CartaoEstruturado = {
   ],
 };
 
+/** The technical view holds the classic card; the sheet is the default tab. */
+function verTecnico() {
+  fireEvent.click(screen.getByRole('tab', { name: 'Técnico' }));
+}
+
 describe('ConsultaResult', () => {
-  it('renders technical view by default', () => {
+  it('renders the fiscalização sheet by default and keeps the technical view available', () => {
     render(<ConsultaResult card={mockCard} />);
-    expect(screen.getByText('516-91')).toBeInTheDocument();
+
+    expect(screen.getByRole('tab', { name: 'Ficha de Fiscalização' })).toHaveAttribute(
+      'aria-selected',
+      'true'
+    );
+    expect(screen.getByRole('heading', { name: 'Ficha de Fiscalização' })).toBeInTheDocument();
+
+    verTecnico();
     expect(screen.getByText('Estacionar em local proibido')).toBeInTheDocument();
   });
 
   it('displays the code MBFT', () => {
     render(<ConsultaResult card={mockCard} />);
-    expect(screen.getByText('516-91')).toBeInTheDocument();
+
+    // Header badge + "Código de Enquadramento" row both show it
+    expect(screen.getAllByText('516-91').length).toBeGreaterThanOrEqual(1);
   });
 
-  it('displays checklist items', () => {
+  it('displays checklist items on the sheet view', () => {
     render(<ConsultaResult card={mockCard} />);
     expect(screen.getByText(/Fotografar o veículo/)).toBeInTheDocument();
   });
 
-  it('displays error items', () => {
+  it('displays error items on the technical view', () => {
     render(<ConsultaResult card={mockCard} />);
+    verTecnico();
     expect(screen.getByText(/Sem fotografia da sinalização/)).toBeInTheDocument();
   });
 
   it('displays gravity level as gravíssima', () => {
     render(<ConsultaResult card={mockCard} />);
-    expect(screen.getByText('GRAVÍSSIMA')).toBeInTheDocument();
+
+    // Header badge + gravidade row
+    expect(screen.getAllByText('GRAVÍSSIMA').length).toBeGreaterThanOrEqual(1);
   });
 
   it('displays points and fine information', () => {
     render(<ConsultaResult card={mockCard} />);
+
+    expect(screen.getByText('7 ponto(s)')).toBeInTheDocument();
+    verTecnico();
     expect(screen.getByText('7')).toBeInTheDocument();
   });
 
@@ -89,8 +110,9 @@ describe('ConsultaResult', () => {
     expect(screen.getByText('Em Palavras Simples')).toBeInTheDocument();
   });
 
-  it('lists the applicable norms with their source', () => {
+  it('lists the applicable norms with their source on the technical view', () => {
     render(<ConsultaResult card={mockCard} />);
+    verTecnico();
 
     expect(screen.getByText('Normas aplicáveis')).toBeInTheDocument();
     expect(screen.getByText('art. 181 XVII')).toBeInTheDocument();
@@ -169,13 +191,15 @@ describe('ConsultaResult', () => {
     expect(screen.getByText(/Resposta do cache/)).toBeInTheDocument();
   });
 
-  it('warns about a possible traffic crime', () => {
+  it('warns about a possible traffic crime on the technical view', () => {
     render(<ConsultaResult card={{ ...mockCard, crime_transito: true }} />);
+    verTecnico();
     expect(screen.getByText(/crime de trânsito/)).toBeInTheDocument();
   });
 
-  it('shows the collected document and the responsible party', () => {
+  it('shows the collected document and the responsible party on the technical view', () => {
     render(<ConsultaResult card={mockCard} />);
+    verTecnico();
 
     expect(screen.getByText(/Recolhimento de documento: CRLV/)).toBeInTheDocument();
     expect(screen.getByText(/Responsável: Proprietário/)).toBeInTheDocument();

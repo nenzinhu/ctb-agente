@@ -3,8 +3,10 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { CartaoEstruturado } from '@/lib/response/response-types';
+import { extrairMbftFields } from '@/lib/response/mbft-fields';
 import CartaoTecnico from './CartaoTecnico';
 import CartaoSimples from './CartaoSimples';
+import FichaFiscalizacao from './FichaFiscalizacao';
 import CitacaoEvidencia from './CitacaoEvidencia';
 import NormasAplicaveis from './NormasAplicaveis';
 import JurisprudenciaBloco from './JurisprudenciaBloco';
@@ -66,7 +68,7 @@ function ChecklistAit({ itens }: { itens: string[] }) {
 }
 
 export default function ConsultaResult({ card }: ConsultaResultProps) {
-  const [view, setView] = useState<'tecnico' | 'simples'>('tecnico');
+  const [view, setView] = useState<'ficha' | 'tecnico' | 'simples'>('ficha');
 
   if (!card.sucesso) {
     return (
@@ -94,7 +96,8 @@ export default function ConsultaResult({ card }: ConsultaResultProps) {
     );
   }
 
-  const abas: { id: 'tecnico' | 'simples'; label: string }[] = [
+  const abas: { id: 'ficha' | 'tecnico' | 'simples'; label: string }[] = [
+    { id: 'ficha', label: 'Ficha de Fiscalização' },
     { id: 'tecnico', label: 'Técnico' },
     { id: 'simples', label: 'Em Palavras Simples' },
   ];
@@ -124,6 +127,14 @@ export default function ConsultaResult({ card }: ConsultaResultProps) {
           <Icone nome="faisca" tamanho={14} />
           Resposta do cache (base inalterada)
         </p>
+      )}
+
+      {view === 'ficha' && (
+        <div className="space-y-5">
+          <FichaFiscalizacao card={card} campos={extrairMbftFields(card.normas.map((n) => n.texto))} />
+          {card.checklist_ait && card.checklist_ait.length > 0 && <ChecklistAit itens={card.checklist_ait} />}
+          <JurisprudenciaBloco decisoes={card.jurisprudencia} />
+        </div>
       )}
 
       {view === 'tecnico' && (
