@@ -161,6 +161,10 @@ describe('ConsultaResult', () => {
     render(<ConsultaResult card={vazio} />);
 
     expect(screen.getByText('Nada encontrado na base')).toBeInTheDocument();
+    // The sheet is still shown, every section in order, with blanks as "—"
+    expect(screen.getByRole('heading', { name: 'Ficha de Fiscalização' })).toBeInTheDocument();
+    expect(screen.getByText('Tipificação Resumida:')).toBeInTheDocument();
+    expect(screen.getByText('Informações Complementares')).toBeInTheDocument();
     expect(screen.getByText(/Não encontrei essa infração/)).toBeInTheDocument();
     expect(screen.queryByText('516-91')).not.toBeInTheDocument();
   });

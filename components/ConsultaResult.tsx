@@ -70,9 +70,11 @@ function ChecklistAit({ itens }: { itens: string[] }) {
 export default function ConsultaResult({ card }: ConsultaResultProps) {
   const [view, setView] = useState<'ficha' | 'tecnico' | 'simples'>('ficha');
 
+  // The sheet is always shown, even with nothing found: empty fields read "—".
   if (!card.sucesso) {
     return (
-      <div className="card card-pad mt-6">
+      <div className="mt-6 space-y-5">
+      <div className="card card-pad">
         <div className="flex items-start gap-3">
           <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-ds-warn/10 text-ds-warn">
             <Icone nome="busca" />
@@ -92,6 +94,8 @@ export default function ConsultaResult({ card }: ConsultaResultProps) {
         <Link href="/?form=1" className="btn-primary mt-5">
           Fazer nova consulta
         </Link>
+      </div>
+      <FichaFiscalizacao card={card} campos={extrairMbftFields(card.normas.map((n) => n.texto))} />
       </div>
     );
   }
