@@ -1,22 +1,23 @@
 'use client';
 
-import { useState, useRef } from 'react';
-import { supabaseBrowser } from '@/lib/db/browser-client';
-import { compressFile, compressionSupported, formatBytes } from '@/lib/ingestion/compress-client';
+import { useRef, useState } from 'react';
+import { compressionSupported, formatBytes } from '@/lib/ingestion/compress-client';
+import { ACCEPT_DOCUMENTOS, FORMATOS_ACEITOS_TEXTO, formatoDoArquivo } from '@/lib/ingestion/formats';
+import { enviarDocumento, limiteDeOrigem, type Compressao, type ResultadoEnvio } from '@/lib/ingestion/upload-client';
+import type { Colecao } from '@/lib/ingestion/documents';
+import Icone from './ui/Icone';
 
 /**
- * Admin upload form component
- * Handles drag & drop or file input for document uploads.
- *
- * The file goes browser → Supabase Storage directly, via a signed URL
- * minted by /api/admin/documents/upload-url — it never passes through this
- * app's Vercel functions, which reject bodies over 4.5MB before the route
- * handler even runs. Once it lands in Storage, /api/ingestion/upload is
- * told the storage path (a tiny JSON call) and does the actual parsing.
+ * Upload form for the document bases: the CTB (laws, resoluções, manuais) and
+ * the POP-PMSC. Accepts PDF, DOC, DOCX, MD and TXT; see
+ * lib/ingestion/upload-client.ts for the upload path.
  */
 
 interface UploadFormProps {
   onUploadSuccess?: () => void;
+  colecao?: Colecao;
+  /** Single-column layout, for narrow places such as a sidebar. */
+  compacto?: boolean;
 }
 
 const DOCUMENT_TYPES = [
@@ -26,400 +27,297 @@ const DOCUMENT_TYPES = [
   { value: 'manual', label: 'Manual' },
 ] as const;
 
-// Matches the documentos-pendentes Storage bucket's file_size_limit
-// (scripts/migrations-006-documents-storage-bucket.sql). With compression on,
-// that limit applies to the gzipped bytes; the original may be larger, up to
-// what the server agrees to decompress (MAX_DECOMPRESSED_BYTES).
-const MAX_UPLOAD_BYTES = 50 * 1024 * 1024;
-const MAX_COMPRESSED_SOURCE_BYTES = 100 * 1024 * 1024;
-
-const TYPE_BY_EXTENSION: Record<string, string> = {
-  pdf: 'application/pdf',
-  docx: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-  txt: 'text/plain',
-};
+const COMPRESSOES: { value: Compressao; label: string; ajuda: string }[] = [
+  {
+    value: 'texto',
+    label: 'Máxima — PDF só com o texto',
+    ajuda: 'O PDF vira texto no próprio navegador e ainda é comprimido: arquivo mínimo e sem problemas de leitura. Recomendado para PDFs grandes.',
+  },
+  { value: 'gzip', label: 'Sem perdas', ajuda: 'Comprime o arquivo como está (ganho grande em TXT/DOC, pequeno em PDF).' },
+  { value: 'nenhuma', label: 'Nenhuma', ajuda: 'Envia o arquivo original, até 50 MB.' },
+];
 
 /**
- * Windows often reports an empty MIME for .docx (and sometimes .pdf), which
- * the upload-url route and the Storage bucket would reject — fall back to
- * the extension.
+ * POPs only feed the text search, so "Máxima" loses nothing there and gets
+ * any PDF through; the CTB base keeps the lossless default.
  */
-function contentTypeOf(file: File): string {
-  const ext = file.name.toLowerCase().split('.').pop() ?? '';
-  return TYPE_BY_EXTENSION[ext] ?? (file.type || 'application/octet-stream');
+function compressaoPadrao(colecao: Colecao): Compressao {
+  if (colecao === 'pop' && typeof Worker !== 'undefined') return 'texto';
+  return compressionSupported() ? 'gzip' : 'nenhuma';
 }
 
-/**
- * Turn a failed fetch response into a message a person can act on.
- * A 413 body may be our own JSON or a platform-level plain-text rejection —
- * either way read the body as text first, since response.json() consumes
- * the stream even when parsing fails, and a body already read can't be
- * re-read as text.
- */
-async function describeUploadError(response: Response): Promise<string> {
-  if (response.status === 413) {
-    return 'Arquivo muito grande para o servidor.';
-  }
-
-  const raw = await response.text().catch(() => '');
-  try {
-    const error = JSON.parse(raw);
-    return error.message || error.error || 'Falha no envio';
-  } catch {
-    return raw.slice(0, 200) || `Falha no envio (HTTP ${response.status})`;
-  }
-}
-
-export default function AdminUploadForm({ onUploadSuccess }: UploadFormProps) {
+export default function AdminUploadForm({ onUploadSuccess, colecao = 'ctb', compacto = false }: UploadFormProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isDragging, setIsDragging] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
-  // { current, total } file being processed. There's no per-chunk progress
-  // from the server (it's one request per file that blocks until every
-  // chunk is embedded and inserted), so this can only track which file is
-  // active, not how far along it is — the bar below is intentionally
-  // indeterminate rather than a fake percentage.
-  const [fileProgress, setFileProgress] = useState<{ current: number; total: number } | null>(
-    null
-  );
+  const [fileProgress, setFileProgress] = useState<{ current: number; total: number } | null>(null);
   const [normaId, setNormaId] = useState('');
+  const [titulo, setTitulo] = useState('');
   const [documentType, setDocumentType] = useState<(typeof DOCUMENT_TYPES)[number]['value']>('lei');
-  const [compress, setCompress] = useState(true);
+  const [compressao, setCompressao] = useState<Compressao>(() => compressaoPadrao(colecao));
   const [stage, setStage] = useState<string | null>(null);
-  const [message, setMessage] = useState<{
-    type: 'success' | 'error';
-    text: string;
-  } | null>(null);
+  const [sucesso, setSucesso] = useState<string | null>(null);
+  const [erros, setErros] = useState<string[]>([]);
+  const [resultados, setResultados] = useState<ResultadoEnvio[]>([]);
 
-  const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
-    e.preventDefault();
-    setIsDragging(true);
-  };
+  const ehCtb = colecao === 'ctb';
+  const idPrefixo = `envio-${colecao}`;
 
-  const handleDragLeave = (e: React.DragEvent<HTMLDivElement>) => {
-    e.preventDefault();
-    setIsDragging(false);
-  };
+  const uploadFiles = async (files: FileList | File[]) => {
+    const lista = Array.from(files);
+    if (lista.length === 0) return;
 
-  const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
-    e.preventDefault();
-    setIsDragging(false);
-
-    const files = e.dataTransfer.files;
-    if (files.length > 0) {
-      uploadFiles(files);
-    }
-  };
-
-  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = e.currentTarget.files;
-    if (files && files.length > 0) {
-      uploadFiles(files);
-    }
-  };
-
-  /**
-   * @returns A note about the compression applied, for the success message
-   */
-  const uploadOne = async (file: File): Promise<string | null> => {
-    const contentType = contentTypeOf(file);
-
-    // 0. Optionally gzip the file in the browser. The blob keeps the
-    // original content type (the bucket only accepts PDF/DOCX/TXT); the
-    // server recognizes gzip by its magic bytes and decompresses it.
-    let body: Blob = file;
-    let note: string | null = null;
-    if (compress) {
-      setStage('Comprimindo');
-      const result = await compressFile(file);
-      if (result.compressed) {
-        body = new Blob([result.blob], { type: contentType });
-        const saving = Math.round((1 - result.finalBytes / result.originalBytes) * 100);
-        note = `${file.name}: ${formatBytes(result.originalBytes)} → ${formatBytes(result.finalBytes)} (−${saving}%)`;
-      }
-    }
-
-    if (body.size > MAX_UPLOAD_BYTES) {
-      throw new Error(
-        compress
-          ? `mesmo comprimido o arquivo tem ${formatBytes(body.size)} (limite de 50 MB).`
-          : 'arquivo acima de 50 MB. Ative "Comprimir antes de enviar" e tente de novo.'
-      );
-    }
-
-    // 1. Ask the server for a place to put the file.
-    setStage('Enviando');
-    const urlResponse = await fetch('/api/admin/documents/upload-url', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ fileName: file.name, contentType }),
-    });
-
-    if (!urlResponse.ok) {
-      throw new Error(await describeUploadError(urlResponse));
-    }
-
-    const { bucket, path, token } = (await urlResponse.json()) as {
-      bucket: string;
-      path: string;
-      token: string;
-    };
-
-    // 2. Upload the bytes directly to Supabase Storage — this is the step
-    // that bypasses Vercel's request body limit entirely.
-    const { error: storageError } = await supabaseBrowser.storage
-      .from(bucket)
-      .uploadToSignedUrl(path, token, body, { contentType });
-    if (storageError) {
-      throw new Error(storageError.message || 'Falha ao enviar para o armazenamento.');
-    }
-
-    // 3. Tell the server to process what's now sitting in Storage.
-    setStage('Processando');
-    const ingestResponse = await fetch('/api/ingestion/upload', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ storagePath: path, fileName: file.name, normaId, documentType }),
-    });
-
-    if (!ingestResponse.ok) {
-      throw new Error(await describeUploadError(ingestResponse));
-    }
-
-    // A 2xx here only means the request completed, not that every chunk was
-    // saved — some may have failed to embed while others succeeded.
-    const result = (await ingestResponse.json()) as {
-      data?: { insertedCount: number; failedCount: number };
-    };
-    if (result.data && result.data.failedCount > 0) {
-      throw new Error(
-        `${result.data.insertedCount} trecho(s) importado(s), mas ${result.data.failedCount} falharam (ver console/logs do servidor).`
-      );
-    }
-
-    return note;
-  };
-
-  const uploadFiles = async (files: FileList) => {
-    if (!normaId.trim()) {
-      setMessage({ type: 'error', text: 'Informe a norma antes de enviar o arquivo.' });
+    if (ehCtb && !normaId.trim()) {
+      setErros(['Informe a norma antes de enviar o arquivo.']);
       return;
     }
 
+    setIsUploading(true);
+    setSucesso(null);
+    setErros([]);
+    setResultados([]);
+    const enviados: ResultadoEnvio[] = [];
+    const falhas: string[] = [];
+
     try {
-      setIsUploading(true);
-      setFileProgress({ current: 1, total: files.length });
-      setMessage(null);
-      const notes: string[] = [];
+      for (let i = 0; i < lista.length; i++) {
+        const file = lista[i];
+        setFileProgress({ current: i + 1, total: lista.length });
+        setStage(null);
 
-      // For now, we'll upload files one by one
-      for (let i = 0; i < files.length; i++) {
-        const file = files[i];
-        setFileProgress({ current: i + 1, total: files.length });
-
-        // Validate file type and size
-        if (!isValidFile(file)) {
-          const tamanhoInvalido = file.size > maxSourceBytes;
-          setMessage({
-            type: 'error',
-            text: tamanhoInvalido
-              ? `Arquivo muito grande: ${file.name} (limite de ${formatBytes(maxSourceBytes)} por envio${
-                  maxSourceBytes === MAX_UPLOAD_BYTES && compressionSupported()
-                    ? '; ative "Comprimir antes de enviar" para até 100 MB'
-                    : ''
-                }).`
-              : `Arquivo inválido: ${file.name}. Formatos aceitos: PDF, DOCX, TXT.`,
-          });
+        if (!formatoDoArquivo(file.name)) {
+          falhas.push(`Arquivo inválido: ${file.name}. Formatos aceitos: ${FORMATOS_ACEITOS_TEXTO}.`);
+          continue;
+        }
+        const limite = limiteDeOrigem(file, compressao);
+        if (file.size > limite) {
+          falhas.push(
+            `Arquivo muito grande: ${file.name} (limite de ${formatBytes(limite)} por envio${
+              formatoDoArquivo(file.name) === 'pdf' && compressao !== 'texto'
+                ? '; escolha a compressão "Máxima" para PDFs maiores'
+                : ''
+            }).`
+          );
           continue;
         }
 
         try {
-          const note = await uploadOne(file);
-          if (note) notes.push(note);
-
-          if (i === files.length - 1) {
-            setMessage({
-              type: 'success',
-              text: `${files.length} arquivo(s) enviado(s) com sucesso.${
-                notes.length > 0 ? ` Comprimido: ${notes.join('; ')}.` : ''
-              }`,
-            });
-            // Clear file input
-            if (fileInputRef.current) {
-              fileInputRef.current.value = '';
-            }
-            // Trigger callback to refresh document list
-            onUploadSuccess?.();
-          }
+          enviados.push(
+            await enviarDocumento(file, {
+              colecao,
+              compressao,
+              // A custom title only makes sense for a single file.
+              titulo: lista.length === 1 ? titulo : undefined,
+              normaId: ehCtb ? normaId.trim() : undefined,
+              documentType: ehCtb ? documentType : undefined,
+              onEtapa: setStage,
+            })
+          );
+          setResultados([...enviados]);
         } catch (error) {
           console.error('Upload error:', error);
-          setMessage({
-            type: 'error',
-            text: `Falha ao enviar ${file.name}: ${
-              error instanceof Error ? error.message : 'erro desconhecido'
-            }`,
-          });
+          falhas.push(`Falha ao enviar ${file.name}: ${error instanceof Error ? error.message : 'erro desconhecido'}`);
         }
       }
     } finally {
       setIsUploading(false);
       setFileProgress(null);
       setStage(null);
+      if (fileInputRef.current) fileInputRef.current.value = '';
+    }
+
+    setErros(falhas);
+    if (enviados.length > 0) {
+      setSucesso(`${enviados.length} arquivo(s) enviado(s) com sucesso.`);
+      onUploadSuccess?.();
     }
   };
 
-  // Without compression the bucket limit applies to the file as-is; with it,
-  // only the gzipped bytes must fit (checked in uploadOne after compressing).
-  const maxSourceBytes =
-    compress && compressionSupported() ? MAX_COMPRESSED_SOURCE_BYTES : MAX_UPLOAD_BYTES;
-
-  const isValidFile = (file: File): boolean => {
-    const validMimeTypes = [
-      'application/pdf',
-      'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-      'text/plain',
-    ];
-
-    const validExtensions = ['.pdf', '.docx', '.txt'];
-
-    const hasValidMimeType = validMimeTypes.includes(file.type);
-    const hasValidExtension = validExtensions.some((ext) =>
-      file.name.toLowerCase().endsWith(ext)
-    );
-
-    const hasValidSize = file.size <= maxSourceBytes;
-
-    return (hasValidMimeType || hasValidExtension) && hasValidSize;
-  };
-
   return (
-    <div className="w-full">
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
-        <label className="block">
-          <span className="text-sm font-medium text-gray-700">Norma</span>
+    <div className="w-full space-y-4">
+      <div className={`grid gap-4 ${compacto ? '' : ehCtb ? 'sm:grid-cols-3' : 'sm:grid-cols-2'}`}>
+        {ehCtb && (
+          <label className="block" htmlFor={`${idPrefixo}-norma`}>
+            <span className="label">Norma</span>
+            <input
+              id={`${idPrefixo}-norma`}
+              type="text"
+              value={normaId}
+              onChange={(e) => setNormaId(e.target.value)}
+              placeholder="ex: ctb, res-432-2013"
+              disabled={isUploading}
+              className="input"
+            />
+          </label>
+        )}
+
+        {ehCtb && (
+          <label className="block" htmlFor={`${idPrefixo}-tipo`}>
+            <span className="label">Tipo</span>
+            <select
+              id={`${idPrefixo}-tipo`}
+              value={documentType}
+              onChange={(e) => setDocumentType(e.target.value as typeof documentType)}
+              disabled={isUploading}
+              className="input"
+            >
+              {DOCUMENT_TYPES.map((tipo) => (
+                <option key={tipo.value} value={tipo.value}>
+                  {tipo.label}
+                </option>
+              ))}
+            </select>
+          </label>
+        )}
+
+        <label className="block" htmlFor={`${idPrefixo}-titulo`}>
+          <span className="label">Título (opcional)</span>
           <input
+            id={`${idPrefixo}-titulo`}
             type="text"
-            value={normaId}
-            onChange={(e) => setNormaId(e.target.value)}
-            placeholder="ex: ctb, res-432-2013"
+            value={titulo}
+            onChange={(e) => setTitulo(e.target.value)}
+            placeholder={ehCtb ? 'ex: Resolução 432/2013' : 'ex: POP 1.01 — Abordagem a pessoas'}
             disabled={isUploading}
-            className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
+            maxLength={200}
+            className="input"
           />
         </label>
 
-        <label className="block">
-          <span className="text-sm font-medium text-gray-700">Tipo</span>
-          <select
-            value={documentType}
-            onChange={(e) => setDocumentType(e.target.value as typeof documentType)}
-            disabled={isUploading}
-            className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
-          >
-            {DOCUMENT_TYPES.map((tipo) => (
-              <option key={tipo.value} value={tipo.value}>
-                {tipo.label}
-              </option>
-            ))}
-          </select>
-        </label>
+        {!ehCtb && (
+          <p className={`hint ${compacto ? '-mt-2' : 'self-end pb-2'}`}>
+            Sem título, usamos o nome do arquivo. Reenviar o mesmo arquivo substitui a versão anterior.
+          </p>
+        )}
       </div>
 
-      <label className="flex items-start gap-2 mb-4 text-sm text-gray-700">
-        <input
-          type="checkbox"
-          checked={compress}
-          onChange={(e) => setCompress(e.target.checked)}
-          disabled={isUploading || !compressionSupported()}
-          className="mt-0.5"
-        />
-        <span>
-          Comprimir antes de enviar
-          <span className="block text-xs text-gray-400">
-            {compressionSupported()
-              ? 'Reduz o envio (bastante em TXT; pouco em PDF/DOCX, que já vêm comprimidos) e aceita arquivos de até 100 MB.'
-              : 'Indisponível neste navegador — o envio será feito sem compressão.'}
-          </span>
-        </span>
-      </label>
+      <fieldset>
+        <legend className="label">Compressão antes de enviar</legend>
+        <div className={`grid gap-2 ${compacto ? '' : 'sm:grid-cols-3'}`}>
+          {COMPRESSOES.map((opcao) => (
+            <label
+              key={opcao.value}
+              className={`flex cursor-pointer gap-2.5 rounded-xl border p-3 text-sm transition-colors ${
+                compressao === opcao.value ? 'border-brand bg-brand-soft/60' : 'border-line hover:bg-surface-2'
+              }`}
+            >
+              <input
+                type="radio"
+                name={`${idPrefixo}-compressao`}
+                value={opcao.value}
+                checked={compressao === opcao.value}
+                onChange={() => setCompressao(opcao.value)}
+                disabled={isUploading || (opcao.value === 'gzip' && !compressionSupported())}
+                className="mt-0.5 accent-[rgb(var(--brand))]"
+              />
+              <span>
+                <span className="block font-semibold text-ink">{opcao.label}</span>
+                <span className="mt-0.5 block text-xs text-muted">{opcao.ajuda}</span>
+              </span>
+            </label>
+          ))}
+        </div>
+      </fieldset>
 
       <div
-        onDragOver={handleDragOver}
-        onDragLeave={handleDragLeave}
-        onDrop={handleDrop}
-        className={`border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition ${
-          isDragging
-            ? 'border-green-500 bg-green-50'
-            : 'border-gray-300 hover:border-gray-400'
-        } ${isUploading ? 'opacity-60 cursor-not-allowed' : ''}`}
+        onDragOver={(e) => {
+          e.preventDefault();
+          setIsDragging(true);
+        }}
+        onDragLeave={(e) => {
+          e.preventDefault();
+          setIsDragging(false);
+        }}
+        onDrop={(e) => {
+          e.preventDefault();
+          setIsDragging(false);
+          if (!isUploading && e.dataTransfer.files.length > 0) void uploadFiles(e.dataTransfer.files);
+        }}
+        className={`flex flex-col items-center gap-3 rounded-2xl border-2 border-dashed px-6 py-8 text-center transition-colors ${
+          isDragging ? 'border-brand bg-brand-soft/60' : 'border-line bg-surface-2/60'
+        } ${isUploading ? 'opacity-60' : ''}`}
       >
         <input
           ref={fileInputRef}
           type="file"
           multiple
-          onChange={handleFileSelect}
+          onChange={(e) => {
+            const files = e.currentTarget.files;
+            if (files && files.length > 0) void uploadFiles(files);
+          }}
           disabled={isUploading}
-          accept=".pdf,.docx,.txt"
+          accept={ACCEPT_DOCUMENTOS}
           className="hidden"
+          aria-label="Selecionar documentos"
         />
-
-        <div onClick={() => !isUploading && fileInputRef.current?.click()}>
-          <svg
-            className="mx-auto h-12 w-12 text-gray-400 mb-4"
-            stroke="currentColor"
-            fill="none"
-            viewBox="0 0 48 48"
-          >
-            <path
-              d="M28 8H12a4 4 0 00-4 4v24a4 4 0 004 4h24a4 4 0 004-4V20m-8-12l-8 8m0 0l-8-8m8 8v20"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-          </svg>
-          <p className="text-lg font-medium text-gray-900 mb-2">
-            Arraste os arquivos para cá
-          </p>
-          <p className="text-sm text-gray-500 mb-4">
-            ou clique para selecionar
-          </p>
-          <p className="text-xs text-gray-400">
-            Aceitos: PDF, DOCX, TXT (até {formatBytes(maxSourceBytes)})
+        <span className="grid h-12 w-12 place-items-center rounded-2xl bg-surface text-brand shadow-sm">
+          <Icone nome="upload" tamanho={24} />
+        </span>
+        <div>
+          <p className="font-semibold text-ink">Arraste os arquivos para cá</p>
+          <p className="mt-0.5 text-sm text-muted">
+            {FORMATOS_ACEITOS_TEXTO} · vários de uma vez
           </p>
         </div>
+        <button
+          type="button"
+          className="btn-secondary"
+          disabled={isUploading}
+          onClick={() => fileInputRef.current?.click()}
+        >
+          Escolher arquivos
+        </button>
       </div>
 
       {isUploading && (
-        <div className="mt-4">
-          <div className="flex items-center justify-between mb-2">
-            <p className="text-sm font-medium text-gray-700">
-              {stage ?? 'Processando'}{fileProgress && fileProgress.total > 1 ? ` arquivo ${fileProgress.current} de ${fileProgress.total}` : ''}…
-            </p>
-          </div>
+        <div className="panel p-4" role="status" aria-live="polite">
+          <p className="text-sm font-medium text-ink">
+            {stage ?? 'Processando'}
+            {fileProgress && fileProgress.total > 1 ? ` · arquivo ${fileProgress.current} de ${fileProgress.total}` : ''}…
+          </p>
           {/* Indeterminate: the server does one blocking request per file
               with no per-chunk progress reporting, so a real percentage
-              isn't available — a document with hundreds of trechos can take
-              up to a minute, and a fake bar stuck at a fixed width reads as
+              isn't available — a fake bar stuck at a fixed width reads as
               broken. */}
-          <div className="w-full h-2 bg-gray-200 rounded-full overflow-hidden">
-            <div className="h-full w-full bg-green-600 rounded-full animate-pulse" />
+          <div className="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-line">
+            <div className="h-full w-1/3 animate-pulse rounded-full bg-brand" />
           </div>
-          <p className="text-xs text-gray-400 mt-1">
-            Documentos grandes podem levar até um minuto — não feche esta aba.
-          </p>
+          <p className="hint">Documentos grandes podem levar até um minuto — não feche esta aba.</p>
         </div>
       )}
 
-      {message && (
-        <div
-          className={`mt-4 p-4 rounded-lg ${
-            message.type === 'success'
-              ? 'bg-green-50 text-green-700 border border-green-200'
-              : 'bg-red-50 text-red-700 border border-red-200'
-          }`}
-        >
-          {message.text}
+      {sucesso && (
+        <div className="alert-success" role="status">
+          <Icone nome="check" className="mt-0.5 shrink-0 text-success" />
+          <div className="min-w-0">
+            <p className="font-semibold">{sucesso}</p>
+            <ul className="mt-1 space-y-1 text-muted">
+              {resultados.map((r) => (
+                <li key={r.fileName} className="break-words">
+                  <span className="font-medium text-ink">{r.titulo ?? r.fileName}</span>:{' '}
+                  {r.duplicado
+                    ? 'já estava indexado, nada mudou'
+                    : `${r.trechos} trechos indexados${r.substituidos > 0 ? ', versão anterior substituída' : ''}`}
+                  {r.nota ? ` · ${r.nota}` : ''}
+                  {!r.duplicado && r.semVetor > 0 && (
+                    <span className="block text-xs">
+                      {r.semVetor} trecho(s) ainda sem vetor semântico — a busca por palavras já funciona; gere os vetores
+                      em “Vetores pendentes”.
+                    </span>
+                  )}
+                </li>
+              ))}
+            </ul>
+          </div>
         </div>
       )}
+
+      {erros.map((erro) => (
+        <div key={erro} className="alert-error" role="alert">
+          <Icone nome="alerta" className="mt-0.5 shrink-0 text-danger" />
+          <p className="min-w-0 break-words">{erro}</p>
+        </div>
+      ))}
     </div>
   );
 }

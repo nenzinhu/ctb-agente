@@ -5,6 +5,7 @@ import { CartaoEstruturado } from '@/lib/response/response-types';
 import { formatarCartaoParaTexto, linkDoCartao } from '@/lib/share/card';
 import { compartilharTexto, type ResultadoCompartilhamento } from '@/lib/share/send';
 import { isFavorite, toggleFavorite } from '@/lib/favorites/favorites';
+import Icone from './ui/Icone';
 
 /** Message shown after sharing. `null` means there is nothing worth saying. */
 const AVISO_COMPARTILHAR: Record<ResultadoCompartilhamento, string | null> = {
@@ -73,29 +74,18 @@ export default function BotoesCartao({ card, onChange }: BotoesCartaoProps) {
         onClick={alternarFavorito}
         aria-pressed={favorito}
         title="Salva o cartão neste aparelho"
-        className={`rounded-lg px-3 py-2 text-sm font-semibold transition-colors ${
-          favorito
-            ? 'bg-ctb-green text-white hover:bg-ctb-green/90'
-            : 'border border-gray-300 text-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:text-gray-200 dark:hover:bg-gray-700'
-        }`}
+        className={favorito ? 'btn-primary btn-sm' : 'btn-secondary btn-sm'}
       >
-        {favorito ? '★ Salvo' : '☆ Salvar'}
+        <Icone nome="estrela" tamanho={16} className={favorito ? 'fill-current' : ''} />
+        {favorito ? 'Salvo' : 'Salvar'}
       </button>
 
-      <button
-        type="button"
-        onClick={compartilhar}
-        title="Compartilhar o cartão"
-        className="rounded-lg border border-gray-300 px-3 py-2 text-sm font-semibold text-gray-700 transition-colors hover:bg-gray-100 dark:border-gray-600 dark:text-gray-200 dark:hover:bg-gray-700"
-      >
-        🔗 Compartilhar
+      <button type="button" onClick={compartilhar} title="Compartilhar o cartão" className="btn-secondary btn-sm">
+        <Icone nome="compartilhar" tamanho={16} />
+        Compartilhar
       </button>
 
-      <span
-        role="status"
-        aria-live="polite"
-        className="text-xs text-gray-600 dark:text-gray-400"
-      >
+      <span role="status" aria-live="polite" className="text-xs text-muted">
         {aviso}
       </span>
     </div>

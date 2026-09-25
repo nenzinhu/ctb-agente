@@ -2,57 +2,60 @@
 
 import { useState } from 'react';
 import { CartaoEstruturado } from '@/lib/response/response-types';
+import Icone from './ui/Icone';
 
 interface CitacaoEvidenciaProps {
   citacoes: CartaoEstruturado['citacoes'];
 }
 
 export default function CitacaoEvidencia({ citacoes }: CitacaoEvidenciaProps) {
-  const [expanded, setExpanded] = useState<string | null>(null);
+  const [expanded, setExpanded] = useState<number | null>(null);
 
   if (!citacoes || citacoes.length === 0) {
     return null;
   }
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-lg p-6">
-      <h3 className="font-bold text-gray-900 dark:text-white mb-4">
-        📋 Fontes e Citações
+    <section className="card card-pad" aria-labelledby="fontes-citacoes">
+      <h3 id="fontes-citacoes" className="section-title">
+        <Icone nome="lista" tamanho={18} className="text-brand" />
+        Fontes e citações
       </h3>
 
-      <div className="space-y-3">
-        {citacoes.map((cit, idx) => (
-          <div
-            key={idx}
-            className="border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden"
-          >
-            <button
-              onClick={() => setExpanded(expanded === idx.toString() ? null : idx.toString())}
-              className="w-full px-4 py-3 flex justify-between items-center hover:bg-gray-50 dark:hover:bg-gray-700 transition"
-            >
-              <div className="text-left">
-                <p className="font-mono text-sm text-ctb-green">
-                  {cit.dispositivo}
-                </p>
-                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                  {cit.validada ? '✅ Validada' : '⚠️ Não verificada'}
-                </p>
-              </div>
-              <span className="text-gray-400">
-                {expanded === idx.toString() ? '−' : '+'}
-              </span>
-            </button>
+      <ul className="mt-4 space-y-2">
+        {citacoes.map((cit, idx) => {
+          const aberta = expanded === idx;
+          return (
+            <li key={idx} className="overflow-hidden rounded-xl border border-line">
+              <button
+                type="button"
+                onClick={() => setExpanded(aberta ? null : idx)}
+                aria-expanded={aberta}
+                className="flex w-full items-center justify-between gap-3 px-4 py-3 text-left transition-colors hover:bg-surface-2"
+              >
+                <span className="min-w-0">
+                  <span className="block font-mono text-sm font-semibold text-brand">{cit.dispositivo}</span>
+                  <span className={`mt-1 ${cit.validada ? 'badge-brand' : 'badge-media'}`}>
+                    <Icone nome={cit.validada ? 'check' : 'alerta'} tamanho={12} />
+                    {cit.validada ? 'Validada no texto da lei' : 'Não verificada'}
+                  </span>
+                </span>
+                <Icone
+                  nome="chevron"
+                  tamanho={18}
+                  className={`shrink-0 text-muted transition-transform ${aberta ? 'rotate-180' : ''}`}
+                />
+              </button>
 
-            {expanded === idx.toString() && (
-              <div className="bg-gray-50 dark:bg-gray-700 px-4 py-3 border-t border-gray-200 dark:border-gray-600">
-                <p className="text-sm text-gray-700 dark:text-gray-300 italic">
-                  "{cit.trecho}"
-                </p>
-              </div>
-            )}
-          </div>
-        ))}
-      </div>
-    </div>
+              {aberta && (
+                <blockquote className="border-t border-line bg-surface-2 px-4 py-3 text-sm italic leading-relaxed text-ink">
+                  “{cit.trecho}”
+                </blockquote>
+              )}
+            </li>
+          );
+        })}
+      </ul>
+    </section>
   );
 }

@@ -92,7 +92,7 @@ describe('ConsultaResult', () => {
   it('lists the applicable norms with their source', () => {
     render(<ConsultaResult card={mockCard} />);
 
-    expect(screen.getByText('📖 Normas aplicáveis')).toBeInTheDocument();
+    expect(screen.getByText('Normas aplicáveis')).toBeInTheDocument();
     expect(screen.getByText('art. 181 XVII')).toBeInTheDocument();
   });
 

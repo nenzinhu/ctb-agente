@@ -1,13 +1,15 @@
 import { expect, test } from '@playwright/test';
-import { ADMIN_PASSWORD, ADMIN_USER, BASE_POPULADA, CONSULTAS, TEMA_PDF } from './fixtures';
+import { ADMIN_PASSWORD, ADMIN_USER, BASE_POPULADA, CONSULTAS, TEMA_PDF, pdfDeTeste } from './fixtures';
 
 test.describe('CTB Agente — fluxo completo', () => {
   test('a home carrega com a navegação principal', async ({ page }) => {
     await page.goto('/');
 
     await expect(page.getByRole('heading', { name: 'CTB Agente' })).toBeVisible();
-    await expect(page.getByRole('button', { name: 'Iniciar Consulta' })).toBeVisible();
-    await expect(page.getByRole('link', { name: /Gerar PDF/ })).toBeVisible();
+    await expect(page.getByLabel('Sua consulta')).toBeVisible();
+    await expect(page.getByRole('link', { name: /POP-PMSC.*procedimentos/i })).toBeVisible();
+    await expect(page.getByRole('link', { name: /Dossiê em PDF/ })).toBeVisible();
+    await expect(page.getByRole('link', { name: /Comprimir PDF.*somente texto/i })).toBeVisible();
   });
 
   test('o modo sol pode ser alternado e persiste', async ({ page }) => {
@@ -22,26 +24,23 @@ test.describe('CTB Agente — fluxo completo', () => {
 
   test('o formulário leva para a página de resultado', async ({ page }) => {
     await page.goto('/');
-    await page.getByRole('button', { name: 'Iniciar Consulta' }).click();
 
     await page.getByLabel('Sua consulta').fill('516-91');
-    await page.getByRole('button', { name: 'Consultar' }).click();
+    await page.getByRole('button', { name: 'Consultar', exact: true }).click();
 
     await page.waitForURL(/\/consulta\?q=/);
     await expect(page.getByRole('heading', { name: 'Resultado da Consulta' })).toBeVisible();
-    await expect(page.getByText('516-91')).toBeVisible();
+    await expect(page.getByText('516-91').first()).toBeVisible();
   });
 
   test('consultas recentes ficam salvas no aparelho', async ({ page }) => {
     await page.goto('/');
-    await page.getByRole('button', { name: 'Iniciar Consulta' }).click();
     await page.getByLabel('Sua consulta').fill('teste-e2e');
-    await page.getByRole('button', { name: 'Consultar' }).click();
+    await page.getByRole('button', { name: 'Consultar', exact: true }).click();
     await page.waitForURL(/\/consulta\?q=/);
 
     await page.goto('/');
-    await page.getByRole('button', { name: 'Iniciar Consulta' }).click();
-    await expect(page.getByText('teste-e2e')).toBeVisible();
+    await expect(page.getByRole('button', { name: 'teste-e2e' })).toBeVisible();
   });
 
   test('a página de PDF mostra temas e seções', async ({ page }) => {
@@ -64,11 +63,37 @@ test.describe('CTB Agente — fluxo completo', () => {
     expect(arquivo.suggestedFilename()).toBe(`ctb-${TEMA_PDF}.pdf`);
   });
 
+  test('a aba POP-PMSC abre a consulta e a biblioteca', async ({ page }) => {
+    await page.goto('/pop');
+
+    await expect(page.getByRole('heading', { name: 'POP-PMSC' })).toBeVisible();
+    await expect(page.getByLabel('Sua pergunta sobre os POPs')).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Biblioteca de POPs' })).toBeVisible();
+  });
+
+  test('comprime um PDF para somente texto no navegador', async ({ page }) => {
+    await page.goto('/comprimir-pdf');
+
+    await expect(page.getByRole('radio', { name: /Máxima — somente texto/ })).toBeChecked();
+    await page.getByLabel('Selecionar PDF').setInputFiles({
+      name: 'teste.pdf',
+      mimeType: 'application/pdf',
+      buffer: pdfDeTeste('Condutor flagrado sem cinto de seguranca'),
+    });
+    await page.getByRole('button', { name: 'Comprimir PDF', exact: true }).click();
+
+    await expect(page.getByRole('heading', { name: 'PDF comprimido' })).toBeVisible({ timeout: 20_000 });
+    const download = page.waitForEvent('download');
+    await page.getByRole('button', { name: 'Baixar .txt' }).click();
+    const arquivo = await download;
+    expect(arquivo.suggestedFilename()).toBe('teste.txt');
+  });
+
   test('o admin protege o acesso e mostra o login', async ({ page }) => {
     await page.goto('/admin');
 
     await expect(page).toHaveURL(/\/admin\/login/);
-    await expect(page.getByText(/login/i).first()).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Entrar no painel' })).toBeVisible();
   });
 
   test('o healthcheck responde', async ({ request }) => {

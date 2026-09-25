@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import Icone from './ui/Icone';
 
 export type Tema = 'padrao' | 'sol';
 
@@ -58,14 +59,14 @@ export default function TemaToggle() {
       type="button"
       onClick={alternar}
       aria-pressed={ativo}
-      title="Alterna o modo de alto contraste para uso sob luz do sol"
-      className={`rounded-full px-3 py-3 text-sm font-semibold transition-colors sm:py-1 ${
-        ativo
-          ? 'bg-yellow-300 text-black ring-2 ring-black'
-          : 'bg-white/10 text-white hover:bg-white/20'
+      aria-label={ativo ? 'Modo sol: ativo' : 'Modo sol'}
+      title="Alto contraste para ler sob luz do sol"
+      className={`inline-flex min-h-[40px] items-center gap-1.5 rounded-full px-3 text-sm font-semibold transition-colors ${
+        ativo ? 'bg-accent text-black ring-2 ring-black' : 'text-muted hover:bg-surface-2 hover:text-ink'
       }`}
     >
-      {ativo ? '☀️ Modo sol: ativo' : '☀️ Modo sol'}
+      <Icone nome="sol" tamanho={18} />
+      <span className="hidden sm:inline">{ativo ? 'Sol: ativo' : 'Modo sol'}</span>
     </button>
   );
 }

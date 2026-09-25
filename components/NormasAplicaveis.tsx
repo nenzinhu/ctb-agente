@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import type { NormaAplicavel } from '@/lib/response/response-types';
+import Icone from './ui/Icone';
 
 interface NormasAplicaveisProps {
   normas: NormaAplicavel[];
@@ -10,47 +11,48 @@ interface NormasAplicaveisProps {
 /**
  * Lists the legal provisions that back the answer.
  * Shown for every query type so article lookups still have substance.
+ * The first one opens expanded: it is the best match.
  */
 export default function NormasAplicaveis({ normas }: NormasAplicaveisProps) {
-  const [aberta, setAberta] = useState<string | null>(null);
+  const [aberta, setAberta] = useState<string | null>(normas?.[0]?.numero_dispositivo ?? null);
 
   if (!normas || normas.length === 0) {
     return null;
   }
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-lg p-6">
-      <h3 className="font-bold text-gray-900 dark:text-white mb-4">
-        📖 Normas aplicáveis
+    <section className="card card-pad" aria-labelledby="normas-aplicaveis">
+      <h3 id="normas-aplicaveis" className="section-title">
+        <Icone nome="livro" tamanho={18} className="text-brand" />
+        Normas aplicáveis
       </h3>
 
-      <ul className="space-y-3">
+      <ul className="mt-4 space-y-2">
         {normas.map((norma) => {
           const expandida = aberta === norma.numero_dispositivo;
           return (
-            <li
-              key={norma.numero_dispositivo}
-              className="border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden"
-            >
+            <li key={norma.numero_dispositivo} className="overflow-hidden rounded-xl border border-line">
               <button
                 type="button"
                 onClick={() => setAberta(expandida ? null : norma.numero_dispositivo)}
                 aria-expanded={expandida}
-                className="w-full px-4 py-3 flex justify-between items-center gap-3 text-left hover:bg-gray-50 dark:hover:bg-gray-700 transition"
+                className="flex w-full items-center justify-between gap-3 px-4 py-3 text-left transition-colors hover:bg-surface-2"
               >
-                <span>
-                  <span className="block font-mono text-sm text-ctb-green">
-                    {norma.numero_dispositivo}
-                  </span>
-                  <span className="block text-xs text-gray-500 dark:text-gray-400 mt-1">
+                <span className="min-w-0">
+                  <span className="block font-mono text-sm font-semibold text-brand">{norma.numero_dispositivo}</span>
+                  <span className="mt-0.5 block text-xs text-muted">
                     {norma.tipo} · {norma.vigente ? 'vigente' : 'com vigência encerrada'}
                   </span>
                 </span>
-                <span className="text-gray-400 shrink-0">{expandida ? '−' : '+'}</span>
+                <Icone
+                  nome="chevron"
+                  tamanho={18}
+                  className={`shrink-0 text-muted transition-transform ${expandida ? 'rotate-180' : ''}`}
+                />
               </button>
 
               {expandida && (
-                <p className="bg-gray-50 dark:bg-gray-700 px-4 py-3 border-t border-gray-200 dark:border-gray-600 text-sm text-gray-700 dark:text-gray-200 whitespace-pre-line">
+                <p className="whitespace-pre-line border-t border-line bg-surface-2 px-4 py-3 text-sm leading-relaxed text-ink">
                   {norma.texto || 'Texto não cadastrado na base.'}
                 </p>
               )}
@@ -58,6 +60,6 @@ export default function NormasAplicaveis({ normas }: NormasAplicaveisProps) {
           );
         })}
       </ul>
-    </div>
+    </section>
   );
 }

@@ -2,6 +2,8 @@
 
 import { CartaoEstruturado } from '@/lib/response/response-types';
 import { formatarMulta, labelDocumento, labelResponsavel } from '@/lib/response/format';
+import BadgeGravidade from './ui/BadgeGravidade';
+import Icone from './ui/Icone';
 
 interface CartaoTecnicoProps {
   card: CartaoEstruturado;
@@ -16,106 +18,78 @@ export default function CartaoTecnico({ card }: CartaoTecnicoProps) {
   const documento = labelDocumento(enquadramento.recolhe_documento);
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-lg p-6 border-l-4 border-ctb-green">
-      <h2 className="text-2xl font-bold text-ctb-green mb-6">
-        {enquadramento.descricao}
-      </h2>
-
-      <div className="grid md:grid-cols-2 gap-6 mb-8">
-        <div>
-          <p className="text-sm text-gray-500 dark:text-gray-400 uppercase">Código MBFT</p>
-          <p className="text-3xl font-mono font-bold text-gray-900 dark:text-white">
+    <article className="card overflow-hidden">
+      <header className="border-b border-line bg-brand-soft/60 px-5 py-5 sm:px-6">
+        <div className="flex flex-wrap items-center gap-2">
+          <span className="rounded-lg border border-line bg-surface px-2.5 py-1 font-mono text-sm font-bold text-ink">
             {enquadramento.codigo_mbft}
-          </p>
+          </span>
+          <BadgeGravidade gravidade={enquadramento.gravidade} />
           {enquadramento.desdobramento > 0 && (
-            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-              Desdobramento {enquadramento.desdobramento}
-            </p>
+            <span className="badge-neutral">Desdobramento {enquadramento.desdobramento}</span>
           )}
         </div>
-        <div>
-          <p className="text-sm text-gray-500 dark:text-gray-400 uppercase">Gravidade</p>
-          <p className={`text-xl font-bold ${
-            enquadramento.gravidade === 'gravíssima' ? 'text-red-600' :
-            enquadramento.gravidade === 'grave' ? 'text-orange-600' :
-            enquadramento.gravidade === 'média' ? 'text-yellow-600' :
-            'text-blue-600'
-          }`}>
-            {enquadramento.gravidade.toUpperCase()}
-          </p>
-          <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-            Responsável: {labelResponsavel(enquadramento.responsavel)}
-          </p>
-        </div>
-      </div>
+        <h2 className="mt-3 text-xl font-bold leading-snug text-ink sm:text-2xl">{enquadramento.descricao}</h2>
+        <p className="mt-1.5 text-sm text-muted">Responsável: {labelResponsavel(enquadramento.responsavel)}</p>
+      </header>
 
-      <div className="grid md:grid-cols-3 gap-4 mb-8 pb-8 border-b border-gray-200 dark:border-gray-700">
-        <div>
-          <p className="text-xs text-gray-500 dark:text-gray-400 uppercase">Pontos</p>
-          <p className="text-2xl font-bold text-gray-900 dark:text-white">
-            {enquadramento.pontos}
-          </p>
+      <dl className="grid grid-cols-2 gap-3 p-5 sm:grid-cols-3 sm:p-6">
+        <div className="stat">
+          <dt className="stat-label">Pontos</dt>
+          <dd className="stat-value">{enquadramento.pontos}</dd>
         </div>
-        <div>
-          <p className="text-xs text-gray-500 dark:text-gray-400 uppercase">Multa</p>
-          <p className="text-2xl font-bold text-gray-900 dark:text-white">
-            {formatarMulta(enquadramento.valor_multa)}
-          </p>
-          <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-            {enquadramento.unidade}
-          </p>
+        <div className="stat">
+          <dt className="stat-label">Multa</dt>
+          <dd className="stat-value">{formatarMulta(enquadramento.valor_multa)}</dd>
+          <dd className="text-xs text-muted">{enquadramento.unidade}</dd>
         </div>
-        <div>
-          <p className="text-xs text-gray-500 dark:text-gray-400 uppercase">CNH exigida</p>
-          <p className="text-sm text-gray-900 dark:text-white">
-            {card.categoria_cnh_exigida}
-          </p>
+        <div className="stat col-span-2 sm:col-span-1">
+          <dt className="stat-label">CNH exigida</dt>
+          <dd className="stat-value text-base">{card.categoria_cnh_exigida}</dd>
         </div>
-      </div>
+      </dl>
 
-      {documento && (
-        <div className="bg-blue-50 dark:bg-blue-900 border-l-4 border-blue-400 p-4 mb-4">
-          <p className="font-semibold text-blue-900 dark:text-blue-100">
-            📄 Recolhimento de documento: {documento}
-          </p>
-        </div>
-      )}
+      {(documento || enquadramento.retem_veiculo || enquadramento.remove_veiculo || card.crime_transito) && (
+        <div className="space-y-2 px-5 pb-5 sm:px-6">
+          {documento && (
+            <div className="alert-info">
+              <Icone nome="arquivo" tamanho={18} className="mt-0.5 shrink-0 text-info" />
+              <p className="font-semibold">Recolhimento de documento: {documento}</p>
+            </div>
+          )}
 
-      {enquadramento.retem_veiculo && (
-        <div className="bg-yellow-50 dark:bg-yellow-900 border-l-4 border-yellow-400 p-4 mb-4">
-          <p className="font-semibold text-yellow-900 dark:text-yellow-100">
-            ⚠️ Veículo retido
-          </p>
-        </div>
-      )}
+          {enquadramento.retem_veiculo && (
+            <div className="alert-warn">
+              <Icone nome="alerta" tamanho={18} className="mt-0.5 shrink-0 text-warn" />
+              <p className="font-semibold">Veículo retido</p>
+            </div>
+          )}
 
-      {enquadramento.remove_veiculo && (
-        <div className="bg-red-50 dark:bg-red-900 border-l-4 border-red-400 p-4 mb-4">
-          <p className="font-semibold text-red-900 dark:text-red-100">
-            🚗 Remoção obrigatória
-          </p>
-          {enquadramento.medida_administrativa && (
-            <p className="text-sm text-red-800 dark:text-red-200 mt-1">
-              {enquadramento.medida_administrativa}
-            </p>
+          {enquadramento.remove_veiculo && (
+            <div className="alert-error">
+              <Icone nome="alerta" tamanho={18} className="mt-0.5 shrink-0 text-danger" />
+              <div>
+                <p className="font-semibold">Remoção obrigatória</p>
+                {enquadramento.medida_administrativa && (
+                  <p className="mt-0.5 text-muted">{enquadramento.medida_administrativa}</p>
+                )}
+              </div>
+            </div>
+          )}
+
+          {card.crime_transito && (
+            <div className="alert-error">
+              <Icone nome="balanca" tamanho={18} className="mt-0.5 shrink-0 text-danger" />
+              <p className="font-semibold">Pode configurar crime de trânsito (arts. 302 a 312 do CTB)</p>
+            </div>
           )}
         </div>
       )}
 
-      {card.crime_transito && (
-        <div className="bg-red-100 dark:bg-red-900 border-l-4 border-red-600 p-4 mb-4">
-          <p className="font-bold text-red-900 dark:text-red-100">
-            ⚠️ Pode configurar crime de trânsito (arts. 302 a 312 do CTB)
-          </p>
-        </div>
-      )}
-
-      <div className="mt-8">
-        <h3 className="font-bold text-gray-900 dark:text-white mb-3">Amparo Legal</h3>
-        <p className="text-gray-700 dark:text-gray-300 font-mono text-sm">
-          {enquadramento.amparo_legal}
-        </p>
-      </div>
-    </div>
+      <footer className="border-t border-line px-5 py-4 sm:px-6">
+        <h3 className="stat-label">Amparo Legal</h3>
+        <p className="mt-1 font-mono text-sm text-ink">{enquadramento.amparo_legal}</p>
+      </footer>
+    </article>
   );
 }
