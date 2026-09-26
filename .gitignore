@@ -20,3 +20,6 @@ playwright-report/
 test-results/
 blob-report/
 .playwright/
+
+# Source PDFs (large); the app reads the JSON generated from them
+data/acervo/*.pdf
