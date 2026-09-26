@@ -67,6 +67,12 @@ function SimNao({ valor, fallback }: { valor: string | null; fallback: boolean }
   );
 }
 
+/** "7" → "7 ponto(s)"; "Não Computável" stays as written */
+function pontos(valor: string | null | undefined): string | null {
+  if (!valor) return null;
+  return /^\d+$/.test(valor.trim()) ? `${valor.trim()} ponto(s)` : valor;
+}
+
 /**
  * Ficha de Fiscalização — the MBFT sheet view of a consultation card.
  * Fields filled from the MBFT chunk text when present, from the
@@ -78,6 +84,8 @@ export default function FichaFiscalizacao({ card, campos: doMbft }: FichaFiscali
   // Base first; the AI draft only fills what the base doesn't have.
   const campos: MbftFields | null = ia
     ? {
+        amparo: doMbft?.amparo ?? ia.amparoLegal,
+        pontuacao: doMbft?.pontuacao ?? ia.pontuacao,
         tipificacao: doMbft?.tipificacao ?? ia.tipificacao,
         infrator: doMbft?.infrator ?? ia.infrator,
         competencia: doMbft?.competencia ?? ia.competencia,
@@ -148,7 +156,7 @@ export default function FichaFiscalizacao({ card, campos: doMbft }: FichaFiscali
               </Valor>
             </Linha>
             <Linha rotulo="Amparo Legal:">
-              <Valor>{enquadramento?.amparo_legal ?? ia?.amparoLegal}</Valor>
+              <Valor>{enquadramento?.amparo_legal ?? campos?.amparo}</Valor>
             </Linha>
             <Linha rotulo="Tipificação do Enquadramento:">
               <Valor>{campos?.tipificacao}</Valor>
@@ -174,7 +182,7 @@ export default function FichaFiscalizacao({ card, campos: doMbft }: FichaFiscali
               <dd>{enquadramento ? <BadgeGravidade gravidade={enquadramento.gravidade} /> : <Valor>{campos?.gravidade}</Valor>}</dd>
             </Linha>
             <Linha rotulo="Pontuação:">
-              <Valor>{enquadramento ? `${enquadramento.pontos} ponto(s)` : ia?.pontuacao ? `${ia.pontuacao} ponto(s)` : null}</Valor>
+              <Valor>{enquadramento ? `${enquadramento.pontos} ponto(s)` : pontos(campos?.pontuacao)}</Valor>
             </Linha>
             <Linha rotulo="Penalidade:">
               <Valor>

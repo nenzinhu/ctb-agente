@@ -208,4 +208,24 @@ describe('ConsultaResult', () => {
     expect(screen.getByText(/Recolhimento de documento: CRLV/)).toBeInTheDocument();
     expect(screen.getByText(/Responsável: Proprietário/)).toBeInTheDocument();
   });
+
+  it('lets the agent pick the sheet when several enquadramentos match', () => {
+    const ficha = (amparo: string, tipificacao: string) =>
+      `${amparo}. Tipificação do Enquadramento: ${tipificacao} Gravidade: Leve\nPenalidade: Multa\nInfrator: Condutor Competência: Municipal. Pontuação: 3`;
+    const varias: CartaoEstruturado = {
+      ...mockCard,
+      enquadramento: null,
+      normas: [
+        { ...mockCard.normas[0], numero_dispositivo: 'a', texto: ficha('Art. 182, IV', 'Parar em desacordo com as posições.') },
+        { ...mockCard.normas[0], numero_dispositivo: 'b', texto: ficha('Art. 182, V', 'Parar na pista de rolamento.') },
+      ],
+    };
+
+    render(<ConsultaResult card={varias} />);
+
+    const seletor = screen.getByLabelText('Enquadramentos encontrados (2)');
+    expect(screen.getByText('Art. 182, IV')).toBeInTheDocument();
+    fireEvent.change(seletor, { target: { value: '1' } });
+    expect(screen.getByText('Art. 182, V')).toBeInTheDocument();
+  });
 });

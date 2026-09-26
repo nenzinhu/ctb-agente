@@ -1,9 +1,9 @@
 'use client';
 
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import Link from 'next/link';
 import { CartaoEstruturado } from '@/lib/response/response-types';
-import { extrairMbftFields } from '@/lib/response/mbft-fields';
+import { listarFichasMbft, type MbftFields } from '@/lib/response/mbft-fields';
 import CartaoTecnico from './CartaoTecnico';
 import CartaoSimples from './CartaoSimples';
 import FichaFiscalizacao from './FichaFiscalizacao';
@@ -11,6 +11,7 @@ import CitacaoEvidencia from './CitacaoEvidencia';
 import NormasAplicaveis from './NormasAplicaveis';
 import JurisprudenciaBloco from './JurisprudenciaBloco';
 import BotoesCartao from './BotoesCartao';
+import Field from './ui/Field';
 import Icone from './ui/Icone';
 
 interface ConsultaResultProps {
@@ -67,6 +68,68 @@ function ChecklistAit({ itens }: { itens: string[] }) {
   );
 }
 
+interface OpcaoFicha {
+  rotulo: string;
+  /** The registered enquadramento goes with the first option only */
+  card: CartaoEstruturado;
+  campos: MbftFields | null;
+}
+
+function resumo(texto: string | null, limite = 70): string {
+  if (!texto) return '';
+  return texto.length > limite ? `${texto.slice(0, limite)}…` : texto;
+}
+
+/**
+ * The Ficha de Fiscalização, with a picker when the query matches more than
+ * one enquadramento (e.g. several incisos of the same article).
+ */
+function FichaEscolhida({ card }: { card: CartaoEstruturado }) {
+  const opcoes = useMemo<OpcaoFicha[]>(() => {
+    const fichas = listarFichasMbft(card.normas.map((n) => n.texto));
+    const lista: OpcaoFicha[] = [];
+    if (card.enquadramento) {
+      const e = card.enquadramento;
+      lista.push({ rotulo: `${e.codigo_mbft} — ${resumo(e.descricao)}`, card, campos: fichas[0] ?? null });
+      fichas.slice(1).forEach((f) =>
+        lista.push({ rotulo: `${f.amparo ?? 'MBFT'} — ${resumo(f.tipificacao)}`, card: { ...card, enquadramento: null }, campos: f })
+      );
+    } else {
+      fichas.forEach((f, i) =>
+        lista.push({ rotulo: `${f.amparo ?? 'MBFT'} — ${resumo(f.tipificacao)}`, card: i === 0 ? card : { ...card, ficha_ia: null }, campos: f })
+      );
+    }
+    return lista;
+  }, [card]);
+  const [indice, setIndice] = useState(0);
+
+  if (opcoes.length === 0) return <FichaFiscalizacao card={card} campos={null} />;
+  const atual = opcoes[Math.min(indice, opcoes.length - 1)];
+
+  return (
+    <div className="space-y-4">
+      {opcoes.length > 1 && (
+        <div className="card card-pad print:hidden">
+          <Field
+            as="select"
+            label={`Enquadramentos encontrados (${opcoes.length})`}
+            value={String(indice)}
+            onChange={(e) => setIndice(Number(e.target.value))}
+            hint="A consulta corresponde a mais de uma infração: escolha qual ficha ver."
+          >
+            {opcoes.map((opcao, i) => (
+              <option key={i} value={i}>
+                {opcao.rotulo}
+              </option>
+            ))}
+          </Field>
+        </div>
+      )}
+      <FichaFiscalizacao card={atual.card} campos={atual.campos} />
+    </div>
+  );
+}
+
 export default function ConsultaResult({ card }: ConsultaResultProps) {
   const [view, setView] = useState<'ficha' | 'tecnico' | 'simples'>('ficha');
 
@@ -95,7 +158,7 @@ export default function ConsultaResult({ card }: ConsultaResultProps) {
           Fazer nova consulta
         </Link>
       </div>
-      <FichaFiscalizacao card={card} campos={extrairMbftFields(card.normas.map((n) => n.texto))} />
+      <FichaEscolhida card={card} />
       </div>
     );
   }
@@ -144,7 +207,7 @@ export default function ConsultaResult({ card }: ConsultaResultProps) {
 
       {view === 'ficha' && (
         <div className="space-y-5">
-          <FichaFiscalizacao card={card} campos={extrairMbftFields(card.normas.map((n) => n.texto))} />
+          <FichaEscolhida card={card} />
           {card.checklist_ait && card.checklist_ait.length > 0 && <ChecklistAit itens={card.checklist_ait} />}
           <JurisprudenciaBloco decisoes={card.jurisprudencia} />
         </div>

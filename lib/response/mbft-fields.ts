@@ -5,11 +5,15 @@
 // keep working because the card JSON itself is unchanged.
 
 export interface MbftFields {
+  /** "Art. 181, XVII" as written at the top of the sheet */
+  amparo: string | null;
   tipificacao: string | null;
   infrator: string | null;
   competencia: string | null;
   constatacao: string | null;
   gravidade: string | null;
+  /** "7" or "Não Computável" */
+  pontuacao: string | null;
   penalidade: string | null;
   medidaAdministrativa: string | null;
   configuraCrime: string | null;
@@ -19,109 +23,144 @@ export interface MbftFields {
   exemplosObservacoes: string[];
 }
 
-/** Labels that open a labeled value, in the exact casing used by the MBFT. */
-const ROTULOS = [
-  'Tipificação do Enquadramento:',
-  'Gravidade:',
-  'Penalidade:',
-  'Medida Administrativa:',
-  'Pode Configurar Crime de Trânsito:',
-  'Infrator:',
-  'Competência:',
-  'Constatação da Infração:',
-  'Quando Autuar:',
-  'Quando NÃO Autuar:',
-  'Definições e Procedimentos:',
-  'Exemplos do Campo de Observações do AIT:',
-] as const;
-
-const INICIO_PROXIMO_BLOCO = ROTULOS.map((rotulo) => ({
-  rotulo,
-  regex: new RegExp(`${rotulo.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\s*`, 'g'),
-}));
-
 /**
- * Find where the value of a label ends: the start of the next known label
- * or the end of the text. Labels are matched case-sensitively on purpose —
- * "Quando NÃO Autuar" must not match "Quando Autuar".
- * @param texto - Raw chunk text
- * @param desde - Index right after the label
- * @returns Start index and label of the next section, when any
+ * Labels of an MBFT sheet. The indexed text varies ("Quando AUTUAR" without
+ * a colon, "Pode Configurar Infração Penal"), so each label is a pattern.
+ * "Quando NÃO Autuar" is listed before "Quando Autuar" and the latter refuses
+ * a NÃO, so they never match each other.
  */
-function proximoRotuloApos(texto: string, desde: number): { rotulo: string; inicio: number } | null {
-  let melhor: { rotulo: string; inicio: number } | null = null;
-  for (const { rotulo, regex } of INICIO_PROXIMO_BLOCO) {
-    regex.lastIndex = desde;
-    const match = regex.exec(texto);
-    if (match && (melhor === null || match.index < melhor.inicio)) {
-      melhor = { rotulo, inicio: match.index };
+type Chave = Exclude<keyof MbftFields, 'exemplosObservacoes' | 'amparo' | 'pontuacao'> | 'exemplos' | 'pontuacao';
+
+const ROTULOS: { chave: Chave; regex: RegExp }[] = [
+  { chave: 'tipificacao', regex: /Tipifica[çc][ãa]o do Enquadramento\s*:?/i },
+  { chave: 'gravidade', regex: /Gravidade\s*:/i },
+  { chave: 'penalidade', regex: /Penalidade\s*:/i },
+  { chave: 'medidaAdministrativa', regex: /Medida Administrativa\s*:/i },
+  { chave: 'configuraCrime', regex: /Pode Configurar (?:Crime de Tr[âa]nsito|Infra[çc][ãa]o Penal)\s*:?/i },
+  { chave: 'infrator', regex: /Infrator\s*:/i },
+  { chave: 'competencia', regex: /Compet[êe]ncia\s*:/i },
+  { chave: 'pontuacao', regex: /Pontua[çc][ãa]o\s*:/i },
+  { chave: 'constatacao', regex: /Constata[çc][ãa]o da Infra[çc][ãa]o\s*:/i },
+  { chave: 'quandoNaoAutuar', regex: /Quando\s+N[ÃA]O\s+Autuar\s*:?/i },
+  { chave: 'quandoAutuar', regex: /Quando\s+(?!N[ÃA]O)Autuar\s*:?/i },
+  { chave: 'definicoes', regex: /Defini[çc][õo]es e Procedimentos\s*:?/i },
+  { chave: 'exemplos', regex: /Exemplos do Campo de Observa[çc][õo]es do AIT\s*:?/i },
+];
+
+/** "Art. 181, XVII." / "Art. 165-A." at the start of a sheet */
+const AMPARO = /^\s*(Art\.\s*\d+(?:-[A-Z])?(?:\s*,\s*(?:§\s*\d+º?|[IVXLC]+|inciso\s+[IVXLC]+))*(?:\s*,\s*al[íi]nea\s+["“]?[a-z]["”]?)?)\.?/i;
+
+/** Every label occurrence, in text order */
+function marcar(texto: string): { chave: Chave; inicio: number; fim: number }[] {
+  const marcas: { chave: Chave; inicio: number; fim: number }[] = [];
+  for (const { chave, regex } of ROTULOS) {
+    const global = new RegExp(regex.source, 'gi');
+    for (const m of texto.matchAll(global)) {
+      const inicio = m.index ?? 0;
+      // "Quando Autuar" inside "Quando NÃO Autuar" was already excluded by the lookahead
+      if (!marcas.some((x) => inicio >= x.inicio && inicio < x.fim)) {
+        marcas.push({ chave, inicio, fim: inicio + m[0].length });
+      }
     }
   }
-  return melhor;
+  return marcas.sort((a, b) => a.inicio - b.inicio);
 }
 
-/**
- * Extract the raw value that follows a label
- * @param texto - Raw chunk text
- * @param rotulo - Label ending with ":" (e.g. "Infrator:")
- * @returns Trimmed value, or null when the label is absent
- */
-function valorApos(texto: string, rotulo: string): string | null {
-  const inicio = texto.indexOf(rotulo);
-  if (inicio === -1) return null;
-  const desde = inicio + rotulo.length;
-  const fim = proximoRotuloApos(texto, desde);
-  const valor = texto.slice(desde, fim ? fim.inicio : undefined).trim();
-  return valor || null;
-}
-
-/** Split "Exemplos…: 1. … 1.1 … 2. …" into top-level numbered items. */
-function extrairExemplos(valor: string | null): string[] {
-  if (!valor) return [];
+/** Split a numbered block into top-level items ("1. … 1.1 … 2. …") */
+function itens(valor: string): string[] {
   return valor
     .split(/(?=(?:^|\s)\d+\.\s)/)
     .map((item) => item.trim())
-    .filter((item) => /^\d+\./.test(item));
+    .filter((item) => /^\d+\.\s/.test(item));
 }
+
+/**
+ * Split numbered items into lists wherever the numbering restarts at 1.
+ * The PDF columns (Quando autuar | Quando NÃO autuar | Exemplos) come out
+ * of the extractor as consecutive lists under stacked, empty headers.
+ */
+function listas(valor: string): string[][] {
+  const resultado: string[][] = [];
+  for (const item of itens(valor)) {
+    if (item.startsWith('1.') && !/^1\.\d/.test(item) || resultado.length === 0) resultado.push([]);
+    resultado[resultado.length - 1].push(item);
+  }
+  return resultado.filter((l) => l.length > 0);
+}
+
+const VAZIO: MbftFields = {
+  amparo: null,
+  tipificacao: null,
+  infrator: null,
+  competencia: null,
+  constatacao: null,
+  gravidade: null,
+  pontuacao: null,
+  penalidade: null,
+  medidaAdministrativa: null,
+  configuraCrime: null,
+  quandoAutuar: null,
+  quandoNaoAutuar: null,
+  definicoes: null,
+  exemplosObservacoes: [],
+};
 
 /**
  * Parse the labeled MBFT sections out of a chunk text
  * @param texto - Raw text of a `dispositivos` chunk
- * @returns Structured fields; each is null when the chunk lacks the label
+ * @returns Structured fields; each is null when the chunk lacks it
  */
 export function parseMbftFields(texto: string): MbftFields {
-  if (!texto) {
-    return {
-      tipificacao: null,
-      infrator: null,
-      competencia: null,
-      constatacao: null,
-      gravidade: null,
-      penalidade: null,
-      medidaAdministrativa: null,
-      configuraCrime: null,
-      quandoAutuar: null,
-      quandoNaoAutuar: null,
-      definicoes: null,
-      exemplosObservacoes: [],
-    };
+  if (!texto) return { ...VAZIO };
+
+  const campos: MbftFields = { ...VAZIO, exemplosObservacoes: [] };
+  campos.amparo = texto.match(AMPARO)?.[1]?.replace(/\s+/g, ' ').trim() ?? null;
+
+  const marcas = marcar(texto);
+  const valores: Partial<Record<Chave, string>> = {};
+  marcas.forEach((marca, i) => {
+    const valor = texto.slice(marca.fim, marcas[i + 1]?.inicio ?? texto.length).trim();
+    if (valor && !valores[marca.chave]) valores[marca.chave] = valor;
+  });
+
+  const limpar = (v?: string) => v?.replace(/\s+/g, ' ').trim() || null;
+  campos.tipificacao = limpar(valores.tipificacao);
+  campos.gravidade = limpar(valores.gravidade);
+  campos.penalidade = limpar(valores.penalidade);
+  campos.medidaAdministrativa = limpar(valores.medidaAdministrativa);
+  campos.configuraCrime = limpar(valores.configuraCrime);
+  campos.infrator = limpar(valores.infrator);
+  campos.competencia = limpar(valores.competencia);
+  campos.pontuacao = limpar(valores.pontuacao);
+  campos.constatacao = limpar(valores.constatacao);
+  campos.definicoes = valores.definicoes && !/^\d+\.\s/.test(valores.definicoes) ? limpar(valores.definicoes) : null;
+
+  const autuar = valores.quandoAutuar;
+  const naoAutuar = valores.quandoNaoAutuar;
+  const exemplos = valores.exemplos ?? '';
+  if (autuar || naoAutuar) {
+    campos.quandoAutuar = autuar ? limpar(autuar) : null;
+    campos.quandoNaoAutuar = naoAutuar ? limpar(naoAutuar) : null;
+    campos.exemplosObservacoes = itens(exemplos);
+  } else {
+    // Stacked headers: the lists follow the last one, in column order.
+    const [primeira = [], segunda = [], ...resto] = listas(exemplos);
+    const cabecalhosEmpilhados = marcas.some((m) => m.chave === 'quandoAutuar');
+    if (cabecalhosEmpilhados && segunda.length > 0) {
+      campos.quandoAutuar = primeira.join('\n');
+      campos.quandoNaoAutuar = segunda.join('\n');
+      campos.exemplosObservacoes = resto.flat();
+    } else {
+      campos.exemplosObservacoes = [...primeira, ...segunda, ...resto.flat()];
+    }
   }
 
-  return {
-    tipificacao: valorApos(texto, 'Tipificação do Enquadramento:'),
-    infrator: valorApos(texto, 'Infrator:'),
-    // The MBFT packs "Pontuação: 7" right after the competência sentence.
-    competencia: valorApos(texto, 'Competência:')?.replace(/\s*Pontua[çc][ãa]o:\s*\d+\s*$/i, '') || null,
-    constatacao: valorApos(texto, 'Constatação da Infração:'),
-    gravidade: valorApos(texto, 'Gravidade:'),
-    penalidade: valorApos(texto, 'Penalidade:'),
-    medidaAdministrativa: valorApos(texto, 'Medida Administrativa:'),
-    configuraCrime: valorApos(texto, 'Pode Configurar Crime de Trânsito:'),
-    quandoAutuar: valorApos(texto, 'Quando Autuar:'),
-    quandoNaoAutuar: valorApos(texto, 'Quando NÃO Autuar:'),
-    definicoes: valorApos(texto, 'Definições e Procedimentos:'),
-    exemplosObservacoes: extrairExemplos(valorApos(texto, 'Exemplos do Campo de Observações do AIT:')),
-  };
+  return campos;
+}
+
+/** How many fields a parsed sheet filled */
+function preenchidos(campos: MbftFields): number {
+  return Object.values(campos).filter((v) => (Array.isArray(v) ? v.length > 0 : Boolean(v))).length;
 }
 
 /**
@@ -130,19 +169,23 @@ export function parseMbftFields(texto: string): MbftFields {
  * @returns Parsed fields from the richest chunk, or null when none has labels
  */
 export function extrairMbftFields(textos: string[]): MbftFields | null {
-  let melhor: MbftFields | null = null;
-  let melhorPontuacao = 0;
+  return listarFichasMbft(textos)[0] ?? null;
+}
 
+/**
+ * Every distinct MBFT sheet among the retrieved norms, richest first. One
+ * query can hit several enquadramentos (art. 181 has twenty incisos); the
+ * same sheet indexed twice is kept once.
+ * @param textos - Raw texts of the retrieved norms
+ */
+export function listarFichasMbft(textos: string[]): MbftFields[] {
+  const porChave = new Map<string, MbftFields>();
   for (const texto of textos) {
     const campos = parseMbftFields(texto);
-    const pontuacao = Object.values(campos).filter((v) =>
-      Array.isArray(v) ? v.length > 0 : Boolean(v)
-    ).length;
-    if (pontuacao > melhorPontuacao) {
-      melhor = campos;
-      melhorPontuacao = pontuacao;
-    }
+    if (preenchidos(campos) < 3 || !campos.tipificacao) continue;
+    const chave = `${campos.amparo ?? ''}|${campos.tipificacao.toLowerCase()}`;
+    const atual = porChave.get(chave);
+    if (!atual || preenchidos(campos) > preenchidos(atual)) porChave.set(chave, campos);
   }
-
-  return melhorPontuacao >= 3 ? melhor : null;
+  return [...porChave.values()].sort((a, b) => preenchidos(b) - preenchidos(a));
 }

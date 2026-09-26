@@ -1,4 +1,4 @@
-import { parseMbftFields, extrairMbftFields } from '@/lib/response/mbft-fields';
+import { parseMbftFields, extrairMbftFields, listarFichasMbft } from '@/lib/response/mbft-fields';
 
 const TEXTO_MBFT_181_XX = `Art. 181, XX. Tipificação do Enquadramento: Estacionar o veículo nas vagas reservadas às pessoas com deficiência ou idosos, sem credencial que comprove tal condição. Gravidade: Gravíssima
 Penalidade: Multa
@@ -77,5 +77,53 @@ describe('extrairMbftFields', () => {
   it('devolve null quando nenhum chunk tem rótulos do MBFT', () => {
     expect(extrairMbftFields([TEXTO_CTB_SIMPLES])).toBeNull();
     expect(extrairMbftFields([])).toBeNull();
+  });
+});
+
+describe('parseMbftFields — variações reais do texto indexado', () => {
+  const ART_182_IV = `Art. 182, IV. Tipificação do Enquadramento: Parar o veículo em desacordo com as posições estabelecidas neste Código. Gravidade: Leve
+Penalidade: Multa
+Medida Administrativa: Não Pode Configurar Crime de Trânsito:
+NÃO Infrator: Condutor Competência: Órgão ou Entidade de Trânsito Municipal e Rodoviário. Pontuação: 3 Constatação da Infração: Possível sem abordagem.
+Quando Autuar: Quando NÃO Autuar: Definições e Procedimentos: Exemplos do Campo de Observações do AIT:
+1. Veículo efetuando embarque ou desembarque em ângulo em relação à guia da calçada (meio-fio).
+1. Motocicleta efetuando embarque perpendicular ao meio-fio: utilizar enquadramento específico: 559-20, art. 182, III.
+2. Veículo obedecendo à regulamentação de estacionamento do local.`;
+
+  const ART_176_III = `Art. 176, III. Tipificação do Enquadramento: Deixar o condutor envolvido em acidente com vítima de preservar o local. Gravidade: Gravíssima
+Penalidade: Multa (5X) e Suspensão do direito de dirigir
+Medida Administrativa: Recolhimento do Documento de Habilitação.
+Pode Configurar Infração Penal:
+SIM 312 do CTBInfrator: Condutor Competência: Órgão ou Entidade de Trânsito Estadual e Rodoviário. Pontuação: Não Computável Constatação da Infração: Possível sem Abordagem. Quando AUTUAR Quando NÃO Autuar Definições e Procedimentos Exemplos do Campo de Observações do AIT:
+1. Condutor que remove elemento do local do acidente.`;
+
+  it('lê amparo, pontuação e "Medida Administrativa: Não"', () => {
+    const c = parseMbftFields(ART_182_IV);
+    expect(c.amparo).toBe('Art. 182, IV');
+    expect(c.pontuacao).toBe('3');
+    expect(c.medidaAdministrativa).toBe('Não');
+    expect(c.configuraCrime).toBe('NÃO');
+    expect(c.competencia).toBe('Órgão ou Entidade de Trânsito Municipal e Rodoviário.');
+  });
+
+  it('separa Quando Autuar e Quando NÃO Autuar quando a numeração recomeça', () => {
+    const c = parseMbftFields(ART_182_IV);
+    expect(c.quandoAutuar).toMatch(/^1\. Veículo efetuando embarque/);
+    expect(c.quandoNaoAutuar).toMatch(/^1\. Motocicleta/);
+    expect(c.quandoNaoAutuar).toMatch(/2\. Veículo obedecendo/);
+  });
+
+  it('aceita "Pode Configurar Infração Penal" e "Quando AUTUAR" sem dois-pontos', () => {
+    const c = parseMbftFields(ART_176_III);
+    expect(c.configuraCrime).toBe('SIM 312 do CTB');
+    expect(c.infrator).toBe('Condutor');
+    expect(c.pontuacao).toBe('Não Computável');
+    expect(c.exemplosObservacoes).toEqual(['1. Condutor que remove elemento do local do acidente.']);
+  });
+
+  it('lista cada ficha uma vez, a mais completa primeiro', () => {
+    const cortada = 'Art. 182, IV. Tipificação do Enquadramento: Parar o veículo em desacordo com as posições estabelecidas neste Código. Gravidade: Leve\nPenalidade: Multa';
+    const fichas = listarFichasMbft([cortada, ART_182_IV, ART_176_III]);
+    expect(fichas.map((f) => f.amparo)).toEqual(['Art. 182, IV', 'Art. 176, III']);
   });
 });
