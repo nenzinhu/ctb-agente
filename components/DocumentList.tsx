@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from 'react';
 import type { Colecao, DocumentoRegistro, DocumentosResposta, GrupoLegado } from '@/lib/ingestion/documents';
+import { chaveDoArquivo } from '@/lib/ingestion/formats';
 import Icone from './ui/Icone';
 
 /**
@@ -111,6 +112,20 @@ export default function DocumentList({ colecao, refreshTrigger, onChange }: Docu
     );
   }
 
+  // Copies of one document (sent again as .txt, as "(1)"…): the newest
+  // stays, the older ones get flagged so the master can delete them.
+  const chaveDe = (doc: DocumentoRegistro) => `${chaveDoArquivo(doc.nome_arquivo)}|${doc.norma_id ?? ''}`;
+  const maisNovo = new Map<string, DocumentoRegistro>();
+  for (const doc of dados.documentos) {
+    const atual = maisNovo.get(chaveDe(doc));
+    if (!atual || doc.criado_em > atual.criado_em) maisNovo.set(chaveDe(doc), doc);
+  }
+  const copiaDe = (doc: DocumentoRegistro) => {
+    const novo = maisNovo.get(chaveDe(doc));
+    return novo && novo.id !== doc.id ? novo : null;
+  };
+  const totalCopias = dados.documentos.filter((doc) => copiaDe(doc)).length;
+
   const termo = busca.trim().toLowerCase();
   const documentos: DocumentoRegistro[] = termo
     ? dados.documentos.filter((d) => `${d.titulo} ${d.nome_arquivo} ${d.norma_id ?? ''}`.toLowerCase().includes(termo))
@@ -174,6 +189,16 @@ export default function DocumentList({ colecao, refreshTrigger, onChange }: Docu
         </label>
       )}
 
+      {totalCopias > 0 && (
+        <div className="alert-warn">
+          <Icone nome="alerta" className="mt-0.5 shrink-0 text-warn" />
+          <p>
+            <strong>{totalCopias === 1 ? 'Há 1 cópia' : `Há ${totalCopias} cópias`} de documento já enviado.</strong> Exclua as
+            marcadas como “Cópia” para as respostas não repetirem o mesmo trecho.
+          </p>
+        </div>
+      )}
+
       {documentos.length === 0 && dados.legado.length === 0 ? (
         <div className="rounded-2xl border border-dashed border-line px-6 py-10 text-center">
           <Icone nome="arquivo" tamanho={28} className="mx-auto text-muted" />
@@ -192,6 +217,11 @@ export default function DocumentList({ colecao, refreshTrigger, onChange }: Docu
                   {doc.titulo}
                 </p>
                 <p className="mt-0.5 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted">
+                  {copiaDe(doc) && (
+                    <span className="badge bg-warn/10 text-warn" title={`Mesmo documento de “${copiaDe(doc)?.nome_arquivo}”, enviado depois`}>
+                      Cópia
+                    </span>
+                  )}
                   <span className="badge-neutral">{FORMATO_ROTULO[doc.formato] ?? doc.formato}</span>
                   {doc.norma_id && <span>norma: {doc.norma_id}</span>}
                   {doc.paginas ? <span>{doc.paginas} pág.</span> : null}

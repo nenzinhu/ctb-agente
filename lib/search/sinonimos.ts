@@ -27,7 +27,39 @@ const SINONIMOS: [RegExp, string][] = [
   [/\bcadeirinhas?\b|\bbebe conforto\b|\bassento de elevacao\b/, 'crianças normas de segurança dispositivo de retenção'],
   [/\bfarol\b|\bfarois\b/, 'luz baixa faróis'],
   [/\bfila dupla\b/, 'ao lado de outro veículo em fila dupla'],
+  // POP-PMSC: the street word → the POP's own title and terms.
+  [/\btaser\b|\barma de choque\b/, 'dispositivo eletrônico de incapacitação'],
+  [/\b(spray|gas) de pimenta\b|\bgas lacrimogeneo\b|\bspray\b/, 'espargidor solução lacrimogênea'],
+  [/\b(balas?|municao|tiros?) de borracha\b/, 'munição de elastômero'],
+  [/\bprotestos?\b|\bpasseatas?\b/, 'manifestação'],
+  [/\b(cavalos?|bois?|vacas?|gado|cachorros?|caes|animais?) solt[oa]s?\b|\banimais? na (pista|via|rodovia|estrada)\b/, 'animal em via pública'],
+  [/\btransport\w* (de |do |da |o |a |os |as )?(pres[oa]s?|detid[oa]s?)\b/, 'condução de preso em viatura'],
+  [/\btermo circunstanciado\b|\btco\b/, 'lavratura de BO-TC'],
+  [/\bato infracional\b|\b(adolescente|menor) (infrator|apreendid[oa])\b/, 'ocorrência envolvendo crianças e adolescentes'],
+  [/\bassaltos?\b/, 'roubo'],
 ];
+
+// Words that make a question, not a subject ("quando posso algemar
+// alguém"): in a POP they match almost everything and push the one word
+// that matters ("algemar") down.
+const PALAVRAS_DE_PERGUNTA = new Set([
+  'posso', 'pode', 'podem', 'podemos', 'devo', 'deve', 'devem', 'devemos', 'preciso', 'precisa', 'precisam',
+  'fazer', 'faco', 'faz', 'proceder', 'procedimento', 'procedimentos', 'alguem', 'algum', 'alguma', 'oque',
+  'correto', 'certo', 'forma', 'maneira', 'jeito', 'existe', 'existem',
+]);
+
+const semAcento = (texto: string) => texto.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+
+/**
+ * @param consulta - Question as typed
+ * @returns The question without its question words, or as typed when
+ *   nothing else is left ("como fazer?")
+ */
+export function semPalavrasDePergunta(consulta: string): string {
+  const palavras = consulta.split(/\s+/).filter(Boolean);
+  const restantes = palavras.filter((palavra) => !PALAVRAS_DE_PERGUNTA.has(semAcento(palavra.toLowerCase()).replace(/[^\p{L}]/gu, '')));
+  return restantes.length > 0 ? restantes.join(' ') : consulta;
+}
 
 /**
  * @param consulta - Question as typed (PII already filtered)

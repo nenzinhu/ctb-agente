@@ -30,3 +30,25 @@ export function reciprocalRankFusion<T extends { id: string }>(lists: T[][], k: 
 
   return [...fused.values()].sort((a, b) => b.score - a.score).map(({ item, score }) => ({ ...item, score }));
 }
+
+/**
+ * Drops an item whose text repeats one ranked above it: the same excerpt
+ * indexed twice (a document sent again in another format, a law quoted in
+ * full inside a manual) would otherwise fill two of the few slots.
+ * @param itens - Ranked items, best first
+ */
+export function semTextoRepetido<T extends { texto: string }>(itens: T[]): T[] {
+  const vistos = new Set<string>();
+  return itens.filter((item) => {
+    const chave = (item.texto ?? '')
+      .normalize('NFD')
+      .replace(/[̀-ͯ]/g, '')
+      .toLowerCase()
+      .replace(/[^a-z0-9]/g, '')
+      .slice(0, 300);
+    if (!chave) return true;
+    if (vistos.has(chave)) return false;
+    vistos.add(chave);
+    return true;
+  });
+}

@@ -64,3 +64,20 @@ export function mimeParaEnvio(fileName: string): string | null {
   const formato = formatoDoArquivo(fileName);
   return formato ? FORMATOS[formato].mime : null;
 }
+
+/**
+ * The same document sent again under another name: "MBFT.pdf", "mbft.txt",
+ * "MBFT (1).pdf", "MBFT (somente texto).pdf" all give "mbft".
+ */
+export function chaveDoArquivo(fileName: string): string {
+  let nome = fileName.replace(/\.[a-z0-9]{1,5}$/i, '');
+  for (let anterior = ''; anterior !== nome; ) {
+    anterior = nome;
+    nome = nome.replace(/\s*\((?:\d+|c[óo]pia|somente texto|comprimido)\)\s*$/i, '').replace(/[\s_-]+(?:c[óo]pia|copy)$/i, '');
+  }
+  return nome
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+    .replace(/[^a-z0-9]/g, '');
+}

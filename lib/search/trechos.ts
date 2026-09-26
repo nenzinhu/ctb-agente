@@ -3,8 +3,8 @@
 import { databaseConfigured, supabaseAdmin } from '@/lib/db/client';
 import { embeddingChain } from '@/lib/ai/embeddings';
 import { MigrationPendingError, isMissingSchemaError, type Colecao } from '@/lib/ingestion/documents';
-import { reciprocalRankFusion } from './fusion';
-import { expandirSinonimos } from './sinonimos';
+import { reciprocalRankFusion, semTextoRepetido } from './fusion';
+import { expandirSinonimos, semPalavrasDePergunta } from './sinonimos';
 
 export interface TrechoEncontrado {
   id: string;
@@ -63,6 +63,9 @@ async function porVetor(consulta: string, colecao: Colecao): Promise<Linha[]> {
 export async function buscarTrechos(consulta: string, colecao: Colecao, limite = 6): Promise<TrechoEncontrado[]> {
   if (!databaseConfigured || !consulta.trim()) return [];
 
-  const [texto, vetor] = await Promise.all([porTexto(expandirSinonimos(consulta), colecao), porVetor(consulta, colecao)]);
-  return reciprocalRankFusion([texto, vetor]).slice(0, limite);
+  const [texto, vetor] = await Promise.all([
+    porTexto(expandirSinonimos(semPalavrasDePergunta(consulta)), colecao),
+    porVetor(consulta, colecao),
+  ]);
+  return semTextoRepetido(reciprocalRankFusion([texto, vetor])).slice(0, limite);
 }

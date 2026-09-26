@@ -175,13 +175,29 @@ describe('chunkText on the POP manual', () => {
 });
 
 describe('removeRunningHeaders with POP header boxes', () => {
-  it('keeps the POP number below "POP" but still drops page numbers', () => {
-    const pagina = (n: number) => ['PROCEDIMENTO OPERACIONAL PADRÃO', 'BUSCA PESSOAL POP', '002', `Conteúdo da página ${n}.`, String(n)].join('\n');
-    const limpas = removeRunningHeaders([pagina(1), pagina(2), pagina(3), pagina(4)]);
+  const caixa = (titulo: string, numero: string) => ['PROCEDIMENTO OPERACIONAL PADRÃO', `${titulo} POP`, numero];
 
-    for (const [i, limpa] of limpas.entries()) {
-      expect(limpa.split('\n')).toContain('002');
-      expect(limpa.split('\n')).not.toContain(String(i + 1));
-    }
+  it('keeps the POP number below "POP" in a manual, but still drops page numbers', () => {
+    const paginas = [
+      [...caixa('BUSCA PESSOAL', '002'), 'Passo da busca.', '1'],
+      [...caixa('BUSCA PESSOAL', '002'), 'Outro passo da busca.', '2'],
+      [...caixa('USO DE ALGEMA', '003'), 'Passo da algema.', '3'],
+      [...caixa('ESCOLTA', '101.11.1'), 'Passo da escolta.', '4'],
+      [...caixa('BARREIRA POLICIAL', '105.1.1'), 'Passo da barreira.', '5'],
+      [...caixa('PATRULHA URBANA', '105.6.1'), 'Passo da patrulha.', '6'],
+    ].map((linhas) => linhas.join('\n'));
+
+    const limpas = removeRunningHeaders(paginas).map((pagina) => pagina.split('\n'));
+
+    expect(limpas[0]).toContain('002');
+    expect(limpas[2]).toContain('003');
+    limpas.forEach((linhas, i) => expect(linhas).not.toContain(String(i + 1)));
+  });
+
+  it('drops the number with the box when a single POP repeats it on every page', () => {
+    const passos = ['Identificar o suspeito.', 'Verbalizar com clareza.', 'Realizar a busca.', 'Registrar no BO.'];
+    const paginas = passos.map((passo, i) => [...caixa('BUSCA PESSOAL', '002'), passo, String(i + 1)].join('\n'));
+
+    expect(removeRunningHeaders(paginas)).toEqual(passos);
   });
 });

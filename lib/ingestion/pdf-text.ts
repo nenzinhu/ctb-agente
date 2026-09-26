@@ -150,11 +150,12 @@ const digitKey = (line: string) => exactKey(line).replace(/\d+/g, '#');
 // A line ending in "POP" / "POP nº": the next line is the POP's number.
 const POP_ROTULO_RE = /\bPOP(?:\s*n[º°o]\.?)?$/i;
 
-function anteriorPreenchida(lines: string[], i: number): string {
+/** Index of the closest filled line above `i`, or -1. */
+function anteriorPreenchida(lines: string[], i: number): number {
   for (let j = i - 1; j >= 0; j--) {
-    if (lines[j].trim()) return lines[j].trim();
+    if (lines[j].trim()) return j;
   }
-  return '';
+  return -1;
 }
 
 /**
@@ -197,8 +198,6 @@ export function removeRunningHeaders(pages: string[]): string[] {
         .filter(({ i, pos }) => {
           const line = lines[i].trim();
           if (LEGAL_LINE_RE.test(line) || hasReadablePageMarkers(line)) return false;
-          // "POP" / "002": the POP's number in its header box, not a page number.
-          if (POP_ROTULO_RE.test(anteriorPreenchida(lines, i))) return false;
           return (
             PAGE_NUMBER_RE.test(digitKey(line)) ||
             repeated(`${pos}|${exactKey(line)}`) ||
@@ -207,8 +206,27 @@ export function removeRunningHeaders(pages: string[]): string[] {
         })
         .map(({ i }) => i)
     );
+    // "POP" / "002": the POP's number in its header box, not a page number —
+    // unless the box repeats on most pages and goes as a running header too.
+    for (const i of [...drop]) {
+      const anterior = anteriorPreenchida(lines, i);
+      if (anterior >= 0 && !drop.has(anterior) && POP_ROTULO_RE.test(lines[anterior].trim())) drop.delete(i);
+    }
     return lines.filter((_line, i) => !drop.has(i)).join('\n');
   });
+}
+
+/**
+ * The text a PDF converted in the browser ("Máxima") is uploaded as: the same
+ * cleanup the server applies to a PDF (joinPdfPages), with "--- Página N ---"
+ * lines the indexer turns back into page numbers. Unlike the .txt offered for
+ * download, lines are not reflowed, so structure detection (articles, POP
+ * header boxes) sees exactly what it would see in the PDF.
+ * @param pages - Raw text of each page (from pageItemsToText)
+ */
+export function pdfTextForUpload(pages: string[]): string {
+  const limpas = removeRunningHeaders(pages);
+  return `${normalizePdfText(limpas.map((page, i) => `${readablePageMarker(i + 1)}\n${page}`).join('\n\n'))}\n`;
 }
 
 /**

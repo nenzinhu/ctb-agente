@@ -1,7 +1,7 @@
 // Hybrid search over the CTB provisions: full-text (tsvector) + semantic (pgvector)
 import { searchByTsvector } from './bm25';
 import { searchByVector } from './vector';
-import { reciprocalRankFusion } from './fusion';
+import { reciprocalRankFusion, semTextoRepetido } from './fusion';
 import { expandirSinonimos } from './sinonimos';
 
 export interface RankedResult {
@@ -64,7 +64,7 @@ export async function hybridSearch(query: string, limit = 5): Promise<RankedResu
     semFalhar('vetor', searchByVector(query, 20) as Promise<Linha[]>),
   ]);
 
-  return priorizarInfracoes(reciprocalRankFusion([texto, vetor]))
+  return semTextoRepetido(priorizarInfracoes(reciprocalRankFusion([texto, vetor])))
     .slice(0, limit)
     .map(({ id, numero_dispositivo, texto: conteudo, score }) => ({ id, numero_dispositivo, texto: conteudo, score }));
 }

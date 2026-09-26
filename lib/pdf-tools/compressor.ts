@@ -5,7 +5,7 @@
 //   texto        — maximum compression: text only, no design, and a .txt.
 // Import this module dynamically: it pulls pdf.js (hundreds of KB) and uses
 // browser APIs (canvas, Worker, CompressionStream).
-import { pageItemsToText, type PdfTextItem } from '@/lib/ingestion/pdf-text';
+import { pageItemsToText, pdfTextForUpload, type PdfTextItem } from '@/lib/ingestion/pdf-text';
 import { pdfDeImagens, pdfSomenteTexto, type Deflate, type PaginaImagem, type TextoPosicionado } from './pdf-writer';
 import { paginasParaDocumento, paginasParaTxt, temTexto } from './texto';
 
@@ -92,7 +92,7 @@ export async function pdfParaTexto(arquivo: File, onProgresso?: (feito: number, 
     throw new Error('Este PDF não tem texto selecionável (parece digitalizado). Envie o PDF original ou passe um OCR antes.');
   }
   const titulo = semExtensao(arquivo.name);
-  return new File([paginasParaTxt(titulo, paginas)], `${titulo}.txt`, { type: 'text/plain' });
+  return new File([pdfTextForUpload(paginas)], `${titulo}.txt`, { type: 'text/plain' });
 }
 
 function canvasParaJpeg(canvas: HTMLCanvasElement, qualidade: number): Promise<Uint8Array> {

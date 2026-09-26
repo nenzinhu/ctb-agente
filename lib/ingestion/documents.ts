@@ -4,7 +4,7 @@
 // a document removes its excerpts (ON DELETE CASCADE).
 import crypto from 'crypto';
 import { databaseConfigured, supabaseAdmin } from '@/lib/db/client';
-import type { FormatoDocumento } from './formats';
+import { chaveDoArquivo, type FormatoDocumento } from './formats';
 
 export type Colecao = 'ctb' | 'pop';
 
@@ -150,20 +150,32 @@ export async function finalizeDocument(id: string, trechos: number, trechosSemVe
 }
 
 /**
- * Removes earlier uploads of the same file (same name in the collection and,
- * in the CTB, the same norma), now that the new version is indexed.
+ * Removes earlier uploads of the same document, now that the new version is
+ * indexed: the same file name up to format and copy suffixes (chaveDoArquivo),
+ * so a PDF sent again as .txt, or as "(1)", replaces its clone instead of
+ * doubling every search result. In the CTB, a different norma is never the
+ * same document.
  * @returns How many previous versions were removed
  */
 export async function replacePreviousVersions(novo: DocumentoRegistro): Promise<number> {
-  let query = supabaseAdmin
+  const { data: candidatos, error: erroLeitura } = await supabaseAdmin
     .from('documentos')
-    .delete()
+    .select('id, nome_arquivo, norma_id')
     .eq('colecao', novo.colecao)
-    .eq('nome_arquivo', novo.nome_arquivo)
     .neq('id', novo.id);
-  if (novo.colecao === 'ctb' && novo.norma_id) query = query.eq('norma_id', novo.norma_id);
+  if (erroLeitura) {
+    console.error('Failed to look for previous versions:', erroLeitura);
+    return 0;
+  }
 
-  const { data, error } = await query.select('id');
+  const chave = chaveDoArquivo(novo.nome_arquivo);
+  const ids = ((candidatos ?? []) as Pick<DocumentoRegistro, 'id' | 'nome_arquivo' | 'norma_id'>[])
+    .filter((doc) => chave && chaveDoArquivo(doc.nome_arquivo) === chave)
+    .filter((doc) => !(novo.colecao === 'ctb' && novo.norma_id && doc.norma_id && doc.norma_id !== novo.norma_id))
+    .map((doc) => doc.id);
+  if (ids.length === 0) return 0;
+
+  const { data, error } = await supabaseAdmin.from('documentos').delete().in('id', ids).select('id');
   if (error) {
     console.error('Failed to replace previous versions:', error);
     return 0;
