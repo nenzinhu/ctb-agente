@@ -9,6 +9,7 @@ Aplicativo PWA que permite consulta interativa da legislação de trânsito (Có
 
 **Recursos:**
 - Busca por código de infração (516-91), artigos (art. 165), ou situação descritiva
+- **"Você quis dizer?" instantâneo**: gírias e siglas (zap, grau, chapado, fumê, farol vermelho, CNH, PPD) viram as infrações relacionadas, com exemplo "Explicando fácil", sem esperar a IA
 - Busca sem depender de acento nem de todas as palavras (`habilitacao` acha "habilitação"), com gírias de campo expandidas (ex.: "bafômetro" → etilômetro)
 - CTB compilado (Lei 9.503/97, 93 páginas) incluído no app: um clique em Painel → Base CTB → "Indexar agora"
 - Aba **POP-PMSC** (`/pop`): perguntas sobre os Procedimentos Operacionais Padrão respondidas só com os trechos indexados, citando POP, seção e página
@@ -24,7 +25,7 @@ Aplicativo PWA que permite consulta interativa da legislação de trânsito (Có
 - Favoritos no aparelho (`/favoritos`), guardados em localStorage — nada vai para o servidor
 - Compartilhamento de cartão como texto + link, pela folha nativa do celular ou cópia
 - Rate limiting por IP + Turnstile anti-bot + filtro PII (placas, CPF, CNPJ)
-- Suporte a múltiplos LLMs em cadeia de fallback (Groq, NVIDIA, Nous, OrcaRouter, AnyAPI, OpenRouter, Mistral)
+- Suporte a múltiplos LLMs em cadeia de fallback (Groq, Cloudflare Workers AI, NVIDIA, Nous, OrcaRouter, AnyAPI, OpenRouter, Mistral)
 - Painel master com base CTB, POP-PMSC, enquadramentos, provedores, uso e limites
 
 ## 🏗️ Stack

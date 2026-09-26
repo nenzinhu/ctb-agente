@@ -9,6 +9,7 @@ import { OpenRouterProvider } from './openrouter';
 import { NousProvider } from './nous';
 import { OrcaRouterProvider } from './orcarouter';
 import { AnyApiProvider } from './anyapi';
+import { CloudflareProvider } from './cloudflare';
 import { OpenAICompatibleProvider } from './openai-compatible';
 import type { AIProvider } from './base';
 
@@ -56,6 +57,21 @@ export const PROVIDERS: ProviderDescriptor[] = [
         apiKey: process.env.CEREBRAS_API_KEY || '',
         baseUrl: 'https://api.cerebras.ai/v1',
       }),
+  },
+  {
+    id: 'cloudflare',
+    nome: 'Cloudflare Workers AI',
+    envVar: 'CLOUDFLARE_API_TOKEN',
+    modelos: [
+      '@cf/meta/llama-3.3-70b-instruct-fp8-fast',
+      '@cf/openai/gpt-oss-120b',
+      '@cf/openai/gpt-oss-20b',
+      '@cf/meta/llama-3.1-8b-instruct-fast',
+    ],
+    papel: 'resposta rapida',
+    cadastro: 'https://dash.cloudflare.com/profile/api-tokens',
+    criar: () =>
+      new CloudflareProvider(process.env.CLOUDFLARE_API_TOKEN || '', process.env.CLOUDFLARE_ACCOUNT_ID || ''),
   },
   {
     id: 'nvidia',
@@ -127,8 +143,9 @@ export const PROVIDERS: ProviderDescriptor[] = [
     nome: 'Nous Portal',
     envVar: 'NOUS_API_KEY',
     modelos: [
-      'deepseek/deepseek-v4-flash-0731',
+      // ":free" first: the others need Nous credits
       'meituan/longcat-2.0:free',
+      'deepseek/deepseek-v4-flash-0731',
       'qwen/qwen3.7-flash',
       'mistralai/mistral-nemo',
       'openai/gpt-oss-120b',
