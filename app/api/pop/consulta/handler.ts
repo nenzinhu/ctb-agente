@@ -1,6 +1,7 @@
 // POP-PMSC consultation: retrieve the most relevant excerpts of the indexed
-// POPs and, when an AI provider is configured, write an answer that cites
-// them. Without a provider (or when it fails) the excerpts alone are returned.
+// POPs and, when an AI provider is configured and the agent wants it, have
+// the AI organize them into an answer that cites them. Without AI (turned
+// off, not configured or failing) the excerpts alone are returned.
 import { filterPII } from '@/lib/query/pii-filter';
 import { checkRateLimit, recordQuery } from '@/lib/ratelimit/limiter';
 import { turnstileEnabled, verifyTurnstile } from '@/lib/ratelimit/turnstile';
@@ -36,7 +37,8 @@ async function gerarResposta(
   let timer: ReturnType<typeof setTimeout> | undefined;
   try {
     const resultado = await Promise.race([
-      chain.generateDetailed(montarPrompt(pergunta, fontes), 900, 0.2),
+      // Room for the four organized sections (resumo, passos, atenção, base legal).
+      chain.generateDetailed(montarPrompt(pergunta, fontes), 1100, 0.2),
       new Promise<never>((_, reject) => {
         timer = setTimeout(() => reject(new Error('tempo esgotado')), TEMPO_IA_MS);
       }),
@@ -50,13 +52,25 @@ async function gerarResposta(
   }
 }
 
+export interface OpcoesPop {
+  /** Have the AI organize an answer from the excerpts (default). Off: excerpts only, faster. */
+  ia?: boolean;
+}
+
 /**
  * Answer a question about the POP-PMSC base
  * @param pergunta - Question as typed by the agent
  * @param ip - Client IP (rate limit)
  * @param turnstileToken - Anti-bot token, required close to the hourly limit
+ * @param opcoes - Whether to write an AI answer or return the excerpts alone
  */
-export async function responderPop(pergunta: string, ip: string, turnstileToken?: string): Promise<ResultadoPop> {
+export async function responderPop(
+  pergunta: string,
+  ip: string,
+  turnstileToken?: string,
+  opcoes: OpcoesPop = {}
+): Promise<ResultadoPop> {
+  const comIa = opcoes.ia !== false;
   const inicio = Date.now();
   // Nothing leaves this function unfiltered: not the log, the cache key,
   // the embedding provider or the AI prompt.
@@ -78,7 +92,8 @@ export async function responderPop(pergunta: string, ip: string, turnstileToken?
   }
 
   const chave = chaveCache(filtrada);
-  const emCache = await getCachedValue<RespostaPop>(chave);
+  // The cache only holds AI answers; without AI the excerpts come straight from the search.
+  const emCache = comIa ? await getCachedValue<RespostaPop>(chave) : null;
   if (emCache) {
     const resposta = { ...emCache, cache_hit: true, tempo_ms: Date.now() - inicio };
     await recordQuery(
@@ -106,7 +121,7 @@ export async function responderPop(pergunta: string, ip: string, turnstileToken?
     let aviso: string | undefined;
     let semResposta = fontes.length === 0;
 
-    if (fontes.length > 0) {
+    if (fontes.length > 0 && comIa) {
       const gerada = await gerarResposta(filtrada, fontes);
       if (gerada === null) {
         aviso = 'Nenhum provedor de IA configurado: veja abaixo os trechos mais relevantes dos POPs.';

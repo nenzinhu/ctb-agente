@@ -49,12 +49,12 @@ const trecho = (n: number) => ({
   score: 1 / n,
 });
 
-function perguntar(pergunta: string) {
+function perguntar(pergunta: string, extras: Record<string, unknown> = {}) {
   return POST(
     new NextRequest('http://localhost/api/pop/consulta', {
       method: 'POST',
       headers: { 'content-type': 'application/json', 'x-forwarded-for': '10.0.0.1' },
-      body: JSON.stringify({ pergunta }),
+      body: JSON.stringify({ pergunta, ...extras }),
     })
   );
 }
@@ -89,6 +89,18 @@ describe('POST /api/pop/consulta', () => {
     expect(consulta).not.toMatch(/ABC1234|123\.456\.789-00/);
     const [prompt] = generateDetailed.mock.calls[0];
     expect(prompt).not.toMatch(/ABC1234|123\.456\.789-00/);
+  });
+
+  it('skips the AI and the cache when the agent turns the AI off', async () => {
+    const corpo = await (await perguntar('Como abordar uma pessoa?', { ia: false })).json();
+
+    expect(generateDetailed).not.toHaveBeenCalled();
+    expect(getCachedValue).not.toHaveBeenCalled();
+    expect(setCachedValue).not.toHaveBeenCalled();
+    expect(corpo.resposta).toBeNull();
+    expect(corpo.aviso).toBeUndefined();
+    expect(corpo.semResposta).toBe(false);
+    expect(corpo.fontes).toHaveLength(2);
   });
 
   it('returns the excerpts alone when no AI provider is configured', async () => {

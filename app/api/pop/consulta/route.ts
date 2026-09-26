@@ -8,6 +8,8 @@ export const maxDuration = 60;
 const PerguntaSchema = z.object({
   pergunta: z.string().trim().min(3).max(500),
   turnstileToken: z.string().optional(),
+  /** false: only the excerpts, no AI answer (faster). */
+  ia: z.boolean().optional(),
 });
 
 const STATUS: Record<PopErro, number> = {
@@ -27,8 +29,8 @@ const MENSAGEM: Record<PopErro, string> = {
 };
 
 /**
- * @example POST /api/pop/consulta { "pergunta": "Quando usar algemas na abordagem?" }
- * @returns RespostaPop — answer (when AI is available) and the cited excerpts
+ * @example POST /api/pop/consulta { "pergunta": "Quando usar algemas na abordagem?", "ia": true }
+ * @returns RespostaPop — answer organized by AI (when asked for and available) and the cited excerpts
  */
 export async function POST(request: NextRequest) {
   let body: unknown;
@@ -52,7 +54,9 @@ export async function POST(request: NextRequest) {
   const ip =
     request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || request.headers.get('x-real-ip') || 'unknown';
 
-  const resultado = await responderPop(parsed.data.pergunta, ip, parsed.data.turnstileToken);
+  const resultado = await responderPop(parsed.data.pergunta, ip, parsed.data.turnstileToken, {
+    ia: parsed.data.ia ?? true,
+  });
   if (resultado.erro) {
     return NextResponse.json(
       { error: resultado.erro, message: resultado.mensagem ?? MENSAGEM[resultado.erro] },

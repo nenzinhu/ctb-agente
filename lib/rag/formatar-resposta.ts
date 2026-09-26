@@ -1,15 +1,18 @@
 // Turns the model's plain-text answer into blocks React can render safely
-// (no HTML injection, no markdown library): paragraphs, bullet and numbered
-// lists, **bold** and [n] citations.
+// (no HTML injection, no markdown library): section titles, paragraphs,
+// bullet and numbered lists, **bold** and [n] citations.
 
 export type Trecho = { tipo: 'texto'; valor: string } | { tipo: 'negrito'; valor: string } | { tipo: 'citacao'; n: number };
 
 export type Bloco =
+  | { tipo: 'titulo'; valor: string }
   | { tipo: 'paragrafo'; conteudo: Trecho[] }
   | { tipo: 'lista'; itens: Trecho[][] }
   | { tipo: 'numerada'; itens: Trecho[][] };
 
 const ITEM_LISTA = /^\s*[-•*]\s+(.*)$/;
+// A section title on its own line: "**Passo a passo**", "## Atenção", "**Resumo:**".
+const TITULO = /^\s*(?:#{1,4}\s+(.+?)|\*\*([^*]+?)\*\*)\s*:?\s*$/;
 const ITEM_NUMERADO = /^\s*\d{1,2}[.)]\s+(.*)$/;
 
 /**
@@ -42,6 +45,12 @@ export function formatarResposta(resposta: string): Bloco[] {
   };
 
   for (const linha of resposta.replace(/\r\n?/g, '\n').split('\n')) {
+    const titulo = TITULO.exec(linha);
+    if (titulo) {
+      fecharParagrafo();
+      blocos.push({ tipo: 'titulo', valor: (titulo[1] ?? titulo[2]).replace(/:$/, '').trim() });
+      continue;
+    }
     const lista = ITEM_LISTA.exec(linha);
     const numerada = ITEM_NUMERADO.exec(linha);
     const tipo = lista ? 'lista' : numerada ? 'numerada' : null;
