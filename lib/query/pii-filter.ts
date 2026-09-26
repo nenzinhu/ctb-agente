@@ -8,8 +8,8 @@
 export function filterPII(text: string): string {
   let filtered = text;
 
-  // Mask plate (ABC-1234 or ABC1234)
-  filtered = filtered.replace(/[A-Z]{3}-?\d{4}/gi, '****');
+  // Mask plate: old pattern (ABC-1234, ABC1234) and Mercosul (ABC1D23)
+  filtered = filtered.replace(/\b[A-Z]{3}-?\d[A-Z0-9]\d{2}\b/gi, '****');
 
   // Mask CPF (XXX.XXX.XXX-XX or XXXXXXXXXXX)
   filtered = filtered.replace(/\d{3}\.\d{3}\.\d{3}-\d{2}|\d{11}/g, '***-****');

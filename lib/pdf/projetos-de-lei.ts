@@ -31,6 +31,16 @@ export async function getProjetosDeLei(
   theme: PDFTheme,
   limit = 5
 ): Promise<ProjetoDeLei[]> {
+  return buscarProjetosDeLei(theme.keywords, limit);
+}
+
+/**
+ * Pending bills whose ementa mentions any of the keywords
+ * @param palavras - Keywords (any match counts)
+ * @param limit - Maximum number of bills to return
+ * @returns Bills, empty when the API fails or nothing matches
+ */
+export async function buscarProjetosDeLei(palavras: string[], limit = 5): Promise<ProjetoDeLei[]> {
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), TIMEOUT_MS);
 
@@ -47,7 +57,7 @@ export async function getProjetosDeLei(
 
     const data = (await response.json()) as { dados?: ProposicaoApi[] };
     const propostas = data.dados ?? [];
-    const chaves = theme.keywords.map((k) => k.toLowerCase());
+    const chaves = palavras.map((k) => k.toLowerCase()).filter(Boolean);
 
     return propostas
       .filter((p) => {

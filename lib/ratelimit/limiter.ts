@@ -9,7 +9,7 @@ import { getSettings, isIpBlocked } from '@/lib/config/settings';
 import type { TipoConsulta } from '@/lib/response/response-types';
 
 /** What was consulted: the CTB card flows, or the POP-PMSC base. */
-export type TipoUso = TipoConsulta | 'pop' | 'explicacao' | 'apostila';
+export type TipoUso = TipoConsulta | 'pop' | 'explicacao' | 'apostila' | 'professor';
 
 export interface RateLimitResult {
   allowed: boolean;

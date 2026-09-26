@@ -24,6 +24,7 @@ const nextConfig: NextConfig = {
     '/api/pop/consulta': ['./data/acervo/pop-pmsc.json'],
     '/api/explicar': ['./data/acervo/mbft-fichas.json', './data/acervo/pop-pmsc.json'],
     '/api/apostila': ['./data/acervo/mbft-fichas.json', './data/acervo/pop-pmsc.json'],
+    '/api/professor': ['./data/acervo/mbft-fichas.json'],
   },
 };
 
