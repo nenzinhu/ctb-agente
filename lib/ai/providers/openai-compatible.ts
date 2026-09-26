@@ -3,6 +3,22 @@
 import type { AIModel, AIProvider } from './base';
 import { fetchWithTimeout } from './timeout';
 
+/** A /models entry; OpenRouter-style catalogs also carry per-token prices. */
+export interface ModeloListado {
+  id: string;
+  name?: string;
+  context_length?: number;
+  pricing?: { prompt?: string | number; completion?: string | number };
+}
+
+export type FiltroGratis = (modelId: string, modelo?: ModeloListado) => boolean;
+
+/** True when the catalog prices both input and output at zero */
+export function precoZero(modelo?: ModeloListado): boolean {
+  const { prompt, completion } = modelo?.pricing ?? {};
+  return prompt !== undefined && completion !== undefined && Number(prompt) === 0 && Number(completion) === 0;
+}
+
 export interface OpenAICompatibleOptions {
   name: string;
   apiKey: string;
@@ -10,7 +26,7 @@ export interface OpenAICompatibleOptions {
   /** Env var holding the base URL, named in the error when it's missing. */
   baseUrlEnvVar?: string;
   /** Keeps only the models usable on the provider's free tier. */
-  filtroGratis?: (modelId: string) => boolean;
+  filtroGratis?: FiltroGratis;
   headers?: Record<string, string>;
 }
 
@@ -40,7 +56,7 @@ export class OpenAICompatibleProvider implements AIProvider {
   protected apiKey: string;
   protected baseUrl: string;
   private baseUrlEnvVar?: string;
-  private filtroGratis?: (modelId: string) => boolean;
+  private filtroGratis?: FiltroGratis;
   private headers: Record<string, string>;
 
   constructor(options: OpenAICompatibleOptions) {
@@ -70,13 +86,13 @@ export class OpenAICompatibleProvider implements AIProvider {
     }
 
     const data = await response.json();
-    const lista: Array<{ id: string; name?: string; context_length?: number }> = Array.isArray(data)
+    const lista: Array<ModeloListado> = Array.isArray(data)
       ? data
       : data.data || data.models || [];
 
     return lista
       .map((m) => ({ ...m, id: String(m.id).replace(/^models\//, '') }))
-      .filter((m) => !this.filtroGratis || this.filtroGratis(m.id))
+      .filter((m) => !this.filtroGratis || this.filtroGratis(m.id, m))
       .map((m) => ({
         id: m.id,
         name: m.name || m.id,

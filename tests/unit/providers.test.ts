@@ -83,3 +83,27 @@ describe('OpenAICompatibleProvider', () => {
     }
   });
 });
+
+describe('Nous Portal free catalog', () => {
+  it('keeps only zero-priced models and ":free" routes', async () => {
+    const { NousProvider } = await import('@/lib/ai/providers/nous');
+    const originalFetch = global.fetch;
+    (global as { fetch: unknown }).fetch = jest.fn(async () => ({
+      ok: true,
+      json: async () => ({
+        data: [
+          { id: 'nousresearch/hermes-4-70b', pricing: { prompt: '0', completion: '0' } },
+          { id: 'meituan/longcat-2.0:free' },
+          { id: 'openai/gpt-5-pro', pricing: { prompt: '0.00001', completion: '0.00003' } },
+          { id: 'sem-preco/modelo' },
+        ],
+      }),
+    }));
+    try {
+      const modelos = await new NousProvider('k').getModels();
+      expect(modelos.map((m) => m.id)).toEqual(['nousresearch/hermes-4-70b', 'meituan/longcat-2.0:free']);
+    } finally {
+      (global as { fetch: unknown }).fetch = originalFetch;
+    }
+  });
+});

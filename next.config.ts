@@ -23,6 +23,7 @@ const nextConfig: NextConfig = {
     // lib/pop/pops.ts reads the POP manual built from the compiled PDF.
     '/api/pop/consulta': ['./data/acervo/pop-pmsc.json'],
     '/api/explicar': ['./data/acervo/mbft-fichas.json', './data/acervo/pop-pmsc.json'],
+    '/api/apostila': ['./data/acervo/mbft-fichas.json', './data/acervo/pop-pmsc.json'],
   },
 };
 

@@ -106,6 +106,8 @@ interface Linha {
   cinza?: boolean;
   /** Extra space before the line, in points. */
   antes: number;
+  /** Left indent, in points. */
+  recuo?: number;
 }
 
 /**
@@ -178,7 +180,11 @@ export async function pdfSomenteTexto(documento: DocumentoTexto, deflate?: Defla
     }
   });
 
-  // Paginate: each output page is one content stream.
+  return montar(documento.titulo, paginar(linhas), deflate);
+}
+
+/** Lay lines out on A4 pages: each output page is one content stream. */
+function paginar(linhas: Linha[]): PaginaMontagem[] {
   const paginas: string[] = [];
   let conteudo = '';
   let y = A4.altura - MARGEM.topo;
@@ -191,15 +197,47 @@ export async function pdfSomenteTexto(documento: DocumentoTexto, deflate?: Defla
     }
     y -= conteudo ? altura : linha.tamanho * 1.35;
     const fonte = linha.fonte === 'Helvetica' ? '/F1' : '/F2';
-    conteudo += `${linha.cinza ? '0.45' : '0'} g ${fonte} ${num(linha.tamanho)} Tf 1 0 0 1 ${num(MARGEM.lado)} ${num(y)} Tm ${literal(linha.texto)} Tj\n`;
+    const x = MARGEM.lado + (linha.recuo ?? 0);
+    conteudo += `${linha.cinza ? '0.45' : '0'} g ${fonte} ${num(linha.tamanho)} Tf 1 0 0 1 ${num(x)} ${num(y)} Tm ${literal(linha.texto)} Tj\n`;
   }
   if (conteudo) paginas.push(conteudo);
+  return paginas.map((c) => ({ largura: A4.largura, altura: A4.altura, conteudo: `BT\n${c}ET\n` }));
+}
 
-  return montar(
-    documento.titulo,
-    paginas.map((c) => ({ largura: A4.largura, altura: A4.altura, conteudo: `BT\n${c}ET\n` })),
-    deflate
-  );
+export type EstiloBloco = 'titulo' | 'subtitulo' | 'paragrafo' | 'item' | 'nota';
+
+export interface BlocoEstilizado {
+  texto: string;
+  estilo: EstiloBloco;
+}
+
+const ESTILOS: Record<EstiloBloco, { fonte: Fonte; tamanho: number; antes: number; recuo: number; cinza?: boolean }> = {
+  titulo: { fonte: 'Helvetica-Bold', tamanho: 14, antes: 22, recuo: 0 },
+  subtitulo: { fonte: 'Helvetica-Bold', tamanho: 11, antes: 12, recuo: 0 },
+  paragrafo: { fonte: 'Helvetica', tamanho: 10, antes: 6, recuo: 0 },
+  item: { fonte: 'Helvetica', tamanho: 10, antes: 3, recuo: 12 },
+  nota: { fonte: 'Helvetica', tamanho: 8, antes: 8, recuo: 0, cinza: true },
+};
+
+/**
+ * A readable text document (handouts): styled headings, paragraphs and list
+ * items, with the same tiny, dependency-free writer.
+ */
+export async function pdfDeBlocos(titulo: string, blocos: BlocoEstilizado[], deflate?: Deflate): Promise<Uint8Array> {
+  const largura = A4.largura - 2 * MARGEM.lado;
+  const linhas: Linha[] = quebrarLinhas(titulo, 'Helvetica-Bold', 18, largura).map((texto, i) => ({
+    texto,
+    fonte: 'Helvetica-Bold' as Fonte,
+    tamanho: 18,
+    antes: i === 0 ? 0 : 4,
+  }));
+  for (const bloco of blocos) {
+    const e = ESTILOS[bloco.estilo];
+    quebrarLinhas(bloco.texto, e.fonte, e.tamanho, largura - e.recuo).forEach((texto, j) =>
+      linhas.push({ texto, fonte: e.fonte, tamanho: e.tamanho, antes: j === 0 ? e.antes : 0, recuo: e.recuo, cinza: e.cinza })
+    );
+  }
+  return montar(titulo, paginar(linhas), deflate);
 }
 
 export interface TextoPosicionado {

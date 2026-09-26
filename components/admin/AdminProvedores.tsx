@@ -293,6 +293,25 @@ export default function AdminProvedores() {
                 )}
               </div>
 
+              <details className="text-xs text-ds-subtle">
+                <summary className="cursor-pointer underline">usar outro modelo (digitar o nome)</summary>
+                <label htmlFor={`modelo-livre-${provider.id}`} className="label mt-2">
+                  Nome exato do modelo em {provider.nome}
+                </label>
+                <input
+                  id={`modelo-livre-${provider.id}`}
+                  className="input min-h-[40px] py-1.5 text-sm"
+                  placeholder="ex.: fornecedor/modelo:free"
+                  spellCheck={false}
+                  autoCapitalize="none"
+                  onChange={(e) => {
+                    const valor = e.target.value.trim();
+                    if (valor) setSelecionado((atual) => ({ ...atual, [provider.id]: valor }));
+                  }}
+                />
+                <p className="hint">Depois use &quot;Testar&quot; e &quot;Usar este&quot; acima.</p>
+              </details>
+
               {vivo && (
                 <p className={`text-xs ${vivo.erro ? 'text-ds-danger' : 'text-ds-subtle'}`}>
                   {vivo.erro ?? `${vivo.modelos.length} modelos grátis no catálogo atual — escolha na lista acima.`}
