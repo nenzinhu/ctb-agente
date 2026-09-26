@@ -6,6 +6,7 @@ import { MbftFields } from '@/lib/response/mbft-fields';
 import type { FichaMbft } from '@/lib/mbft/parser';
 import { formatarMulta, labelResponsavel } from '@/lib/response/format';
 import BadgeGravidade from './ui/BadgeGravidade';
+import ExplicacaoSimples from './ExplicacaoSimples';
 import Icone from './ui/Icone';
 
 interface FichaFiscalizacaoProps {
@@ -176,6 +177,8 @@ export default function FichaFiscalizacao({ card, campos: doBanco, oficial = nul
       </header>
 
       <div className="space-y-6 p-4 sm:p-6">
+        {oficial && <ExplicacaoSimples key={oficial.codigo} tipo="ficha" id={oficial.codigo} />}
+
         <section aria-labelledby="identificacao-infracao">
           <SecaoTitulo>Identificação da Infração</SecaoTitulo>
           <dl className="mt-2">

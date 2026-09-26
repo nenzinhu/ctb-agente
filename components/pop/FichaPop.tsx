@@ -1,4 +1,5 @@
 import type { ItemPop, Pop } from '@/lib/pop/parser';
+import ExplicacaoSimples from '../ExplicacaoSimples';
 import Icone, { type NomeIcone } from '../ui/Icone';
 
 const RECUO = ['pl-0', 'pl-4', 'pl-8', 'pl-12'];
@@ -62,6 +63,8 @@ export default function FichaPop({ pop }: { pop: Pop }) {
       </header>
 
       <div className="space-y-6 p-4 sm:p-6">
+        <ExplicacaoSimples key={pop.numero} tipo="pop" id={pop.numero} />
+
         <Secao titulo="Material Necessário" icone="lista">
           <Itens itens={pop.material} />
         </Secao>
