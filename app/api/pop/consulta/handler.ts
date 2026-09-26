@@ -8,7 +8,8 @@ import { buscarTrechos } from '@/lib/search/trechos';
 import { MigrationPendingError } from '@/lib/ingestion/documents';
 import { ProviderChain } from '@/lib/ai/providers/chain';
 import { getCachedValue, setCachedValue } from '@/lib/response/cache';
-import { ehSemResposta, montarPrompt, montarPromptGeral, validarCitacoes, type FontePop, type RespostaPop } from '@/lib/rag/pop';
+import { buscarPops } from '@/lib/pop/pops';
+import { ehSemResposta, fontesDosPops, montarPrompt, montarPromptGeral, validarCitacoes, type FontePop, type RespostaPop } from '@/lib/rag/pop';
 
 export type PopErro = 'rate_limit_exceeded' | 'ip_blocked' | 'turnstile_failed' | 'migration_pending' | 'internal_error';
 
@@ -80,7 +81,7 @@ export async function responderPop(pergunta: string, ip: string, turnstileToken?
   const chave = chaveCache(filtrada);
   const emCache = await getCachedValue<RespostaPop>(chave);
   if (emCache) {
-    const resposta = { ...emCache, cache_hit: true, tempo_ms: Date.now() - inicio };
+    const resposta = { ...emCache, pops: emCache.pops ?? buscarPops(filtrada), cache_hit: true, tempo_ms: Date.now() - inicio };
     await recordQuery(
       ip,
       filtrada,
@@ -91,8 +92,10 @@ export async function responderPop(pergunta: string, ip: string, turnstileToken?
   }
 
   try {
-    const trechos = await buscarTrechos(filtrada, 'pop', LIMITE_FONTES);
-    const fontes: FontePop[] = trechos.map((t, i) => ({
+    // The bundled manual first: whole POP sections beat excerpts cut at indexing
+    const pops = buscarPops(filtrada);
+    const trechos = pops.length > 0 ? [] : await buscarTrechos(filtrada, 'pop', LIMITE_FONTES);
+    const fontes: FontePop[] = pops.length > 0 ? fontesDosPops(pops) : trechos.map((t, i) => ({
       n: i + 1,
       documento_id: t.documento_id,
       titulo: t.titulo,
@@ -142,6 +145,7 @@ export async function responderPop(pergunta: string, ip: string, turnstileToken?
       modelo,
       aviso,
       geral,
+      pops,
       cache_hit: false,
       tempo_ms: Date.now() - inicio,
     };

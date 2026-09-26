@@ -10,6 +10,8 @@ import Icone from '../ui/Icone';
 import PrimaryButton from '../ui/PrimaryButton';
 import SectionCard from '../ui/SectionCard';
 import RespostaFormatada from './RespostaFormatada';
+import FichaPop from './FichaPop';
+import type { Pop } from '@/lib/pop/parser';
 
 const EXEMPLOS = [
   'Como proceder na abordagem a pessoas?',
@@ -41,6 +43,34 @@ function Fonte({ fonte }: { fonte: FontePop }) {
         </div>
       </div>
     </li>
+  );
+}
+
+/** The matching POPs in standard form, with a picker when there are several */
+function PopsEncontrados({ pops }: { pops: Pop[] }) {
+  const [indice, setIndice] = useState(0);
+  const atual = pops[Math.min(indice, pops.length - 1)];
+  return (
+    <div className="space-y-4">
+      {pops.length > 1 && (
+        <div className="card card-pad">
+          <Field
+            as="select"
+            label={`POPs encontrados (${pops.length})`}
+            value={String(indice)}
+            onChange={(e) => setIndice(Number(e.target.value))}
+            hint="A pergunta corresponde a mais de um POP: escolha qual ver."
+          >
+            {pops.map((pop, i) => (
+              <option key={pop.numero} value={i}>
+                POP {pop.numero} — {pop.titulo.length > 70 ? `${pop.titulo.slice(0, 70)}…` : pop.titulo}
+              </option>
+            ))}
+          </Field>
+        </div>
+      )}
+      <FichaPop pop={atual} />
+    </div>
   );
 }
 
@@ -184,10 +214,11 @@ export default function PopConsulta() {
 
       {resultado && (
         <div className="space-y-5">
+          {resultado.pops && resultado.pops.length > 0 && <PopsEncontrados key={resultado.pergunta} pops={resultado.pops} />}
           {resultado.resposta && !resultado.semResposta && (
             <SectionCard
               numero={2}
-              titulo="Resposta"
+              titulo="Resumo da IA"
               acao={
                 <span className="badge-neutral" title={resultado.modelo ?? undefined}>
                   {resultado.cache_hit ? 'do cache' : 'gerada por IA'}

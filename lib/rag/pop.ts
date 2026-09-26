@@ -1,6 +1,7 @@
 // POP-PMSC answers grounded on the indexed procedures (RAG). Pure module:
 // the prompt, the source references and the citation check. The route that
 // retrieves excerpts and calls the model lives in app/api/pop/consulta.
+import type { Pop } from '@/lib/pop/parser';
 
 export interface FontePop {
   /** Number the answer cites as [n]. */
@@ -22,6 +23,8 @@ export interface RespostaPop {
   /** "Provedor · modelo" that wrote the answer. */
   modelo: string | null;
   aviso?: string;
+  /** The matching POPs from the bundled manual, complete, best first */
+  pops?: Pop[];
   /** Written from the model's general knowledge: the indexed POPs had nothing. */
   geral?: boolean;
   cache_hit: boolean;
@@ -110,4 +113,36 @@ export function validarCitacoes(resposta: string, totalFontes: number): { texto:
  */
 export function ehSemResposta(resposta: string): boolean {
   return resposta.toLowerCase().includes('não encontrei essa informação');
+}
+
+const SECOES_POP: [keyof Pick<Pop, 'sequencia' | 'atividadesCriticas' | 'errosEvitar' | 'material'>, string][] = [
+  ['sequencia', 'SEQUÊNCIA DAS AÇÕES'],
+  ['atividadesCriticas', 'ATIVIDADES CRÍTICAS'],
+  ['errosEvitar', 'ERROS A SEREM EVITADOS'],
+  ['material', 'MATERIAL NECESSÁRIO'],
+];
+
+/**
+ * The sections of the best POPs as numbered sources for the model: whole
+ * sections from the manual instead of excerpts cut at indexing time.
+ * @param pops - Matching POPs, best first
+ * @param quantos - How many POPs to use
+ */
+export function fontesDosPops(pops: Pop[], quantos = 2): FontePop[] {
+  const fontes: FontePop[] = [];
+  for (const pop of pops.slice(0, quantos)) {
+    for (const [chave, secao] of SECOES_POP) {
+      const texto = pop[chave].map((i) => i.texto).join('\n');
+      if (!texto) continue;
+      fontes.push({
+        n: fontes.length + 1,
+        documento_id: `pop-${pop.numero}`,
+        titulo: `POP ${pop.numero} — ${pop.titulo}`,
+        secao,
+        pagina: pop.pagina,
+        texto: texto.length > 3500 ? `${texto.slice(0, 3500)}…` : texto,
+      });
+    }
+  }
+  return fontes;
 }

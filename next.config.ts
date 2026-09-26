@@ -20,6 +20,8 @@ const nextConfig: NextConfig = {
     '/api/admin/acervo': ['./data/acervo/**/*'],
     // lib/mbft/fichas.ts reads the MBFT sheets built from the official manual.
     '/api/consulta': ['./data/acervo/mbft-fichas.json'],
+    // lib/pop/pops.ts reads the POP manual built from the compiled PDF.
+    '/api/pop/consulta': ['./data/acervo/pop-pmsc.json'],
   },
 };
 

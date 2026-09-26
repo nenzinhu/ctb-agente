@@ -24,6 +24,9 @@ jest.mock('../../lib/response/cache', () => ({
 }));
 
 let provedores: string[] = ['Groq'];
+const buscarPops = jest.fn();
+jest.mock('../../lib/pop/pops', () => ({ buscarPops: (...args: unknown[]) => buscarPops(...args) }));
+
 const generateDetailed = jest.fn();
 jest.mock('../../lib/ai/providers/chain', () => ({
   ProviderChain: jest.fn().mockImplementation(() => ({
@@ -65,6 +68,7 @@ describe('POST /api/pop/consulta', () => {
     provedores = ['Groq'];
     checkRateLimit.mockResolvedValue({ allowed: true, remaining: 20, blocked: false, registroId: 'r1' });
     buscarTrechos.mockResolvedValue([trecho(1), trecho(2)]);
+    buscarPops.mockReturnValue([]);
     generateDetailed.mockResolvedValue({ texto: 'Informe a central [1] e aborde [2][7].', provedor: 'Groq', modelo: 'llama' });
   });
 
@@ -159,5 +163,34 @@ describe('POST /api/pop/consulta', () => {
 
   it('rejects an empty question', async () => {
     expect((await perguntar('  ')).status).toBe(400);
+  });
+
+  it('answers from the bundled POP manual, whole sections as sources', async () => {
+    const pop = {
+      numero: '003',
+      titulo: 'USO DE ALGEMA (TÉCNICA POLICIAL)',
+      estabelecido: '23/12/2011',
+      atualizado: '27/03/2018',
+      execucao: 'Guarnição PM',
+      material: [{ texto: '1. Algema.', nivel: 0 }],
+      fundamentacao: [],
+      sequencia: [{ texto: '1. Algemar com as mãos para trás.', nivel: 0 }],
+      atividadesCriticas: [{ texto: '1. Resistência.', nivel: 0 }],
+      errosEvitar: [{ texto: '1. Algemar pela frente.', nivel: 0 }],
+      anexos: [],
+      pagina: 12,
+    };
+    buscarPops.mockReturnValue([pop]);
+    const corpo = await (await perguntar('Quando usar algemas?')).json();
+
+    expect(buscarTrechos).not.toHaveBeenCalled();
+    expect(corpo.pops).toHaveLength(1);
+    expect(corpo.fontes.map((f: { secao: string }) => f.secao)).toEqual([
+      'SEQUÊNCIA DAS AÇÕES',
+      'ATIVIDADES CRÍTICAS',
+      'ERROS A SEREM EVITADOS',
+      'MATERIAL NECESSÁRIO',
+    ]);
+    expect(generateDetailed.mock.calls[0][0]).toContain('POP 003 — USO DE ALGEMA');
   });
 });
