@@ -11,6 +11,7 @@ import {
 import { getCachedCard, setCachedCard } from '@/lib/response/cache';
 import { ProviderChain } from '@/lib/ai/providers/chain';
 import { interpretarFicha, montarPromptFicha } from '@/lib/rag/ficha-ia';
+import { buscarFichas } from '@/lib/mbft/fichas';
 import { validateCitations } from '@/lib/response/validator';
 import { isBackedByNormas } from '@/lib/response/card-builder';
 import { checkRateLimit, recordQuery } from '@/lib/ratelimit/limiter';
@@ -107,7 +108,13 @@ export async function handleConsulta(
 
     const cached = await getCachedCard(consultaFiltrada);
     if (cached) {
-      const card = { ...cached, cache_hit: true, tempo_ms: Date.now() - startTime };
+      // Cards cached before the bundled MBFT get their sheets on the way out
+      const card = {
+        ...cached,
+        fichas_mbft: cached.fichas_mbft ?? buscarFichas(consultaFiltrada),
+        cache_hit: true,
+        tempo_ms: Date.now() - startTime,
+      };
       await recordQuery(ipAddress, consultaFiltrada, {
         tipo,
         cacheHit: true,
@@ -128,7 +135,14 @@ export async function handleConsulta(
     const tempo = Date.now() - startTime;
     let finalCard: CartaoEstruturado = { ...validated, tempo_ms: tempo, cache_hit: false };
 
-    // Nothing in the base: let the AI models draft the sheet (flagged as such).
+    // The official MBFT sheets: a match there is an answer even when the
+    // database has nothing for the query.
+    const fichas = buscarFichas(consultaFiltrada);
+    if (fichas.length > 0) {
+      finalCard = { ...finalCard, fichas_mbft: fichas, sucesso: true };
+    }
+
+    // Nothing in the base nor in the MBFT: let the AI models draft the sheet (flagged as such).
     if (!finalCard.sucesso) {
       const ia = await gerarFichaIA(consultaFiltrada);
       if (ia) finalCard = { ...finalCard, ficha_ia: ia.ficha, ficha_ia_modelo: ia.modelo, tempo_ms: Date.now() - startTime };

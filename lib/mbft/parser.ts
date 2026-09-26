@@ -39,11 +39,14 @@ export interface Pagina {
   linhas: Linha[];
 }
 
-/** Left edges of the 4-column rows: 41, 172, 303 and 438 in the PDF. */
-const CORTES = [160, 295, 430];
+/**
+ * Left edges of the 4-column rows. Usually 41, 172, 303 and 438, but some
+ * pages are shifted, so each sheet measures them on its "Gravidade" row.
+ */
+const CORTES_PADRAO = [160, 295, 430];
 
-function coluna(x: number): number {
-  return CORTES.filter((c) => x >= c).length;
+function coluna(x: number, cortes: number[] = CORTES_PADRAO): number {
+  return cortes.filter((c) => x >= c).length;
 }
 
 const texto = (l: Linha) => l.map((f) => f.texto).join(' ').replace(/\s+/g, ' ').trim();
@@ -80,11 +83,11 @@ function juntar(pedacos: string[]): string[] {
 const unir = (pedacos: string[]) => juntar(pedacos).join(' ').replace(/\s+/g, ' ').trim();
 
 /** Split the lines into columns by the x of each fragment */
-function porColuna(linhas: Linha[], total: number): string[][] {
+function porColuna(linhas: Linha[], total: number, cortes: number[]): string[][] {
   const colunas: string[][] = Array.from({ length: total }, () => []);
   for (const linha of linhas) {
     const naLinha: string[][] = Array.from({ length: total }, () => []);
-    for (const f of linha) naLinha[Math.min(coluna(f.x), total - 1)].push(f.texto);
+    for (const f of linha) naLinha[Math.min(coluna(f.x, cortes), total - 1)].push(f.texto);
     naLinha.forEach((partes, i) => partes.length && colunas[i].push(partes.join(' ')));
   }
   return colunas;
@@ -107,22 +110,31 @@ function lerFicha(linhas: Linha[], pagina: number): FichaMbft | null {
   const iColunas = achar(/^(Exemplos do Campo|Quando AUTUAR)/i, Math.max(iPontuacao, 0));
   if ([iResumida, iAmparo, iTipificacao, iGravidade, iInfrator, iPontuacao].some((i) => i < 0)) return null;
 
+  const rotulos = linhas[iGravidade];
+  const borda = (re: RegExp) => rotulos.find((f) => re.test(f.texto))?.x;
+  const medidos = [borda(/^Penalidade/), borda(/^Medida/), borda(/^Pode/)];
+  const cortes = medidos.every((x) => x !== undefined) ? medidos.map((x) => (x as number) - 6) : CORTES_PADRAO;
+
   // Code and short description share the line below the labels
   const linhaResumo = linhas.slice(iResumida + 1, iAmparo).flat();
   const codigo = linhaResumo.map((f) => f.texto).join(' ').match(/\b(\d{3}\s?-\s?\d{2})\b/)?.[1]?.replace(/\s/g, '') ?? '';
   const tipificacaoResumida = unir(
-    linhas.slice(iResumida + 1, iAmparo).map((l) => texto(l.filter((f) => f.x < 430)))
+    linhas.slice(iResumida + 1, iAmparo).map((l) => texto(l.filter((f) => f.x < cortes[2])))
   );
 
   const amparoLegal = unir(linhas.slice(iAmparo + 1, iTipificacao).map(texto));
   const tipificacao = unir(linhas.slice(iTipificacao + 1, iGravidade).map(texto));
 
   // Gravidade | Penalidade | Medida | Crime; the crime answer may sit on the Infrator rows
-  const [grav, pen, medida, crime1] = porColuna(linhas.slice(iGravidade + 1, iInfrator), 4);
-  const [infr, comp, , crime2] = porColuna(linhas.slice(iInfrator + 1, iPontuacao), 4);
+  const [grav, pen, medida] = porColuna(linhas.slice(iGravidade + 1, iInfrator), 4, cortes);
+  const [infr, comp] = porColuna(linhas.slice(iInfrator + 1, iPontuacao), 4, cortes);
+  // The crime column's answer lands on any row, the label rows included
+  const crime = linhas
+    .slice(iGravidade, iPontuacao)
+    .flatMap((l) => l.filter((f) => coluna(f.x, cortes) === 3).map((f) => f.texto))
+    .filter((t) => !/^(Pode|Configurar|Crime|de|Trânsito:?|Infração|Penal:?)$|^(Pode Configurar|Crime de|Infração Penal)/i.test(t.trim()));
   const fimPontuacao = iColunas > 0 ? iColunas : linhas.length;
-  const [pont, const1] = porColuna(linhas.slice(iPontuacao + 1, fimPontuacao), 2);
-  const crime = [...crime1, ...crime2].filter((t) => !/^Trânsito:?$|^Penal:?$/i.test(t.trim()));
+  const [pont, const1] = porColuna(linhas.slice(iPontuacao + 1, fimPontuacao), 2, cortes);
 
   // Four columns until "Informações Complementares"
   const iInfo = achar(/^Informações Complementares/, Math.max(iColunas, 0));
@@ -130,7 +142,7 @@ function lerFicha(linhas: Linha[], pagina: number): FichaMbft | null {
   const semRotulos = blocoColunas.filter(
     (l) => !inicia(l, /^(Exemplos do Campo|Quando AUTUAR|Observações do AIT)/i)
   );
-  const [autuar, naoAutuar, definicoes, exemplos] = porColuna(semRotulos, 4);
+  const [autuar, naoAutuar, definicoes, exemplos] = porColuna(semRotulos, 4, cortes);
   const info = iInfo > 0 ? juntar(linhas.slice(iInfo + 1).map(texto)) : [];
 
   return {
@@ -141,7 +153,7 @@ function lerFicha(linhas: Linha[], pagina: number): FichaMbft | null {
     gravidade: unir(grav),
     penalidade: unir(pen),
     medidaAdministrativa: unir(medida),
-    configuraCrime: unir(crime),
+    configuraCrime: unir(crime).replace(/^(?:Pode\s+)?(?:Configurar\s+)?(?:Crime\s+de\s*|Infração\s+Penal:?\s*)?(?:Trânsito:?\s*)?/i, ''),
     infrator: unir(infr),
     competencia: unir(comp),
     pontuacao: unir(pont).replace(/^:\s*/, ''),

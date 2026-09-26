@@ -1,6 +1,7 @@
 // Response card and related types
 import type { Enquadramento, Jurisprudencia } from '@/lib/db/schema';
 import type { FichaIA } from '@/lib/rag/ficha-ia';
+import type { FichaMbft } from '@/lib/mbft/parser';
 
 /**
  * Citation object within a response
@@ -49,6 +50,8 @@ export interface CartaoEstruturado {
   citacoes: ResponseCitation[];
   cache_hit: boolean;
   tempo_ms: number;
+  /** Official MBFT sheets matching the query, best first (bundled manual) */
+  fichas_mbft?: FichaMbft[];
   /** Sheet drafted by AI when the base had nothing; always shown as such. */
   ficha_ia?: FichaIA | null;
   /** "provider · model" that drafted ficha_ia */

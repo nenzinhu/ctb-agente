@@ -1,6 +1,7 @@
 import { fireEvent, render, screen } from '@testing-library/react';
 import ConsultaResult from '@/components/ConsultaResult';
 import { CartaoEstruturado } from '@/lib/response/response-types';
+import { buscarFichas } from '@/lib/mbft/fichas';
 
 const mockCard: CartaoEstruturado = {
   tipo: 'codigo',
@@ -227,5 +228,15 @@ describe('ConsultaResult', () => {
     expect(screen.getByText('Art. 182, IV')).toBeInTheDocument();
     fireEvent.change(seletor, { target: { value: '1' } });
     expect(screen.getByText('Art. 182, V')).toBeInTheDocument();
+  });
+
+  it('shows the official MBFT sheet, complete, with its code', () => {
+    const oficiais = buscarFichas('art. 165');
+    render(<ConsultaResult card={{ ...mockCard, enquadramento: null, fichas_mbft: oficiais }} />);
+
+    expect(screen.getByLabelText(`Enquadramentos encontrados (${oficiais.length})`)).toBeInTheDocument();
+    expect(screen.getAllByText('516-91').length).toBeGreaterThan(0);
+    expect(screen.getByText('Dirigir sob a influência de álcool.')).toBeInTheDocument();
+    expect(screen.getByText(/Ficha do MBFT \(Volume I\), página \d+/)).toBeInTheDocument();
   });
 });

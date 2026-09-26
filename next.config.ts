@@ -18,6 +18,8 @@ const nextConfig: NextConfig = {
     ],
     // lib/ingestion/acervo.ts reads the bundled documents from disk.
     '/api/admin/acervo': ['./data/acervo/**/*'],
+    // lib/mbft/fichas.ts reads the MBFT sheets built from the official manual.
+    '/api/consulta': ['./data/acervo/mbft-fichas.json'],
   },
 };
 

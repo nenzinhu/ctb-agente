@@ -4,6 +4,7 @@ import { useMemo, useState } from 'react';
 import Link from 'next/link';
 import { CartaoEstruturado } from '@/lib/response/response-types';
 import { listarFichasMbft, type MbftFields } from '@/lib/response/mbft-fields';
+import type { FichaMbft } from '@/lib/mbft/parser';
 import CartaoTecnico from './CartaoTecnico';
 import CartaoSimples from './CartaoSimples';
 import FichaFiscalizacao from './FichaFiscalizacao';
@@ -70,6 +71,7 @@ function ChecklistAit({ itens }: { itens: string[] }) {
 
 interface OpcaoFicha {
   rotulo: string;
+  oficial?: FichaMbft;
   /** The registered enquadramento goes with the first option only */
   card: CartaoEstruturado;
   campos: MbftFields | null;
@@ -86,6 +88,14 @@ function resumo(texto: string | null, limite = 70): string {
  */
 function FichaEscolhida({ card }: { card: CartaoEstruturado }) {
   const opcoes = useMemo<OpcaoFicha[]>(() => {
+    if (card.fichas_mbft?.length) {
+      return card.fichas_mbft.map((f) => ({
+        rotulo: `${f.codigo} — ${f.amparoLegal.replace(/\.$/, '')} — ${resumo(f.tipificacaoResumida, 60)}`,
+        oficial: f,
+        card,
+        campos: null,
+      }));
+    }
     const fichas = listarFichasMbft(card.normas.map((n) => n.texto));
     const lista: OpcaoFicha[] = [];
     if (card.enquadramento) {
@@ -125,7 +135,7 @@ function FichaEscolhida({ card }: { card: CartaoEstruturado }) {
           </Field>
         </div>
       )}
-      <FichaFiscalizacao card={atual.card} campos={atual.campos} />
+      <FichaFiscalizacao card={atual.card} campos={atual.campos} oficial={atual.oficial} />
     </div>
   );
 }
