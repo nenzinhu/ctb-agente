@@ -85,7 +85,7 @@ describe('OpenAICompatibleProvider', () => {
 });
 
 describe('Nous Portal free catalog', () => {
-  it('keeps only zero-priced models and ":free" routes', async () => {
+  it('keeps only free models on the curated list', async () => {
     const { NousProvider } = await import('@/lib/ai/providers/nous');
     const originalFetch = global.fetch;
     (global as { fetch: unknown }).fetch = jest.fn(async () => ({
@@ -94,6 +94,9 @@ describe('Nous Portal free catalog', () => {
         data: [
           { id: 'nousresearch/hermes-4-70b', pricing: { prompt: '0', completion: '0' } },
           { id: 'meituan/longcat-2.0:free' },
+          { id: 'upstage/solar-pro4:free' },
+          { id: 'x/ling', name: 'Ling 3.0 Flash Fin:Free', pricing: { prompt: '0', completion: '0' } },
+          { id: 'stepfun/step-3.7-flash', name: 'Step 3.7 Flash', pricing: { prompt: '1', completion: '1' } },
           { id: 'openai/gpt-5-pro', pricing: { prompt: '0.00001', completion: '0.00003' } },
           { id: 'sem-preco/modelo' },
         ],
@@ -101,7 +104,7 @@ describe('Nous Portal free catalog', () => {
     }));
     try {
       const modelos = await new NousProvider('k').getModels();
-      expect(modelos.map((m) => m.id)).toEqual(['nousresearch/hermes-4-70b', 'meituan/longcat-2.0:free']);
+      expect(modelos.map((m) => m.id)).toEqual(['upstage/solar-pro4:free', 'x/ling']);
     } finally {
       (global as { fetch: unknown }).fetch = originalFetch;
     }
