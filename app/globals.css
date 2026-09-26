@@ -71,10 +71,19 @@
   --ds-radius-card: 16px;
   --ds-radius-pill: 9999px;
 
-  /* Page background layers */
+  /* Page background layers: the colors of the CPMRv crest — sun at the top,
+     green field at the bottom, the red of its ribbon as a glow. */
+  --ds-crest-red: #e5252c;
+  --ds-crest-orange: #f7a616;
+  --ds-crest-yellow: #f6e10f;
+  --ds-crest-green: #1c8a3c;
+  --ds-fundo-topo: color-mix(in srgb, var(--ds-crest-yellow) 22%, #ffffff);
+  --ds-fundo-meio: color-mix(in srgb, var(--ds-crest-orange) 10%, #ffffff);
+  --ds-fundo-base: color-mix(in srgb, var(--ds-crest-green) 14%, #ffffff);
+  --ds-glow-red: color-mix(in srgb, var(--ds-crest-red) 22%, transparent);
   --ds-grid-line: color-mix(in srgb, var(--ds-text) 5%, transparent);
   --ds-grid-size: 32px;
-  --ds-blob-green: color-mix(in srgb, var(--ds-header-via) 55%, transparent);
+  --ds-blob-green: color-mix(in srgb, var(--ds-header-via) 25%, transparent);
   --ds-blob-gold: color-mix(in srgb, var(--ds-gold) 45%, transparent);
   --ds-vignette: rgb(0 0 0 / 0.18);
 
@@ -105,6 +114,10 @@
     --ds-sev-grave: #fb923c;
 
     --ds-shadow-color: rgb(0 0 0 / 0.6);
+    --ds-fundo-topo: color-mix(in srgb, var(--ds-crest-orange) 14%, #0f172a);
+    --ds-fundo-meio: #0f172a;
+    --ds-fundo-base: color-mix(in srgb, var(--ds-crest-green) 22%, #0f172a);
+    --ds-glow-red: color-mix(in srgb, var(--ds-crest-red) 16%, transparent);
     --ds-grid-line: color-mix(in srgb, var(--ds-text) 4%, transparent);
     --ds-blob-green: color-mix(in srgb, var(--ds-header-via) 30%, transparent);
     --ds-blob-gold: color-mix(in srgb, var(--ds-gold) 18%, transparent);
@@ -153,6 +166,10 @@
 
   --ds-shadow-color: transparent;
   --ds-shadow-overlay: none;
+  --ds-fundo-topo: #ffffff;
+  --ds-fundo-meio: #ffffff;
+  --ds-fundo-base: #ffffff;
+  --ds-glow-red: transparent;
   --ds-grid-line: transparent;
   --ds-blob-green: transparent;
   --ds-blob-gold: transparent;
@@ -197,12 +214,14 @@ body::before {
     radial-gradient(ellipse at center, transparent 45%, var(--ds-vignette) 100%),
     linear-gradient(to right, var(--ds-grid-line) 1px, transparent 1px),
     linear-gradient(to bottom, var(--ds-grid-line) 1px, transparent 1px),
-    radial-gradient(circle at 0% 0%, var(--ds-blob-green) 0, var(--ds-blob-green) 5rem, transparent min(34rem, 75vw)),
-    radial-gradient(circle at 100% 100%, var(--ds-blob-gold) 0, var(--ds-blob-gold) 4rem, transparent min(30rem, 70vw));
+    radial-gradient(circle at 100% 0%, var(--ds-glow-red) 0, transparent min(28rem, 70vw)),
+    radial-gradient(circle at 0% 100%, var(--ds-blob-green) 0, transparent min(34rem, 80vw)),
+    linear-gradient(180deg, var(--ds-fundo-topo) 0%, var(--ds-fundo-meio) 45%, var(--ds-fundo-base) 100%);
   background-size:
     auto,
     var(--ds-grid-size) var(--ds-grid-size),
     var(--ds-grid-size) var(--ds-grid-size),
+    auto,
     auto,
     auto;
 }
@@ -476,6 +495,9 @@ body::before {
   }
   .header-strip {
     border-top: 1px solid var(--ds-header-line);
+    /* Thin crest ribbon under the bar: red, orange, yellow */
+    border-bottom: 3px solid transparent;
+    border-image: linear-gradient(90deg, var(--ds-crest-red), var(--ds-crest-orange), var(--ds-crest-yellow)) 1;
   }
   /* Phones: a horizontally scrolling strip, faded at the right edge */
   .nav-tabs {

@@ -15,18 +15,6 @@ const SECOES: ItemNav[] = [
   { href: '/comprimir-pdf', label: 'Comprimir PDF', curto: 'Comprimir', icone: 'comprimir' },
 ];
 
-/** The app's own mark (the ring and bar of its PWA icon), drawn with tokens. */
-function Marca() {
-  return (
-    <span aria-hidden className="header-mark">
-      <svg viewBox="0 0 24 24" width={22} height={22} fill="none">
-        <circle cx="12" cy="12" r="8.25" stroke="currentColor" strokeWidth={2.5} />
-        <rect x="7" y="10.6" width="10" height="2.8" rx="1" className="fill-ds-accent" />
-      </svg>
-    </span>
-  );
-}
-
 /**
  * Sticky header in two strips: brand and utility pills on top, section tabs
  * below. Server component; only the interactive pieces ship JavaScript.
@@ -36,7 +24,9 @@ export default function Header() {
     <header className="ds-header sticky top-0 z-40 print:hidden">
       <div className="mx-auto flex h-[52px] max-w-6xl items-center gap-2 px-4 sm:h-14 sm:gap-3 sm:px-6">
         <Link href="/" aria-label="CTB Agente — início" className="flex min-w-0 items-center gap-2.5 rounded-control">
-          <Marca />
+          {/* Decorative: the link's aria-label already names it */}
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/brasao-cpmrv.png" alt="" width={38} height={48} className="h-11 w-auto shrink-0 drop-shadow sm:h-12" />
           <span className="min-w-0">
             <span className="header-title block">
               <span className="text-ds-accent">CTB</span> Agente
