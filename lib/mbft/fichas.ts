@@ -3,6 +3,7 @@
 import { readFileSync } from 'node:fs';
 import path from 'node:path';
 import { expandirSinonimos } from '@/lib/search/sinonimos';
+import { historicoDaLei } from './ficha-extras';
 import type { FichaMbft } from './parser';
 
 let cache: FichaMbft[] | null = null;
@@ -12,12 +13,28 @@ export function todasAsFichas(): FichaMbft[] {
   if (!cache) {
     try {
       cache = JSON.parse(readFileSync(path.join(process.cwd(), 'data/acervo/mbft-fichas.json'), 'utf8')) as FichaMbft[];
+      const ctb = lerCtb();
+      if (ctb) cache = cache.map((f) => ({ ...f, historicoLei: historicoDaLei(f.amparoLegal, ctb) }));
     } catch (error) {
       console.warn('MBFT sheets unavailable:', error);
       cache = [];
     }
   }
   return cache;
+}
+
+function lerCtb(): string | null {
+  try {
+    return readFileSync(path.join(process.cwd(), 'data/acervo/ctb-lei-9503-compilado.txt'), 'utf8');
+  } catch (error) {
+    console.warn('Compiled CTB unavailable, sheets go without law history:', error);
+    return null;
+  }
+}
+
+/** The bundled sheet for a code, or null */
+export function fichaPorCodigo(codigo: string): FichaMbft | null {
+  return todasAsFichas().find((f) => f.codigo === codigo) ?? null;
 }
 
 const normalizar = (t: string) =>

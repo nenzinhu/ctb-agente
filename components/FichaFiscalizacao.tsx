@@ -7,6 +7,7 @@ import type { FichaMbft } from '@/lib/mbft/parser';
 import { formatarMulta, labelResponsavel } from '@/lib/response/format';
 import BadgeGravidade from './ui/BadgeGravidade';
 import ExplicacaoSimples from './ExplicacaoSimples';
+import { AlertaCrime, ExplicarAoCidadao, HistoricoLei } from './FichaExtras';
 import Icone from './ui/Icone';
 
 interface FichaFiscalizacaoProps {
@@ -164,6 +165,7 @@ export default function FichaFiscalizacao({ card, campos: doBanco, oficial = nul
             </>
           )}
         </div>
+        {oficial && <AlertaCrime ficha={oficial} />}
         {ia && (
           <p className="alert-warn mt-3" role="note">
             <Icone nome="faisca" tamanho={16} className="mt-0.5 shrink-0 text-ds-warn" />
@@ -178,6 +180,8 @@ export default function FichaFiscalizacao({ card, campos: doBanco, oficial = nul
 
       <div className="space-y-6 p-4 sm:p-6">
         {oficial && <ExplicacaoSimples key={oficial.codigo} tipo="ficha" id={oficial.codigo} />}
+        {oficial && <ExplicarAoCidadao ficha={oficial} />}
+        {oficial && <HistoricoLei ficha={oficial} />}
 
         <section aria-labelledby="identificacao-infracao">
           <SecaoTitulo>Identificação da Infração</SecaoTitulo>
