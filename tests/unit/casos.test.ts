@@ -52,4 +52,13 @@ describe('montarCaso', () => {
     }
     expect(achou).toBe(true);
   });
+
+  it('com tema, a resposta certa vem só das fichas do tema e as erradas do acervo todo', () => {
+    const alvos = fichas.filter((f) => ['763-31', '763-32', '736-62'].includes(f.codigo));
+    for (let i = 1; i <= 30; i++) {
+      const caso = montarCaso(fichas, semente(i), alvos);
+      expect(['763-31', '763-32', '736-62']).toContain(caso.correta);
+      expect(caso.opcoes).toHaveLength(4);
+    }
+  });
 });

@@ -38,4 +38,21 @@ describe('CasosPraticos', () => {
     expect(screen.getByText(/Acertou!/)).toBeInTheDocument();
     expect(JSON.parse(localStorage.getItem('ctb-casos-placar')!)).toEqual({ acertos: 1, total: 1 });
   });
+
+  it('busca casos por tema e mantém o caso atual quando o tema não tem casos', async () => {
+    const fetchMock = global.fetch as jest.Mock;
+    render(<CasosPraticos />);
+    await screen.findByText(/etilômetro/);
+
+    fireEvent.change(screen.getByLabelText('Treinar sobre…'), { target: { value: 'zap' } });
+    fireEvent.click(screen.getByRole('button', { name: /Ver casos deste tema/ }));
+    expect(await screen.findByText('Tema: zap')).toBeInTheDocument();
+    expect(fetchMock).toHaveBeenLastCalledWith('/api/casos?tema=zap', { cache: 'no-store' });
+
+    fetchMock.mockResolvedValueOnce({ ok: false, json: async () => ({ message: 'Nenhum caso para “xyz”. Tente outra palavra.' }) });
+    fireEvent.click(screen.getByRole('button', { name: 'moto' }));
+    expect(await screen.findByRole('alert')).toHaveTextContent('Nenhum caso para “xyz”');
+    expect(screen.getByText(/etilômetro/)).toBeInTheDocument();
+    expect(screen.getByText('Tema: zap')).toBeInTheDocument();
+  });
 });

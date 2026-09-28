@@ -3,11 +3,15 @@
 import Link from 'next/link';
 import { useCallback, useEffect, useState } from 'react';
 import type { Caso } from '@/lib/mbft/casos';
+import BotaoVoz, { AvisoVoz, useDitado } from './BotaoVoz';
+import Field from './ui/Field';
 import Icone from './ui/Icone';
 import PrimaryButton from './ui/PrimaryButton';
 import TitleCard from './ui/TitleCard';
 
 const CHAVE_PLACAR = 'ctb-casos-placar';
+
+const TEMAS = ['bafômetro', 'celular', 'moto', 'estacionar', 'velocidade', 'sem CNH'];
 
 interface Placar {
   acertos: number;
@@ -34,16 +38,23 @@ export default function CasosPraticos() {
   const [carregando, setCarregando] = useState(false);
   const [erro, setErro] = useState<string | null>(null);
   const [placar, setPlacar] = useState<Placar>({ acertos: 0, total: 0 });
+  const [busca, setBusca] = useState('');
+  /** Topic in use; '' = any infraction */
+  const [tema, setTema] = useState('');
+  const ditado = useDitado({ onTranscricao: (t) => setBusca((atual) => (atual ? `${atual} ${t}` : t)) });
 
-  const proximo = useCallback(async () => {
+  /** Loads a case; the topic only sticks when it has cases, so a miss keeps the current one. */
+  const proximo = useCallback(async (novoTema: string) => {
     setCarregando(true);
     setErro(null);
     try {
-      const resposta = await fetch('/api/casos', { cache: 'no-store' });
+      const url = novoTema ? `/api/casos?tema=${encodeURIComponent(novoTema)}` : '/api/casos';
+      const resposta = await fetch(url, { cache: 'no-store' });
       const corpo = await resposta.json().catch(() => null);
       if (!resposta.ok) throw new Error(corpo?.message || 'Não foi possível carregar o caso.');
       setCaso(corpo as Caso);
       setEscolha(null);
+      setTema(novoTema);
     } catch (error) {
       setErro(error instanceof Error ? error.message : 'Erro desconhecido.');
     } finally {
@@ -53,8 +64,15 @@ export default function CasosPraticos() {
 
   useEffect(() => {
     setPlacar(lerPlacar());
-    void proximo();
+    void proximo('');
   }, [proximo]);
+
+  const treinar = (texto: string) => {
+    const t = texto.trim();
+    if (!t || carregando) return;
+    setBusca(t);
+    void proximo(t);
+  };
 
   const responder = (codigo: string) => {
     if (!caso || escolha) return;
@@ -77,6 +95,53 @@ export default function CasosPraticos() {
         icone="check"
         subtitulo="Leia a situação, como ela foi escrita no campo de observações do AIT, e escolha o enquadramento certo."
       />
+
+      <form
+        className="card card-pad space-y-3"
+        role="search"
+        onSubmit={(e) => {
+          e.preventDefault();
+          treinar(busca);
+        }}
+      >
+        <Field
+          label="Treinar sobre…"
+          value={busca}
+          onChange={(e) => setBusca(e.target.value)}
+          maxLength={120}
+          enterKeyHint="search"
+          placeholder="Ex.: celular, bafômetro, zap, 516-91, art. 181"
+          hint="Tema, gíria, código ou artigo. Deixe vazio para casos de todas as infrações."
+          acao={<BotaoVoz ditado={ditado} />}
+        />
+        <AvisoVoz ditado={ditado} />
+        <div className="flex flex-wrap gap-2">
+          {TEMAS.map((t) => (
+            <button key={t} type="button" className="chip" onClick={() => treinar(t)} disabled={carregando}>
+              {t}
+            </button>
+          ))}
+        </div>
+        <PrimaryButton type="submit" icone="busca" disabled={!busca.trim()} className="w-full">
+          Ver casos deste tema
+        </PrimaryButton>
+      </form>
+
+      {tema && (
+        <p className="flex items-center gap-2 text-sm text-ds-text">
+          <span className="badge-neutral">Tema: {tema}</span>
+          <button
+            type="button"
+            className="text-xs font-semibold text-ds-ink underline"
+            onClick={() => {
+              setBusca('');
+              void proximo('');
+            }}
+          >
+            Todas as infrações
+          </button>
+        </p>
+      )}
 
       <p className="text-sm text-ds-subtle" aria-live="polite">
         Placar neste aparelho: <strong className="text-ds-text">{placar.acertos}</strong> de {placar.total}
@@ -159,7 +224,7 @@ export default function CasosPraticos() {
         icone="seta"
         carregando={carregando}
         textoCarregando="Carregando caso…"
-        onClick={() => void proximo()}
+        onClick={() => void proximo(tema)}
         className="w-full text-base"
       >
         {caso && !escolha ? 'Pular este caso' : 'Próximo caso'}

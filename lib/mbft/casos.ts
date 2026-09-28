@@ -31,6 +31,9 @@ function limparCena(exemplo: string): string {
     .trim();
 }
 
+/** True when the sheet has an example long enough to be a scene */
+export const temCena = (f: FichaMbft) => f.exemplos.some((e) => limparCena(e).length >= 25);
+
 function embaralhar<T>(lista: T[], aleatorio: () => number): T[] {
   const copia = [...lista];
   for (let i = copia.length - 1; i > 0; i--) {
@@ -46,9 +49,11 @@ const opcao = (f: FichaMbft): OpcaoCaso => ({ codigo: f.codigo, rotulo: f.tipifi
  * One practice case.
  * @param fichas - Sheet pool (needs at least 4 with distinct wording)
  * @param aleatorio - Random source in [0, 1)
+ * @param alvos - Sheets the right answer must come from (a chosen topic); defaults to all
  */
-export function montarCaso(fichas: FichaMbft[], aleatorio: () => number = Math.random): Caso {
-  const candidatas = fichas.filter((f) => f.exemplos.some((e) => limparCena(e).length >= 25));
+export function montarCaso(fichas: FichaMbft[], aleatorio: () => number = Math.random, alvos: FichaMbft[] = fichas): Caso {
+  const candidatas = alvos.filter(temCena);
+  if (candidatas.length === 0) throw new Error('Nenhuma ficha com exemplo para montar o caso');
   const certa = candidatas[Math.floor(aleatorio() * candidatas.length)];
   const cenas = certa.exemplos.map(limparCena).filter((c) => c.length >= 25);
   const cena = cenas[Math.floor(aleatorio() * cenas.length)];
