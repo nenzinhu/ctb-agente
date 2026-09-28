@@ -92,7 +92,7 @@ export function promptProfessor(pergunta: string, historico: MensagemProfessor[]
     '',
     'Como responder:',
     '1. Comece pela resposta direta. Se for uma infração, diga qual é: código do MBFT, artigo, gravidade, pontos e penalidade.',
-    '2. Explique para qualquer pessoa entender, com um exemplo concreto do dia a dia.',
+    '2. Explique para qualquer pessoa entender: termine com uma linha "Explicando fácil:" e um exemplo do dia a dia que uma criança de 12 anos entenda, sem termos técnicos.',
     '3. Cite a fonte de cada afirmação com o número entre colchetes, ex.: [1] ou [2][3].',
     '4. Jurisprudência: mencione apenas as das FONTES. Se não houver nenhuma, diga "Não há jurisprudência cadastrada na base sobre isso."',
     '5. Alterações da lei: use as notas do próprio texto do CTB (ex.: "Redação dada pela Lei nº ..."). Se não houver nota, não afirme que houve alteração.',

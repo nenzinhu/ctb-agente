@@ -47,4 +47,17 @@ describe('AI provider registry', () => {
     const openrouter = listProviders().find((p) => p.id === 'openrouter');
     expect(openrouter?.modelos.length).toBeGreaterThan(1);
   });
+
+  it('includes Cloudflare Workers AI and asks for the account id when it is missing', async () => {
+    process.env.CLOUDFLARE_API_TOKEN = 'test-key';
+    delete process.env.CLOUDFLARE_ACCOUNT_ID;
+    expect(listProviders().find((p) => p.id === 'cloudflare')?.configurado).toBe(true);
+    const result = await pingProvider('cloudflare');
+    expect(result.ok).toBe(false);
+    expect(result.erro).toMatch(/CLOUDFLARE_ACCOUNT_ID/);
+  });
+
+  it('puts a free Nous model first, so the default works without credits', () => {
+    expect(PROVIDERS.find((p) => p.id === 'nous')?.modelos[0]).toMatch(/:free$/);
+  });
 });

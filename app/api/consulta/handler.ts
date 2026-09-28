@@ -11,7 +11,7 @@ import {
 import { getCachedCard, setCachedCard } from '@/lib/response/cache';
 import { ProviderChain } from '@/lib/ai/providers/chain';
 import { interpretarFicha, montarPromptFicha } from '@/lib/rag/ficha-ia';
-import { buscarFichas } from '@/lib/mbft/fichas';
+import { buscarFichas, fichaPorCodigo } from '@/lib/mbft/fichas';
 import { validateCitations } from '@/lib/response/validator';
 import { isBackedByNormas } from '@/lib/response/card-builder';
 import { checkRateLimit, recordQuery } from '@/lib/ratelimit/limiter';
@@ -111,7 +111,8 @@ export async function handleConsulta(
       // Cards cached before the bundled MBFT get their sheets on the way out
       const card = {
         ...cached,
-        fichas_mbft: cached.fichas_mbft ?? buscarFichas(consultaFiltrada),
+        // Fresh copies, so cached cards also get fields added since (law history)
+        fichas_mbft: cached.fichas_mbft?.map((f) => fichaPorCodigo(f.codigo) ?? f) ?? buscarFichas(consultaFiltrada),
         cache_hit: true,
         tempo_ms: Date.now() - startTime,
       };

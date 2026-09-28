@@ -9,6 +9,7 @@ const SECOES: ItemNav[] = [
   { href: '/', label: 'Consulta CTB', curto: 'Consulta', icone: 'busca', tambem: ['/consulta'] },
   { href: '/pop', label: 'POP-PMSC', curto: 'POP', icone: 'escudo' },
   { href: '/professor', label: 'Professor', curto: 'Professor', icone: 'professor' },
+  { href: '/casos', label: 'Casos práticos', curto: 'Casos', icone: 'check' },
   { href: '/favoritos', label: 'Favoritos', curto: 'Favoritos', icone: 'estrela' },
   { href: '/gerador-pdf', label: 'Dossiê PDF', curto: 'Dossiê', icone: 'arquivo' },
   { href: '/apostila', label: 'Apostila IA', curto: 'Apostila', icone: 'livro' },

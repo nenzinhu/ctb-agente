@@ -25,8 +25,21 @@ const SINONIMOS: [RegExp, string][] = [
   [/\bmenor de idade\b/, 'menor de dezoito anos'],
   [/\bcapacete\b/, 'capacete de segurança'],
   [/\bcadeirinhas?\b|\bbebe conforto\b|\bassento de elevacao\b/, 'crianças normas de segurança dispositivo de retenção'],
-  [/\bfarol\b|\bfarois\b/, 'luz baixa faróis'],
+  // "Farol vermelho" is the traffic light in much of Brazil, not the headlamp
+  [/\b(farol|sinal|sinaleiro|semaforo) (vermelho|fechado)\b|\bfur(ar|ou|ando) o (farol|sinal|sinaleiro)\b/, 'avançar o sinal vermelho do semáforo'],
+  [/(?<!fur\w{1,4} o )\b(farol|farois)\b(?! (vermelho|fechado))/, 'luz baixa faróis'],
   [/\bfila dupla\b/, 'ao lado de outro veículo em fila dupla'],
+  [/\b(manguaca|cachaca|pinga|birita|cerveja|breja|cana)\b/, 'influência de álcool'],
+  [/\b(chapad[oa]s?|drogad[oa]s?|maconha|cocaina|droga)\b/, 'substância psicoativa'],
+  [/\b(zap|zapzap|whatsapp|smartphone)\b/, 'telefone celular'],
+  [/\b(fume|insufilm)\b/, 'película vidros'],
+  [/\b(grau|empin\w*|cavalo de pau|zerinho|manobra radical)\b/, 'malabarismo equilibrando-se apenas em uma roda exibição perícia em manobra'],
+  [/\bcalcada\b/, 'passeio'],
+  [/\bsem placas?\b/, 'sem qualquer uma das placas de identificação'],
+  [/\b(ipva|licenciamento atrasado|documento atrasado|crlv)\b/, 'devidamente licenciado'],
+  [/\bppd\b/, 'Permissão para Dirigir'],
+  [/\bacc\b/, 'Autorização para Conduzir Ciclomotor'],
+  [/\bait\b/, 'auto de infração'],
 ];
 
 /**

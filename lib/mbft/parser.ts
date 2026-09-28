@@ -25,6 +25,8 @@ export interface FichaMbft {
   informacoesComplementares: string[];
   /** First PDF page of the sheet */
   pagina: number;
+  /** Laws that changed the cited article, from the compiled CTB (added at load) */
+  historicoLei?: string[];
 }
 
 export interface Fragmento {
