@@ -4,29 +4,34 @@
 import { NextRequest } from 'next/server';
 import { GET } from '@/app/api/casos/route';
 
-const pedir = (q = '') => GET(new NextRequest(`http://localhost/api/casos${q}`));
+const pedir = (q: string) => GET(new NextRequest(`http://localhost/api/casos${q}`));
+const codigos = (lista: Array<{ codigo: string }>) => lista.map((c) => c.codigo);
 
 describe('GET /api/casos', () => {
-  it('sem tema, devolve um caso qualquer', async () => {
-    const r = pedir();
-    expect(r.status).toBe(200);
-    expect((await r.json()).opcoes).toHaveLength(4);
+  it('situação comum → a conduta exata primeiro, parecidas à parte', async () => {
+    const r = await pedir('?tema=carro estacionado na calçada').json();
+    expect(codigos(r.principais)).toEqual(['545-21']);
+    expect(codigos(r.relacionadas)).not.toContain('545-21');
   });
 
-  it('com gíria, o caso é do tema', async () => {
-    for (let i = 0; i < 10; i++) {
-      const caso = await pedir('?tema=zap').json();
-      expect(['763-31', '763-32', '736-62']).toContain(caso.correta);
-    }
+  it('recusa do bafômetro → 757-90 como conduta indicada', async () => {
+    expect(codigos((await pedir('?tema=recusou o bafômetro').json()).principais)).toEqual(['757-90']);
   });
 
-  it('com código, o caso é daquela ficha', async () => {
-    expect((await pedir('?tema=516-91').json()).correta).toBe('516-91');
+  it('código → exatamente aquela ficha, sem relacionadas', async () => {
+    const r = await pedir('?tema=516-91').json();
+    expect(codigos(r.principais)).toEqual(['516-91']);
+    expect(r.relacionadas).toEqual([]);
   });
 
-  it('tema sem resultado devolve 404 com mensagem clara', async () => {
+  it('artigo → as fichas do artigo', async () => {
+    for (const c of (await pedir('?tema=art. 252').json()).principais) expect(c.amparo).toMatch(/^Art\. 252/);
+  });
+
+  it('sem tema → 400; tema sem ficha → 404 com mensagem clara', async () => {
+    expect(pedir('').status).toBe(400);
     const r = pedir('?tema=xyzxyz');
     expect(r.status).toBe(404);
-    expect((await r.json()).message).toMatch(/Nenhum caso para “xyzxyz”/);
+    expect((await r.json()).message).toMatch(/Nenhuma ficha do MBFT para “xyzxyz”/);
   });
 });

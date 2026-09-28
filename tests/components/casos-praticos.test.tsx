@@ -1,58 +1,54 @@
 import { fireEvent, render, screen } from '@testing-library/react';
 import CasosPraticos from '@/components/CasosPraticos';
-import type { Caso } from '@/lib/mbft/casos';
+import type { CasoPratico } from '@/lib/mbft/casos';
 
-const caso: Caso = {
-  cena: 'Condutor realizou teste de etilômetro, resultado 0,20 mg/L.',
-  correta: '516-91',
+const caso = (codigo: string, infracao: string, extra: Partial<CasoPratico> = {}): CasoPratico => ({
+  codigo,
+  infracao,
+  amparo: 'Art. 165-A',
   gravidade: 'Gravíssima',
-  explicacao: 'Tomou cerveja e foi dirigir? É infração gravíssima.',
-  opcoes: [
-    { codigo: '757-90', rotulo: 'Recusar o teste', amparo: 'Art. 165-A.' },
-    { codigo: '516-91', rotulo: 'Dirigir sob a influência de álcool.', amparo: 'Art. 165.' },
-    { codigo: '516-92', rotulo: 'Dirigir sob substância psicoativa.', amparo: 'Art. 165.' },
-    { codigo: '501-00', rotulo: 'Dirigir sem CNH.', amparo: 'Art. 162, I.' },
-  ],
-};
+  medidaAdministrativa: 'Recolhimento do documento de habilitação',
+  crime: null,
+  exemplos: ['Condutor recusou-se a realizar o teste do etilômetro.'],
+  quandoAutuar: ['Recusa ao teste.'],
+  quandoNaoAutuar: ['Condutor que realizou o teste.'],
+  pagina: 1,
+  ...extra,
+});
 
-describe('CasosPraticos', () => {
-  beforeEach(() => {
-    localStorage.clear();
-    global.fetch = jest.fn().mockResolvedValue({ ok: true, json: async () => caso }) as unknown as typeof fetch;
+describe('CasosPraticos (consulta de campo)', () => {
+  it('mostra só a conduta oficial, com como descrever, quando autuar e quando NÃO autuar', async () => {
+    const fetchMock = jest.fn().mockResolvedValue({
+      ok: true,
+      json: async () => ({
+        tema: 'recusou o bafômetro',
+        principais: [caso('757-90', 'Recusar-se a ser submetido a teste')],
+        relacionadas: [caso('516-91', 'Dirigir sob a influência de álcool', { crime: 'Art. 306 e 310 do CTB' })],
+      }),
+    });
+    global.fetch = fetchMock as unknown as typeof fetch;
+    render(<CasosPraticos />);
+
+    fireEvent.click(screen.getByRole('button', { name: 'recusou o bafômetro' }));
+    expect(await screen.findByText('Conduta indicada para “recusou o bafômetro”')).toBeInTheDocument();
+    expect(fetchMock).toHaveBeenCalledWith('/api/casos?tema=recus' + 'ou%20o%20baf%C3%B4metro', { cache: 'no-store' });
+    expect(screen.getByText('757-90')).toBeInTheDocument();
+    expect(screen.getAllByText('Quando NÃO autuar').length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/Como descrever no AIT/).length).toBeGreaterThan(0);
+    expect(screen.getByText(/Situações parecidas \(1\) — confira os critérios/)).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: /ficha completa de 757-90/ })).toHaveAttribute('href', '/consulta?q=757-90');
+    // No quiz: nothing to pick as right or wrong
+    expect(screen.queryByText(/Acertou|Não foi dessa vez|Placar/)).not.toBeInTheDocument();
   });
 
-  it('mostra a cena, corrige na hora e soma o placar', async () => {
+  it('mostra a mensagem quando não há ficha para o tema', async () => {
+    global.fetch = jest.fn().mockResolvedValue({
+      ok: false,
+      json: async () => ({ message: 'Nenhuma ficha do MBFT para “xyz”.' }),
+    }) as unknown as typeof fetch;
     render(<CasosPraticos />);
-    expect(await screen.findByText(/etilômetro/)).toBeInTheDocument();
-    fireEvent.click(screen.getByRole('button', { name: /Recusar o teste/ }));
-    expect(screen.getByText(/Não foi dessa vez\. O certo é 516-91/)).toBeInTheDocument();
-    expect(screen.getByText(/Explicando fácil/)).toBeInTheDocument();
-    expect(screen.getByRole('link', { name: /ficha completa de 516-91/ })).toHaveAttribute('href', '/consulta?q=516-91');
-    expect(screen.getByText(/de 1/)).toBeInTheDocument();
-    expect(JSON.parse(localStorage.getItem('ctb-casos-placar')!)).toEqual({ acertos: 0, total: 1 });
-  });
-
-  it('conta o acerto', async () => {
-    render(<CasosPraticos />);
-    fireEvent.click(await screen.findByRole('button', { name: /influência de álcool/ }));
-    expect(screen.getByText(/Acertou!/)).toBeInTheDocument();
-    expect(JSON.parse(localStorage.getItem('ctb-casos-placar')!)).toEqual({ acertos: 1, total: 1 });
-  });
-
-  it('busca casos por tema e mantém o caso atual quando o tema não tem casos', async () => {
-    const fetchMock = global.fetch as jest.Mock;
-    render(<CasosPraticos />);
-    await screen.findByText(/etilômetro/);
-
-    fireEvent.change(screen.getByLabelText('Treinar sobre…'), { target: { value: 'zap' } });
-    fireEvent.click(screen.getByRole('button', { name: /Ver casos deste tema/ }));
-    expect(await screen.findByText('Tema: zap')).toBeInTheDocument();
-    expect(fetchMock).toHaveBeenLastCalledWith('/api/casos?tema=zap', { cache: 'no-store' });
-
-    fetchMock.mockResolvedValueOnce({ ok: false, json: async () => ({ message: 'Nenhum caso para “xyz”. Tente outra palavra.' }) });
-    fireEvent.click(screen.getByRole('button', { name: 'moto' }));
-    expect(await screen.findByRole('alert')).toHaveTextContent('Nenhum caso para “xyz”');
-    expect(screen.getByText(/etilômetro/)).toBeInTheDocument();
-    expect(screen.getByText('Tema: zap')).toBeInTheDocument();
+    fireEvent.change(screen.getByLabelText('Qual é a situação?'), { target: { value: 'xyz' } });
+    fireEvent.click(screen.getByRole('button', { name: /Ver a conduta/ }));
+    expect(await screen.findByRole('alert')).toHaveTextContent('Nenhuma ficha do MBFT para “xyz”');
   });
 });

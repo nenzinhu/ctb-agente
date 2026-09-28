@@ -1,26 +1,39 @@
-// GET /api/casos[?tema=] — one practice case from the bundled MBFT (no AI,
-// instant). With a topic (slang, code or article), the right answer comes
-// from the sheets the consultation search finds for it.
+// GET /api/casos?tema= — official MBFT field cases for a situation. First the
+// exact conducts from the verified slang map; then look-alikes found by the
+// consultation search, flagged so the agent checks their criteria. No AI.
 import { NextResponse, type NextRequest } from 'next/server';
-import { buscarFichas, todasAsFichas } from '@/lib/mbft/fichas';
-import { montarCaso, temCena } from '@/lib/mbft/casos';
+import { buscarFichas, fichaPorCodigo } from '@/lib/mbft/fichas';
+import { casoDaFicha } from '@/lib/mbft/casos';
+import type { FichaMbft } from '@/lib/mbft/parser';
 import { filterPII } from '@/lib/query/pii-filter';
+import { condutasCirurgicas } from '@/lib/search/intencoes';
 
 export const dynamic = 'force-dynamic';
 
 export function GET(request: NextRequest) {
-  const fichas = todasAsFichas();
-  if (fichas.length < 4) {
-    return NextResponse.json({ message: 'Fichas do MBFT indisponíveis no momento.' }, { status: 503 });
+  const tema = filterPII((request.nextUrl.searchParams.get('tema') ?? '').trim().slice(0, 200));
+  if (tema.length < 2) {
+    return NextResponse.json({ message: 'Descreva a situação, a gíria, o código ou o artigo.' }, { status: 400 });
   }
 
-  const tema = (request.nextUrl.searchParams.get('tema') ?? '').trim().slice(0, 120);
-  let alvos = fichas;
-  if (tema) {
-    alvos = buscarFichas(filterPII(tema), 30).filter(temCena);
-    if (alvos.length === 0) {
-      return NextResponse.json({ message: `Nenhum caso para “${tema}”. Tente outra palavra.` }, { status: 404 });
-    }
+  const mapeadas = condutasCirurgicas(tema)
+    .map(fichaPorCodigo)
+    .filter((f): f is FichaMbft => f !== null);
+  const encontradas = buscarFichas(tema, 6);
+  const principais = mapeadas.length ? mapeadas : encontradas;
+  const relacionadas = mapeadas.length
+    ? encontradas.filter((f) => !mapeadas.some((m) => m.codigo === f.codigo)).slice(0, 4)
+    : [];
+
+  if (principais.length === 0) {
+    return NextResponse.json(
+      { message: `Nenhuma ficha do MBFT para “${tema}”. Tente outras palavras ou o código da infração.` },
+      { status: 404 }
+    );
   }
-  return NextResponse.json(montarCaso(fichas, Math.random, alvos), { headers: { 'Cache-Control': 'no-store' } });
+  return NextResponse.json({
+    tema,
+    principais: principais.map(casoDaFicha),
+    relacionadas: relacionadas.map(casoDaFicha),
+  });
 }

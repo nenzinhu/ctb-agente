@@ -99,8 +99,11 @@ export function buscarFichas(consulta: string, limite = 8, fichas = todasAsFicha
       const resumo = new Set(palavras(f.tipificacaoResumida));
       const corpo = new Set(palavras(`${f.tipificacao} ${f.quandoAutuar.join(' ')}`));
       // Prefix match tolerates plural/verb forms ("estacionar"/"estacionado")
+      // without letting "licenciamento" match "licença"
       const tem = (conjunto: Set<string>, termo: string) =>
-        [...conjunto].some((p) => p === termo || (termo.length >= 5 && p.startsWith(termo.slice(0, 5))));
+        [...conjunto].some(
+          (p) => p === termo || (termo.length >= 5 && p.startsWith(termo.slice(0, Math.max(5, termo.length - 3))))
+        );
       const pontos = termos.reduce((soma, t) => soma + (tem(resumo, t) ? 2 : tem(corpo, t) ? 1 : 0), 0);
       return { f, pontos };
     })

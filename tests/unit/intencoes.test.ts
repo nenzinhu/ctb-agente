@@ -1,6 +1,6 @@
 import { readFileSync } from 'node:fs';
 import path from 'node:path';
-import { INTENCOES, detectarIntencoes } from '@/lib/search/intencoes';
+import { INTENCOES, condutasCirurgicas, detectarIntencoes } from '@/lib/search/intencoes';
 import { expandirSinonimos } from '@/lib/search/sinonimos';
 
 const fichas = JSON.parse(readFileSync(path.join(process.cwd(), 'data/acervo/mbft-fichas.json'), 'utf8')) as Array<{
@@ -69,5 +69,33 @@ describe('gírias e siglas na busca', () => {
 
   it('"farol vermelho" não vira luz baixa', () => {
     expect(expandirSinonimos('furou o farol vermelho')).not.toContain('luz baixa');
+  });
+});
+
+describe('condutasCirurgicas', () => {
+  it.each([
+    ['recusou o bafômetro', ['757-90']],
+    ['motorista bêbado', ['516-91']],
+    ['carro estacionado na calçada', ['545-21']],
+    ['parou na vaga de idoso', ['762-52']],
+    ['cnh vencida', ['504-50']],
+    ['emprestou o carro pro filho sem cnh', ['501-00', '506-10']],
+    ['dirigindo com o celular na mão', ['763-31']],
+    ['moto dando grau', ['705-61']],
+    ['garupa sem capacete', ['704-81']],
+    ['criança sem cadeirinha', ['519-30']],
+    ['licenciamento atrasado', ['659-92']],
+    ['furou o sinal vermelho', ['605-01']],
+  ])('"%s" → %j', (texto, esperado) => {
+    expect(condutasCirurgicas(texto)).toEqual(esperado);
+  });
+
+  it('texto genérico traz o grupo inteiro', () => {
+    expect(condutasCirurgicas('sem cinto')).toEqual(['518-51', '518-52', '519-30']);
+  });
+
+  it('código ou artigo não passa pelo mapa', () => {
+    expect(condutasCirurgicas('516-91')).toEqual([]);
+    expect(condutasCirurgicas('art. 165')).toEqual([]);
   });
 });
