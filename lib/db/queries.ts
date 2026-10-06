@@ -149,9 +149,11 @@ export async function findDispositivoByReferencia(
  */
 export async function searchDispositivos(query: string, limit = 5): Promise<Dispositivo[]> {
   if (!databaseConfigured) return [];
+  if (!query || query.trim().length < 2) return [];
   try {
+    const expandido = expandirSinonimos(query);
     const { data, error } = await supabase.rpc('search_dispositivos_tsvector', {
-      query_text: expandirSinonimos(query),
+      query_text: expandido,
       limit_count: limit,
     });
 
@@ -242,5 +244,24 @@ export async function getCounters(): Promise<{ documentos: number; enquadramento
     };
   } catch {
     return { documentos: 0, enquadramentos: 0 };
+  }
+}
+
+/**
+ * Count dispositivos for a given article number (used to detect splits)
+ * @param numero - e.g. "art. 165"
+ * @returns Number of rows matching
+ */
+export async function countDispositivosByNumero(numero: string): Promise<number> {
+  if (!databaseConfigured) return 0;
+  try {
+    const { count, error } = await supabase
+      .from('dispositivos')
+      .select('*', { count: 'exact', head: true })
+      .ilike('numero_dispositivo', literalLike(numero.trim()));
+    if (error) return 0;
+    return count ?? 0;
+  } catch {
+    return 0;
   }
 }

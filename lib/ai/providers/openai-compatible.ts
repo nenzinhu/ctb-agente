@@ -81,8 +81,7 @@ export class OpenAICompatibleProvider implements AIProvider {
     this.requireBaseUrl();
     const response = await fetchWithTimeout(
       `${this.baseUrl}/models`,
-      { headers: { Authorization: `Bearer ${this.apiKey}`, ...this.headers } },
-      10_000
+      { headers: { Authorization: `Bearer ${this.apiKey}`, ...this.headers } }
     );
     if (!response.ok) {
       throw new Error(await describeHttpError(this.name, response));

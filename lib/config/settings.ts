@@ -6,11 +6,35 @@ import { databaseConfigured, supabase, supabaseAdmin } from '@/lib/db/client';
 export interface AppSettings {
   consultas_por_hora: number;
   turnstile_ativo: boolean;
+  /** Weight applied to infraction articles (161-255) in hybrid search ranking */
+  pesoInfracoes?: number;
+  /** RRF smoothing constant for hybrid search */
+  rrfK?: number;
+  /** Minimum chunk size in characters */
+  minChunkChars?: number;
+  /** Default chunk size in characters */
+  defaultChunkChars?: number;
+  /** Per-provider timeout in ms */
+  providerTimeoutMs?: number;
+  /** Max retry attempts per provider call */
+  providerMaxAttempts?: number;
+  /** Cache TTL in days for response cache */
+  cacheTtlDias?: number;
+  /** Whether to enable debug logging */
+  debugLog?: boolean;
 }
 
 export const DEFAULT_SETTINGS: AppSettings = {
   consultas_por_hora: Number(process.env.RATE_LIMIT_QUERIES_PER_HOUR || 30),
   turnstile_ativo: true,
+  pesoInfracoes: 1.04,
+  rrfK: 60,
+  minChunkChars: 20,
+  defaultChunkChars: 1200,
+  providerTimeoutMs: 25_000,
+  providerMaxAttempts: 3,
+  cacheTtlDias: 30,
+  debugLog: false,
 };
 
 const SETTINGS_CACHE_MS = 30_000;
@@ -61,6 +85,14 @@ export async function updateSettings(patch: Partial<AppSettings>): Promise<AppSe
   const next: AppSettings = {
     consultas_por_hora: sanitizeRateLimit(patch.consultas_por_hora ?? current.consultas_por_hora),
     turnstile_ativo: patch.turnstile_ativo ?? current.turnstile_ativo,
+    pesoInfracoes: sanitizeFloat(patch.pesoInfracoes ?? current.pesoInfracoes ?? 1.04, 1.0, 2.0),
+    rrfK: sanitizeInt(patch.rrfK ?? current.rrfK ?? 60, 1, 500),
+    minChunkChars: sanitizeInt(patch.minChunkChars ?? current.minChunkChars ?? 20, 1, 500),
+    defaultChunkChars: sanitizeInt(patch.defaultChunkChars ?? current.defaultChunkChars ?? 1200, 50, 5000),
+    providerTimeoutMs: sanitizeInt(patch.providerTimeoutMs ?? current.providerTimeoutMs ?? 25_000, 1_000, 120_000),
+    providerMaxAttempts: sanitizeInt(patch.providerMaxAttempts ?? current.providerMaxAttempts ?? 3, 1, 10),
+    cacheTtlDias: sanitizeInt(patch.cacheTtlDias ?? current.cacheTtlDias ?? 30, 1, 365),
+    debugLog: patch.debugLog ?? current.debugLog ?? false,
   };
 
   const { error } = await supabaseAdmin
@@ -90,6 +122,22 @@ export function invalidateSettingsCache(): void {
 export function sanitizeRateLimit(value: number): number {
   if (!Number.isFinite(value)) return DEFAULT_SETTINGS.consultas_por_hora;
   return Math.min(1000, Math.max(1, Math.trunc(value)));
+}
+
+/**
+ * Clamp a float to a range
+ */
+export function sanitizeFloat(value: number, min: number, max: number): number {
+  if (!Number.isFinite(value)) return min;
+  return Math.min(max, Math.max(min, value));
+}
+
+/**
+ * Clamp an integer to a range
+ */
+export function sanitizeInt(value: number, min: number, max: number): number {
+  if (!Number.isFinite(value)) return min;
+  return Math.min(max, Math.max(min, Math.trunc(value)));
 }
 
 /**

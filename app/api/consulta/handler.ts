@@ -233,16 +233,20 @@ async function getNormasForEnquadramento(
   descricao: string
 ): Promise<NormaAplicavel[]> {
   const normas: NormaAplicavel[] = [];
+  const vistos = new Set<string>();
 
   const principal = await findDispositivoByReferencia(amparoLegal);
   if (principal) {
     normas.push(dispositivoToNorma(principal));
+    vistos.add(principal.numero_dispositivo);
   }
 
   const relacionados = await searchDispositivos(descricao, 3);
   for (const row of relacionados) {
-    if (!normas.some((n) => n.numero_dispositivo === row.numero_dispositivo)) {
+    const key = row.numero_dispositivo;
+    if (key && !vistos.has(key)) {
       normas.push(dispositivoToNorma(row));
+      vistos.add(key);
     }
   }
 
@@ -255,8 +259,9 @@ async function getNormasForEnquadramento(
  * @param rows - Candidate rows
  * @returns Rows that are not the principal provision
  */
-function normalizeRelated(principal: { numero_dispositivo: string }, rows: any[]): any[] {
-  return rows.filter((r) => r.numero_dispositivo !== principal.numero_dispositivo);
+function normalizeRelated<T extends { numero_dispositivo: string }>(principal: T, rows: T[]): T[] {
+  const key = principal.numero_dispositivo;
+  return rows.filter((r) => r.numero_dispositivo !== key);
 }
 
 /**
@@ -292,16 +297,15 @@ function validateCard(card: CartaoEstruturado): CartaoEstruturado {
   );
 
   // Regex sweep over the free-text fields as a second line of defense.
-  const { issues } = validateCitations(
-    JSON.stringify([card.explicacao_simples, card.exemplo_dia_a_dia]),
-    card.normas
-  );
+  const textoCompleto = `${card.explicacao_simples}\n${card.exemplo_dia_a_dia}`;
+  const { issues } = validateCitations(textoCompleto, card.normas);
   if (issues.length === 0) {
     return { ...card, citacoes: citacoesFiltradas };
   }
 
+  // Extract the reference strings from the issues ("Citation not found: \"art. 999\"")
   const invalidas = new Set(
-    issues.map((i) => i.replace(/^Citation not found: "/, '').replace(/"$/, ''))
+    issues.map((i) => i.replace(/^Citation not found:\s*"/, '').replace(/"$/, ''))
   );
   return {
     ...card,

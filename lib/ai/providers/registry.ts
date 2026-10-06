@@ -23,10 +23,42 @@ export interface ProviderDescriptor {
   cadastro: string;
   baseUrlEnvVar?: string;
   criar: (apiKey: string, baseUrl?: string) => AIProvider;
+  /** Max attempts per call (retry on transient failures) */
+  maxAttempts?: number;
+  /** Per-call timeout in ms */
+  timeoutMs?: number;
 }
 
-// Big free models (120B+) regularly take 10s+ to answer even a one-word ping.
-const TIMEOUT_MS = 25_000;
+// Default values for provider configuration (overridden by settings).
+const DEFAULT_TIMEOUT_MS = 25_000;
+const DEFAULT_MAX_ATTEMPTS = 3;
+
+let timeoutMsCache: number = DEFAULT_TIMEOUT_MS;
+let maxAttemptsCache: number = DEFAULT_MAX_ATTEMPTS;
+let configCacheTs = 0;
+const CONFIG_CACHE_TTL = 60_000;
+
+export async function loadProviderConfig(): Promise<{ timeoutMs: number; maxAttempts: number }> {
+  const now = Date.now();
+  if (configCacheTs > 0 && now - configCacheTs < CONFIG_CACHE_TTL) {
+    return { timeoutMs: timeoutMsCache, maxAttempts: maxAttemptsCache };
+  }
+  try {
+    const { getSettings } = await import('../../config/settings');
+    const s = await getSettings();
+    timeoutMsCache = s.providerTimeoutMs ?? DEFAULT_TIMEOUT_MS;
+    maxAttemptsCache = s.providerMaxAttempts ?? DEFAULT_MAX_ATTEMPTS;
+  } catch {
+    timeoutMsCache = DEFAULT_TIMEOUT_MS;
+    maxAttemptsCache = DEFAULT_MAX_ATTEMPTS;
+  }
+  configCacheTs = now;
+  return { timeoutMs: timeoutMsCache, maxAttempts: maxAttemptsCache };
+}
+
+export function invalidateProviderConfig(): void {
+  configCacheTs = 0;
+}
 
 export const PROVIDERS: ProviderDescriptor[] = [
   {
@@ -51,7 +83,7 @@ export const PROVIDERS: ProviderDescriptor[] = [
     modelos: ['gpt-oss-120b', 'llama-3.3-70b', 'llama3.1-8b', 'qwen-3-32b'],
     papel: 'resposta rapida',
     cadastro: 'https://cloud.cerebras.ai',
-    criar: (apiKey, baseUrl) =>
+    criar: (apiKey, _baseUrl) =>
       new OpenAICompatibleProvider({
         name: 'Cerebras',
         apiKey,
@@ -239,7 +271,10 @@ export async function listLiveModels(
     return { modelos: [], erro: `${descriptor.envVar} não configurada` };
   }
   try {
-    const modelos = await descriptor.criar().getModels();
+    const modelos = await descriptor.criar(
+      process.env[descriptor.envVar] || '',
+      descriptor.baseUrlEnvVar ? process.env[descriptor.baseUrlEnvVar] : undefined
+    ).getModels();
     return { modelos: Array.from(new Set(modelos.map((m) => m.id))).sort() };
   } catch (error) {
     return { modelos: [], erro: error instanceof Error ? error.message : 'Falha desconhecida' };
@@ -253,6 +288,21 @@ export interface PingResult {
   latenciaMs: number;
   resposta?: string;
   erro?: string;
+}
+
+/**
+ * Race a promise against a timeout
+ * @param promise - Promise to await
+ * @param ms - Timeout in milliseconds
+ * @returns The promise result
+ */
+async function withTimeoutLocal<T>(promise: Promise<T>, ms: number): Promise<T> {
+  return Promise.race([
+    promise,
+    new Promise<never>((_, reject) =>
+      setTimeout(() => reject(new Error('Timeout ao contatar o provedor')), ms)
+    ),
+  ]);
 }
 
 /**
@@ -288,12 +338,16 @@ export async function pingProvider(providerId: string, modelo?: string): Promise
   }
 
   try {
-    const provider = descriptor.criar();
+    const provider = descriptor.criar(
+      process.env[descriptor.envVar] || '',
+      descriptor.baseUrlEnvVar ? process.env[descriptor.baseUrlEnvVar] : undefined
+    );
+    const config = await loadProviderConfig();
     // 64 tokens, not 8: reasoning models spend the first tokens thinking
     // and would come back empty on a tighter budget.
-    const resposta = await withTimeout(
+    const resposta = await withTimeoutLocal(
       provider.generate('Responda apenas com a palavra: ok', modeloUsado, 64, 0),
-      TIMEOUT_MS
+      config.timeoutMs
     );
 
     return {
@@ -312,19 +366,4 @@ export async function pingProvider(providerId: string, modelo?: string): Promise
       erro: error instanceof Error ? error.message : 'Falha desconhecida',
     };
   }
-}
-
-/**
- * Race a promise against a timeout
- * @param promise - Promise to await
- * @param ms - Timeout in milliseconds
- * @returns The promise result
- */
-async function withTimeout<T>(promise: Promise<T>, ms: number): Promise<T> {
-  return Promise.race([
-    promise,
-    new Promise<never>((_, reject) =>
-      setTimeout(() => reject(new Error('Timeout ao contatar o provedor')), ms)
-    ),
-  ]);
 }

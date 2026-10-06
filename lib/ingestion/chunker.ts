@@ -11,6 +11,7 @@
 // headings ("SEQUÊNCIA DAS AÇÕES", "3.1 Da abordagem", "# Título") and
 // packed up to the size limit inside each section.
 import { PAGE_MARKER_RE, joinWrappedLine } from './pdf-text';
+import { getSettings } from '../config/settings';
 
 export interface TextChunk {
   text: string;
@@ -27,7 +28,7 @@ export type ChunkMode = 'legal' | 'secoes';
 
 /** Soft size limit of an excerpt, in characters (~300 tokens of Portuguese). */
 export const DEFAULT_CHUNK_CHARS = 1200;
-const MIN_CHUNK_CHARS = 20;
+export const DEFAULT_MIN_CHUNK_CHARS = 20;
 
 type UnitKind = 'artigo' | 'titulo' | 'paragrafo' | 'inciso' | 'item' | 'texto';
 
@@ -345,13 +346,20 @@ function splitLongUnit(text: string, max: number): string[] {
 /**
  * Splits text into excerpts that respect the document's structure.
  * @param text - Extracted text (may carry page markers from the parser)
- * @param maxChars - Soft size limit per excerpt
+ * @param maxChars - Soft size limit per excerpt (overrides settings)
  * @param mode - 'legal' (articles) or 'secoes' (headed sections)
+ * @param minChars - Minimum chunk size (overrides settings)
  * @returns Excerpts in document order
  */
-export function chunkText(text: string, maxChars: number = DEFAULT_CHUNK_CHARS, mode: ChunkMode = 'legal'): TextChunk[] {
+export function chunkText(
+  text: string,
+  maxChars?: number,
+  mode: ChunkMode = 'legal',
+  minChars?: number
+): TextChunk[] {
   if (!text || !text.trim()) return [];
-  const max = Math.max(50, maxChars);
+  const max = Math.max(50, maxChars ?? DEFAULT_CHUNK_CHARS);
+  const min = Math.max(1, minChars ?? DEFAULT_MIN_CHUNK_CHARS);
 
   const chunks: Omit<TextChunk, 'order'>[] = [];
   let buffer: string[] = [];
@@ -422,8 +430,28 @@ export function chunkText(text: string, maxChars: number = DEFAULT_CHUNK_CHARS, 
   flush();
 
   return chunks
-    .filter((chunk) => chunk.text.trim().length > MIN_CHUNK_CHARS)
+    .filter((chunk) => chunk.text.trim().length > min)
     .map((chunk, order) => ({ ...chunk, order }));
+}
+
+/**
+ * Async version that reads chunking settings from the database. Use this in
+ * routes that can await settings (ingestion, admin panel). The sync version
+ * above is kept for tests and code that runs before settings are ready.
+ */
+export async function chunkTextAsync(
+  text: string,
+  maxChars?: number,
+  mode: ChunkMode = 'legal',
+  minChars?: number
+): Promise<TextChunk[]> {
+  if (!text || !text.trim()) return [];
+  try {
+    const s = await getSettings();
+    return chunkText(text, maxChars ?? s.defaultChunkChars ?? DEFAULT_CHUNK_CHARS, mode, minChars ?? s.minChunkChars ?? DEFAULT_MIN_CHUNK_CHARS);
+  } catch {
+    return chunkText(text, maxChars, mode, minChars);
+  }
 }
 
 /**

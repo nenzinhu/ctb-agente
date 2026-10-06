@@ -13,7 +13,6 @@ interface Elo {
 }
 
 /** Retry configuration for transient errors (rate limits, 5xx) */
-const RETRYABLE_STATUS = new Set([408, 429, 500, 502, 503, 504]);
 const MAX_ATTEMPTS = 3;
 const BASE_DELAY_MS = 1000;
 
@@ -54,7 +53,7 @@ export class ProviderChain implements AIProvider {
   constructor() {
     this.elos = PROVIDERS.filter((p) => Boolean(process.env[p.envVar])).map((p) => ({
       id: p.id,
-      provider: p.criar(process.env[p.envVar] || '', process.env[p.baseUrlEnvVar]),
+      provider: p.criar(process.env[p.envVar] || '', p.baseUrlEnvVar ? process.env[p.baseUrlEnvVar] : undefined),
       modeloPadrao: p.modelos[0],
     }));
   }
