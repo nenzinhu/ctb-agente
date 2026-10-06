@@ -72,6 +72,9 @@ export class OpenAICompatibleProvider implements AIProvider {
     if (!this.baseUrl) {
       throw new Error(`${this.baseUrlEnvVar ?? 'base URL'} não configurada`);
     }
+    if (!this.apiKey) {
+      throw new Error(`${this.name}: API key não configurada`);
+    }
   }
 
   async getModels(): Promise<AIModel[]> {

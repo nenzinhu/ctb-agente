@@ -21,7 +21,7 @@ export interface ProviderDescriptor {
   papel: 'resposta rapida' | 'resposta analitica' | 'embeddings';
   /** Where to create a free key ('' when unknown). */
   cadastro: string;
-  criar: () => AIProvider;
+  criar: (apiKey: string, baseUrl?: string) => AIProvider;
 }
 
 // Big free models (120B+) regularly take 10s+ to answer even a one-word ping.
