@@ -21,6 +21,7 @@ export interface ProviderDescriptor {
   papel: 'resposta rapida' | 'resposta analitica' | 'embeddings';
   /** Where to create a free key ('' when unknown). */
   cadastro: string;
+  baseUrlEnvVar?: string;
   criar: (apiKey: string, baseUrl?: string) => AIProvider;
 }
 
@@ -50,10 +51,10 @@ export const PROVIDERS: ProviderDescriptor[] = [
     modelos: ['gpt-oss-120b', 'llama-3.3-70b', 'llama3.1-8b', 'qwen-3-32b'],
     papel: 'resposta rapida',
     cadastro: 'https://cloud.cerebras.ai',
-    criar: () =>
+    criar: (apiKey, baseUrl) =>
       new OpenAICompatibleProvider({
         name: 'Cerebras',
-        apiKey: process.env.CEREBRAS_API_KEY || '',
+        apiKey,
         baseUrl: 'https://api.cerebras.ai/v1',
       }),
   },

@@ -12,6 +12,41 @@ interface Elo {
   modeloPadrao: string;
 }
 
+/** Retry configuration for transient errors (rate limits, 5xx) */
+const RETRYABLE_STATUS = new Set([408, 429, 500, 502, 503, 504]);
+const MAX_ATTEMPTS = 3;
+const BASE_DELAY_MS = 1000;
+
+function sleep(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+function isRetryable(error: unknown): boolean {
+  if (error instanceof Error) {
+    const msg = error.message;
+    if (/timeout|temporarily unavailable|rate limit|try again later|service unavailable/i.test(msg)) return true;
+  }
+  return false;
+}
+
+async function withRetry<T>(fn: () => Promise<T>, attempts = MAX_ATTEMPTS): Promise<T> {
+  let lastError: unknown;
+  for (let attempt = 1; attempt <= attempts; attempt++) {
+    try {
+      return await fn();
+    } catch (error) {
+      lastError = error;
+      if (attempt < attempts && isRetryable(error)) {
+        const delay = Math.min(BASE_DELAY_MS * Math.pow(2, attempt - 1), 10_000);
+        await sleep(delay);
+        continue;
+      }
+      throw error;
+    }
+  }
+  throw lastError;
+}
+
 export class ProviderChain implements AIProvider {
   name = 'Provider Chain';
   private elos: Elo[];
@@ -78,7 +113,7 @@ export class ProviderChain implements AIProvider {
     let lastError: Error | null = null;
     for (const { elo, modelo } of this.tentativas(await getAIPreference())) {
       try {
-        const texto = await elo.provider.generate(prompt, modelo, maxTokens, temperature);
+        const texto = await withRetry(() => elo.provider.generate(prompt, modelo, maxTokens, temperature));
         return { texto, provedor: elo.provider.name, modelo };
       } catch (error) {
         lastError = error instanceof Error ? error : new Error(String(error));
@@ -106,7 +141,7 @@ export class ProviderChain implements AIProvider {
 
     const tentativas = this.tentativas(await getAIPreference());
     const tentar = async ({ elo, modelo }: { elo: Elo; modelo: string }) => {
-      const texto = await elo.provider.generate(prompt, modelo, maxTokens, temperature);
+      const texto = await withRetry(() => elo.provider.generate(prompt, modelo, maxTokens, temperature));
       if (!texto.trim()) throw new Error(`${elo.provider.name} (${modelo}) respondeu vazio`);
       return { texto, provedor: elo.provider.name, modelo };
     };

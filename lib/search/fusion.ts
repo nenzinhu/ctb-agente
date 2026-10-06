@@ -30,3 +30,32 @@ export function reciprocalRankFusion<T extends { id: string }>(lists: T[][], k: 
 
   return [...fused.values()].sort((a, b) => b.score - a.score).map(({ item, score }) => ({ ...item, score }));
 }
+
+/**
+ * Variant of RRF that weights each list by a multiplier before fusion.
+ * Useful when one source (e.g. BM25) is known to be more reliable than
+ * another (e.g. vector search with a weak embedding model).
+ * @param weightedLists - Lists with a weight; higher weight = more influence
+ * @param k - Smoothing constant
+ */
+export function weightedReciprocalRankFusion<T extends { id: string }>(
+  weightedLists: { list: T[]; weight: number }[],
+  k: number = RRF_K
+): Array<T & { score: number }> {
+  const fused = new Map<string, { item: T; score: number }>();
+
+  for (const { list, weight } of weightedLists) {
+    list.forEach((item, position) => {
+      const gain = weight / (k + position + 1);
+      const current = fused.get(item.id);
+      if (current) {
+        current.item = { ...current.item, ...item };
+        current.score += gain;
+      } else {
+        fused.set(item.id, { item, score: gain });
+      }
+    });
+  }
+
+  return [...fused.values()].sort((a, b) => b.score - a.score).map(({ item, score }) => ({ ...item, score }));
+}
