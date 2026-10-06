@@ -19,7 +19,7 @@ export class ProviderChain implements AIProvider {
   constructor() {
     this.elos = PROVIDERS.filter((p) => Boolean(process.env[p.envVar])).map((p) => ({
       id: p.id,
-      provider: p.criar(),
+      provider: p.criar(process.env[p.envVar] || '', process.env[p.baseUrlEnvVar]),
       modeloPadrao: p.modelos[0],
     }));
   }
