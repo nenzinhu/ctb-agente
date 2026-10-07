@@ -97,6 +97,38 @@ describe('ProviderChain', () => {
     }
   });
 
+  it('rewrites an English answer in Portuguese before returning it', async () => {
+    for (const p of PROVIDERS) delete process.env[p.envVar];
+    process.env.GROQ_API_KEY = 'k';
+
+    const originalFetch = global.fetch;
+    const fetchMock = jest
+      .fn(async (_url: string, _init: RequestInit) => ({
+        ok: true,
+        json: async () => ({ choices: [{ message: { content: '' } }] }),
+      }))
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({ choices: [{ message: { content: 'The driver must stop the vehicle and show the requested documents.' } }] }),
+      })
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({ choices: [{ message: { content: 'O condutor deve parar o veículo e apresentar os documentos solicitados.' } }] }),
+      });
+    (global as { fetch: unknown }).fetch = fetchMock;
+
+    try {
+      const resultado = await new ProviderChain().generateDetailed('O que fazer?', 120, 0.2);
+      expect(resultado.texto).toMatch(/^O condutor/);
+      expect(fetchMock).toHaveBeenCalledTimes(2);
+      const segundoBody = JSON.parse(fetchMock.mock.calls[1][1]?.body as string);
+      expect(segundoBody.messages[1].content).toContain('Reescreva a resposta');
+      expect(segundoBody.temperature).toBe(0);
+    } finally {
+      (global as { fetch: unknown }).fetch = originalFetch;
+    }
+  });
+
   it('explains itself when no provider is configured', async () => {
     for (const p of PROVIDERS) delete process.env[p.envVar];
 

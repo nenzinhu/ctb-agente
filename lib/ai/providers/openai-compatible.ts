@@ -2,6 +2,7 @@
 // protocol (Groq, NVIDIA, OpenRouter, Mistral, Gemini, Cerebras, ...).
 import type { AIModel, AIProvider } from './base';
 import { fetchWithTimeout } from './timeout';
+import { SISTEMA_PORTUGUES_BR } from '../portugues';
 
 /** A /models entry; OpenRouter-style catalogs also carry per-token prices. */
 export interface ModeloListado {
@@ -115,7 +116,10 @@ export class OpenAICompatibleProvider implements AIProvider {
       },
       body: JSON.stringify({
         model,
-        messages: [{ role: 'user', content: prompt }],
+        messages: [
+          { role: 'system', content: SISTEMA_PORTUGUES_BR },
+          { role: 'user', content: prompt },
+        ],
         max_tokens: maxTokens,
         temperature,
       }),

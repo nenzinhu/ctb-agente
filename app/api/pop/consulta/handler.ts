@@ -27,7 +27,8 @@ const TEMPO_IA_MS = 18_000;
 
 function chaveCache(pergunta: string): string {
   // A new ranking must not reuse an answer grounded in the old source list.
-  return `pop:v5:${pergunta.toLowerCase().replace(/\s+/g, ' ').trim()}`;
+  // v6 discards answers cached before the global pt-BR output guard.
+  return `pop:v6:${pergunta.toLowerCase().replace(/\s+/g, ' ').trim()}`;
 }
 
 async function gerarResposta(

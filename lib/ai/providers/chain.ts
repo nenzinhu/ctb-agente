@@ -5,6 +5,7 @@
 import type { AIModel, AIProvider } from './base';
 import { PROVIDERS } from './registry';
 import { getAIPreference, type AIPreference } from '../preference';
+import { pareceRespostaEmIngles, promptReescreverEmPortugues } from '../portugues';
 
 interface Elo {
   id: string;
@@ -44,6 +45,23 @@ async function withRetry<T>(fn: () => Promise<T>, attempts = MAX_ATTEMPTS): Prom
     }
   }
   throw lastError;
+}
+
+async function gerarEmPortugues(
+  provider: AIProvider,
+  prompt: string,
+  modelo: string,
+  maxTokens: number,
+  temperature: number
+): Promise<string> {
+  const texto = await provider.generate(prompt, modelo, maxTokens, temperature);
+  if (!pareceRespostaEmIngles(texto)) return texto;
+
+  const corrigido = await provider.generate(promptReescreverEmPortugues(texto), modelo, maxTokens, 0);
+  if (pareceRespostaEmIngles(corrigido)) {
+    throw new Error(`${provider.name} insistiu em responder em inglês`);
+  }
+  return corrigido;
 }
 
 export class ProviderChain implements AIProvider {
@@ -112,7 +130,7 @@ export class ProviderChain implements AIProvider {
     let lastError: Error | null = null;
     for (const { elo, modelo } of this.tentativas(await getAIPreference())) {
       try {
-        const texto = await withRetry(() => elo.provider.generate(prompt, modelo, maxTokens, temperature));
+        const texto = await withRetry(() => gerarEmPortugues(elo.provider, prompt, modelo, maxTokens, temperature));
         return { texto, provedor: elo.provider.name, modelo };
       } catch (error) {
         lastError = error instanceof Error ? error : new Error(String(error));
@@ -140,7 +158,7 @@ export class ProviderChain implements AIProvider {
 
     const tentativas = this.tentativas(await getAIPreference());
     const tentar = async ({ elo, modelo }: { elo: Elo; modelo: string }) => {
-      const texto = await withRetry(() => elo.provider.generate(prompt, modelo, maxTokens, temperature));
+      const texto = await withRetry(() => gerarEmPortugues(elo.provider, prompt, modelo, maxTokens, temperature));
       if (!texto.trim()) throw new Error(`${elo.provider.name} (${modelo}) respondeu vazio`);
       return { texto, provedor: elo.provider.name, modelo };
     };

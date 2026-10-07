@@ -82,6 +82,24 @@ describe('OpenAICompatibleProvider', () => {
       (global as { fetch: unknown }).fetch = originalFetch;
     }
   });
+
+  it('sends a system rule that forces every generation to Brazilian Portuguese', async () => {
+    const originalFetch = global.fetch;
+    const fetchMock = jest.fn(async (_url: string, _init: RequestInit) => ({
+      ok: true,
+      json: async () => ({ choices: [{ message: { content: 'Resposta em português.' } }] }),
+    }));
+    (global as { fetch: unknown }).fetch = fetchMock;
+    try {
+      const provider = new OpenAICompatibleProvider({ name: 'X', apiKey: 'k', baseUrl: 'https://a.test/v1' });
+      await provider.generate('Explique a infração.', 'm', 80);
+      const body = JSON.parse(fetchMock.mock.calls[0][1]?.body as string);
+      expect(body.messages[0]).toEqual(expect.objectContaining({ role: 'system', content: expect.stringMatching(/português do Brasil.*não responda em inglês/i) }));
+      expect(body.messages[1]).toEqual({ role: 'user', content: 'Explique a infração.' });
+    } finally {
+      (global as { fetch: unknown }).fetch = originalFetch;
+    }
+  });
 });
 
 describe('Nous Portal free catalog', () => {

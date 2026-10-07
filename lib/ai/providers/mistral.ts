@@ -1,5 +1,6 @@
 import { AIProvider, AIModel, EmbeddingProvider } from './base';
 import { fetchWithTimeout } from './timeout';
+import { SISTEMA_PORTUGUES_BR } from '../portugues';
 
 export class MistralProvider implements AIProvider {
   name = 'Mistral';
@@ -27,7 +28,10 @@ export class MistralProvider implements AIProvider {
       },
       body: JSON.stringify({
         model,
-        messages: [{ role: 'user', content: prompt }],
+        messages: [
+          { role: 'system', content: SISTEMA_PORTUGUES_BR },
+          { role: 'user', content: prompt },
+        ],
         max_tokens: maxTokens,
         temperature,
       }),
