@@ -45,6 +45,13 @@ export const SINONIMOS: ReadonlyArray<readonly [RegExp, readonly string[]]> = [
   [/\b(?:placa escondida|placa tampada|sem placa visivel)\b/, ['placa sem visibilidade legibilidade']],
   [/\b(?:cadaver|corpo sem vida|encontrado morto)\b/, ['encontro de cadáver constatação de óbito']],
   [/\b(?:baseado|maconha|cocaina|crack)\b/, ['posse de drogas para consumo', 'tráfico de drogas']],
+  [/\b(?:motoca|motinha)\b/, ['motocicleta']],
+  [/\b(?:bike|magrela)\b/, ['bicicleta']],
+  [/\b(?:breja|cachaca|pinga)\b/, ['bebida alcoólica', 'influência de álcool']],
+  [/\b(?:furou|fugiu da|passou pela) blitz\b/, ['transpor bloqueio policial', 'desobedecer ordem de parada']],
+  [/\b(?:farol|lanterna) queimad[oa]\b/, ['defeito no sistema de iluminação']],
+  [/\bcrianca solta\b/, ['transportar criança sem observância das normas de segurança']],
+  [/\b(?:deu|meteu) fuga\b/, ['acompanhamento perseguição de veículo', 'desobedecer ordem de parada']],
 ];
 
 export function normalizarBusca(texto: string): string {

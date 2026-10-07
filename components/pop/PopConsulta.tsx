@@ -14,6 +14,7 @@ import RespostaFormatada from './RespostaFormatada';
 import FichaPop from './FichaPop';
 import type { Pop } from '@/lib/pop/parser';
 import ConsultaModes from '../ConsultaModes';
+import SearchSuggestions from '../SearchSuggestions';
 
 const EXEMPLOS = [
   'Como proceder na abordagem a pessoas?',
@@ -155,10 +156,19 @@ export default function PopConsulta() {
               enterKeyHint="search"
               placeholder="Ex: Como proceder na abordagem a veículo suspeito?"
               controlClassName="min-h-[124px] resize-y leading-relaxed"
-              hint="Use número, assunto ou parte da palavra. Enter consulta; Shift + Enter cria uma nova linha."
+              hint="Use número, assunto, parte da palavra ou termos como “baculejo”, “blitz” e “encontrado morto”. Enter consulta; Shift + Enter cria uma nova linha."
               acao={<BotaoVoz ditado={ditado} />}
             />
             <AvisoVoz ditado={ditado} />
+            <SearchSuggestions
+              query={pergunta}
+              fonte="pop"
+              disabled={carregando}
+              onSelect={(valor) => {
+                setPergunta(valor);
+                void perguntar(valor);
+              }}
+            />
           </div>
           <PrimaryButton
             type="submit"

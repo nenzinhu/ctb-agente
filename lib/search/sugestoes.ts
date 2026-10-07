@@ -1,0 +1,52 @@
+import { buscarFichas } from '@/lib/mbft/fichas';
+import { buscarPops } from '@/lib/pop/pops';
+import { extractArticleRef } from '@/lib/query/router';
+
+export type FonteSugestao = 'ctb' | 'pop';
+
+export interface SugestaoBusca {
+  valor: string;
+  tipo: 'Artigo CTB' | 'Infração MBFT' | 'POP';
+  titulo: string;
+  detalhe: string;
+}
+
+/** Fast local suggestions. Values are exact identifiers, so selecting one
+ * narrows the next consultation instead of silently guessing the result. */
+export function sugerirBusca(consulta: string, fonte: FonteSugestao, limite = 5): SugestaoBusca[] {
+  const texto = consulta.trim();
+  if (texto.length < 3 || limite <= 0) return [];
+
+  if (fonte === 'pop') {
+    return buscarPops(texto, limite).map((pop) => ({
+      valor: `POP ${pop.numero}`,
+      tipo: 'POP',
+      titulo: `POP ${pop.numero} — ${pop.titulo}`,
+      detalhe: pop.pagina ? `Procedimento oficial · página ${pop.pagina}` : 'Procedimento oficial',
+    }));
+  }
+
+  const sugestoes: SugestaoBusca[] = [];
+  const artigo = extractArticleRef(texto);
+  if (artigo) {
+    sugestoes.push({
+      valor: artigo,
+      tipo: 'Artigo CTB',
+      titulo: artigo.replace(/^art\./, 'Art.'),
+      detalhe: 'Abrir diretamente este dispositivo do CTB',
+    });
+  }
+
+  for (const ficha of buscarFichas(texto, limite)) {
+    sugestoes.push({
+      valor: ficha.codigo,
+      tipo: 'Infração MBFT',
+      titulo: `${ficha.codigo} — ${ficha.tipificacaoResumida}`,
+      detalhe: ficha.amparoLegal,
+    });
+  }
+
+  return sugestoes
+    .filter((item, indice, todos) => todos.findIndex((outro) => outro.valor === item.valor) === indice)
+    .slice(0, limite);
+}

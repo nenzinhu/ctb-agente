@@ -7,6 +7,7 @@ import TurnstileWidget, { turnstileConfigurado } from './TurnstileWidget';
 import BotaoVoz, { AvisoVoz, useDitado } from './BotaoVoz';
 import Field from './ui/Field';
 import PrimaryButton from './ui/PrimaryButton';
+import SearchSuggestions from './SearchSuggestions';
 
 interface ConsultaFormProps {
   autoFocus?: boolean;
@@ -107,11 +108,20 @@ export default function ConsultaForm({ autoFocus = false, exemplos = [] }: Consu
           enterKeyHint="search"
           rows={4}
           controlClassName="min-h-[124px] resize-y leading-relaxed"
-          hint="Use código, artigo, parte da palavra ou descreva a situação. Enter consulta; Shift + Enter cria uma nova linha."
+          hint="Use código, artigo, parte da palavra, abreviações ou gírias como “zap”, “bafom” e “doc atrasado”. Enter consulta; Shift + Enter cria uma nova linha."
           erro={erro?.doCampo ? erro.mensagem : null}
           acao={<BotaoVoz ditado={ditado} />}
         />
         <AvisoVoz ditado={ditado} />
+        <SearchSuggestions
+          query={query}
+          fonte="ctb"
+          disabled={loading}
+          onSelect={(valor) => {
+            setQuery(valor);
+            consultar(valor);
+          }}
+        />
       </div>
 
       <PrimaryButton

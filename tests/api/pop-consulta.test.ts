@@ -85,8 +85,8 @@ describe('POST /api/pop/consulta', () => {
     ]);
     expect(setCachedValue).toHaveBeenCalled();
     // Responses based on the previous ranking must be recomputed with new sources.
-    expect(getCachedValue).toHaveBeenCalledWith('pop:v3:como abordar uma pessoa?');
-    expect(setCachedValue.mock.calls[0][0]).toBe('pop:v3:como abordar uma pessoa?');
+    expect(getCachedValue).toHaveBeenCalledWith('pop:v4:como abordar uma pessoa?');
+    expect(setCachedValue.mock.calls[0][0]).toBe('pop:v4:como abordar uma pessoa?');
   });
 
   it('filters personal data before searching, logging or prompting', async () => {
