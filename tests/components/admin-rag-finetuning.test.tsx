@@ -6,7 +6,7 @@ describe('AdminRagFineTuning', () => {
     delete (global as { fetch?: typeof fetch }).fetch;
   });
 
-  it('explains RAG and fine-tuning separately and shows the live diagnosis', async () => {
+  it('explica RAG e ajuste fino separadamente e mostra o diagnóstico atual', async () => {
     global.fetch = jest.fn(async () => ({
       ok: true,
       json: async () => ({
@@ -14,7 +14,7 @@ describe('AdminRagFineTuning', () => {
         bancoEscrita: 'ok',
         embeddings: 'indisponivel',
         esquemaRag: 9,
-        avisos: ['Aplique a migration 010.', 'Defina MISTRAL_API_KEY.'],
+        avisos: ['Aplique a migração 010.', 'Defina MISTRAL_API_KEY.'],
       }),
     })) as unknown as typeof fetch;
 
@@ -27,7 +27,7 @@ describe('AdminRagFineTuning', () => {
 
     expect(await screen.findByText(/Busca textual no banco/i)).toBeInTheDocument();
     expect(screen.getByText(/Esquema RAG 9/i)).toBeInTheDocument();
-    expect(screen.getByText(/Aplique a migration 010/i)).toBeInTheDocument();
+    expect(screen.getByText(/Aplique a migração 010/i)).toBeInTheDocument();
     expect(screen.getByText(/Defina MISTRAL_API_KEY/i)).toBeInTheDocument();
   });
 });

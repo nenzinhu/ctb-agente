@@ -22,8 +22,8 @@ export default function ComprimirPdfPage() {
       <div className="alert-info">
         <Icone nome="info" className="mt-0.5 shrink-0 text-ds-ink" />
         <p>
-          Para colocar um PDF grande na base de consulta, o master também pode escolher <strong>Máxima — PDF só com o texto</strong>{' '}
-          direto no envio (Painel ou aba POP-PMSC): a conversão acontece no navegador antes do upload.
+          Para colocar um PDF grande na base de consulta, o administrador também pode escolher <strong>Máxima — PDF só com o texto</strong>{' '}
+          diretamente no envio (Painel ou aba POP-PMSC): a conversão acontece no navegador antes de anexar o arquivo.
         </p>
       </div>
     </main>

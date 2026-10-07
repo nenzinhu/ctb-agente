@@ -34,7 +34,7 @@ const EnquadramentoSchema = z.object({
  */
 export async function GET() {
   if (!(await validateSession())) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    return NextResponse.json({ error: 'Não autorizado.' }, { status: 401 });
   }
 
   if (!databaseConfigured) {
@@ -51,7 +51,7 @@ export async function GET() {
  */
 export async function POST(request: NextRequest) {
   if (!(await validateSession())) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    return NextResponse.json({ error: 'Não autorizado.' }, { status: 401 });
   }
 
   if (!databaseConfigured) {
@@ -88,7 +88,7 @@ export async function POST(request: NextRequest) {
     await invalidateResponseCache();
     return NextResponse.json({ enquadramento }, { status: 200 });
   } catch (error) {
-    console.error('Failed to upsert enquadramento:', error);
+    console.error('Falha ao salvar o enquadramento:', error);
     return NextResponse.json(
       { error: 'upsert_failed', message: 'Não foi possível salvar o enquadramento no banco.' },
       { status: 503 }
@@ -101,7 +101,7 @@ export async function POST(request: NextRequest) {
  */
 export async function DELETE(request: NextRequest) {
   if (!(await validateSession())) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    return NextResponse.json({ error: 'Não autorizado.' }, { status: 401 });
   }
 
   const codigo = request.nextUrl.searchParams.get('codigo');
@@ -121,7 +121,7 @@ export async function DELETE(request: NextRequest) {
     await invalidateResponseCache();
     return NextResponse.json({ ok: true }, { status: 200 });
   } catch (error) {
-    console.error('Failed to delete enquadramento:', error);
+    console.error('Falha ao excluir o enquadramento:', error);
     return NextResponse.json(
       { error: 'delete_failed', message: 'Não foi possível remover o enquadramento do banco.' },
       { status: 503 }

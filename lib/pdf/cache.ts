@@ -70,7 +70,7 @@ export async function setCachedPdf(key: string, pdf: Buffer, tema: string): Prom
     );
 
     if (error) {
-      console.warn('Failed to cache PDF:', error.message);
+      console.warn('Falha ao guardar o PDF na memória temporária:', error.message);
     }
   } catch (error) {
     console.warn('PDF cache write failed:', error);

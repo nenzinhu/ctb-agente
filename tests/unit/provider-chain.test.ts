@@ -10,7 +10,7 @@ describe('ProviderChain', () => {
 
   it('is built from the full registry', () => {
     const chain = new ProviderChain();
-    expect(chain.name).toBe('Provider Chain');
+    expect(chain.name).toBe('Cadeia de provedores');
     expect(chain.getModels).toBeDefined();
     expect(chain.generate).toBeDefined();
     expect(listProviders()).toHaveLength(PROVIDERS.length);

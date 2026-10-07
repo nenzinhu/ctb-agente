@@ -49,7 +49,7 @@ describe('POST /api/explicar', () => {
     expect(corpo.texto).toMatch(/O que é/);
     expect(generateRapido.mock.calls[0][0]).toMatch(/Exemplos do dia a dia/);
     expect(generateRapido.mock.calls[0][0]).toMatch(/516-91/);
-    expect(setCachedValue).toHaveBeenCalledWith('explicar:v2:ficha:516-91', expect.any(Object), expect.any(Object));
+    expect(setCachedValue).toHaveBeenCalledWith('explicar:v3:ficha:516-91', expect.any(Object), expect.any(Object));
   });
 
   it('explains a POP from the manual', async () => {

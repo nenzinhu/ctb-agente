@@ -27,8 +27,8 @@ const TEMPO_IA_MS = 18_000;
 
 function chaveCache(pergunta: string): string {
   // A new ranking must not reuse an answer grounded in the old source list.
-  // v6 discards answers cached before the global pt-BR output guard.
-  return `pop:v6:${pergunta.toLowerCase().replace(/\s+/g, ' ').trim()}`;
+  // v7 discards answers cached before the mixed-language pt-BR guard.
+  return `pop:v7:${pergunta.toLowerCase().replace(/\s+/g, ' ').trim()}`;
 }
 
 async function gerarResposta(
@@ -171,7 +171,7 @@ export async function responderPop(pergunta: string, ip: string, turnstileToken?
     return { resposta: final };
   } catch (error) {
     if (error instanceof MigrationPendingError) {
-      return { erro: 'migration_pending', mensagem: 'A base de POPs ainda não foi criada no banco (migration 008).' };
+      return { erro: 'migration_pending', mensagem: 'A base de POPs ainda não foi criada no banco (migração 008).' };
     }
     console.error('POP consultation failed:', error);
     await recordQuery(ip, filtrada, { tipo: 'pop', sucesso: false, tempoMs: Date.now() - inicio }, limite.registroId);

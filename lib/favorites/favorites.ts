@@ -79,7 +79,7 @@ function persist(lista: CartaoFavorito[]): boolean {
     store.setItem(FAVORITES_STORAGE_KEY, JSON.stringify(lista.slice(0, MAX_FAVORITES)));
     return true;
   } catch (err) {
-    console.error('Failed to save favorites:', err);
+    console.error('Falha ao salvar os favoritos:', err);
     return false;
   }
 }
@@ -101,7 +101,7 @@ export function getFavorites(): CartaoFavorito[] {
 
     return parsed.filter(isCartaoFavorito);
   } catch (err) {
-    console.error('Failed to read favorites:', err);
+    console.error('Falha ao ler os favoritos:', err);
     return [];
   }
 }
@@ -143,6 +143,6 @@ export function clearFavorites(): void {
   try {
     store.removeItem(FAVORITES_STORAGE_KEY);
   } catch (err) {
-    console.error('Failed to clear favorites:', err);
+    console.error('Falha ao limpar os favoritos:', err);
   }
 }

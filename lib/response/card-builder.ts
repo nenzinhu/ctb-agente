@@ -384,7 +384,7 @@ export async function getJurisprudencia(
     }
     return data as Jurisprudencia[];
   } catch (error) {
-    console.error('Failed to load jurisprudence:', error);
+    console.error('Falha ao carregar a jurisprudência:', error);
     return [];
   }
 }

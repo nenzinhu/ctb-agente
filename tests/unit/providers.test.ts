@@ -47,7 +47,7 @@ describe('OpenAICompatibleProvider', () => {
     try {
       const provider = new OpenAICompatibleProvider({ name: 'Groq', apiKey: 'k', baseUrl: 'https://a.test/v1' });
       await expect(provider.generate('oi', 'x', 8)).rejects.toThrow(
-        'Groq HTTP 404 (modelo não encontrado): The model `x` does not exist'
+        'Groq HTTP 404: modelo não encontrado'
       );
     } finally {
       (global as { fetch: unknown }).fetch = originalFetch;
@@ -94,7 +94,10 @@ describe('OpenAICompatibleProvider', () => {
       const provider = new OpenAICompatibleProvider({ name: 'X', apiKey: 'k', baseUrl: 'https://a.test/v1' });
       await provider.generate('Explique a infração.', 'm', 80);
       const body = JSON.parse(fetchMock.mock.calls[0][1]?.body as string);
-      expect(body.messages[0]).toEqual(expect.objectContaining({ role: 'system', content: expect.stringMatching(/português do Brasil.*não responda em inglês/i) }));
+      expect(body.messages[0]).toEqual(expect.objectContaining({
+        role: 'system',
+        content: expect.stringMatching(/português do Brasil.*não escreva.*em inglês.*não misture idiomas/i),
+      }));
       expect(body.messages[1]).toEqual({ role: 'user', content: 'Explique a infração.' });
     } finally {
       (global as { fetch: unknown }).fetch = originalFetch;

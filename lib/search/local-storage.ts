@@ -17,7 +17,7 @@ export function saveQuery(query: string): void {
     const updated = [limpa, ...filtered].slice(0, MAX_RECENT);
     localStorage.setItem(RECENT_QUERIES_KEY, JSON.stringify(updated));
   } catch (err) {
-    console.error('Failed to save query:', err);
+    console.error('Falha ao salvar a consulta:', err);
   }
 }
 
@@ -38,7 +38,7 @@ export function getRecentQueries(): string[] {
       .map((item) => item.trim().slice(0, MAX_QUERY_LENGTH))
       .filter(Boolean);
   } catch (err) {
-    console.error('Failed to get recent queries:', err);
+    console.error('Falha ao obter as consultas recentes:', err);
     return [];
   }
 }
@@ -47,6 +47,6 @@ export function clearRecentQueries(): void {
   try {
     localStorage.removeItem(RECENT_QUERIES_KEY);
   } catch (err) {
-    console.error('Failed to clear queries:', err);
+    console.error('Falha ao limpar as consultas:', err);
   }
 }

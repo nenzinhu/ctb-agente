@@ -230,7 +230,7 @@ async function getJurisprudencia(keywords: string[]): Promise<Jurisprudencia[]> 
       })
       .slice(0, 10);
   } catch (error) {
-    console.warn('Failed to load jurisprudence for the dossiê:', error);
+    console.warn('Falha ao carregar a jurisprudência para o dossiê:', error);
     return [];
   }
 }

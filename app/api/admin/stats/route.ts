@@ -13,7 +13,7 @@ export async function GET() {
     const isValid = await validateSession();
     if (!isValid) {
       return NextResponse.json(
-        { error: 'Unauthorized' },
+        { error: 'Não autorizado.' },
         { status: 401 }
       );
     }
@@ -39,7 +39,7 @@ export async function GET() {
     if (countError) {
       console.error('Supabase error:', countError);
       return NextResponse.json(
-        { error: 'Failed to fetch statistics' },
+        { error: 'Não foi possível carregar as estatísticas.' },
         { status: 500 }
       );
     }
@@ -54,7 +54,7 @@ export async function GET() {
     if (error) {
       console.error('Supabase error:', error);
       return NextResponse.json(
-        { error: 'Failed to fetch statistics' },
+        { error: 'Não foi possível carregar as estatísticas.' },
         { status: 500 }
       );
     }
@@ -83,7 +83,7 @@ export async function GET() {
   } catch (error) {
     console.error('Error fetching statistics:', error);
     return NextResponse.json(
-      { error: 'An error occurred while fetching statistics' },
+      { error: 'Ocorreu um erro ao carregar as estatísticas.' },
       { status: 500 }
     );
   }

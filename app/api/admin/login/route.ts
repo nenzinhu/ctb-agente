@@ -54,13 +54,13 @@ export async function POST(request: NextRequest) {
     await createSession(getAdminUsername());
 
     return NextResponse.json(
-      { message: 'Login successful', username: getAdminUsername() },
+      { message: 'Entrada realizada com sucesso.', username: getAdminUsername() },
       { status: 200 }
     );
   } catch (error) {
     console.error('Login error:', error);
     return NextResponse.json(
-      { error: 'An error occurred during login' },
+      { error: 'Não foi possível entrar no painel.' },
       { status: 500 }
     );
   }

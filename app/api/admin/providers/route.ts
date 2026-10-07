@@ -17,7 +17,7 @@ export const maxDuration = 60;
  */
 export async function GET(request: NextRequest) {
   if (!(await validateSession())) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    return NextResponse.json({ error: 'Não autorizado.' }, { status: 401 });
   }
 
   const catalogo = request.nextUrl.searchParams.get('modelos');
@@ -37,7 +37,7 @@ export async function GET(request: NextRequest) {
  */
 export async function POST(request: NextRequest) {
   if (!(await validateSession())) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    return NextResponse.json({ error: 'Não autorizado.' }, { status: 401 });
   }
 
   let providerId: string | undefined;
@@ -69,7 +69,7 @@ const PreferenciaSchema = z
  */
 export async function PUT(request: NextRequest) {
   if (!(await validateSession())) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    return NextResponse.json({ error: 'Não autorizado.' }, { status: 401 });
   }
 
   let body: unknown;

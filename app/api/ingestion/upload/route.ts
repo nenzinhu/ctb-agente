@@ -50,7 +50,7 @@ const UploadRequestSchema = z.discriminatedUnion('colecao', [
  */
 export async function POST(request: NextRequest): Promise<NextResponse> {
   if (!(await validateSession())) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    return NextResponse.json({ error: 'Não autorizado.' }, { status: 401 });
   }
 
   let body: unknown;
@@ -153,7 +153,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     }
     console.error('Upload error:', error);
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : 'Upload failed' },
+      { error: error instanceof Error ? error.message : 'Falha ao enviar o arquivo' },
       { status: 500 }
     );
   } finally {
@@ -161,7 +161,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       try {
         fs.unlinkSync(tempFilePath);
       } catch (cleanupError) {
-        console.error('Failed to clean up temp file:', cleanupError);
+        console.error('Falha ao excluir o arquivo temporário:', cleanupError);
       }
     }
 
@@ -170,7 +170,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     try {
       await supabaseAdmin.storage.from(DOCUMENTS_BUCKET).remove([storagePath]);
     } catch (cleanupError) {
-      console.error('Failed to remove temp storage object:', cleanupError);
+      console.error('Falha ao excluir o objeto temporário do armazenamento:', cleanupError);
     }
   }
 }
@@ -255,23 +255,23 @@ function respostaDaIndexacao(
 export async function GET(): Promise<NextResponse> {
   return NextResponse.json(
     {
-      name: 'Document Upload Endpoint',
+      name: 'Serviço de envio de documentos',
       version: '3.0.0',
       description:
-        'Indexes a document (PDF, DOC, DOCX, MD or TXT) already uploaded to Supabase Storage into the CTB base or the POP-PMSC base',
+        'Indexa na base do CTB ou dos POPs da PMSC um documento (PDF, DOC, DOCX, MD ou TXT) já enviado ao armazenamento do Supabase.',
       methods: {
         POST: {
-          description: 'Process a document previously uploaded via /api/admin/documents/upload-url',
+          description: 'Processa um documento enviado anteriormente por /api/admin/documents/upload-url.',
           accepts: 'application/json',
           fields: {
-            storagePath: 'Path returned by /api/admin/documents/upload-url',
-            fileName: 'Original file name',
-            colecao: 'ctb (default) | pop',
-            titulo: 'Optional display title',
-            normaId: 'CTB only: norm identifier the document belongs to',
-            documentType: 'CTB only: lei | resolucao | portaria | manual',
+            storagePath: 'Caminho retornado por /api/admin/documents/upload-url',
+            fileName: 'Nome original do arquivo',
+            colecao: 'ctb (padrão) | pop',
+            titulo: 'Título opcional para exibição',
+            normaId: 'Somente CTB: identificador da norma à qual o documento pertence',
+            documentType: 'Somente CTB: lei | resolucao | portaria | manual',
           },
-          maxFileSize: '50MB (enforced by the documentos-pendentes Storage bucket)',
+          maxFileSize: '50 MB (limite aplicado pelo recipiente documentos-pendentes do armazenamento)',
         },
       },
     },

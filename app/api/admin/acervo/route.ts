@@ -16,7 +16,7 @@ export const maxDuration = 60;
  */
 export async function GET() {
   if (!(await validateSession())) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    return NextResponse.json({ error: 'Não autorizado.' }, { status: 401 });
   }
 
   let migracaoPendente = false;
@@ -52,7 +52,7 @@ const IndexarSchema = z.object({ id: z.string().min(1) });
  */
 export async function POST(request: NextRequest) {
   if (!(await validateSession())) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    return NextResponse.json({ error: 'Não autorizado.' }, { status: 401 });
   }
   if (!databaseConfigured) {
     return NextResponse.json({ error: 'database_not_configured', message: 'Banco não configurado.' }, { status: 503 });

@@ -29,6 +29,10 @@ interface Preferencia {
 }
 
 const chave = (providerId: string, modelo: string) => `${providerId}::${modelo}`;
+const papelEmPortugues = (papel: string) => papel
+  .replace('resposta rapida', 'resposta rápida')
+  .replace('resposta analitica', 'resposta analítica')
+  .replace('embeddings', 'vetores semânticos');
 
 // How many pings "Testar todos" keeps in flight — free tiers rate-limit
 // bursts, and a 429 would be reported as a broken model.
@@ -231,7 +235,7 @@ export default function AdminProvedores() {
                 <div className="flex-1 min-w-[200px]">
                   <p className="font-semibold text-ds-text">{provider.nome}</p>
                   <p className="text-xs text-ds-subtle">
-                    {provider.papel} · variável {provider.envVar}
+                    {papelEmPortugues(provider.papel)} · variável {provider.envVar}
                     {provider.cadastro && (
                       <>
                         {' · '}

@@ -42,7 +42,7 @@ export default function Header() {
               visitor is anonymous caches the redirect to /admin/login in the
               client router, and the stale entry then swallows the navigation
               right after a successful login. */}
-          <Link href="/admin" prefetch={false} aria-label="Painel master" title="Painel master" className="header-pill">
+          <Link href="/admin" prefetch={false} aria-label="Painel administrativo" title="Painel administrativo" className="header-pill">
             <Icone nome="engrenagem" tamanho={17} />
             <span className="hidden lg:inline">Painel</span>
           </Link>

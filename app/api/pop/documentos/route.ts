@@ -24,7 +24,7 @@ export async function GET() {
     if (error instanceof MigrationPendingError) {
       return NextResponse.json({ documentos: [], migracaoPendente: true, bancoConfigurado: true });
     }
-    console.error('Failed to list POP documents:', error);
+    console.error('Falha ao listar os documentos de POP:', error);
     return NextResponse.json({ error: 'Não foi possível carregar a biblioteca de POPs.' }, { status: 500 });
   }
 }

@@ -33,8 +33,8 @@ export async function explicar(
   if (!ficha && !pop) return { erro: 'not_found' };
 
   // One explanation per sheet serves every agent: cached before the rate limit
-  // v2 discards explanations cached before the global pt-BR output guard.
-  const chave = `explicar:v2:${tipo}:${id}`;
+  // v3 discards explanations cached before the mixed-language pt-BR guard.
+  const chave = `explicar:v3:${tipo}:${id}`;
   const emCache = await getCachedValue<Explicacao>(chave);
   if (emCache) return { explicacao: { ...emCache, cache_hit: true } };
 

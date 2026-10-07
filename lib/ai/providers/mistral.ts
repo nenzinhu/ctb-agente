@@ -38,7 +38,7 @@ export class MistralProvider implements AIProvider {
     });
 
     if (!response.ok) {
-      throw new Error(`Mistral API error: ${response.statusText}`);
+      throw new Error(`Erro na API da Mistral: ${response.statusText || `HTTP ${response.status}`}`);
     }
 
     const data = await response.json();

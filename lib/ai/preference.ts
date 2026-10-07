@@ -51,7 +51,7 @@ export async function setAIPreference(value: AIPreference | null): Promise<void>
     : await supabaseAdmin.from('configuracoes').delete().eq('chave', PREFERENCE_KEY);
 
   if (error) {
-    throw new Error(`Failed to persist AI preference: ${error.message}`);
+    throw new Error(`Falha ao salvar a preferência de IA: ${error.message}`);
   }
   cached = { value, expiresAt: Date.now() + CACHE_MS };
 }

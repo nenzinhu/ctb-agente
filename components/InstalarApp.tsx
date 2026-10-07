@@ -47,7 +47,7 @@ export default function InstalarApp() {
     <button
       type="button"
       onClick={() => void instalar()}
-      aria-label="Instalar o app"
+      aria-label="Instalar o aplicativo"
       title="Instalar o CTB Agente neste aparelho"
       className="header-pill"
     >

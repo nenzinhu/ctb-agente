@@ -41,7 +41,7 @@ function sanitizeFileName(name: string): string {
  */
 export async function POST(request: NextRequest) {
   if (!(await validateSession())) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    return NextResponse.json({ error: 'Não autorizado.' }, { status: 401 });
   }
 
   if (!databaseConfigured) {
@@ -91,7 +91,7 @@ export async function POST(request: NextRequest) {
 
   const { data, error } = await supabaseAdmin.storage.from(DOCUMENTS_BUCKET).createSignedUploadUrl(path);
   if (error || !data) {
-    console.error('Failed to create signed upload URL:', error);
+    console.error('Falha ao criar o endereço assinado para envio:', error);
     return NextResponse.json(
       { error: 'signed_url_failed', message: 'Não foi possível preparar o envio.' },
       { status: 502 }

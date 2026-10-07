@@ -15,7 +15,7 @@ const BUDGET_MS = 40_000;
  */
 export async function POST() {
   if (!(await validateSession())) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    return NextResponse.json({ error: 'Não autorizado.' }, { status: 401 });
   }
   if (!databaseConfigured) {
     return NextResponse.json({ error: 'database_not_configured', message: 'Banco não configurado.' }, { status: 503 });

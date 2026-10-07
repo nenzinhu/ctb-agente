@@ -10,7 +10,7 @@ import { getCacheStats } from '@/lib/response/cache';
  */
 export async function GET(request: NextRequest) {
   if (!(await validateSession())) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    return NextResponse.json({ error: 'Não autorizado.' }, { status: 401 });
   }
 
   const dias = Number(request.nextUrl.searchParams.get('dias') ?? 30);

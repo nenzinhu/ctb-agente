@@ -62,14 +62,14 @@ export function validateFile(input: Partial<FileValidationInput>): void {
 
   // Check file exists
   if (!fs.existsSync(validated.filePath)) {
-    throw new Error(`File not found: ${validated.filePath}`);
+    throw new Error(`Arquivo não encontrado: ${validated.filePath}`);
   }
 
   // Check file size
   const stats = fs.statSync(validated.filePath);
   if (stats.size > validated.maxSizeBytes) {
     throw new Error(
-      `File too large: ${stats.size} bytes exceeds ${validated.maxSizeBytes} bytes`,
+      `Arquivo muito grande: ${stats.size} bytes excedem o limite de ${validated.maxSizeBytes} bytes`,
     );
   }
 
@@ -77,7 +77,7 @@ export function validateFile(input: Partial<FileValidationInput>): void {
   const ext = path.extname(validated.fileName).toLowerCase().slice(1);
   if (!validated.allowedTypes.includes(ext)) {
     throw new Error(
-      `File type not allowed: ${ext}. Allowed: ${validated.allowedTypes.join(', ')}`,
+      `Tipo de arquivo não permitido: ${ext}. Permitidos: ${validated.allowedTypes.join(', ')}`,
     );
   }
 }
@@ -163,7 +163,7 @@ async function parsePdf(bytes: Buffer): Promise<{ text: string; pageCount: numbe
     if (name === 'InvalidPDFException') {
       throw new Error('o arquivo não é um PDF válido ou está corrompido.');
     }
-    throw new Error(`Failed to parse PDF file: ${error instanceof Error ? error.message : String(error)}`);
+    throw new Error(`Falha ao interpretar o PDF: ${error instanceof Error ? error.message : String(error)}`);
   }
 
   try {
@@ -180,7 +180,7 @@ async function parsePdf(bytes: Buffer): Promise<{ text: string; pageCount: numbe
       } catch (pageError) {
         failedPages++;
         pages.push('');
-        console.warn(`Failed to extract text from page ${i}:`, pageError);
+        console.warn(`Falha ao extrair o texto da página ${i}:`, pageError);
       }
     }
 
@@ -253,7 +253,7 @@ export async function parseDocument(
     }
 
     if (!text || stripPageMarkers(text).length === 0) {
-      throw new Error('No text content extracted from file');
+      throw new Error('Nenhum conteúdo de texto foi extraído do arquivo');
     }
 
     return {

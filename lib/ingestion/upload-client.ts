@@ -140,7 +140,7 @@ export async function enviarDocumento(original: File, opcoes: EnvioOpcoes): Prom
   if (storageError) {
     if (/mime type/i.test(storageError.message ?? '')) {
       throw new Error(
-        'o armazenamento recusou este tipo de arquivo. Aplique a migration 008 (aceita .doc) ou envie em PDF/DOCX/TXT.'
+        'o armazenamento recusou este tipo de arquivo. Aplique a migração 008 (aceita .doc) ou envie em PDF/DOCX/TXT.'
       );
     }
     throw new Error(storageError.message || 'Falha ao enviar para o armazenamento.');

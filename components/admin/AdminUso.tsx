@@ -81,10 +81,10 @@ export default function AdminUso() {
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         <Tile titulo="Consultas" valor={String(dados.total)} />
-        <Tile titulo="Cache hit" valor={`${dados.taxaCache}%`} />
+        <Tile titulo="Uso da memória temporária" valor={`${dados.taxaCache}%`} />
         <Tile titulo="Falhas" valor={String(dados.falhas)} />
         <Tile
-          titulo="Entradas em cache"
+          titulo="Respostas na memória temporária"
           valor={`${dados.cache.validas}/${dados.cache.total}`}
         />
       </div>
@@ -104,7 +104,7 @@ export default function AdminUso() {
                   aria-hidden="true"
                 />
                 <span className="text-ds-subtle">
-                  {dia.consultas} consultas · {dia.cacheHits} do cache
+                  {dia.consultas} consultas · {dia.cacheHits} da memória temporária
                   {dia.falhas > 0 ? ` · ${dia.falhas} falhas` : ''}
                 </span>
               </li>

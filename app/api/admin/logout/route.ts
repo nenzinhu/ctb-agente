@@ -9,13 +9,13 @@ export async function POST() {
   try {
     await clearSession();
     return NextResponse.json(
-      { message: 'Logout successful' },
+      { message: 'Saída realizada com sucesso.' },
       { status: 200 }
     );
   } catch (error) {
     console.error('Logout error:', error);
     return NextResponse.json(
-      { error: 'An error occurred during logout' },
+      { error: 'Não foi possível sair do painel.' },
       { status: 500 }
     );
   }

@@ -11,7 +11,7 @@ export async function GET() {
 
     if (!isValid) {
       return NextResponse.json(
-        { error: 'No valid session' },
+        { error: 'Nenhuma sessão válida.' },
         { status: 401 }
       );
     }
@@ -23,7 +23,7 @@ export async function GET() {
   } catch (error) {
     console.error('Session validation error:', error);
     return NextResponse.json(
-      { error: 'Failed to validate session' },
+      { error: 'Não foi possível validar a sessão.' },
       { status: 500 }
     );
   }

@@ -34,7 +34,8 @@ async function escreverCapitulo(chain: ProviderChain, fonte: FonteApostila, id: 
   if (!item) return null;
   const titulo = tituloItem(fonte, item);
 
-  const chave = `apostila:${fonte}:${id}:${publico}`;
+  // v2 discards chapters cached before the mixed-language pt-BR guard.
+  const chave = `apostila:v2:${fonte}:${id}:${publico}`;
   const emCache = await getCachedValue<Capitulo>(chave);
   if (emCache) return emCache;
 

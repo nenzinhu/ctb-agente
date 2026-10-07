@@ -71,7 +71,7 @@ export async function setCachedValue(
       },
       { onConflict: 'hash_pergunta' }
     );
-    if (error) console.warn('Failed to cache value:', error.message);
+    if (error) console.warn('Falha ao guardar o valor na memória temporária:', error.message);
   } catch (error) {
     console.warn('Cache write failed:', error);
   }
@@ -144,7 +144,7 @@ export async function setCachedCard(
     );
 
     if (error) {
-      console.warn('Failed to cache response:', error.message);
+      console.warn('Falha ao guardar a resposta na memória temporária:', error.message);
     }
   } catch (error) {
     console.warn('Cache write failed:', error);

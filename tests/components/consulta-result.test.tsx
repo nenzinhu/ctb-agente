@@ -193,7 +193,7 @@ describe('ConsultaResult', () => {
 
   it('flags cached answers', () => {
     render(<ConsultaResult card={{ ...mockCard, cache_hit: true }} />);
-    expect(screen.getByText(/Resposta do cache/)).toBeInTheDocument();
+    expect(screen.getByText(/Resposta da memória temporária/)).toBeInTheDocument();
   });
 
   it('warns about a possible traffic crime on the technical view', () => {

@@ -88,7 +88,7 @@ export default function AdminRagFineTuning() {
             </div>
             <div className="rounded-xl border border-ds-line p-4">
               <Estado ok={health.embeddings === 'ok'}>Busca semântica</Estado>
-              <p className="mt-2 text-sm text-ds-subtle">Usa embeddings para encontrar sentidos próximos, mesmo com palavras diferentes.</p>
+              <p className="mt-2 text-sm text-ds-subtle">Usa vetores semânticos para encontrar sentidos próximos, mesmo com palavras diferentes.</p>
             </div>
             <div className="rounded-xl border border-ds-line p-4">
               <Estado ok={(health.esquemaRag ?? 0) >= 10}>Esquema RAG {health.esquemaRag ?? 'não detectado'}</Estado>
@@ -109,7 +109,7 @@ export default function AdminRagFineTuning() {
       <section className="card card-pad">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
-            <h2 className="text-xl font-bold text-ds-text">Fine-tuning: treinamento especializado</h2>
+            <h2 className="text-xl font-bold text-ds-text">Ajuste fino: treinamento especializado</h2>
             <p className="mt-1 text-sm text-ds-subtle">Estado atual: <strong>nenhum modelo foi treinado por este aplicativo</strong>.</p>
           </div>
           <span className="badge-neutral">Planejamento</span>
@@ -121,7 +121,7 @@ export default function AdminRagFineTuning() {
             <ul className="mt-2 list-disc space-y-1 pl-5 text-sm text-ds-subtle">
               <li>Formato, clareza e consistência das explicações.</li>
               <li>Classificação ou reordenação de consultas ambíguas, após rotulagem humana.</li>
-              <li>Vocabulário operacional recorrente que não foi resolvido por sinônimos ou embeddings.</li>
+              <li>Vocabulário operacional recorrente que não foi resolvido por sinônimos ou vetores semânticos.</li>
             </ul>
           </div>
           <div className="rounded-xl border border-ds-line p-4">
@@ -153,7 +153,7 @@ export default function AdminRagFineTuning() {
       <section className="card card-pad">
         <h2 className="text-lg font-bold text-ds-text">O que usar agora</h2>
         <p className="mt-1 text-sm text-ds-subtle">
-          Para melhorar a precisão hoje, priorize documentos corretos, migration 010, embeddings e feedback de consultas. Fine-tuning entra depois que houver dados revisados suficientes.
+          Para melhorar a precisão hoje, priorize documentos corretos, migração 010, representações vetoriais e retorno das consultas. O ajuste fino entra depois que houver dados revisados suficientes.
         </p>
         <div className="mt-4 flex flex-wrap gap-2">
           <Link href="/consulta" className="btn-secondary btn-sm">Testar CTB/MBFT</Link>

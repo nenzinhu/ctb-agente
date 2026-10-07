@@ -146,7 +146,7 @@ export async function finalizeDocument(id: string, trechos: number, trechosSemVe
     .from('documentos')
     .update({ trechos, trechos_sem_vetor: trechosSemVetor, atualizado_em: new Date().toISOString() })
     .eq('id', id);
-  if (error) console.error('Failed to finalize document counts:', error);
+  if (error) console.error('Falha ao finalizar as contagens do documento:', error);
 }
 
 /**
@@ -165,7 +165,7 @@ export async function replacePreviousVersions(novo: DocumentoRegistro): Promise<
 
   const { data, error } = await query.select('id');
   if (error) {
-    console.error('Failed to replace previous versions:', error);
+    console.error('Falha ao substituir as versões anteriores:', error);
     return 0;
   }
   return (data ?? []).length;

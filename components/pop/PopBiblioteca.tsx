@@ -83,13 +83,13 @@ export default function PopBiblioteca() {
 
       {dados?.migracaoPendente && (
         <p className="text-sm text-ds-subtle">
-          A base de POPs ainda não foi criada no banco. {master ? 'Aplique a migration 008 no Supabase.' : 'Fale com o master.'}
+          A base de POPs ainda não foi criada no banco. {master ? 'Aplique a migração 008 no Supabase.' : 'Fale com o administrador.'}
         </p>
       )}
 
       {dados && !dados.migracaoPendente && dados.documentos.length === 0 && (
         <p className="text-sm text-ds-subtle">
-          Nenhum POP indexado ainda.{master ? ' Anexe os arquivos abaixo.' : ' O master pode anexá-los pelo painel.'}
+          Nenhum POP indexado ainda.{master ? ' Anexe os arquivos abaixo.' : ' O administrador pode anexá-los pelo painel.'}
         </p>
       )}
 

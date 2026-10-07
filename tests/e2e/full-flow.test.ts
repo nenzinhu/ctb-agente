@@ -132,7 +132,7 @@ test.describe('CTB Agente — fluxo completo', () => {
       await page.getByRole('button', { name: /entrar|login/i }).click();
 
       await page.waitForURL(/\/admin$/);
-      await expect(page.getByRole('heading', { name: /Painel Master/ })).toBeVisible();
+      await expect(page.getByRole('heading', { name: /Painel administrativo/ })).toBeVisible();
       await expect(page.getByRole('button', { name: /Provedores de IA/ })).toBeVisible();
     });
   });

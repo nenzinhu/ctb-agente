@@ -160,7 +160,7 @@ export default function ConsultaResult({ card }: ConsultaResultProps) {
         <ul className="mt-4 space-y-1.5 text-sm text-ds-subtle">
           <li>• Confira o código (ex.: 516-91) ou o artigo (ex.: art. 165)</li>
           <li>• Descreva a situação com mais detalhes</li>
-          <li>• Peça ao master para cadastrar o documento no painel</li>
+          <li>• Peça ao administrador para cadastrar o documento no painel</li>
         </ul>
         <Link href="/?form=1" className="btn-primary mt-5">
           Fazer nova consulta
@@ -209,7 +209,7 @@ export default function ConsultaResult({ card }: ConsultaResultProps) {
       {card.cache_hit && (
         <p className="flex items-center gap-1.5 text-xs font-medium text-ds-subtle">
           <Icone nome="faisca" tamanho={14} />
-          Resposta do cache (base inalterada)
+          Resposta da memória temporária (base inalterada)
         </p>
       )}
 

@@ -42,7 +42,7 @@ describe('Document Parser', () => {
           filePath: path.join(tempDir, 'nonexistent.txt'),
           fileName: 'nonexistent.txt',
         });
-      }).toThrow('File not found');
+      }).toThrow('Arquivo não encontrado');
     });
 
     it('should reject unsupported file types', () => {
@@ -51,7 +51,7 @@ describe('Document Parser', () => {
 
       expect(() => {
         validateFile({ filePath: testFile, fileName: 'test.xyz' });
-      }).toThrow('File type not allowed');
+      }).toThrow('Tipo de arquivo não permitido');
     });
 
     it('should reject files exceeding size limit', () => {
@@ -66,7 +66,7 @@ describe('Document Parser', () => {
           fileName: 'large.txt',
           maxSizeBytes: 1024 * 1024, // 1MB limit
         });
-      }).toThrow('File too large');
+      }).toThrow('Arquivo muito grande');
     });
   });
 
@@ -287,7 +287,7 @@ Parágrafo único - Considera-se parada a imobilização do veículo por mais de
       // Attempt to parse empty file
       await expect(
         parseDocument(testFile, 'empty.txt'),
-      ).rejects.toThrow('No text content extracted');
+      ).rejects.toThrow('Nenhum conteúdo de texto foi extraído');
     });
   });
 

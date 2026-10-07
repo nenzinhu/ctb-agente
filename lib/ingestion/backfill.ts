@@ -152,7 +152,7 @@ export async function backfillEmbeddings(deadline: number): Promise<BackfillResu
       }
     }
   } finally {
-    await atualizarContagens(tocados).catch((error) => console.error('Failed to refresh counts:', error));
+    await atualizarContagens(tocados).catch((error) => console.error('Falha ao atualizar as contagens:', error));
   }
 
   return { atualizados, restantes: await countPendingEmbeddings() };

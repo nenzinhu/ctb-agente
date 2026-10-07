@@ -49,7 +49,7 @@ describe('/api/apostila', () => {
     expect(generateRapido).toHaveBeenCalledTimes(2);
     expect(generateRapido.mock.calls[0][0]).toMatch(/pessoas leigas/);
     expect(generateRapido.mock.calls[0][0]).toMatch(/Questões de fixação/);
-    expect(setCachedValue).toHaveBeenCalledWith('apostila:mbft:516-91:leigo', expect.any(Object), expect.any(Object));
+    expect(setCachedValue).toHaveBeenCalledWith('apostila:v2:mbft:516-91:leigo', expect.any(Object), expect.any(Object));
   });
 
   it('falls back to the official text when the models fail', async () => {

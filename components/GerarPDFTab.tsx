@@ -19,7 +19,7 @@ import { cx } from './ui/cx';
 const ETAPAS: Etapa[] = [
   { id: 'tema', rotulo: 'Tema' },
   { id: 'secoes', rotulo: 'Seções' },
-  { id: 'download', rotulo: 'Download' },
+  { id: 'download', rotulo: 'Baixar' },
 ];
 
 export default function GerarPDFTab() {
@@ -131,7 +131,7 @@ export default function GerarPDFTab() {
         </fieldset>
       </SectionCard>
 
-      <SectionCard numero={3} titulo="Download">
+      <SectionCard numero={3} titulo="Baixar">
         <div className="space-y-4">
           <div className="alert-info">
             <Icone nome="info" className="mt-0.5 shrink-0 text-ds-ink" />
@@ -152,7 +152,7 @@ export default function GerarPDFTab() {
           {cache && !erro && (
             <p className="flex items-center gap-1.5 text-sm font-semibold text-ds-success" role="status">
               <Icone nome="check" tamanho={16} />
-              {cache === 'HIT' ? 'Dossiê entregue do cache' : 'Dossiê gerado agora'}
+              {cache === 'HIT' ? 'Dossiê recuperado da memória temporária' : 'Dossiê gerado agora'}
             </p>
           )}
 

@@ -65,7 +65,7 @@ async function gerarEmPortugues(
 }
 
 export class ProviderChain implements AIProvider {
-  name = 'Provider Chain';
+  name = 'Cadeia de provedores';
   private elos: Elo[];
 
   constructor() {
@@ -97,7 +97,7 @@ export class ProviderChain implements AIProvider {
       try {
         allModels.push(...(await provider.getModels()));
       } catch (error) {
-        console.warn(`Failed to fetch models from ${provider.name}:`, error);
+        console.warn(`Falha ao consultar os modelos de ${provider.name}:`, error);
       }
     }
     return allModels;
@@ -123,7 +123,7 @@ export class ProviderChain implements AIProvider {
   ): Promise<{ texto: string; provedor: string; modelo: string }> {
     if (this.elos.length === 0) {
       throw new Error(
-        'Nenhum provedor de IA configurado — defina ao menos uma API key (ver .env.local.example).'
+        'Nenhum provedor de IA configurado — defina ao menos uma chave de API (consulte .env.local.example).'
       );
     }
 
@@ -134,11 +134,11 @@ export class ProviderChain implements AIProvider {
         return { texto, provedor: elo.provider.name, modelo };
       } catch (error) {
         lastError = error instanceof Error ? error : new Error(String(error));
-        console.warn(`Provider ${elo.provider.name} (${modelo}) failed, trying next...`, error);
+        console.warn(`O provedor ${elo.provider.name} (${modelo}) falhou; tentando o próximo.`, error);
       }
     }
 
-    throw new Error(`All providers failed. Last error: ${lastError?.message}`);
+    throw new Error(`Todos os provedores falharam. Último erro: ${lastError?.message}`);
   }
 
   /**
@@ -153,7 +153,7 @@ export class ProviderChain implements AIProvider {
     paralelos = 3
   ): Promise<{ texto: string; provedor: string; modelo: string }> {
     if (this.elos.length === 0) {
-      throw new Error('Nenhum provedor de IA configurado — defina ao menos uma API key (ver .env.local.example).');
+      throw new Error('Nenhum provedor de IA configurado — defina ao menos uma chave de API (consulte .env.local.example).');
     }
 
     const tentativas = this.tentativas(await getAIPreference());
@@ -166,7 +166,7 @@ export class ProviderChain implements AIProvider {
     try {
       return await primeiraQueResolver(tentativas.slice(0, paralelos).map(tentar));
     } catch (error) {
-      console.warn('First AI attempts failed, trying the rest in order...', error);
+      console.warn('As primeiras tentativas de IA falharam; tentando as demais em ordem.', error);
     }
 
     let lastError: unknown = null;
@@ -177,7 +177,7 @@ export class ProviderChain implements AIProvider {
         lastError = error;
       }
     }
-    throw new Error(`All providers failed. Last error: ${lastError instanceof Error ? lastError.message : 'sem resposta'}`);
+    throw new Error(`Todos os provedores falharam. Último erro: ${lastError instanceof Error ? lastError.message : 'sem resposta'}`);
   }
 }
 

@@ -225,7 +225,7 @@ export async function recordQuery(
       timestamp: new Date().toISOString(),
     });
   } catch (error) {
-    console.warn('Failed to record query usage:', error);
+    console.warn('Falha ao registrar o uso da consulta:', error);
   }
 }
 
@@ -294,7 +294,7 @@ export async function getUsageStats(dias = 30): Promise<UsoStats> {
         .sort((a, b) => b.falhas - a.falhas),
     };
   } catch (error) {
-    console.warn('Failed to load usage stats:', error);
+    console.warn('Falha ao carregar as estatísticas de uso:', error);
     return vazio;
   }
 }

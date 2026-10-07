@@ -27,7 +27,7 @@ const IpSchema = z.object({
  */
 export async function GET() {
   if (!(await validateSession())) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    return NextResponse.json({ error: 'Não autorizado.' }, { status: 401 });
   }
 
   const [settings, ipBloqueados] = await Promise.all([getSettings(), listBlockedIps()]);
@@ -49,7 +49,7 @@ export async function GET() {
  */
 export async function PUT(request: NextRequest) {
   if (!(await validateSession())) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    return NextResponse.json({ error: 'Não autorizado.' }, { status: 401 });
   }
 
   let body: unknown;
@@ -75,7 +75,7 @@ export async function PUT(request: NextRequest) {
 
     return NextResponse.json({ settings }, { status: 200 });
   } catch (error) {
-    console.error('Failed to update limits:', error);
+    console.error('Falha ao atualizar os limites:', error);
     return NextResponse.json({ error: 'update_failed' }, { status: 500 });
   }
 }
@@ -86,7 +86,7 @@ export async function PUT(request: NextRequest) {
  */
 export async function POST(request: NextRequest) {
   if (!(await validateSession())) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    return NextResponse.json({ error: 'Não autorizado.' }, { status: 401 });
   }
 
   let body: unknown;
@@ -105,7 +105,7 @@ export async function POST(request: NextRequest) {
     await blockIp(parsed.data.ip, parsed.data.motivo ?? '');
     return NextResponse.json({ ok: true, ipBloqueados: await listBlockedIps() }, { status: 200 });
   } catch (error) {
-    console.error('Failed to block IP:', error);
+    console.error('Falha ao bloquear o IP:', error);
     return NextResponse.json({ error: 'block_failed' }, { status: 500 });
   }
 }
@@ -115,7 +115,7 @@ export async function POST(request: NextRequest) {
  */
 export async function DELETE(request: NextRequest) {
   if (!(await validateSession())) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    return NextResponse.json({ error: 'Não autorizado.' }, { status: 401 });
   }
 
   const ip = request.nextUrl.searchParams.get('ip');
@@ -127,7 +127,7 @@ export async function DELETE(request: NextRequest) {
     await unblockIp(ip);
     return NextResponse.json({ ok: true, ipBloqueados: await listBlockedIps() }, { status: 200 });
   } catch (error) {
-    console.error('Failed to unblock IP:', error);
+    console.error('Falha ao desbloquear o IP:', error);
     return NextResponse.json({ error: 'unblock_failed' }, { status: 500 });
   }
 }

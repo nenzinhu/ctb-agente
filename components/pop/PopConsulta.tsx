@@ -233,7 +233,7 @@ export default function PopConsulta() {
               titulo="Resumo da IA"
               acao={
                 <span className="badge-neutral" title={resultado.modelo ?? undefined}>
-                  {resultado.cache_hit ? 'do cache' : 'gerada por IA'}
+                  {resultado.cache_hit ? 'da memória temporária' : 'gerada por IA'}
                   {resultado.geral ? ' · sem fonte nos POPs' : ' a partir dos POPs'}
                 </span>
               }
@@ -264,7 +264,7 @@ export default function PopConsulta() {
               <div>
                 <p className="font-semibold">Não encontrei isso nos POPs indexados.</p>
                 <p className="mt-1 text-ds-subtle">
-                  Tente outras palavras (ex.: o nome do procedimento) ou peça ao master para anexar o POP correspondente.
+                  Tente outras palavras (ex.: o nome do procedimento) ou peça ao administrador para anexar o POP correspondente.
                 </p>
               </div>
             </div>

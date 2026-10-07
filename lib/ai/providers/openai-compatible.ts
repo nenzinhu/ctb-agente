@@ -49,7 +49,19 @@ export async function describeHttpError(name: string, response: Response): Promi
   const motivo = { 401: 'chave inválida', 403: 'acesso negado', 404: 'modelo não encontrado', 429: 'limite de uso atingido' }[
     response.status
   ];
-  return `${name} HTTP ${response.status}${motivo ? ` (${motivo})` : ''}: ${detalhe.slice(0, 200) || response.statusText}`;
+  const explicacao = motivo ?? traduzirDetalheErro(detalhe, response.statusText);
+  return `${name} HTTP ${response.status}: ${explicacao}`;
+}
+
+function traduzirDetalheErro(detalhe: string, statusText: string): string {
+  const mensagem = `${detalhe || statusText}`.toLocaleLowerCase('en-US');
+  if (/api.?key|authentication|unauthorized|credential/.test(mensagem)) return 'chave de API ou autenticação inválida';
+  if (/rate.?limit|too many requests|quota/.test(mensagem)) return 'limite de uso atingido';
+  if (/model.*(not found|does not exist)|not found/.test(mensagem)) return 'recurso ou modelo não encontrado';
+  if (/timeout|timed out/.test(mensagem)) return 'tempo limite da solicitação excedido';
+  if (/bad request|invalid request/.test(mensagem)) return 'solicitação inválida';
+  if (/unavailable|overloaded/.test(mensagem)) return 'serviço temporariamente indisponível';
+  return 'erro retornado pelo provedor de IA';
 }
 
 export class OpenAICompatibleProvider implements AIProvider {
@@ -71,10 +83,10 @@ export class OpenAICompatibleProvider implements AIProvider {
 
   private requireBaseUrl(): void {
     if (!this.baseUrl) {
-      throw new Error(`${this.baseUrlEnvVar ?? 'base URL'} não configurada`);
+      throw new Error(`${this.baseUrlEnvVar ?? 'URL base'} não configurada`);
     }
     if (!this.apiKey) {
-      throw new Error(`${this.name}: API key não configurada`);
+      throw new Error(`${this.name}: chave de API não configurada`);
     }
   }
 

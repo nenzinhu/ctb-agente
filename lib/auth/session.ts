@@ -70,7 +70,7 @@ export async function getSession(): Promise<AdminSession | null> {
 
     return session;
   } catch (error) {
-    console.error('Failed to parse session cookie:', error);
+    console.error('Falha ao interpretar o cookie da sessão:', error);
     return null;
   }
 }

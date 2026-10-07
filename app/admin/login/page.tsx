@@ -74,7 +74,7 @@ export default function LoginPage() {
             Entrar no painel
           </h1>
         </div>
-        <p className="text-center text-sm text-ds-subtle">Acesso restrito ao master do CTB Agente.</p>
+        <p className="text-center text-sm text-ds-subtle">Acesso restrito ao administrador do CTB Agente.</p>
 
         {configured === false && (
           <div className="alert-warn mt-6" role="status">

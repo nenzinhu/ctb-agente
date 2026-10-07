@@ -52,7 +52,7 @@ async function gruposLegados(): Promise<GrupoLegado[]> {
  */
 export async function GET(request: NextRequest) {
   if (!(await validateSession())) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    return NextResponse.json({ error: 'Não autorizado.' }, { status: 401 });
   }
 
   // Without credentials the list is legitimately empty; a 500 here would
@@ -104,7 +104,7 @@ export async function GET(request: NextRequest) {
  */
 export async function DELETE(request: NextRequest) {
   if (!(await validateSession())) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    return NextResponse.json({ error: 'Não autorizado.' }, { status: 401 });
   }
   if (!databaseConfigured) {
     return NextResponse.json({ error: 'database_not_configured', message: 'Banco não configurado.' }, { status: 503 });

@@ -32,7 +32,7 @@ const ABAS: { id: Aba; label: string; icone: NomeIcone }[] = [
   { id: 'documentos', label: 'Base CTB', icone: 'livro' },
   { id: 'pop', label: 'POP-PMSC', icone: 'escudo' },
   { id: 'enquadramentos', label: 'Enquadramentos', icone: 'lista' },
-  { id: 'rag', label: 'RAG e Fine-tuning', icone: 'busca' },
+  { id: 'rag', label: 'RAG e ajuste fino', icone: 'busca' },
   { id: 'provedores', label: 'Provedores de IA', icone: 'faisca' },
   { id: 'uso', label: 'Uso', icone: 'relogio' },
   { id: 'limites', label: 'Limites', icone: 'engrenagem' },
@@ -123,7 +123,7 @@ export default function AdminDashboard() {
   return (
     <main className="page max-w-6xl">
       <TitleCard
-        titulo="Painel Master"
+        titulo="Painel administrativo"
         icone="engrenagem"
         subtitulo="Bases de documentos, enquadramentos, provedores de IA, uso e limites."
       >
@@ -170,7 +170,7 @@ export default function AdminDashboard() {
             )}
 
             <Secao
-              titulo="Acervo incluído no app"
+              titulo="Acervo incluído no aplicativo"
               descricao="Documentos que já vêm com o CTB Agente. Um clique coloca o texto na base de consulta."
             >
               <AcervoCard onIndexado={atualizar} />

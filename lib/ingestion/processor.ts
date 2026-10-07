@@ -149,8 +149,8 @@ async function indexChunks(
       const { data, error } = await supabaseAdmin.from(table).insert(rows).select('id');
 
       if (error) {
-        console.error(`Failed to insert chunks ${indexes[0]}-${indexes[indexes.length - 1]}:`, error);
-        failAll(indexes, `Database insert failed: ${error.message}`);
+        console.error(`Falha ao inserir os trechos ${indexes[0]}-${indexes[indexes.length - 1]}:`, error);
+        failAll(indexes, `Falha ao inserir no banco: ${error.message}`);
         return;
       }
 
@@ -162,8 +162,8 @@ async function indexChunks(
         failAll(indexes.slice(ids.length), 'Insert returned no ID');
       }
     } catch (error) {
-      console.error('Unexpected error processing batch:', error);
-      failAll(indexes, `Unexpected error: ${error instanceof Error ? error.message : String(error)}`);
+      console.error('Erro inesperado ao processar o lote:', error);
+      failAll(indexes, `Erro inesperado: ${error instanceof Error ? error.message : String(error)}`);
     }
   }
 
@@ -301,6 +301,6 @@ export function validateProcessingResult(result: ProcessingResult): void {
   }
 
   if (result.insertedCount === 0 && result.failedCount === 0) {
-    throw new Error('No chunks were processed');
+    throw new Error('Nenhum trecho foi processado');
   }
 }

@@ -23,7 +23,7 @@ export default function JurisprudenciaBloco({ decisoes }: JurisprudenciaBlocoPro
 
       {lista.length === 0 ? (
         <p className="mt-2 text-sm text-ds-subtle">
-          Nenhuma decisão cadastrada para este tema. O painel master pode cadastrar decisões
+          Nenhuma decisão cadastrada para este tema. O painel administrativo pode cadastrar decisões
           para enriquecer as próximas consultas.
         </p>
       ) : (

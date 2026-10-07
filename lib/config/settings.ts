@@ -100,7 +100,7 @@ export async function updateSettings(patch: Partial<AppSettings>): Promise<AppSe
     .upsert({ chave: SETTINGS_KEY, valor: next, atualizado_em: new Date().toISOString() });
 
   if (error) {
-    throw new Error(`Failed to persist settings: ${error.message}`);
+    throw new Error(`Falha ao salvar as configurações: ${error.message}`);
   }
 
   cached = { settings: next, expiresAt: Date.now() + SETTINGS_CACHE_MS };
@@ -190,7 +190,7 @@ export async function blockIp(ip: string, motivo = ''): Promise<void> {
     .upsert({ ip, motivo, criado_em: new Date().toISOString() });
 
   if (error) {
-    throw new Error(`Failed to block IP: ${error.message}`);
+    throw new Error(`Falha ao bloquear o IP: ${error.message}`);
   }
 }
 
@@ -202,6 +202,6 @@ export async function unblockIp(ip: string): Promise<void> {
   const { error } = await supabaseAdmin.from('ip_bloqueados').delete().eq('ip', ip);
 
   if (error) {
-    throw new Error(`Failed to unblock IP: ${error.message}`);
+    throw new Error(`Falha ao desbloquear o IP: ${error.message}`);
   }
 }

@@ -133,7 +133,7 @@ export default function DocumentList({ colecao, refreshTrigger, onChange }: Docu
         <div className="alert-warn">
           <Icone nome="base" className="mt-0.5 shrink-0 text-ds-warn" />
           <p>
-            <strong>Falta a migration 008.</strong> Rode <code>scripts/migrations-008-rag-indexacao.sql</code> no SQL Editor
+            <strong>Falta a migração 008.</strong> Rode <code>scripts/migrations-008-rag-indexacao.sql</code> no Editor SQL
             do Supabase para listar e gerenciar documentos, corrigir a busca e habilitar a base de POPs.
           </p>
         </div>
