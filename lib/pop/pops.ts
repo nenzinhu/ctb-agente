@@ -29,7 +29,12 @@ function indiceDosPops(pops: Pop[]): IndiceBusca<Pop> {
     indice = criarIndiceBusca(pops.map((pop) => ({
       item: pop,
       titulo: pop.titulo,
-      corpo: [pop.sequencia, pop.atividadesCriticas, pop.errosEvitar].flat().map((i) => i.texto).join(' '),
+      corpo: [
+        pop.execucao,
+        ...pop.material.map((i) => i.texto),
+        ...pop.fundamentacao.flatMap((norma) => [norma.norma, norma.especificacao]),
+        ...[pop.sequencia, pop.atividadesCriticas, pop.errosEvitar, pop.anexos].flat().map((i) => i.texto),
+      ].join(' '),
     })));
     indices.set(pops, indice);
   }

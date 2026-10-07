@@ -33,7 +33,10 @@ function indiceDasFichas(fichas: FichaMbft[]): IndiceBusca<FichaMbft> {
       titulo: f.tipificacaoResumida,
       // Do not rank a sheet for an offense mentioned only in "Quando NÃO
       // Autuar" or cross-references to a different code.
-      corpo: `${f.tipificacao} ${f.quandoAutuar.join(' ')}`,
+      // Official examples often use the same concrete wording an agent types
+      // at the roadside, while "Quando não autuar" stays excluded so an
+      // exception can never promote the wrong sheet.
+      corpo: `${f.tipificacao} ${f.quandoAutuar.join(' ')} ${f.exemplos.join(' ')}`,
     })));
     indices.set(fichas, indice);
   }

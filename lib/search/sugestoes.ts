@@ -22,7 +22,8 @@ export function sugerirBusca(consulta: string, fonte: FonteSugestao, limite = 5)
       valor: `POP ${pop.numero}`,
       tipo: 'POP',
       titulo: `POP ${pop.numero} — ${pop.titulo}`,
-      detalhe: pop.pagina ? `Procedimento oficial · página ${pop.pagina}` : 'Procedimento oficial',
+      detalhe: [pop.execucao ? `Execução: ${pop.execucao}` : 'Procedimento oficial', pop.pagina ? `página ${pop.pagina}` : null]
+        .filter(Boolean).join(' · '),
     }));
   }
 
@@ -42,7 +43,7 @@ export function sugerirBusca(consulta: string, fonte: FonteSugestao, limite = 5)
       valor: ficha.codigo,
       tipo: 'Infração MBFT',
       titulo: `${ficha.codigo} — ${ficha.tipificacaoResumida}`,
-      detalhe: ficha.amparoLegal,
+      detalhe: `${ficha.amparoLegal}${ficha.quandoAutuar[0] ? ` · Quando autuar: ${ficha.quandoAutuar[0].replace(/^\d+\.\s*/, '')}` : ''}`,
     });
   }
 

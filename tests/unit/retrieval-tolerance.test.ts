@@ -19,8 +19,11 @@ describe('recuperação no corpus oficial: variações da consulta', () => {
     ['sem cint', '518-51'],
     ['moto s/ capacete', '703-01'],
     ['moto sem capac', '703-01'],
+    ['garupa sem capacete', '704-81'],
     ['segurando celualr', '763-31'],
     ['dirigir segurando o zap', '763-31'],
+    ['celular na mão', '763-31'],
+    ['digitando no celular', '763-32'],
     ['Posso usar o celular no semáforo?', '763-31'],
     ['estac vaga idoso', '762-52'],
     ['vaga pcd', '762-51'],
@@ -28,6 +31,11 @@ describe('recuperação no corpus oficial: variações da consulta', () => {
     ['dar grau', '705-61'],
     ['empinando moto', '705-61'],
     ['estacionar na calçada', '545-21'],
+    ['retrovisor quebrado', '663-72'],
+    ['andando no acostamento', '581-97'],
+    ['ultrapassou pelo acostamento', '590-80'],
+    ['parou no cruzamento', '563-00'],
+    ['moto sem placa', '658-00'],
   ])('MBFT: %s encontra %s entre as três primeiras fichas', (consulta, codigo) => {
     expect(buscarFichas(consulta, 3).map((f) => f.codigo)).toContain(codigo);
   });

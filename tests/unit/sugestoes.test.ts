@@ -6,7 +6,7 @@ describe('sugestões instantâneas de busca', () => {
     expect(sugestoes.map((item) => item.valor)).toContain('763-32');
     expect(sugestoes.find((item) => item.valor === '763-32')).toEqual(expect.objectContaining({
       tipo: 'Infração MBFT',
-      detalhe: expect.stringMatching(/252/),
+      detalhe: expect.stringMatching(/252.*Quando autuar/),
     }));
   });
 
@@ -21,6 +21,7 @@ describe('sugestões instantâneas de busca', () => {
     expect(sugerirBusca('baculejo', 'pop')[0]).toEqual(expect.objectContaining({
       valor: 'POP 002',
       tipo: 'POP',
+      detalhe: expect.stringMatching(/Execução:|Procedimento oficial/),
     }));
   });
 

@@ -39,7 +39,7 @@ export const SINONIMOS: ReadonlyArray<readonly [RegExp, readonly string[]]> = [
   [/\b(?:batida de carro|colisao|abalroamento)\b/, ['acidente de trânsito']],
   [/\b(?:na |sobre a )?calcada\b/, ['passeio']],
   [/\b(?:furou|passou|avancou) (?:o )?(?:sinal|vermelho)\b/, ['avançar sinal vermelho semáforo']],
-  [/\b(?:deu|dar|passou sem dar) seta\b|\bsem seta\b/, ['deixar de indicar mudança de direção']],
+  [/\b(?:deu|dar|passou sem dar) seta\b|\bsem seta\b|\bpisca\b/, ['luz indicadora gesto de braço']],
   [/\b(?:doc|documento|licenciamento) atrasad[oa]\b/, ['veículo não licenciado']],
   [/\b(?:carro|veiculo) rebaixad[oa]\b/, ['característica alterada veículo']],
   [/\b(?:placa escondida|placa tampada|sem placa visivel)\b/, ['placa sem visibilidade legibilidade']],
@@ -52,6 +52,16 @@ export const SINONIMOS: ReadonlyArray<readonly [RegExp, readonly string[]]> = [
   [/\b(?:farol|lanterna) queimad[oa]\b/, ['defeito no sistema de iluminação']],
   [/\bcrianca solta\b/, ['transportar criança sem observância das normas de segurança']],
   [/\b(?:deu|meteu) fuga\b/, ['acompanhamento perseguição de veículo', 'desobedecer ordem de parada']],
+  [/\b(?:mexendo|digitando|teclando|rolando (?:a )?tela)\b/, ['manuseando telefone celular']],
+  [/\bcelular (?:na mao|segurado)\b/, ['segurando telefone celular']],
+  [/\b(?:garupa|carona) sem capacete\b/, ['passageiro sem capacete de segurança']],
+  [/\bsem retrovisor\b/, ['sem equipamento obrigatório']],
+  [/\bretrovisor (?:quebrado|solto|inoperante)\b/, ['equipamento obrigatório ineficiente inoperante']],
+  [/\b(?:andando|trafegando|rodando) (?:pelo|no) acostamento\b/, ['transitar veículo em acostamentos']],
+  [/\b(?:ultrapassou|cortou) pelo acostamento\b/, ['ultrapassar pelo acostamento']],
+  [/\b(?:parou|fechou) (?:no|o) cruzamento\b/, ['parar na área de cruzamento de vias']],
+  [/\b(?:furou|passou direto) (?:a )?preferencial\b/, ['deixar de dar preferência interseção']],
+  [/\b(?:moto|carro|veiculo) sem placa\b/, ['veículo sem placas de identificação']],
 ];
 
 export function normalizarBusca(texto: string): string {
