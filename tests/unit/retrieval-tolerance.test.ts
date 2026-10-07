@@ -9,7 +9,10 @@ describe('recuperação no corpus oficial: variações da consulta', () => {
     ['51691', '516-91'],
     ['5169-1', '516-91'],
     ['código 516 91', '516-91'],
+    ['código 516/91', '516-91'],
+    ['516.91', '516-91'],
     ['art. 165A', '757-90'],
+    ['165-A do CTB', '757-90'],
     ['recusa do bafômetro', '757-90'],
     ['rec bafom', '757-90'],
     ['s/ cinto', '518-51'],
@@ -31,6 +34,8 @@ describe('recuperação no corpus oficial: variações da consulta', () => {
 
   it.each([
     ['POP 002', '002'],
+    ['P.O.P. nº 002', '002'],
+    ['POP-003', '003'],
     ['pop 2', '002'],
     ['105.1.1', '105.1.1'],
     ['algmeas', '003'],
@@ -45,6 +50,7 @@ describe('recuperação no corpus oficial: variações da consulta', () => {
     ['violencia domest', '201.4.6'],
     ['batida de carro', '201.6.1'],
     ['perseguicao de veiculo', '006'],
+    ['encontrado morto', '201.4.22'],
   ])('POP: %s encontra %s entre os três primeiros procedimentos', (consulta, numero) => {
     expect(buscarPops(consulta, 3).map((p) => p.numero)).toContain(numero);
   });

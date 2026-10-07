@@ -1,5 +1,5 @@
 // Main handler for consultation queries
-import { codigoMbft, identifyQueryType, normalizeQuery } from '@/lib/query/router';
+import { codigoMbft, extractArticleRef, identifyQueryType, normalizeQuery } from '@/lib/query/router';
 import { filterPII } from '@/lib/query/pii-filter';
 import { hybridSearch } from '@/lib/search/hybrid';
 import {
@@ -209,14 +209,19 @@ async function buildAnswer(
   }
 
   if (tipo === 'artigo') {
+    const referencia = extractArticleRef(filtered);
     const dispositivo =
-      (await getDispositivoByNumero(normalized)) ?? (await findDispositivoByReferencia(filtered));
+      (referencia ? await getDispositivoByNumero(referencia) : await getDispositivoByNumero(normalized))
+      ?? (await findDispositivoByReferencia(filtered));
 
     if (dispositivo) {
       // Read in the law's order (165-A before 165-B), not by search score.
       const relacionadas = normalizeRelated(dispositivo, await searchDispositivos(filtered, 3)).sort(porOrdem);
       return buildCardFromNormas([dispositivo, ...relacionadas], consulta, 'artigo');
     }
+    // An explicit legal identifier is authoritative. Returning a semantically
+    // nearby article here would look precise while giving the wrong rule.
+    if (referencia) return emptyCard(consulta, 'artigo');
   }
 
   const resultados = await safeHybridSearch(filtered);

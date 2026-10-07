@@ -61,6 +61,8 @@ describe('consulta com identificador legal explícito', () => {
     const result = await handleConsulta('art. 999', '127.0.0.1');
     expect(result.sucesso).toBe(false);
     expect(result.card.ficha_ia).toBeFalsy();
+    expect(searchDispositivos).not.toHaveBeenCalled();
+    expect(hybridSearch).not.toHaveBeenCalled();
     expect(generateDetailed).not.toHaveBeenCalled();
   });
 });

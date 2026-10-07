@@ -38,6 +38,13 @@ export const SINONIMOS: ReadonlyArray<readonly [RegExp, readonly string[]]> = [
   [/\b(?:perseguicao|fuga de veiculo)\b/, ['perseguição de veículo', 'acompanhamento de veículo']],
   [/\b(?:batida de carro|colisao|abalroamento)\b/, ['acidente de trânsito']],
   [/\b(?:na |sobre a )?calcada\b/, ['passeio']],
+  [/\b(?:furou|passou|avancou) (?:o )?(?:sinal|vermelho)\b/, ['avançar sinal vermelho semáforo']],
+  [/\b(?:deu|dar|passou sem dar) seta\b|\bsem seta\b/, ['deixar de indicar mudança de direção']],
+  [/\b(?:doc|documento|licenciamento) atrasad[oa]\b/, ['veículo não licenciado']],
+  [/\b(?:carro|veiculo) rebaixad[oa]\b/, ['característica alterada veículo']],
+  [/\b(?:placa escondida|placa tampada|sem placa visivel)\b/, ['placa sem visibilidade legibilidade']],
+  [/\b(?:cadaver|corpo sem vida|encontrado morto)\b/, ['encontro de cadáver constatação de óbito']],
+  [/\b(?:baseado|maconha|cocaina|crack)\b/, ['posse de drogas para consumo', 'tráfico de drogas']],
 ];
 
 export function normalizarBusca(texto: string): string {

@@ -1,5 +1,5 @@
 // Unit tests for query routing
-import { codigoMbft, identifyQueryType, normalizeQuery } from '@/lib/query/router';
+import { codigoMbft, extractArticleRef, identifyQueryType, normalizeQuery, numeroPop } from '@/lib/query/router';
 
 describe('Query Router', () => {
   describe('identifyQueryType', () => {
@@ -22,6 +22,9 @@ describe('Query Router', () => {
       expect(identifyQueryType('§ 1º')).toBe('article');
       expect(identifyQueryType('inc')).toBe('article');
       expect(identifyQueryType('alínea')).toBe('article');
+      expect(identifyQueryType('art165-A')).toBe('article');
+      expect(identifyQueryType('165 do CTB')).toBe('article');
+      expect(identifyQueryType('CTB 181 inciso XVII')).toBe('article');
     });
 
     it('should identify situation query', () => {
@@ -64,10 +67,30 @@ describe('Query Router', () => {
 
 
 describe('codigoMbft', () => {
-  it.each(['516-91', '51691', '5169-1', '516 91', 'código 516–91'])('normalizes %s without changing its digits', (consulta) => {
+  it.each(['516-91', '51691', '5169-1', '516 91', '516/91', '516.91', 'código 516–91'])('normalizes %s without changing its digits', (consulta) => {
     expect(codigoMbft(consulta)).toBe('516-91');
   });
   it.each(['5-16-91', '516-912', '123456', 'ABC51691DEF', 'art. 165', 'POP 201.4.19'])('does not guess a code from %s', (consulta) => {
     expect(codigoMbft(consulta)).toBeNull();
+  });
+});
+
+describe('identificadores legais tolerantes', () => {
+  it.each([
+    ['art165', 'art. 165'],
+    ['artigo nº 165-A', 'art. 165-A'],
+    ['CTB 181 inciso XVII', 'art. 181 XVII'],
+    ['165 do CTB', 'art. 165'],
+  ])('normaliza artigo em %s', (consulta, esperado) => {
+    expect(extractArticleRef(consulta)).toBe(esperado);
+  });
+
+  it.each([
+    ['POP-003', '003'],
+    ['P.O.P. nº 003', '003'],
+    ['pop 3', '003'],
+    ['POP: 201.4.22', '201.4.22'],
+  ])('normaliza número de POP em %s', (consulta, esperado) => {
+    expect(numeroPop(consulta)).toBe(esperado);
   });
 });

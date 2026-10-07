@@ -8,7 +8,7 @@ import type { CartaoEstruturado } from './response-types';
 const DEFAULT_TTL_DIAS = 30;
 
 // Keep responses ranked by the previous lexical search out of the new cache.
-const chaveCartao = (consulta: string) => `consulta:v2:${consulta.trim()}`;
+const chaveCartao = (consulta: string) => `consulta:v3:${consulta.trim()}`;
 
 /**
  * Stable hash used as cache key

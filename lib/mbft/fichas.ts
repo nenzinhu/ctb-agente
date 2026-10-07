@@ -5,7 +5,7 @@ import path from 'node:path';
 import { normalizarBusca } from '@/lib/search/sinonimos';
 import { buscarNoIndice, criarIndiceBusca, type IndiceBusca } from '@/lib/search/lexical';
 import type { FichaMbft } from './parser';
-import { codigoMbft } from '@/lib/query/router';
+import { codigoMbft, extractArticleRef } from '@/lib/query/router';
 
 let cache: FichaMbft[] | null = null;
 
@@ -42,10 +42,12 @@ function indiceDasFichas(fichas: FichaMbft[]): IndiceBusca<FichaMbft> {
 
 /** "art. 181, XVII" → { artigo: "181", inciso: "xvii" } */
 function referencia(consulta: string): { artigo: string; resto: string[] } | null {
-  const m = normalizar(consulta).match(/\bart(?:igo)?\.?\s*(\d{2,3})(?:-?([a-z]))?\b(.*)$/);
+  const ref = extractArticleRef(consulta);
+  if (!ref) return null;
+  const m = ref.match(/^art\.\s*(\d{1,3}(?:-[a-z])?)(.*)$/i);
   if (!m) return null;
-  const resto = m[3].split(/[^a-z0-9º]+/).filter((p) => /^[ivxlc]+$|^\d+º?$/.test(p));
-  return { artigo: `${m[1]}${m[2] ? `-${m[2]}` : ''}`, resto };
+  const resto = m[2].toLowerCase().split(/[^a-z0-9º]+/).filter((p) => /^[ivxlcdm]+$|^\d+º?$/.test(p));
+  return { artigo: m[1].toLowerCase(), resto };
 }
 
 /**
