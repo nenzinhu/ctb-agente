@@ -12,8 +12,7 @@ interface TitleCardProps {
 }
 
 /**
- * Highlight card that opens a page: white, 2px green border, centered green
- * uppercase mono title with an icon.
+ * Centered page heading with an optional icon and supporting text.
  */
 export default function TitleCard({ titulo, icone, subtitulo, className, children }: TitleCardProps) {
   return (

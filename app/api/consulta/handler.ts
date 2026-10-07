@@ -1,5 +1,5 @@
 // Main handler for consultation queries
-import { identifyQueryType, normalizeQuery } from '@/lib/query/router';
+import { codigoMbft, identifyQueryType, normalizeQuery } from '@/lib/query/router';
 import { filterPII } from '@/lib/query/pii-filter';
 import { hybridSearch } from '@/lib/search/hybrid';
 import {
@@ -130,20 +130,26 @@ export async function handleConsulta(
       };
     }
 
-    const card = await buildAnswer(consulta, tipo);
+    const fichas = buscarFichas(consultaFiltrada);
+    // The bundled MBFT is the fastest and most authoritative answer for a
+    // recognized code/situation. Database RAG remains the fallback for CTB
+    // text, uploaded norms and queries outside the manual.
+    const card = fichas.length > 0 && tipo !== 'artigo'
+      ? emptyCard(consulta, tipo)
+      : await buildAnswer(consulta, tipo);
     const validated = validateCard(card);
     const tempo = Date.now() - startTime;
     let finalCard: CartaoEstruturado = { ...validated, tempo_ms: tempo, cache_hit: false };
 
     // The official MBFT sheets: a match there is an answer even when the
     // database has nothing for the query.
-    const fichas = buscarFichas(consultaFiltrada);
     if (fichas.length > 0) {
       finalCard = { ...finalCard, fichas_mbft: fichas, sucesso: true };
     }
 
-    // Nothing in the base nor in the MBFT: let the AI models draft the sheet (flagged as such).
-    if (!finalCard.sucesso) {
+    // For a situation without a match, AI may draft a clearly flagged sheet.
+    // Explicit codes/articles must never acquire a fabricated legal identifier.
+    if (!finalCard.sucesso && tipo === 'situacao') {
       const ia = await gerarFichaIA(consultaFiltrada);
       if (ia) finalCard = { ...finalCard, ficha_ia: ia.ficha, ficha_ia_modelo: ia.modelo, tempo_ms: Date.now() - startTime };
     }
@@ -191,10 +197,11 @@ async function buildAnswer(
   const normalized = normalizeQuery(filtered);
 
   if (tipo === 'codigo') {
-    const enquadramento = await getEnquadramentoByCodigo(filtered);
+    const enquadramento = await getEnquadramentoByCodigo(codigoMbft(filtered) ?? filtered);
     if (!enquadramento) {
-      const proximos = await searchDispositivos(filtered, 5);
-      return buildCardFromNormas(proximos, consulta, 'codigo');
+      // An explicit code is an exact identifier. The bundled MBFT is checked
+      // next; a nearby offense must never stand in for a missing code.
+      return emptyCard(consulta, 'codigo');
     }
 
     const normas = await getNormasForEnquadramento(enquadramento.amparo_legal, enquadramento.descricao);

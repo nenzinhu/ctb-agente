@@ -5,8 +5,27 @@
 import type { FichaMbft } from '@/lib/mbft/parser';
 import type { Jurisprudencia } from '@/lib/db/schema';
 import type { ProjetoDeLei } from '@/lib/pdf/projetos-de-lei';
+import type { FontePop } from '@/lib/rag/pop';
 
-export type TipoFonte = 'ctb' | 'mbft' | 'jurisprudencia' | 'projeto';
+export type TipoFonte = 'ctb' | 'mbft' | 'pop' | 'jurisprudencia' | 'projeto';
+export type ModoProfessor = 'auto' | 'ctb' | 'infracao' | 'pop' | 'simulador';
+
+export interface OpcaoEsclarecimento {
+  valor: string;
+  titulo: string;
+  descricao: string;
+}
+
+export interface ComparacaoInfracao {
+  codigo: string;
+  descricao: string;
+  amparo: string;
+  gravidade: string;
+  pontos: string;
+  penalidade: string;
+  medida: string;
+  quandoAutuar: string;
+}
 
 export interface FonteProfessor {
   n: number;
@@ -29,6 +48,7 @@ const corte = (t: string, limite: number) => (t.length > limite ? `${t.slice(0, 
 export function montarFontes(dados: {
   ctb: { numero_dispositivo: string; texto: string }[];
   fichas: FichaMbft[];
+  pops: FontePop[];
   jurisprudencia: Jurisprudencia[];
   projetos: ProjetoDeLei[];
 }): FonteProfessor[] {
@@ -47,6 +67,11 @@ export function montarFontes(dados: {
         ].join('\n'),
         1800
       ),
+    })),
+    ...dados.pops.map((p) => ({
+      tipo: 'pop' as const,
+      titulo: [p.titulo, p.secao, p.pagina ? `p. ${p.pagina}` : null].filter(Boolean).join(' · '),
+      texto: corte(p.texto, 1800),
     })),
     ...dados.jurisprudencia.map((j) => ({
       tipo: 'jurisprudencia' as const,
@@ -67,6 +92,7 @@ export function montarFontes(dados: {
 const ROTULO: Record<TipoFonte, string> = {
   ctb: 'LEI (CTB)',
   mbft: 'FICHA DO MBFT',
+  pop: 'PROCEDIMENTO OPERACIONAL PADRÃO',
   jurisprudencia: 'JURISPRUDÊNCIA CADASTRADA',
   projeto: 'PROJETO DE LEI EM TRAMITAÇÃO',
 };
@@ -87,18 +113,19 @@ export function promptProfessor(pergunta: string, historico: MensagemProfessor[]
     .join('\n');
 
   return [
-    'Você é o Professor Grão-Mestre em Trânsito: especialista no Código de Trânsito Brasileiro (Lei 9.503/97), no MBFT e na fiscalização de trânsito, e um ótimo didata.',
+    'Você é o Professor Grão-Mestre em Trânsito: especialista no Código de Trânsito Brasileiro (Lei 9.503/97), no MBFT, nos POPs da PMSC e na fiscalização de trânsito, e um ótimo didata.',
     'Responda à PERGUNTA do aluno usando as FONTES numeradas.',
     '',
     'Como responder:',
     '1. Comece pela resposta direta. Se for uma infração, diga qual é: código do MBFT, artigo, gravidade, pontos e penalidade.',
     '2. Explique para qualquer pessoa entender, com um exemplo concreto do dia a dia.',
-    '3. Cite a fonte de cada afirmação com o número entre colchetes, ex.: [1] ou [2][3].',
-    '4. Jurisprudência: mencione apenas as das FONTES. Se não houver nenhuma, diga "Não há jurisprudência cadastrada na base sobre isso."',
-    '5. Alterações da lei: use as notas do próprio texto do CTB (ex.: "Redação dada pela Lei nº ..."). Se não houver nota, não afirme que houve alteração.',
-    '6. Tramitação: mencione apenas os projetos de lei das FONTES, como PROPOSTA, nunca como lei vigente. Se não houver, diga que não foi encontrado projeto relacionado na consulta à Câmara.',
-    '7. Nunca invente artigos, códigos, valores, decisões ou números de projeto. Se as fontes não bastarem, diga o que falta.',
-    '8. Português do Brasil, tom de professor paciente, no máximo 25 linhas, listas com "- " quando ajudar.',
+    '3. Para uma dúvida operacional, indique o POP e resuma a sequência aplicável em passos curtos.',
+    '4. Cite a fonte de cada afirmação com o número entre colchetes, ex.: [1] ou [2][3].',
+    '5. Só fale de jurisprudência ou projetos de lei quando o aluno perguntar sobre isso. Mencione apenas os itens presentes nas FONTES.',
+    '6. Alterações da lei: use as notas do próprio texto do CTB (ex.: "Redação dada pela Lei nº ..."). Se não houver nota, não afirme que houve alteração.',
+    '7. Nunca misture uma ficha MBFT com um POP nem invente artigos, códigos, valores, decisões, procedimentos ou números de projeto.',
+    '8. Se as fontes não bastarem, diga objetivamente qual informação falta.',
+    '9. Português do Brasil, tom de professor paciente, no máximo 18 linhas, listas com "- " quando ajudar.',
     '',
     'FONTES:',
     blocoFontes,

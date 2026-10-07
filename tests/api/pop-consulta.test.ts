@@ -16,11 +16,11 @@ jest.mock('../../lib/ratelimit/turnstile', () => ({
   verifyTurnstile: async () => ({ ok: true, skipped: true }),
 }));
 
-const getCachedValue = jest.fn(async (): Promise<unknown> => null);
-const setCachedValue = jest.fn(async () => undefined);
+const getCachedValue = jest.fn(async (_chave: string): Promise<unknown> => null);
+const setCachedValue = jest.fn(async (..._args: unknown[]) => undefined);
 jest.mock('../../lib/response/cache', () => ({
-  getCachedValue: () => getCachedValue(),
-  setCachedValue: (...args: unknown[]) => setCachedValue(...(args as [])),
+  getCachedValue: (chave: string) => getCachedValue(chave),
+  setCachedValue: (...args: unknown[]) => setCachedValue(...args),
 }));
 
 let provedores: string[] = ['Groq'];
@@ -84,6 +84,9 @@ describe('POST /api/pop/consulta', () => {
       [2, 2],
     ]);
     expect(setCachedValue).toHaveBeenCalled();
+    // Responses based on the previous ranking must be recomputed with new sources.
+    expect(getCachedValue).toHaveBeenCalledWith('pop:v2:como abordar uma pessoa?');
+    expect(setCachedValue.mock.calls[0][0]).toBe('pop:v2:como abordar uma pessoa?');
   });
 
   it('filters personal data before searching, logging or prompting', async () => {
@@ -123,6 +126,16 @@ describe('POST /api/pop/consulta', () => {
     expect(corpo.semResposta).toBe(false);
     expect(corpo.resposta).toBe('1. Isole o local.');
     expect(generateDetailed.mock.calls[0][0]).toMatch(/não trazem a resposta/);
+  });
+
+  it('does not answer an absent explicit POP from another procedure or general AI', async () => {
+    // The search backend returned POP 1.01; it cannot stand in for POP 999.
+    const corpo = await (await perguntar('POP 999')).json();
+    expect(corpo.semResposta).toBe(true);
+    expect(corpo.geral).toBe(false);
+    expect(corpo.fontes).toEqual([]);
+    expect(generateDetailed).not.toHaveBeenCalled();
+    expect(setCachedValue).not.toHaveBeenCalled();
   });
 
   it('also falls back to the general answer when the excerpts do not answer', async () => {

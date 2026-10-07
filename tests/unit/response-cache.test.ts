@@ -2,20 +2,31 @@
 let linha: Record<string, unknown> | null = null;
 let erro: unknown = null;
 const updates: Record<string, unknown>[] = [];
+const inserts: Record<string, unknown>[] = [];
+let requestedHash: string | null = null;
 
 jest.mock('../../lib/db/client', () => {
   const chain: Record<string, unknown> = {};
   chain.select = () => chain;
-  chain.eq = () => chain;
+  chain.eq = (column: string, value: string) => {
+    if (column === 'hash_pergunta') requestedHash = value;
+    return chain;
+  };
   chain.update = (valor: Record<string, unknown>) => {
     updates.push(valor);
     return chain;
   };
-  chain.upsert = () => chain;
+  chain.upsert = (value: Record<string, unknown>) => {
+    inserts.push(value);
+    return chain;
+  };
   chain.delete = () => chain;
   chain.lt = () => chain;
   chain.limit = () => chain;
-  chain.maybeSingle = async () => ({ data: linha, error: erro });
+  chain.maybeSingle = async () => ({
+    data: linha?.hash_pergunta && linha.hash_pergunta !== requestedHash ? null : linha,
+    error: erro,
+  });
   chain.then = (resolve: (value: unknown) => unknown) =>
     Promise.resolve({ data: linha ? [linha] : [], error: erro }).then(resolve);
 
@@ -103,6 +114,16 @@ describe('getCachedCard', () => {
     await expect(getCachedCard('516-91')).resolves.toBeNull();
   });
 
+  it('does not reuse sources ranked before the search update', async () => {
+    linha = {
+      hash_pergunta: hashPergunta('516-91'),
+      resposta_completa: cartaoCache(),
+      ttl_dias: 30,
+      data_ultimo_acesso: new Date().toISOString(),
+    };
+    await expect(getCachedCard('516-91')).resolves.toBeNull();
+  });
+
   it('ignores a malformed payload', async () => {
     linha = {
       resposta_completa: 'não é um cartão',
@@ -125,16 +146,21 @@ describe('setCachedCard', () => {
   beforeEach(() => {
     erro = null;
     updates.length = 0;
+    inserts.length = 0;
   });
 
   it('does not cache failed answers', async () => {
     await setCachedCard('x', { ...cartaoCache(), sucesso: false });
-    expect(updates).toHaveLength(0);
+    expect(inserts).toHaveLength(0);
   });
 
   it('caches successful answers', async () => {
     await expect(setCachedCard('516-91', cartaoCache())).resolves.toBeUndefined();
-    expect(updates).toHaveLength(0); // upsert is mocked out; the call must not throw
+    expect(inserts).toHaveLength(1);
+    expect(inserts[0].pergunta_original).toBe('516-91');
+    expect(inserts[0].hash_pergunta).not.toBe(hashPergunta('516-91'));
+    linha = inserts[0];
+    await expect(getCachedCard('  516-91  ')).resolves.toMatchObject({ consulta: '516-91', cache_hit: true });
   });
 });
 

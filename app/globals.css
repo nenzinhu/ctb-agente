@@ -16,8 +16,11 @@
    Contrast (WCAG AA) was checked for every text/background pair in use.
    ========================================================================= */
 :root {
+  /* Native fonts keep startup/build independent of third-party font downloads. */
+  --font-sans: 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, Arial, sans-serif;
+  --font-mono: 'SFMono-Regular', Consolas, 'Liberation Mono', monospace;
   /* Palette */
-  --ds-bg: #eaf2fb; /* page background, ice blue */
+  --ds-bg: #f3f6f4;
   --ds-surface: #ffffff; /* cards and inputs */
   --ds-text: #1e293b; /* main text (slate-800) */
   --ds-border: #1e293b; /* thick borders */
@@ -25,7 +28,7 @@
   --ds-gold: #c8933f; /* gold: decorative details */
   --ds-accent: #fbbf24; /* highlight yellow */
   --ds-ink: #2b6cb0; /* links and information */
-  --ds-muted: #dbeafe; /* soft backgrounds */
+  --ds-muted: #f1f5f3; /* soft backgrounds */
   --ds-danger: #dc2626;
 
   /* Derived tokens the palette needs to stay readable */
@@ -60,12 +63,12 @@
   --ds-header-pill-border: rgb(255 255 255 / 0.3);
   --ds-on-header: #ffffff;
   --ds-on-header-soft: rgb(255 255 255 / 0.85);
-  --ds-header-shadow: 0 12px 40px rgb(0 0 0 / 0.22);
+  --ds-header-shadow: 0 3px 14px rgb(0 0 0 / 0.10);
 
   /* Shadows and radii */
-  --ds-shadow-color: rgb(30 41 59 / 0.55);
-  --ds-shadow-solid: 3px 3px 0 var(--ds-shadow-color);
-  --ds-shadow-pressed: 1px 1px 0 var(--ds-shadow-color);
+  --ds-shadow-color: rgb(30 41 59 / 0.06);
+  --ds-shadow-solid: 0 4px 20px var(--ds-shadow-color);
+  --ds-shadow-pressed: 0 1px 3px var(--ds-shadow-color);
   --ds-shadow-overlay: 0 12px 40px rgb(0 0 0 / 0.22);
   --ds-radius-control: 12px;
   --ds-radius-card: 16px;
@@ -197,9 +200,7 @@ body {
   isolation: isolate;
 }
 
-/* Layered page background, fixed to the viewport: two soft glows in opposite
-   corners, a 32px technical grid and a vignette. Gradients instead of
-   filter: blur(), so it is painted once and costs nothing while scrolling. */
+/* A restrained green wash keeps the search and source documents in focus. */
 body::before {
   content: '';
   position: fixed;
@@ -210,20 +211,7 @@ body::before {
   height: 100vh;
   height: 100lvh;
   pointer-events: none;
-  background-image:
-    radial-gradient(ellipse at center, transparent 45%, var(--ds-vignette) 100%),
-    linear-gradient(to right, var(--ds-grid-line) 1px, transparent 1px),
-    linear-gradient(to bottom, var(--ds-grid-line) 1px, transparent 1px),
-    radial-gradient(circle at 100% 0%, var(--ds-glow-red) 0, transparent min(28rem, 70vw)),
-    radial-gradient(circle at 0% 100%, var(--ds-blob-green) 0, transparent min(34rem, 80vw)),
-    linear-gradient(180deg, var(--ds-fundo-topo) 0%, var(--ds-fundo-meio) 45%, var(--ds-fundo-base) 100%);
-  background-size:
-    auto,
-    var(--ds-grid-size) var(--ds-grid-size),
-    var(--ds-grid-size) var(--ds-grid-size),
-    auto,
-    auto,
-    auto;
+  background-image: radial-gradient(ellipse at 85% 0%, color-mix(in srgb, var(--ds-primary) 6%, transparent), transparent 60%);
 }
 
 :focus-visible {
@@ -260,27 +248,27 @@ body::before {
     @apply mx-auto w-full max-w-3xl px-4 pb-16 pt-5 sm:px-6 sm:pt-8;
   }
 
-  /* ---- Type: IBM Plex Mono, uppercase, for titles, labels and controls ---- */
+  /* ---- Type: readable headings and compact mono reference labels ---- */
   .eyebrow {
     @apply font-mono text-xs font-semibold uppercase tracking-[0.12em] text-ds-gold-strong;
   }
   .page-title {
-    @apply font-mono text-xl font-bold uppercase tracking-[0.06em] text-ds-text sm:text-2xl;
+    @apply text-xl font-bold tracking-tight text-ds-text sm:text-2xl;
   }
   .page-lead {
     @apply mt-2 max-w-2xl text-base text-ds-subtle;
   }
   .section-title {
-    @apply flex min-w-0 items-center gap-2 font-mono text-sm font-bold uppercase tracking-[0.08em] text-ds-primary;
+    @apply flex min-w-0 items-center gap-2 text-base font-semibold text-ds-text;
   }
   .section-number {
     @apply text-ds-gold-strong;
   }
   .label {
-    @apply mb-1.5 block font-mono text-xs font-semibold uppercase tracking-[0.08em] text-ds-text;
+    @apply mb-2 block text-sm font-semibold text-ds-text;
   }
   .hint {
-    @apply mt-1.5 text-xs text-ds-subtle;
+    @apply mt-2 text-xs leading-relaxed text-ds-subtle;
   }
   .field-error {
     @apply mt-1.5 text-xs font-semibold text-ds-danger;
@@ -288,14 +276,14 @@ body::before {
 
   /* ---- Cards ---- */
   .card {
-    @apply rounded-card border-2 border-ds-border bg-ds-surface shadow-solid;
+    @apply rounded-card border border-ds-line bg-ds-surface shadow-solid;
   }
   .card-pad {
     @apply p-4 sm:p-6;
   }
-  /* Card title row with the 2px divider below it */
+  /* A subtle divider keeps the heading separate from the content. */
   .card-head {
-    @apply mb-4 flex flex-wrap items-center justify-between gap-x-3 gap-y-2 border-b-2 border-ds-text pb-3;
+    @apply mb-5 flex flex-wrap items-center justify-between gap-x-3 gap-y-2 border-b border-ds-line pb-4;
   }
   /* Soft box inside a card */
   .panel {
@@ -303,10 +291,10 @@ body::before {
   }
   /* Highlight / page title card */
   .card-destaque {
-    @apply rounded-control border-2 border-ds-primary bg-ds-surface px-4 py-4 text-center sm:px-6;
+    @apply rounded-card border border-ds-line bg-ds-surface px-4 py-5 text-center sm:px-6;
   }
   .card-destaque-titulo {
-    @apply inline-flex items-center justify-center gap-2 font-mono text-lg font-bold uppercase tracking-[0.1em] text-ds-primary sm:text-xl;
+    @apply inline-flex items-center justify-center gap-2 text-xl font-bold tracking-tight text-ds-primary sm:text-2xl;
   }
   .card-destaque-sub {
     @apply mx-auto mt-1.5 max-w-2xl text-sm text-ds-subtle;
@@ -314,9 +302,9 @@ body::before {
 
   /* ---- Buttons ---- */
   .btn {
-    @apply inline-flex min-h-[44px] items-center justify-center gap-2 rounded-control px-4 py-2.5 text-center font-mono text-sm font-semibold uppercase tracking-[0.06em] transition-[transform,box-shadow,background-color,border-color,color] duration-150 disabled:cursor-not-allowed disabled:opacity-50;
+    @apply inline-flex min-h-[44px] items-center justify-center gap-2 rounded-control px-4 py-2.5 text-center text-sm font-semibold transition-[transform,box-shadow,background-color,border-color,color] duration-150 disabled:cursor-not-allowed disabled:opacity-50;
   }
-  /* Solid offset shadow that "sinks" on press */
+  /* A small press movement provides feedback without shifting the layout. */
   .btn-primary {
     @apply btn bg-ds-primary text-ds-on-solid shadow-solid hover:bg-ds-primary-strong active:translate-x-0.5 active:translate-y-0.5 active:shadow-pressed;
   }
@@ -341,11 +329,47 @@ body::before {
 
   /* ---- Form controls ---- */
   .input {
-    @apply block min-h-[48px] w-full rounded-control border-2 border-ds-border-input bg-ds-surface px-3.5 py-2.5 font-mono text-base text-ds-text placeholder:text-ds-subtle/80 disabled:cursor-not-allowed disabled:opacity-60 aria-[invalid=true]:border-ds-danger;
+    @apply block min-h-[48px] w-full rounded-control border border-ds-border-input bg-ds-surface px-3.5 py-3 text-base text-ds-text placeholder:text-ds-subtle/80 disabled:cursor-not-allowed disabled:opacity-60 aria-[invalid=true]:border-ds-danger;
   }
 
   .chip {
-    @apply inline-flex min-h-[36px] max-w-full items-center gap-1.5 truncate rounded-full border-2 border-ds-border bg-ds-surface px-3 py-1 font-mono text-[13px] text-ds-text transition-colors hover:bg-ds-muted;
+    @apply inline-flex min-h-[36px] max-w-full items-center gap-1.5 truncate rounded-full border border-ds-line bg-ds-surface px-3 py-1 text-[13px] text-ds-text transition-colors hover:border-ds-primary hover:bg-ds-primary-soft disabled:cursor-not-allowed disabled:opacity-50;
+  }
+
+  /* ---- CTB and POP consultation workspace ---- */
+  .consultation-intro {
+    @apply pt-1 sm:pt-3;
+  }
+  .consultation-title {
+    @apply mt-2 text-3xl font-bold tracking-tight text-ds-text sm:text-[2.75rem] sm:leading-tight;
+  }
+  .consultation-lead {
+    @apply mt-2 max-w-2xl text-base leading-relaxed text-ds-subtle sm:text-lg;
+  }
+  .consultation-card {
+    @apply border-t-4 border-t-ds-primary;
+  }
+  .consultation-modes {
+    @apply mb-6 grid grid-cols-2 gap-2 rounded-control bg-ds-muted p-1.5;
+  }
+  .consultation-mode {
+    @apply flex min-w-0 items-center gap-2 rounded-lg border border-transparent px-2.5 py-3 text-sm text-ds-subtle transition-colors hover:bg-ds-surface sm:gap-3 sm:px-3;
+  }
+  .consultation-mode[aria-current='page'] {
+    @apply border-ds-primary bg-ds-surface text-ds-primary-strong shadow-sm;
+  }
+  .query-example {
+    @apply min-h-[40px] whitespace-normal text-left;
+    overflow-wrap: anywhere;
+  }
+  .search-guide {
+    @apply rounded-card border border-ds-line bg-ds-surface/70 p-5;
+  }
+  .search-guide-icon {
+    @apply grid h-9 w-9 shrink-0 place-items-center rounded-lg bg-ds-primary-soft text-ds-primary-strong;
+  }
+  .tool-link {
+    @apply block h-full rounded-card border border-ds-line bg-ds-surface p-5 transition-colors hover:border-ds-primary;
   }
 
   /* ---- Badges: solid fills keep >= 4.5:1 in both themes ---- */
@@ -473,7 +497,7 @@ body::before {
     border-color: var(--ds-header-pill-border);
   }
   .header-title {
-    @apply min-w-0 truncate font-mono text-[15px] font-bold uppercase leading-none tracking-[0.1em] sm:text-lg sm:tracking-[0.14em];
+    @apply min-w-0 truncate text-base font-bold leading-none tracking-tight sm:text-xl;
   }
   .header-sub {
     @apply mt-1 font-mono text-[10px] font-semibold uppercase leading-none tracking-[0.14em];
@@ -495,9 +519,7 @@ body::before {
   }
   .header-strip {
     border-top: 1px solid var(--ds-header-line);
-    /* Thin crest ribbon under the bar: red, orange, yellow */
-    border-bottom: 3px solid transparent;
-    border-image: linear-gradient(90deg, var(--ds-crest-red), var(--ds-crest-orange), var(--ds-crest-yellow)) 1;
+    border-bottom: 2px solid var(--ds-gold);
   }
   /* Phones: a horizontally scrolling strip, faded at the right edge */
   .nav-tabs {
@@ -509,7 +531,7 @@ body::before {
     display: none;
   }
   .nav-tab {
-    @apply flex min-h-[34px] items-center gap-1.5 whitespace-nowrap rounded-full border border-transparent px-3 font-mono text-[11px] font-semibold uppercase tracking-[0.08em] transition-colors;
+    @apply flex min-h-[36px] items-center gap-1.5 whitespace-nowrap rounded-lg border border-transparent px-3 text-xs font-medium transition-colors;
     color: var(--ds-on-header-soft);
   }
   .nav-tab:hover {

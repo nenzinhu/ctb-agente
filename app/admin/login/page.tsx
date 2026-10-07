@@ -1,13 +1,13 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Field from '@/components/ui/Field';
 import Icone from '@/components/ui/Icone';
 import PrimaryButton from '@/components/ui/PrimaryButton';
 
 /**
  * Admin login page
- * Username: set on the server (hardcoded)
+ * Username: set on the server with ADMIN_USERNAME
  * Password: hashed with bcrypt (from ADMIN_PASSWORD_HASH env var)
  */
 export default function LoginPage() {
@@ -15,6 +15,20 @@ export default function LoginPage() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [configured, setConfigured] = useState<boolean | null>(null);
+
+  useEffect(() => {
+    let active = true;
+    fetch('/api/admin/login', { cache: 'no-store' })
+      .then((response) => response.json())
+      .then((status) => {
+        if (!active) return;
+        if (typeof status.username === 'string') setUsername(status.username);
+        setConfigured(Boolean(status.configured));
+      })
+      .catch(() => active && setConfigured(null));
+    return () => { active = false; };
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -62,6 +76,13 @@ export default function LoginPage() {
         </div>
         <p className="text-center text-sm text-ds-subtle">Acesso restrito ao master do CTB Agente.</p>
 
+        {configured === false && (
+          <div className="alert-warn mt-6" role="status">
+            <Icone nome="alerta" className="mt-0.5 shrink-0 text-ds-warn" />
+            <p>O login ainda não foi configurado no servidor. Defina um hash bcrypt em <code className="font-mono">ADMIN_PASSWORD_HASH</code>.</p>
+          </div>
+        )}
+
         {error && (
           <div className="alert-error mt-6" role="alert">
             <Icone nome="alerta" className="mt-0.5 shrink-0 text-ds-danger" />
@@ -97,7 +118,7 @@ export default function LoginPage() {
             type="submit"
             carregando={isLoading}
             textoCarregando="Entrando…"
-            disabled={!username || !password}
+            disabled={configured === false || !username || !password}
             className="w-full text-base"
           >
             Entrar
@@ -105,7 +126,7 @@ export default function LoginPage() {
         </form>
 
         <p className="mt-6 text-center text-xs text-ds-subtle">
-          A senha é definida por <code className="font-mono">ADMIN_PASSWORD_HASH</code> no servidor.
+          O usuário vem de <code className="font-mono">ADMIN_USERNAME</code>; a senha usa um hash bcrypt em <code className="font-mono">ADMIN_PASSWORD_HASH</code>.
         </p>
       </div>
     </main>

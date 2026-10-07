@@ -6,18 +6,20 @@ import { referenciaDaFonte } from '@/lib/rag/pop';
 import TurnstileWidget, { turnstileConfigurado } from '../TurnstileWidget';
 import BotaoVoz, { AvisoVoz, useDitado } from '../BotaoVoz';
 import Field from '../ui/Field';
+import ResultChoices from '../ui/ResultChoices';
 import Icone from '../ui/Icone';
 import PrimaryButton from '../ui/PrimaryButton';
 import SectionCard from '../ui/SectionCard';
 import RespostaFormatada from './RespostaFormatada';
 import FichaPop from './FichaPop';
 import type { Pop } from '@/lib/pop/parser';
+import ConsultaModes from '../ConsultaModes';
 
 const EXEMPLOS = [
   'Como proceder na abordagem a pessoas?',
   'Quando é permitido o uso de algemas?',
   'Procedimento em acidente de trânsito com vítima',
-  'Como realizar a busca pessoal?',
+  'Revista pessoal',
 ];
 
 function Fonte({ fonte }: { fonte: FontePop }) {
@@ -53,21 +55,13 @@ function PopsEncontrados({ pops }: { pops: Pop[] }) {
   return (
     <div className="space-y-4">
       {pops.length > 1 && (
-        <div className="card card-pad">
-          <Field
-            as="select"
+          <ResultChoices
             label={`POPs encontrados (${pops.length})`}
             value={String(indice)}
-            onChange={(e) => setIndice(Number(e.target.value))}
-            hint="A pergunta corresponde a mais de um POP: escolha qual ver."
-          >
-            {pops.map((pop, i) => (
-              <option key={pop.numero} value={i}>
-                POP {pop.numero} — {pop.titulo.length > 70 ? `${pop.titulo.slice(0, 70)}…` : pop.titulo}
-              </option>
-            ))}
-          </Field>
-        </div>
+            onChange={(value) => setIndice(Number(value))}
+            hint="Confira os procedimentos encontrados e selecione qual deseja ler."
+            options={pops.map((pop, i) => ({ value: String(i), title: `POP ${pop.numero}`, description: pop.titulo }))}
+          />
       )}
       <FichaPop pop={atual} />
     </div>
@@ -101,6 +95,7 @@ export default function PopConsulta() {
   const ditado = useDitado({ onTranscricao: (texto) => setPergunta((atual) => (atual ? `${atual} ${texto}` : texto)) });
 
   const perguntar = async (entrada: string) => {
+    if (carregando) return;
     const texto = entrada.trim();
     if (texto.length < 3) return;
     if (turnstileConfigurado && !token) {
@@ -128,10 +123,12 @@ export default function PopConsulta() {
   };
 
   return (
-    <div className="space-y-5">
-      <SectionCard numero={1} titulo="Pergunta">
+    <div className="min-w-0 space-y-5">
+      <SectionCard titulo="Consultar procedimentos" icone="busca" className="consultation-card">
+        <ConsultaModes atual="pop" />
         <form
           className="space-y-4"
+          aria-busy={carregando}
           onSubmit={(e) => {
             e.preventDefault();
             void perguntar(pergunta);
@@ -143,18 +140,22 @@ export default function PopConsulta() {
               id="pergunta-pop"
               label="Sua pergunta sobre os POPs"
               value={pergunta}
-              onChange={(e) => setPergunta(e.target.value)}
+              onChange={(e) => {
+                setPergunta(e.target.value);
+                setErro(null);
+              }}
               onKeyDown={(e) => {
                 if (e.key === 'Enter' && !e.shiftKey && !e.nativeEvent.isComposing) {
                   e.preventDefault();
                   void perguntar(pergunta);
                 }
               }}
-              rows={3}
+              rows={4}
               maxLength={500}
               enterKeyHint="search"
-              placeholder="Ex: Qual a sequência de ações na abordagem a veículo suspeito?"
-              controlClassName="min-h-[96px] resize-none"
+              placeholder="Ex: Como proceder na abordagem a veículo suspeito?"
+              controlClassName="min-h-[124px] resize-y leading-relaxed"
+              hint="Use número, assunto ou parte da palavra. Enter consulta; Shift + Enter cria uma nova linha."
               acao={<BotaoVoz ditado={ditado} />}
             />
             <AvisoVoz ditado={ditado} />
@@ -170,14 +171,15 @@ export default function PopConsulta() {
             Perguntar
           </PrimaryButton>
           <TurnstileWidget onToken={setToken} />
-          <div>
-            <p className="label">Experimente</p>
+          <div className="border-t border-ds-line pt-4">
+            <p className="mb-2 text-xs font-semibold text-ds-subtle">Experimente uma pergunta</p>
             <div className="flex flex-wrap gap-2">
               {EXEMPLOS.map((exemplo) => (
                 <button
                   key={exemplo}
                   type="button"
-                  className="chip"
+                  className="chip query-example"
+                  disabled={carregando}
                   onClick={() => {
                     setPergunta(exemplo);
                     void perguntar(exemplo);
@@ -195,7 +197,7 @@ export default function PopConsulta() {
         <div className="card card-pad space-y-3" role="status" aria-live="polite">
           <p className="flex items-center gap-2 font-mono text-xs font-semibold uppercase tracking-[0.08em] text-ds-subtle">
             <span className="h-2 w-2 shrink-0 animate-pulse rounded-full bg-ds-primary" aria-hidden />
-            {segundos < 2 ? 'Buscando nos POPs…' : 'Gerando a resposta com IA…'}
+            {segundos < 2 ? 'Buscando nos POPs…' : 'Preparando a resposta…'}
             {segundos >= 2 && <span aria-hidden>{segundos}s</span>}
           </p>
           <div className="skeleton h-5 w-1/3" />

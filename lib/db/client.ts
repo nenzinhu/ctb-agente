@@ -14,6 +14,11 @@ export const databaseConfigured = Boolean(
   process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
 );
 
+/** Server-side writes and private RAG tables require the service-role binding. */
+export const databaseAdminConfigured = Boolean(
+  process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.SUPABASE_SERVICE_ROLE_KEY
+);
+
 export const supabase = createClient(supabaseUrl, supabaseKey);
 
 // For server-side operations (with service role key)

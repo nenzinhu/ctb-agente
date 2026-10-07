@@ -1,6 +1,6 @@
 // GET /api/health — liveness probe used by the deployment guide and CI smoke tests
 import { NextResponse } from 'next/server';
-import { databaseConfigured, supabase } from '@/lib/db/client';
+import { databaseAdminConfigured, databaseConfigured, supabase } from '@/lib/db/client';
 import { listProviders } from '@/lib/ai/providers/registry';
 import { getSettings } from '@/lib/config/settings';
 
@@ -11,6 +11,8 @@ interface HealthPayload {
   timestamp: string;
   versao: string;
   banco: 'ok' | 'indisponivel';
+  bancoEscrita: 'ok' | 'indisponivel';
+  esquemaRag: number | null;
   configuracoes: { consultas_por_hora: number; turnstile_ativo: boolean };
   provedoresConfigurados: string[];
   provedoresAusentes: string[];
@@ -38,6 +40,16 @@ async function checkVectorRpc(): Promise<boolean> {
   }
 }
 
+async function checkRagSchema(): Promise<number | null> {
+  try {
+    const { data, error } = await supabase.rpc('rag_schema_version');
+    if (error || typeof data !== 'number') return null;
+    return data;
+  } catch {
+    return null;
+  }
+}
+
 /**
  * GET /api/health
  * @returns 200 when the app is up; `degraded` when the database is unreachable
@@ -46,6 +58,7 @@ export async function GET() {
   let banco: 'ok' | 'indisponivel' = 'ok';
   let cache: 'ok' | 'indisponivel' = 'ok';
   let embeddings: 'ok' | 'indisponivel' = process.env.MISTRAL_API_KEY ? 'ok' : 'indisponivel';
+  let esquemaRag: number | null = null;
   const avisos: string[] = [];
 
   if (!databaseConfigured) {
@@ -77,6 +90,16 @@ export async function GET() {
     if (!rpcOk) {
       avisos.push('Busca vetorial indisponível: aplique scripts/migrations-003-search-functions.sql.');
     }
+
+    esquemaRag = await checkRagSchema();
+    if (esquemaRag === null || esquemaRag < 10) {
+      avisos.push('RAG sem o ajuste de precisão e prefixos: aplique scripts/migrations-010-rag-precision-performance.sql.');
+    }
+  }
+
+
+  if (!databaseAdminConfigured) {
+    avisos.push('Escritas administrativas indisponíveis: defina SUPABASE_SERVICE_ROLE_KEY.');
   }
 
   if (embeddings === 'indisponivel') {
@@ -89,10 +112,12 @@ export async function GET() {
   const settings = await getSettings();
 
   const payload: HealthPayload = {
-    status: banco === 'ok' ? 'ok' : 'degraded',
+    status: banco === 'ok' && databaseAdminConfigured ? 'ok' : 'degraded',
     timestamp: new Date().toISOString(),
     versao: process.env.VERCEL_GIT_COMMIT_SHA?.slice(0, 7) ?? 'local',
     banco,
+    bancoEscrita: databaseAdminConfigured ? 'ok' : 'indisponivel',
+    esquemaRag,
     cache,
     embeddings,
     configuracoes: settings,

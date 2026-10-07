@@ -82,7 +82,7 @@ export default function ConsultaForm({ autoFocus = false, exemplos = [] }: Consu
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
+    <form onSubmit={handleSubmit} className="space-y-4" aria-busy={loading}>
       <div>
         <Field
           as="textarea"
@@ -90,7 +90,10 @@ export default function ConsultaForm({ autoFocus = false, exemplos = [] }: Consu
           ref={campoRef}
           label="Sua consulta"
           value={query}
-          onChange={(e) => setQuery(e.target.value)}
+          onChange={(e) => {
+            setQuery(e.target.value);
+            setErro(null);
+          }}
           onKeyDown={(e) => {
             // Enter sends, Shift+Enter breaks the line (like a chat).
             if (e.key === 'Enter' && !e.shiftKey && !e.nativeEvent.isComposing) {
@@ -98,13 +101,13 @@ export default function ConsultaForm({ autoFocus = false, exemplos = [] }: Consu
               consultar(query);
             }
           }}
-          placeholder="Ex: 516-91 ou art. 165 ou dirigir acima do limite de velocidade"
+          placeholder="Ex: 516-91, art. 165 ou motorista mexendo no celular"
           maxLength={LIMITE_CONSULTA}
           autoFocus={autoFocus}
           enterKeyHint="search"
-          rows={3}
-          controlClassName="min-h-[96px] resize-none"
-          hint="Código MBFT, artigo ou a situação com suas palavras. Enter para consultar."
+          rows={4}
+          controlClassName="min-h-[124px] resize-y leading-relaxed"
+          hint="Use código, artigo, parte da palavra ou descreva a situação. Enter consulta; Shift + Enter cria uma nova linha."
           erro={erro?.doCampo ? erro.mensagem : null}
           acao={<BotaoVoz ditado={ditado} />}
         />
@@ -131,14 +134,15 @@ export default function ConsultaForm({ autoFocus = false, exemplos = [] }: Consu
       )}
 
       {exemplos.length > 0 && (
-        <div className="pt-1">
-          <p className="label">Experimente</p>
+        <div className="border-t border-ds-line pt-4">
+          <p className="mb-2 text-xs font-semibold text-ds-subtle">Experimente uma consulta</p>
           <div className="flex flex-wrap gap-2">
             {exemplos.map((exemplo) => (
               <button
                 key={exemplo}
                 type="button"
-                className="chip"
+                className="chip query-example"
+                disabled={loading}
                 onClick={() => {
                   setQuery(exemplo);
                   consultar(exemplo);

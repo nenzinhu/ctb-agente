@@ -1,17 +1,6 @@
 import type { Metadata, Viewport } from 'next';
-import { IBM_Plex_Mono, IBM_Plex_Sans } from 'next/font/google';
 import './globals.css';
 import Header from '@/components/Header';
-
-// Running text in Plex Sans (variable, one file); titles, labels, controls
-// and navigation in Plex Mono.
-const plexSans = IBM_Plex_Sans({ subsets: ['latin'], display: 'swap', variable: '--font-sans' });
-const plexMono = IBM_Plex_Mono({
-  subsets: ['latin'],
-  weight: ['400', '600', '700'],
-  display: 'swap',
-  variable: '--font-mono',
-});
 
 export const metadata: Metadata = {
   title: { default: 'CTB Agente', template: '%s · CTB Agente' },
@@ -49,7 +38,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="pt-BR" className={`${plexSans.variable} ${plexMono.variable}`} suppressHydrationWarning>
+    <html lang="pt-BR" suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: TEMA_SALVO }} />
       </head>

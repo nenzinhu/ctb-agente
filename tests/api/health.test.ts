@@ -5,10 +5,14 @@
 const respostas: Record<string, { error: unknown; count?: number }> = {};
 const rpcRespostas: Record<string, { error: unknown; data?: unknown }> = {};
 let dbConfigurado = true;
+let dbAdminConfigurado = true;
 
 jest.mock('../../lib/db/client', () => ({
   get databaseConfigured() {
     return dbConfigurado;
+  },
+  get databaseAdminConfigured() {
+    return dbAdminConfigurado;
   },
   supabase: {
     from: (tabela: string) => {
@@ -23,7 +27,7 @@ jest.mock('../../lib/db/client', () => ({
     rpc: (fn: string) => {
       const chain: Record<string, unknown> = {};
       chain.then = (resolve: (value: unknown) => unknown) =>
-        Promise.resolve(rpcRespostas[fn] ?? { error: null, data: [] }).then(resolve);
+        Promise.resolve(rpcRespostas[fn] ?? { error: null, data: fn === 'rag_schema_version' ? 10 : [] }).then(resolve);
       return chain;
     },
   },
@@ -35,6 +39,7 @@ import { GET } from '@/app/api/health/route';
 describe('GET /api/health', () => {
   beforeEach(() => {
     dbConfigurado = true;
+    dbAdminConfigurado = true;
     for (const chave of Object.keys(respostas)) delete respostas[chave];
     for (const chave of Object.keys(rpcRespostas)) delete rpcRespostas[chave];
   });
@@ -46,9 +51,23 @@ describe('GET /api/health', () => {
     const corpo = await resposta.json();
     expect(corpo.status).toBe('ok');
     expect(corpo.banco).toBe('ok');
+    expect(corpo.bancoEscrita).toBe('ok');
+    expect(corpo.esquemaRag).toBe(10);
     expect(corpo).toHaveProperty('versao');
     expect(Array.isArray(corpo.provedoresAusentes)).toBe(true);
     expect(corpo.configuracoes).toMatchObject({ consultas_por_hora: expect.any(Number) });
+  });
+
+  it('warns when migration 010 or the service role is missing', async () => {
+    dbAdminConfigurado = false;
+    rpcRespostas.rag_schema_version = { error: { code: 'PGRST202' } };
+    const resposta = await GET();
+    const corpo = await resposta.json();
+    expect(resposta.status).toBe(503);
+    expect(corpo.status).toBe('degraded');
+    expect(corpo.bancoEscrita).toBe('indisponivel');
+    expect(corpo.avisos.join(' ')).toMatch(/migrations-010/);
+    expect(corpo.avisos.join(' ')).toMatch(/SUPABASE_SERVICE_ROLE_KEY/);
   });
 
   it('exposes the embeddings status and warnings array', async () => {

@@ -66,7 +66,7 @@ jest.mock('../../lib/db/client', () => {
 });
 
 import { NextRequest } from 'next/server';
-import { POST as login } from '@/app/api/admin/login/route';
+import { GET as loginStatus, POST as login } from '@/app/api/admin/login/route';
 import { POST as logout } from '@/app/api/admin/logout/route';
 import { GET as session } from '@/app/api/admin/session/route';
 import { GET as documentos } from '@/app/api/admin/documents/route';
@@ -130,12 +130,22 @@ describe('Admin API', () => {
         );
 
         expect(resposta.status).toBe(503);
-        expect((await resposta.json()).error).toBe('admin_not_configured');
+        expect((await resposta.json()).error).toBe('missing_password_hash');
         expect(cookieStore.has(COOKIE)).toBe(false);
       } finally {
         // @ts-expect-error restoring the original value
         process.env.NODE_ENV = original;
       }
+    });
+  });
+
+  describe('GET /api/admin/login', () => {
+    it('reports the configured username without exposing secrets', async () => {
+      const resposta = await loginStatus();
+      const corpo = await resposta.json();
+      expect(corpo).toMatchObject({ configured: true, username: 'nenzinhu' });
+      expect(corpo).not.toHaveProperty('password');
+      expect(corpo).not.toHaveProperty('passwordHash');
     });
   });
 

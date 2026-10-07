@@ -9,6 +9,7 @@ import { MigrationPendingError } from '@/lib/ingestion/documents';
 import { ProviderChain } from '@/lib/ai/providers/chain';
 import { getCachedValue, setCachedValue } from '@/lib/response/cache';
 import { buscarPops } from '@/lib/pop/pops';
+import { numeroPop } from '@/lib/query/router';
 import { ehSemResposta, fontesDosPops, montarPrompt, montarPromptGeral, validarCitacoes, type FontePop, type RespostaPop } from '@/lib/rag/pop';
 
 export type PopErro = 'rate_limit_exceeded' | 'ip_blocked' | 'turnstile_failed' | 'migration_pending' | 'internal_error';
@@ -25,7 +26,8 @@ const LIMITE_FONTES = 6;
 const TEMPO_IA_MS = 18_000;
 
 function chaveCache(pergunta: string): string {
-  return `pop:${pergunta.toLowerCase().replace(/\s+/g, ' ').trim()}`;
+  // A new ranking must not reuse an answer grounded in the old source list.
+  return `pop:v2:${pergunta.toLowerCase().replace(/\s+/g, ' ').trim()}`;
 }
 
 async function gerarResposta(
@@ -94,8 +96,12 @@ export async function responderPop(pergunta: string, ip: string, turnstileToken?
   try {
     // The bundled manual first: whole POP sections beat excerpts cut at indexing
     const pops = buscarPops(filtrada);
-    const trechos = pops.length > 0 ? [] : await buscarTrechos(filtrada, 'pop', LIMITE_FONTES);
-    const fontes: FontePop[] = pops.length > 0 ? fontesDosPops(pops) : trechos.map((t, i) => ({
+    const numero = numeroPop(filtrada);
+    const encontrados = pops.length > 0 ? [] : await buscarTrechos(filtrada, 'pop', LIMITE_FONTES);
+    // OR-based database search may return another procedure for a missing
+    // exact number. Only that explicit POP can support an answer here.
+    const trechos = numero ? encontrados.filter((t) => numeroPop(t.titulo) === numero) : encontrados;
+    const fontes: FontePop[] = pops.length > 0 ? fontesDosPops(pops, 2, filtrada) : trechos.map((t, i) => ({
       n: i + 1,
       documento_id: t.documento_id,
       titulo: t.titulo,
@@ -127,7 +133,7 @@ export async function responderPop(pergunta: string, ip: string, turnstileToken?
     // The POPs don't cover it: answer from the models' general knowledge,
     // flagged as such in the UI.
     let geral = false;
-    if (semResposta && !semIA) {
+    if (semResposta && !semIA && !numero) {
       const gerada = await gerarResposta(montarPromptGeral(filtrada));
       if (gerada && !('erro' in gerada) && gerada.texto.trim()) {
         resposta = validarCitacoes(gerada.texto, 0).texto;

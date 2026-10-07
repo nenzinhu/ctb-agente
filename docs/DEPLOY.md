@@ -39,6 +39,11 @@ No SQL Editor do Supabase, aplique **nesta ordem**:
    `numero_dispositivo` sem UNIQUE (a mesma correção da
    `migrations-007-drop-numero-dispositivo-unique.sql`, que então pode ser
    pulada). Idempotente: pode ser reaplicada sem perder dados.
+9. `scripts/migrations-009-config-extended.sql` — configurações avançadas de
+   busca, chunking, provedores e cache.
+10. `scripts/migrations-010-rag-precision-performance.sql` — pesquisa por
+   prefixos, cobertura mínima para consultas longas, limiar de similaridade
+   vetorial e marcador de versão conferido por `/api/health`.
 
 Depois da 008: `/admin` → Base CTB → **Indexar agora** carrega o CTB
 compilado que acompanha o app (`data/acervo/`). Trechos indexados antes
@@ -81,6 +86,7 @@ Settings → Environment Variables, marcadas para **Production** (e Preview, se 
 | `NEXT_PUBLIC_SUPABASE_URL` | Supabase → Settings → API | Conexão do banco |
 | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Supabase → Settings → API | Leitura pública |
 | `SUPABASE_SERVICE_ROLE_KEY` | Supabase → Settings → API | Escritas do painel, cache e seed |
+| `ADMIN_USERNAME` | você (opcional; padrão `nenzinhu`) | Usuário do painel master |
 | `ADMIN_PASSWORD_HASH` | bcrypt (abaixo) | Login do painel master |
 | `GROQ_API_KEY` | Groq Console | Provedor 1 (resposta rápida) / voz |
 | `NVIDIA_API_KEY` | NVIDIA NIM | Provedor 2 |
@@ -96,8 +102,11 @@ Hash da senha do master:
 node -e "console.log(require('bcryptjs').hashSync('sua-senha-forte', 12))"
 ```
 
-O usuário é fixo: `nenzinhu`. Sem `ADMIN_PASSWORD_HASH` o painel aceita
-qualquer senha — comportamento apenas para desenvolvimento.
+O usuário padrão é `nenzinhu` e pode ser alterado com `ADMIN_USERNAME`.
+`ADMIN_PASSWORD_HASH` deve receber o hash completo que começa com `$2`, nunca
+a senha em texto. Sem um hash bcrypt válido, produção bloqueia o painel e a
+tela de login mostra o erro de configuração. Em desenvolvimento local, a
+ausência do hash mantém o acesso facilitado para testes.
 
 ## 4. Deploy
 
@@ -123,7 +132,7 @@ npm run check:health -- --versao=<sha> --espera=60     # exigir um commit, com p
 
 | Passo | Como checar |
 |---|---|
-| Healthcheck | `curl -s https://SEU-DOMINIO/api/health` → `status: ok` |
+| Healthcheck | `curl -s https://SEU-DOMINIO/api/health` → banco, escrita e `esquemaRag: 10` |
 | Home | abre com a navegação (Consulta, POP, Favoritos, Dossiê, Comprimir) |
 | Consulta por código | `516-91` → cartão com gravidade, pontos, multa e checklist |
 | Consulta por artigo | `art. 165` → normas aplicáveis e citações validadas |

@@ -2,8 +2,9 @@
 // scripts/importar-pops.ts): every procedure complete, in its standard form.
 import { readFileSync } from 'node:fs';
 import path from 'node:path';
-import { expandirSinonimos } from '@/lib/search/sinonimos';
+import { buscarNoIndice, criarIndiceBusca, type IndiceBusca } from '@/lib/search/lexical';
 import type { Pop } from './parser';
+import { numeroPop } from '@/lib/query/router';
 
 let cache: Pop[] | null = null;
 
@@ -20,24 +21,20 @@ export function todosOsPops(): Pop[] {
   return cache;
 }
 
-const normalizar = (t: string) =>
-  t
-    .normalize('NFD')
-    .replace(/[̀-ͯ]/g, '')
-    .toLowerCase();
+const indices = new WeakMap<Pop[], IndiceBusca<Pop>>();
 
-const PALAVRAS_VAZIAS = new Set(
-  'que com sem para por pela pelo nos nas dos das uma uns umas como onde quando qual quais deve devo fazer procedimento procedimentos proceder pop pops policial policia militar'.split(' ')
-);
-
-function palavras(t: string): string[] {
-  return normalizar(t)
-    .split(/[^a-z0-9]+/)
-    .filter((p) => p.length >= 3 && !PALAVRAS_VAZIAS.has(p));
+function indiceDosPops(pops: Pop[]): IndiceBusca<Pop> {
+  let indice = indices.get(pops);
+  if (!indice) {
+    indice = criarIndiceBusca(pops.map((pop) => ({
+      item: pop,
+      titulo: pop.titulo,
+      corpo: [pop.sequencia, pop.atividadesCriticas, pop.errosEvitar].flat().map((i) => i.texto).join(' '),
+    })));
+    indices.set(pops, indice);
+  }
+  return indice;
 }
-
-const texto = (pop: Pop) =>
-  [pop.sequencia, pop.atividadesCriticas, pop.errosEvitar].flat().map((i) => i.texto).join(' ');
 
 /**
  * POPs matching a question, best first: by number ("POP 002", "201.4.29") or
@@ -46,32 +43,10 @@ const texto = (pop: Pop) =>
  * @param limite - Maximum POPs
  */
 export function buscarPops(pergunta: string, limite = 6, pops = todosOsPops()): Pop[] {
-  const numero = pergunta.match(/\b(\d{3}(?:\.\d+){0,3})\b/)?.[1];
+  if (!pergunta.trim() || limite <= 0) return [];
+  const numero = numeroPop(pergunta);
   if (numero) {
-    const exato = pops.filter((p) => p.numero === numero);
-    if (exato.length) return exato;
+    return pops.filter((p) => p.numero === numero).slice(0, limite);
   }
-
-  const termos = [...new Set(palavras(expandirSinonimos(pergunta)))];
-  if (termos.length === 0) return [];
-
-  const tem = (conjunto: Set<string>, termo: string) =>
-    conjunto.has(termo) || (termo.length >= 5 && [...conjunto].some((p) => p.startsWith(termo.slice(0, 5))));
-
-  const pontuados = pops
-    .map((pop) => {
-      const titulo = new Set(palavras(pop.titulo));
-      const corpo = new Set(palavras(texto(pop)));
-      const pontos = termos.reduce((soma, t) => soma + (tem(titulo, t) ? 3 : tem(corpo, t) ? 1 : 0), 0);
-      return { pop, pontos };
-    })
-    .filter((x) => x.pontos > 0);
-
-  const melhor = Math.max(0, ...pontuados.map((x) => x.pontos));
-  const minimo = Math.max(2, Math.ceil(melhor * 0.5));
-  return pontuados
-    .filter((x) => x.pontos >= minimo)
-    .sort((a, b) => b.pontos - a.pontos)
-    .slice(0, limite)
-    .map((x) => x.pop);
+  return buscarNoIndice(pergunta, indiceDosPops(pops), limite);
 }

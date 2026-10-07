@@ -87,6 +87,8 @@ Aplicar as migrations no Supabase (SQL Editor), na ordem:
 6. `scripts/migrations-006-documents-storage-bucket.sql`
 7. `scripts/migrations-007-ratelimit-cache.sql` (rate limit atômico + invalidação do cache)
 8. `scripts/migrations-008-rag-indexacao.sql` (busca sem acento/OR, índice HNSW, base de POPs e novos formatos no bucket)
+9. `scripts/migrations-009-config-extended.sql` (configurações avançadas de busca, chunking, provedores e cache)
+10. `scripts/migrations-010-rag-precision-performance.sql` (prefixos, cobertura mínima, corte de baixa similaridade e limites seguros)
 
 A migration 007 é opcional: sem ela o app continua funcionando (rate limit
 legado e invalidação via fallback), mas perde a atomicidade anti-rajada e a
@@ -100,6 +102,10 @@ A migration 008 é necessária para a aba POP-PMSC e para a busca nova. Depois
 dela, entre em `/admin` → Base CTB → **Indexar agora** para carregar o CTB
 compilado, e use "Gerar vetores pendentes" quando houver `MISTRAL_API_KEY`
 (sem vetores, a busca por palavras já funciona).
+
+A migration 010 refina o RAG do CTB e dos POPs. Ela faz consultas como
+`estacion` alcançarem `estacionar`, reduz falsos positivos em frases longas e
+impede que o índice vetorial devolva um trecho distante só para completar a lista.
 
 Depois, popular a base com dados de exemplo:
 
@@ -133,6 +139,7 @@ O conjunto E2E que depende de base populada só roda com `E2E_SEEDED=1`.
 - `docs/specs/2026-09-21-ctb-agente-design.md` — Especificação completa
 - `docs/plans/2026-09-21-ctb-agente-implementation.md` — Plano de implementação
 - `docs/DEPLOY.md` — Deploy, variáveis de ambiente e verificação pós-deploy
+- `docs/BUSCA-E-AVALIACAO.md` — Busca por gírias/abreviações, critérios de avaliação e próximos passos para fine-tuning
 - `BATCH-4-7-STATUS.md` — Status histórico das entregas
 
 ## 🔐 Segurança

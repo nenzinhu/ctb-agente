@@ -2,6 +2,7 @@
 // the prompt, the source references and the citation check. The route that
 // retrieves excerpts and calls the model lives in app/api/pop/consulta.
 import type { Pop } from '@/lib/pop/parser';
+import { buscarNoIndice, criarIndiceBusca, trechoDaConsulta } from '@/lib/search/lexical';
 
 export interface FontePop {
   /** Number the answer cites as [n]. */
@@ -127,22 +128,36 @@ const SECOES_POP: [keyof Pick<Pop, 'sequencia' | 'atividadesCriticas' | 'errosEv
  * sections from the manual instead of excerpts cut at indexing time.
  * @param pops - Matching POPs, best first
  * @param quantos - How many POPs to use
+ * @param consulta - Prefer the passage relevant to this query in long sections
  */
-export function fontesDosPops(pops: Pop[], quantos = 2): FontePop[] {
-  const fontes: FontePop[] = [];
+export function fontesDosPops(pops: Pop[], quantos = 2, consulta = ''): FontePop[] {
+  const fontes: Omit<FontePop, 'n'>[] = [];
   for (const pop of pops.slice(0, quantos)) {
     for (const [chave, secao] of SECOES_POP) {
       const texto = pop[chave].map((i) => i.texto).join('\n');
       if (!texto) continue;
       fontes.push({
-        n: fontes.length + 1,
         documento_id: `pop-${pop.numero}`,
         titulo: `POP ${pop.numero} — ${pop.titulo}`,
         secao,
         pagina: pop.pagina,
-        texto: texto.length > 3500 ? `${texto.slice(0, 3500)}…` : texto,
+        texto: trechoDaConsulta(texto, consulta, 1_800),
       });
     }
   }
-  return fontes;
+  const selecionadas = consulta.trim() && fontes.length > 4
+    ? buscarNoIndice(
+        consulta,
+        criarIndiceBusca(fontes.map((fonte) => ({
+          item: fonte,
+          titulo: `${fonte.titulo} ${fonte.secao ?? ''}`,
+          corpo: fonte.texto,
+        }))),
+        6
+      )
+    : fontes.slice(0, 6);
+  // If section-level lexical ranking cannot recognize the wording, retain the
+  // best POP's sources instead of sending an empty grounding context.
+  return (selecionadas.length > 0 ? selecionadas : fontes.slice(0, 4))
+    .map((fonte, i) => ({ ...fonte, n: i + 1 }));
 }

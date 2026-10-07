@@ -7,6 +7,7 @@ export const maxDuration = 60;
 
 const PedidoSchema = z.object({
   pergunta: z.string().trim().min(3).max(800),
+  modo: z.enum(['auto', 'ctb', 'infracao', 'pop', 'simulador']).default('auto'),
   historico: z
     .array(z.object({ papel: z.enum(['agente', 'professor']), texto: z.string().max(4000) }))
     .max(12)
@@ -32,7 +33,7 @@ export async function POST(request: NextRequest) {
 
   const ip =
     request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || request.headers.get('x-real-ip') || 'unknown';
-  const resultado = await perguntarAoProfessor(parsed.data.pergunta, parsed.data.historico, ip);
+  const resultado = await perguntarAoProfessor(parsed.data.pergunta, parsed.data.historico, ip, parsed.data.modo);
 
   if ('erro' in resultado) {
     const [message, status] = ERROS[resultado.erro];

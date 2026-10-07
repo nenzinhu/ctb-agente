@@ -12,8 +12,7 @@ interface PrimaryButtonProps extends ComponentPropsWithRef<'button'> {
 }
 
 /**
- * The main action of a screen: solid green, uppercase mono, with the solid
- * offset shadow that sinks on press (.btn-primary in app/globals.css).
+ * The main action of a screen, with a shared loading and disabled state.
  */
 export default function PrimaryButton({
   icone,

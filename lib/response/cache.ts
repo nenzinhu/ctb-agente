@@ -7,6 +7,9 @@ import type { CartaoEstruturado } from './response-types';
 
 const DEFAULT_TTL_DIAS = 30;
 
+// Keep responses ranked by the previous lexical search out of the new cache.
+const chaveCartao = (consulta: string) => `consulta:v2:${consulta.trim()}`;
+
 /**
  * Stable hash used as cache key
  * @param consulta - Raw user query
@@ -82,7 +85,7 @@ export async function setCachedValue(
 export async function getCachedCard(consulta: string): Promise<CartaoEstruturado | null> {
   if (!databaseConfigured) return null;
   try {
-    const hash = hashPergunta(consulta);
+    const hash = hashPergunta(chaveCartao(consulta));
     const { data, error } = await supabase
       .from('cache_respostas')
       .select('resposta_completa, ttl_dias, data_ultimo_acesso, citacoes_validadas')
@@ -128,7 +131,7 @@ export async function setCachedCard(
   try {
     const { error } = await supabaseAdmin.from('cache_respostas').upsert(
       {
-        hash_pergunta: hashPergunta(consulta),
+        hash_pergunta: hashPergunta(chaveCartao(consulta)),
         pergunta_original: consulta,
         resposta_completa: card,
         modelo_usado: modelo,

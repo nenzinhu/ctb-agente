@@ -17,8 +17,7 @@ interface SectionCardProps {
 }
 
 /**
- * Form/content card: 2px border, solid offset shadow and a mono uppercase
- * title over a 2px divider.
+ * Form/content card with a heading, optional action and subtle divider.
  */
 export default function SectionCard({
   titulo,

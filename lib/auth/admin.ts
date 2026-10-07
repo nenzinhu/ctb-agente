@@ -2,17 +2,32 @@ import * as bcryptjs from 'bcryptjs';
 
 /**
  * Admin credentials validation
- * Username is hardcoded as 'nenzinhu', password is hashed with bcrypt
+ * Username comes from ADMIN_USERNAME (default: nenzinhu); the password is
+ * stored only as a bcrypt hash.
  */
+const DEFAULT_ADMIN_USERNAME = 'nenzinhu';
 
-const ADMIN_USERNAME = 'nenzinhu';
+export type AdminConfiguration =
+  | { configured: true; username: string }
+  | { configured: false; username: string; reason: 'missing_password_hash' | 'invalid_password_hash' };
+
+const BCRYPT_HASH = /^\$2[aby]\$\d{2}\$[./A-Za-z0-9]{53}$/;
 
 /**
  * Whether the master password hash is configured
  * @returns True when ADMIN_PASSWORD_HASH is present
  */
 export function adminPasswordConfigured(): boolean {
-  return Boolean(process.env.ADMIN_PASSWORD_HASH);
+  return adminConfiguration().configured;
+}
+
+/** Safe configuration metadata; never returns the hash or session secret. */
+export function adminConfiguration(): AdminConfiguration {
+  const username = getAdminUsername();
+  const hash = process.env.ADMIN_PASSWORD_HASH?.trim();
+  if (!hash) return { configured: false, username, reason: 'missing_password_hash' };
+  if (!BCRYPT_HASH.test(hash)) return { configured: false, username, reason: 'invalid_password_hash' };
+  return { configured: true, username };
 }
 
 /**
@@ -27,17 +42,17 @@ export async function verifyAdminCredentials(
   password: string
 ): Promise<boolean> {
   // Username must match
-  if (username !== ADMIN_USERNAME) {
+  if (username.trim() !== getAdminUsername()) {
     return false;
   }
 
   // Get password hash from environment
-  const passwordHash = process.env.ADMIN_PASSWORD_HASH;
+  const passwordHash = process.env.ADMIN_PASSWORD_HASH?.trim();
 
-  if (!passwordHash) {
+  if (!passwordHash || !BCRYPT_HASH.test(passwordHash)) {
     if (process.env.NODE_ENV === 'production') {
       console.error(
-        'ADMIN_PASSWORD_HASH is not set: refusing admin login in production. Configure it to enable the panel.'
+        'ADMIN_PASSWORD_HASH is missing or is not a bcrypt hash: refusing admin login in production.'
       );
       return false;
     }
@@ -70,5 +85,5 @@ export async function hashPassword(password: string): Promise<string> {
  * Get the admin username
  */
 export function getAdminUsername(): string {
-  return ADMIN_USERNAME;
+  return process.env.ADMIN_USERNAME?.trim() || DEFAULT_ADMIN_USERNAME;
 }

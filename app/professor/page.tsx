@@ -4,7 +4,7 @@ import Professor from '@/components/Professor';
 export const metadata: Metadata = {
   title: 'Professor Grão-Mestre em Trânsito',
   description:
-    'Pergunte sobre o CTB: infrações, explicações com exemplos do dia a dia, jurisprudência, alterações na lei e projetos em tramitação.',
+    'Pergunte sobre CTB, infrações do MBFT e procedimentos dos POPs, com explicações e fontes.',
 };
 
 export default function ProfessorPage() {

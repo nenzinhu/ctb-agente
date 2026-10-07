@@ -12,7 +12,7 @@ import CitacaoEvidencia from './CitacaoEvidencia';
 import NormasAplicaveis from './NormasAplicaveis';
 import JurisprudenciaBloco from './JurisprudenciaBloco';
 import BotoesCartao from './BotoesCartao';
-import Field from './ui/Field';
+import ResultChoices from './ui/ResultChoices';
 import Icone from './ui/Icone';
 
 interface ConsultaResultProps {
@@ -119,20 +119,18 @@ function FichaEscolhida({ card }: { card: CartaoEstruturado }) {
   return (
     <div className="space-y-4">
       {opcoes.length > 1 && (
-        <div className="card card-pad print:hidden">
-          <Field
-            as="select"
+        <div className="print:hidden">
+          <ResultChoices
             label={`Enquadramentos encontrados (${opcoes.length})`}
             value={String(indice)}
-            onChange={(e) => setIndice(Number(e.target.value))}
-            hint="A consulta corresponde a mais de uma infração: escolha qual ficha ver."
-          >
-            {opcoes.map((opcao, i) => (
-              <option key={i} value={i}>
-                {opcao.rotulo}
-              </option>
-            ))}
-          </Field>
+            onChange={(value) => setIndice(Number(value))}
+            hint="Confira as alternativas e selecione a ficha que corresponde à situação."
+            options={opcoes.map((opcao, i) => ({
+              value: String(i),
+              title: opcao.oficial ? `${opcao.oficial.codigo} — ${opcao.oficial.amparoLegal}` : opcao.rotulo,
+              description: opcao.oficial?.tipificacaoResumida ?? opcao.campos?.tipificacao ?? undefined,
+            }))}
+          />
         </div>
       )}
       <FichaFiscalizacao card={atual.card} campos={atual.campos} oficial={atual.oficial} />

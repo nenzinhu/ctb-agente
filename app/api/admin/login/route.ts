@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { adminPasswordConfigured, getAdminUsername, verifyAdminCredentials } from '@/lib/auth/admin';
+import { adminConfiguration, getAdminUsername, verifyAdminCredentials } from '@/lib/auth/admin';
 import { createSession } from '@/lib/auth/session';
 import { sessionSecret } from '@/lib/auth/session-token';
 
@@ -22,15 +22,19 @@ export async function POST(request: NextRequest) {
     }
 
     // Refuse early when the panel cannot be secured (production without a hash)
-    if (process.env.NODE_ENV === 'production' && (!adminPasswordConfigured() || !sessionSecret())) {
+    const configuration = adminConfiguration();
+    if (process.env.NODE_ENV === 'production' && (!configuration.configured || !sessionSecret())) {
       console.error(
         'Admin panel misconfigured: set ADMIN_PASSWORD_HASH (and optionally ADMIN_SESSION_SECRET).'
       );
       return NextResponse.json(
         {
-          error: 'admin_not_configured',
-          message:
-            'Painel indisponível: ADMIN_PASSWORD_HASH não está configurada neste ambiente.',
+          error: configuration.configured ? 'admin_session_not_configured' : configuration.reason,
+          message: configuration.configured
+            ? 'Painel indisponível: a assinatura da sessão não está configurada.'
+            : configuration.reason === 'invalid_password_hash'
+              ? 'Painel indisponível: ADMIN_PASSWORD_HASH precisa conter um hash bcrypt válido, não a senha em texto.'
+              : 'Painel indisponível: ADMIN_PASSWORD_HASH não está configurada neste ambiente.',
         },
         { status: 503 }
       );
@@ -60,4 +64,14 @@ export async function POST(request: NextRequest) {
       { status: 500 }
     );
   }
+}
+
+/** Public, non-secret readiness used by the login screen. */
+export async function GET() {
+  const configuration = adminConfiguration();
+  return NextResponse.json({
+    configured: process.env.NODE_ENV !== 'production' || (configuration.configured && Boolean(sessionSecret())),
+    username: configuration.username,
+    reason: configuration.configured ? null : configuration.reason,
+  });
 }

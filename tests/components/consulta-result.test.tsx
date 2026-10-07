@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from '@testing-library/react';
+import { fireEvent, render, screen, within } from '@testing-library/react';
 import ConsultaResult from '@/components/ConsultaResult';
 import { CartaoEstruturado } from '@/lib/response/response-types';
 import { buscarFichas } from '@/lib/mbft/fichas';
@@ -224,9 +224,12 @@ describe('ConsultaResult', () => {
 
     render(<ConsultaResult card={varias} />);
 
-    const seletor = screen.getByLabelText('Enquadramentos encontrados (2)');
+    const alternativas = screen.getByRole('group', { name: 'Enquadramentos encontrados (2)' });
+    expect(within(alternativas).getAllByRole('radio')).toHaveLength(2);
+    expect(screen.queryByRole('combobox')).not.toBeInTheDocument();
     expect(screen.getByText('Art. 182, IV')).toBeInTheDocument();
-    fireEvent.change(seletor, { target: { value: '1' } });
+    fireEvent.click(within(alternativas).getByRole('radio', { name: /Art\. 182, V —/ }));
+    expect(within(alternativas).getByRole('radio', { name: /Art\. 182, V —/ })).toBeChecked();
     expect(screen.getByText('Art. 182, V')).toBeInTheDocument();
   });
 
@@ -234,9 +237,9 @@ describe('ConsultaResult', () => {
     const oficiais = buscarFichas('art. 165');
     render(<ConsultaResult card={{ ...mockCard, enquadramento: null, fichas_mbft: oficiais }} />);
 
-    expect(screen.getByLabelText(`Enquadramentos encontrados (${oficiais.length})`)).toBeInTheDocument();
+    expect(screen.getByRole('group', { name: `Enquadramentos encontrados (${oficiais.length})` })).toBeInTheDocument();
     expect(screen.getAllByText('516-91').length).toBeGreaterThan(0);
-    expect(screen.getByText('Dirigir sob a influência de álcool.')).toBeInTheDocument();
+    expect(within(screen.getByRole('article', { name: 'Ficha de Fiscalização' })).getByText('Dirigir sob a influência de álcool.')).toBeInTheDocument();
     expect(screen.getByText(/Ficha do MBFT \(Volume I\), página \d+/)).toBeInTheDocument();
   });
 });

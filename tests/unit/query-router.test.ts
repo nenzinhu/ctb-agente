@@ -1,5 +1,5 @@
 // Unit tests for query routing
-import { identifyQueryType, normalizeQuery } from '@/lib/query/router';
+import { codigoMbft, identifyQueryType, normalizeQuery } from '@/lib/query/router';
 
 describe('Query Router', () => {
   describe('identifyQueryType', () => {
@@ -9,7 +9,9 @@ describe('Query Router', () => {
     });
 
     it('should not match code for non-matching patterns', () => {
-      expect(identifyQueryType('51691')).not.toBe('code');
+      expect(identifyQueryType('51691')).toBe('code');
+      expect(identifyQueryType('5169-1')).toBe('code');
+      expect(identifyQueryType('código 516 91')).toBe('code');
       expect(identifyQueryType('5-16-91')).not.toBe('code');
     });
 
@@ -57,5 +59,15 @@ describe('Query Router', () => {
       const result = normalizeQuery('Está disponível');
       expect(result).toBe('esta disponivel');
     });
+  });
+});
+
+
+describe('codigoMbft', () => {
+  it.each(['516-91', '51691', '5169-1', '516 91', 'código 516–91'])('normalizes %s without changing its digits', (consulta) => {
+    expect(codigoMbft(consulta)).toBe('516-91');
+  });
+  it.each(['5-16-91', '516-912', '123456', 'ABC51691DEF', 'art. 165', 'POP 201.4.19'])('does not guess a code from %s', (consulta) => {
+    expect(codigoMbft(consulta)).toBeNull();
   });
 });

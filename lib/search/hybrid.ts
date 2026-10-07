@@ -18,6 +18,19 @@ interface Linha {
   texto: string;
 }
 
+const TEMPO_TEXTO_MS = 1_500;
+const TEMPO_VETOR_MS = 2_000;
+
+async function comPrazo<T>(promise: Promise<T>, ms: number, fonte: string): Promise<T> {
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  return Promise.race([
+    promise,
+    new Promise<never>((_, reject) => {
+      timer = setTimeout(() => reject(new Error(`${fonte} excedeu ${ms} ms`)), ms);
+    }),
+  ]).finally(() => clearTimeout(timer));
+}
+
 /**
  * One source failing (e.g. the embedding provider is down) must not hide
  * what the other one found.
@@ -81,8 +94,8 @@ export function priorizarInfracoes<T extends { numero_dispositivo: string; score
  */
 export async function hybridSearch(query: string, limit = 5): Promise<RankedResult[]> {
   const [texto, vetor] = await Promise.all([
-    semFalhar('texto', searchByTsvector(expandirSinonimos(query), 20) as Promise<Linha[]>),
-    semFalhar('vetor', searchByVector(query, 20) as Promise<Linha[]>),
+    semFalhar('texto', comPrazo(searchByTsvector(expandirSinonimos(query), 20) as Promise<Linha[]>, TEMPO_TEXTO_MS, 'busca textual')),
+    semFalhar('vetor', comPrazo(searchByVector(query, 20) as Promise<Linha[]>, TEMPO_VETOR_MS, 'busca vetorial')),
   ]);
 
   const peso = await getPesoInfracoes();

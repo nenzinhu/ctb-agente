@@ -1,91 +1,87 @@
 import Link from 'next/link';
 import ConsultaForm from '@/components/ConsultaForm';
+import ConsultaModes from '@/components/ConsultaModes';
 import RecentQueries from '@/components/RecentQueries';
-import { ETAPAS_CONSULTA } from '@/components/etapas';
 import Icone, { type NomeIcone } from '@/components/ui/Icone';
 import SectionCard from '@/components/ui/SectionCard';
-import Stepper from '@/components/ui/Stepper';
-import TitleCard from '@/components/ui/TitleCard';
 
-const EXEMPLOS = ['516-91', 'art. 165', 'moto sem capacete', 'recusa do bafômetro', 'estacionar em vaga de idoso'];
+const EXEMPLOS = ['516-91', 'art. 165', 'moto sem capacete', 'recusa do bafômetro', 'racha'];
 
-const TIPOS: { titulo: string; exemplo: string; texto: string }[] = [
-  { titulo: 'Código MBFT', exemplo: '516-91', texto: 'Enquadramento completo: gravidade, pontos, multa e medidas.' },
-  { titulo: 'Artigo', exemplo: 'art. 181, XVII', texto: 'O texto literal do dispositivo, com os relacionados.' },
-  { titulo: 'Situação', exemplo: 'dirigir usando celular', texto: 'Descreva o que viu: a busca encontra os artigos certos.' },
-];
+const TIPOS = [
+  { titulo: 'Tem o código?', exemplo: '516-91 ou art. 165', texto: 'Use o enquadramento MBFT ou o artigo do CTB.', icone: 'balanca' },
+  { titulo: 'Descreva a situação', exemplo: 'motorista mexendo no celular', texto: 'Conte o que aconteceu, com as palavras do dia a dia.', icone: 'busca' },
+  { titulo: 'Lembra só uma parte?', exemplo: 'estacion ou bafomet', texto: 'Tente o começo da palavra. Acrescente detalhes para refinar a busca.', icone: 'faisca' },
+] satisfies { titulo: string; exemplo: string; texto: string; icone: NomeIcone }[];
 
 const ATALHOS: { href: string; titulo: string; texto: string; icone: NomeIcone }[] = [
-  {
-    href: '/pop',
-    titulo: 'POP-PMSC',
-    texto: 'Pergunte sobre os procedimentos operacionais padrão e veja a fonte.',
-    icone: 'escudo',
-  },
-  { href: '/gerador-pdf', titulo: 'Dossiê em PDF', texto: 'Normas, enquadramentos e checklist para levar à rua.', icone: 'arquivo' },
-  {
-    href: '/comprimir-pdf',
-    titulo: 'Comprimir PDF',
-    texto: 'Reduza PDFs no próprio aparelho — até "somente texto".',
-    icone: 'comprimir',
-  },
+  { href: '/favoritos', titulo: 'Seus favoritos', texto: 'Retome os enquadramentos salvos neste aparelho.', icone: 'estrela' },
+  { href: '/gerador-pdf', titulo: 'Dossiê em PDF', texto: 'Reúna normas, enquadramentos e checklist para consultar depois.', icone: 'arquivo' },
+  { href: '/comprimir-pdf', titulo: 'Comprimir PDF', texto: 'Reduza arquivos no aparelho, inclusive para somente texto.', icone: 'comprimir' },
 ];
 
 export default function Home() {
   return (
-    <main className="page space-y-6">
-      <TitleCard
-        titulo="CTB Agente"
-        icone="escudo"
-        subtitulo="Enquadramentos, artigos e procedimentos em segundos — sempre com o texto da lei ao lado."
-      />
+    <main className="page max-w-6xl space-y-7 sm:space-y-9">
+      <div className="consultation-intro">
+        <p className="eyebrow">Apoio à fiscalização</p>
+        <h1 className="consultation-title">CTB Agente</h1>
+        <p className="consultation-lead">Da situação ao enquadramento, com a fonte para conferir.</p>
+      </div>
 
-      <Stepper etapas={ETAPAS_CONSULTA} atual={0} rotulo="Etapas da consulta" />
+      <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_320px]">
+        <SectionCard titulo="Consultar infrações e artigos" icone="busca" className="min-w-0 consultation-card">
+          <ConsultaModes atual="ctb" />
+          <ConsultaForm exemplos={EXEMPLOS} />
+          <RecentQueries />
+        </SectionCard>
 
-      <SectionCard numero={1} titulo="Consulta">
-        <ConsultaForm exemplos={EXEMPLOS} />
-        <RecentQueries />
-      </SectionCard>
+        <aside className="min-w-0 space-y-5" aria-label="Ajuda para consultar">
+          <section className="search-guide" aria-labelledby="como-perguntar">
+            <h2 id="como-perguntar" className="text-lg font-semibold text-ds-text">Como perguntar</h2>
+            <p className="mt-1 text-sm text-ds-subtle">Não precisa lembrar o termo exato.</p>
+            <ul className="mt-5 space-y-5">
+              {TIPOS.map((tipo) => (
+                <li key={tipo.titulo} className="flex items-start gap-3">
+                  <span className="search-guide-icon"><Icone nome={tipo.icone} tamanho={18} /></span>
+                  <div className="min-w-0">
+                    <h3 className="text-sm font-semibold text-ds-text">{tipo.titulo}</h3>
+                    <p className="mt-1 text-sm font-medium text-ds-primary-strong">“{tipo.exemplo}”</p>
+                    <p className="mt-1 text-sm leading-relaxed text-ds-subtle">{tipo.texto}</p>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          </section>
+          <p className="flex items-start gap-2 px-1 text-xs leading-relaxed text-ds-subtle">
+            <Icone nome="info" tamanho={16} className="mt-0.5 shrink-0" />
+            Mais detalhes ajudam: informe o veículo, a conduta e o local quando forem relevantes.
+          </p>
+        </aside>
+      </div>
 
-      <SectionCard titulo="Como perguntar" icone="info">
-        <ul className="grid gap-3 sm:grid-cols-3">
-          {TIPOS.map((tipo) => (
-            <li key={tipo.titulo} className="panel p-4">
-              <p className="font-mono text-xs font-bold uppercase tracking-[0.08em] text-ds-text">{tipo.titulo}</p>
-              <p className="mt-1.5 font-mono text-sm font-semibold text-ds-primary-strong">{tipo.exemplo}</p>
-              <p className="mt-2 text-sm text-ds-subtle">{tipo.texto}</p>
-            </li>
-          ))}
-        </ul>
-      </SectionCard>
-
-      <SectionCard titulo="Ferramentas" icone="faisca">
+      <section aria-labelledby="ferramentas-titulo">
+        <div className="mb-3 flex items-center justify-between gap-3">
+          <h2 id="ferramentas-titulo" className="text-lg font-semibold text-ds-text">No seu dia a dia</h2>
+          <span className="text-xs text-ds-subtle">Ferramentas de apoio</span>
+        </div>
         <ul className="grid gap-3 sm:grid-cols-3">
           {ATALHOS.map((atalho) => (
-            <li key={atalho.href}>
-              <Link
-                href={atalho.href}
-                className="group flex h-full flex-col gap-2 rounded-control border-2 border-ds-border p-4 transition-colors hover:bg-ds-muted"
-              >
-                <span className="flex items-center gap-2.5">
-                  <span className="grid h-9 w-9 shrink-0 place-items-center rounded-lg bg-ds-primary text-ds-on-solid">
-                    <Icone nome={atalho.icone} tamanho={18} />
-                  </span>
-                  <span className="font-mono text-sm font-bold uppercase tracking-[0.06em] text-ds-text">{atalho.titulo}</span>
+            <li key={atalho.href} className="min-w-0">
+              <Link href={atalho.href} className="tool-link group">
+                <span className="flex items-center justify-between gap-3">
+                  <Icone nome={atalho.icone} tamanho={21} className="text-ds-primary" />
+                  <Icone nome="seta" tamanho={16} className="text-ds-subtle transition-transform group-hover:translate-x-1" />
                 </span>
-                <span className="text-sm text-ds-subtle">{atalho.texto}</span>
-                <span className="mt-auto inline-flex items-center gap-1 pt-1 font-mono text-xs font-semibold uppercase tracking-[0.06em] text-ds-primary">
-                  Abrir
-                  <Icone nome="seta" tamanho={14} className="transition-transform group-hover:translate-x-0.5" />
-                </span>
+                <span className="mt-3 block font-semibold text-ds-text">{atalho.titulo}</span>
+                <span className="mt-1 block text-sm leading-relaxed text-ds-subtle">{atalho.texto}</span>
               </Link>
             </li>
           ))}
         </ul>
-      </SectionCard>
+      </section>
 
-      <p className="text-center text-xs text-ds-subtle">
-        Para agentes de trânsito (PM, PC, PRF e municipais). Confira sempre a redação vigente antes de lavrar o AIT.
+      <p className="border-t border-ds-line pt-5 text-center text-xs leading-relaxed text-ds-subtle">
+        Apoio à consulta de trânsito. Confira a fonte e a redação vigente antes de lavrar o AIT.
       </p>
     </main>
   );
