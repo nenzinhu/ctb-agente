@@ -158,7 +158,7 @@ export default function AdminRagFineTuning() {
         <div className="mt-4 flex flex-wrap gap-2">
           <Link href="/consulta" className="btn-secondary btn-sm">Testar CTB/MBFT</Link>
           <Link href="/pop" className="btn-secondary btn-sm">Testar POP</Link>
-          <Link href="/professor" className="btn-secondary btn-sm">Testar Professor</Link>
+          <Link href="/professor" className="btn-secondary btn-sm">Testar Professor Emérito</Link>
         </div>
       </section>
     </div>

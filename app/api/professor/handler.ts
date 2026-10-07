@@ -284,7 +284,7 @@ export async function perguntarAoProfessor(
       modelo = local ? 'Base oficial local' : null;
       aviso = local
         ? 'O provedor demorou ou falhou; foi usada uma resposta rápida das fontes oficiais.'
-        : 'O professor não conseguiu responder agora. As fontes encontradas estão abaixo.';
+        : 'O Professor Emérito não conseguiu responder agora. As fontes encontradas estão abaixo.';
     } finally {
       if (timer) clearTimeout(timer);
     }

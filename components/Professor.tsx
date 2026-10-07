@@ -111,7 +111,7 @@ function Comparacao({ itens }: { itens: ComparacaoInfracao[] }) {
 }
 
 /**
- * Chat with the "Professor Grão-Mestre em Trânsito". The conversation lives
+ * Chat with the "Professor Emérito". The conversation lives
  * in the browser; each question goes with the recent turns so follow-ups
  * ("e a multa?") keep their subject.
  */
@@ -148,7 +148,7 @@ export default function Professor() {
         body: JSON.stringify({ pergunta: texto, historico, modo }),
       });
       const corpo = await resposta.json().catch(() => null);
-      if (!resposta.ok) throw new Error(corpo?.message || 'O professor não conseguiu responder.');
+      if (!resposta.ok) throw new Error(corpo?.message || 'O Professor Emérito não conseguiu responder.');
       setTurnos((atual) => [...atual, { pergunta: texto, ...(corpo as Omit<Turno, 'pergunta'>) }]);
       setPergunta('');
     } catch (error) {
@@ -161,9 +161,9 @@ export default function Professor() {
   return (
     <div className="space-y-6">
       <TitleCard
-        titulo="Professor Grão-Mestre em Trânsito"
+        titulo="Professor Emérito"
         icone="professor"
-        subtitulo="Tire dúvidas sobre CTB, infrações do MBFT e procedimentos dos POPs. O professor consulta primeiro os manuais oficiais disponíveis no aplicativo."
+        subtitulo="Tire dúvidas sobre CTB, infrações do MBFT e procedimentos dos POPs. O Professor Emérito consulta primeiro os manuais oficiais disponíveis no aplicativo."
       />
 
       {turnos.length > 0 && (
@@ -177,7 +177,7 @@ export default function Professor() {
               <article className="card card-pad">
                 <p className="section-title">
                   <Icone nome="professor" tamanho={18} className="shrink-0" />
-                  Professor
+                  Professor Emérito
                 </p>
                 <div className="mt-3">
                   {turno.resposta ? (
@@ -256,7 +256,7 @@ export default function Professor() {
           <div>
             <Field
               as="textarea"
-              label={turnos.length ? 'Continue a conversa' : 'Sua pergunta ao professor'}
+              label={turnos.length ? 'Continue a conversa' : 'Sua pergunta ao Professor Emérito'}
               value={pergunta}
               onChange={(e) => setPergunta(e.target.value)}
               onKeyDown={(e) => {
@@ -296,7 +296,7 @@ export default function Professor() {
               type="submit"
               icone="professor"
               carregando={carregando}
-              textoCarregando="O professor está pensando…"
+              textoCarregando="O Professor Emérito está pensando…"
               disabled={pergunta.trim().length < 3}
               className="flex-1 text-base"
             >

@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import Professor from '@/components/Professor';
 
 export const metadata: Metadata = {
-  title: 'Professor Grão-Mestre em Trânsito',
+  title: 'Professor Emérito',
   description:
     'Pergunte sobre CTB, infrações do MBFT e procedimentos dos POPs, com explicações e fontes.',
 };
