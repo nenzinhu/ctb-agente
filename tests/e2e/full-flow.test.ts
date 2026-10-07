@@ -8,7 +8,7 @@ test.describe('CTB Agente — fluxo completo', () => {
     await expect(page.getByRole('heading', { name: 'CTB Agente' })).toBeVisible();
     await expect(page.getByLabel('Sua consulta')).toBeVisible();
     await expect(page.getByRole('link', { name: /POP-PMSC.*procedimentos/i })).toBeVisible();
-    await expect(page.getByRole('link', { name: /Dossiê em PDF/ })).toBeVisible();
+    await expect(page.getByRole('link', { name: /Gerar apostila/ })).toBeVisible();
     await expect(page.getByRole('link', { name: /Comprimir PDF.*somente texto/i })).toBeVisible();
   });
 

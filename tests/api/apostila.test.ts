@@ -21,6 +21,7 @@ jest.mock('../../lib/ai/providers/chain', () => ({
 }));
 
 import { NextRequest } from 'next/server';
+import { readFileSync } from 'node:fs';
 import { GET, POST } from '@/app/api/apostila/route';
 import { blocosDaApostila } from '@/lib/rag/apostila';
 import { pdfDeBlocos } from '@/lib/pdf-tools/pdf-writer';
@@ -75,5 +76,19 @@ describe('apostila em PDF', () => {
 
     const pdf = await pdfDeBlocos('Apostila — algemas', blocos);
     expect(Buffer.from(pdf.slice(0, 5)).toString()).toBe('%PDF-');
+  });
+
+  it('brands the PDF with the road police crest and institution name', async () => {
+    const logoJpeg = new Uint8Array(readFileSync('public/brasao-cpmrv.jpg'));
+    const pdf = await pdfDeBlocos('Apostila — CTB', [], undefined, {
+      instituicao: 'Polícia Militar Rodoviária de Santa Catarina',
+      logoJpeg,
+      logoLarguraPx: 115,
+      logoAlturaPx: 144,
+    });
+    const conteudo = Buffer.from(pdf).toString('latin1');
+
+    expect(conteudo).toContain('/Im0 Do');
+    expect(conteudo).toContain('Pol\\355cia Militar Rodovi\\341ria de Santa Catarina');
   });
 });

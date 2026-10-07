@@ -104,6 +104,7 @@ interface Linha {
   fonte: Fonte;
   tamanho: number;
   cinza?: boolean;
+  cor?: [number, number, number];
   /** Extra space before the line, in points. */
   antes: number;
   /** Left indent, in points. */
@@ -184,24 +185,50 @@ export async function pdfSomenteTexto(documento: DocumentoTexto, deflate?: Defla
 }
 
 /** Lay lines out on A4 pages: each output page is one content stream. */
-function paginar(linhas: Linha[]): PaginaMontagem[] {
+function paginar(linhas: Linha[], marca?: MarcaApostila): PaginaMontagem[] {
   const paginas: string[] = [];
   let conteudo = '';
-  let y = A4.altura - MARGEM.topo;
+  const topoConteudo = marca ? 118 : MARGEM.topo;
+  let y = A4.altura - topoConteudo;
   for (const linha of linhas) {
     const altura = linha.tamanho * 1.35 + linha.antes;
     if (y - altura < MARGEM.base && conteudo) {
       paginas.push(conteudo);
       conteudo = '';
-      y = A4.altura - MARGEM.topo;
+      y = A4.altura - topoConteudo;
     }
     y -= conteudo ? altura : linha.tamanho * 1.35;
     const fonte = linha.fonte === 'Helvetica' ? '/F1' : '/F2';
     const x = MARGEM.lado + (linha.recuo ?? 0);
-    conteudo += `${linha.cinza ? '0.45' : '0'} g ${fonte} ${num(linha.tamanho)} Tf 1 0 0 1 ${num(x)} ${num(y)} Tm ${literal(linha.texto)} Tj\n`;
+    const cor = linha.cor
+      ? `${linha.cor.map(num).join(' ')} rg`
+      : `${linha.cinza ? '0.45' : '0'} g`;
+    conteudo += `${cor} ${fonte} ${num(linha.tamanho)} Tf 1 0 0 1 ${num(x)} ${num(y)} Tm ${literal(linha.texto)} Tj\n`;
   }
   if (conteudo) paginas.push(conteudo);
-  return paginas.map((c) => ({ largura: A4.largura, altura: A4.altura, conteudo: `BT\n${c}ET\n` }));
+  return paginas.map((c) => {
+    if (!marca) return { largura: A4.largura, altura: A4.altura, conteudo: `BT\n${c}ET\n` };
+    const verde: [number, number, number] = [0.05, 0.25, 0.16];
+    const dourado: [number, number, number] = [0.72, 0.51, 0.12];
+    const logoAltura = 58;
+    const logoLargura = logoAltura * (marca.logoLarguraPx / marca.logoAlturaPx);
+    const cabecalho = [
+      `q ${num(logoLargura)} 0 0 ${logoAltura} ${MARGEM.lado} ${num(A4.altura - 88)} cm /Im0 Do Q`,
+      `BT ${verde.map(num).join(' ')} rg /F2 11 Tf 1 0 0 1 112 ${num(A4.altura - 59)} Tm ${literal(marca.instituicao)} Tj ET`,
+      `q ${verde.map(num).join(' ')} RG 2 w ${MARGEM.lado} ${num(A4.altura - 101)} m ${num(A4.largura - MARGEM.lado)} ${num(A4.altura - 101)} l S Q`,
+      `q ${dourado.map(num).join(' ')} RG 1 w ${MARGEM.lado} ${num(A4.altura - 105)} m ${num(A4.largura - MARGEM.lado)} ${num(A4.altura - 105)} l S Q`,
+    ].join('\n');
+    return {
+      largura: A4.largura,
+      altura: A4.altura,
+      conteudo: `${cabecalho}\nBT\n${c}ET\n`,
+      imagem: {
+        jpeg: marca.logoJpeg,
+        larguraPx: marca.logoLarguraPx,
+        alturaPx: marca.logoAlturaPx,
+      },
+    };
+  });
 }
 
 export type EstiloBloco = 'titulo' | 'subtitulo' | 'paragrafo' | 'item' | 'nota';
@@ -209,6 +236,13 @@ export type EstiloBloco = 'titulo' | 'subtitulo' | 'paragrafo' | 'item' | 'nota'
 export interface BlocoEstilizado {
   texto: string;
   estilo: EstiloBloco;
+}
+
+export interface MarcaApostila {
+  instituicao: string;
+  logoJpeg: Uint8Array;
+  logoLarguraPx: number;
+  logoAlturaPx: number;
 }
 
 const ESTILOS: Record<EstiloBloco, { fonte: Fonte; tamanho: number; antes: number; recuo: number; cinza?: boolean }> = {
@@ -223,13 +257,19 @@ const ESTILOS: Record<EstiloBloco, { fonte: Fonte; tamanho: number; antes: numbe
  * A readable text document (handouts): styled headings, paragraphs and list
  * items, with the same tiny, dependency-free writer.
  */
-export async function pdfDeBlocos(titulo: string, blocos: BlocoEstilizado[], deflate?: Deflate): Promise<Uint8Array> {
+export async function pdfDeBlocos(
+  titulo: string,
+  blocos: BlocoEstilizado[],
+  deflate?: Deflate,
+  marca?: MarcaApostila
+): Promise<Uint8Array> {
   const largura = A4.largura - 2 * MARGEM.lado;
   const linhas: Linha[] = quebrarLinhas(titulo, 'Helvetica-Bold', 18, largura).map((texto, i) => ({
     texto,
     fonte: 'Helvetica-Bold' as Fonte,
     tamanho: 18,
     antes: i === 0 ? 0 : 4,
+    cor: marca ? [0.05, 0.25, 0.16] : undefined,
   }));
   for (const bloco of blocos) {
     const e = ESTILOS[bloco.estilo];
@@ -237,7 +277,7 @@ export async function pdfDeBlocos(titulo: string, blocos: BlocoEstilizado[], def
       linhas.push({ texto, fonte: e.fonte, tamanho: e.tamanho, antes: j === 0 ? e.antes : 0, recuo: e.recuo, cinza: e.cinza })
     );
   }
-  return montar(titulo, paginar(linhas), deflate);
+  return montar(titulo, paginar(linhas, marca), deflate);
 }
 
 export interface TextoPosicionado {
@@ -297,7 +337,7 @@ interface PaginaMontagem {
   largura: number;
   altura: number;
   conteudo: string;
-  imagem?: PaginaImagem;
+  imagem?: Pick<PaginaImagem, 'jpeg' | 'larguraPx' | 'alturaPx'>;
 }
 
 async function montar(titulo: string, paginas: PaginaMontagem[], deflate?: Deflate): Promise<Uint8Array> {

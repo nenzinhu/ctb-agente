@@ -10,7 +10,6 @@ const SECOES: ItemNav[] = [
   { href: '/pop', label: 'POP-PMSC', curto: 'POP', icone: 'escudo' },
   { href: '/professor', label: 'Professor Emérito', curto: 'Emérito', icone: 'professor' },
   { href: '/favoritos', label: 'Favoritos', curto: 'Favoritos', icone: 'estrela' },
-  { href: '/gerador-pdf', label: 'Dossiê PDF', curto: 'Dossiê', icone: 'arquivo' },
   { href: '/apostila', label: 'Apostila IA', curto: 'Apostila', icone: 'livro' },
   { href: '/comprimir-pdf', label: 'Comprimir PDF', curto: 'Comprimir', icone: 'comprimir' },
 ];

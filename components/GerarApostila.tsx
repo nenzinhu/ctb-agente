@@ -125,9 +125,21 @@ export default function GerarApostila() {
 
   const baixar = async () => {
     if (!capitulos) return;
-    const bytes = await pdfDeBlocos(tituloApostila, blocosDaApostila(capitulos));
-    const nome = tituloApostila.normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9]+/gi, '-').toLowerCase();
-    baixarArquivo(new Blob([bytes as BlobPart], { type: 'application/pdf' }), `${nome}.pdf`);
+    setErro(null);
+    try {
+      const logo = await fetch('/brasao-cpmrv.jpg');
+      if (!logo.ok) throw new Error('Não foi possível carregar o brasão da apostila.');
+      const bytes = await pdfDeBlocos(tituloApostila, blocosDaApostila(capitulos), undefined, {
+        instituicao: 'Polícia Militar Rodoviária de Santa Catarina',
+        logoJpeg: new Uint8Array(await logo.arrayBuffer()),
+        logoLarguraPx: 115,
+        logoAlturaPx: 144,
+      });
+      const nome = tituloApostila.normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9]+/gi, '-').toLowerCase();
+      baixarArquivo(new Blob([bytes as BlobPart], { type: 'application/pdf' }), `${nome}.pdf`);
+    } catch (error) {
+      setErro(error instanceof Error ? error.message : 'Não foi possível baixar a apostila.');
+    }
   };
 
   return (
