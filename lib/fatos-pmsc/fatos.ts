@@ -28,6 +28,23 @@ function consultaOperacional(consulta: string): string {
   return consulta;
 }
 
+function atalhosOperacionais(consulta: string, fatos: FatoPmsc[]): FatoPmsc[] {
+  const texto = normalizarBusca(consulta);
+  let naturezas: string[] = [];
+  if (/\bsuic|\b(?:tent|quer|quis|ia)\w*\s+(?:se\s+)?matar|tirar\s+a?\s*propria\s+vida|acabar\s+com\s+a?\s*propria\s+vida/.test(texto)) {
+    naturezas = ['Suicídio'];
+  } else if (
+    /\b(?:bateu|batida|colis|acid)\w*.*\b(?:ferid|feriu|machuc|lesion|vitima)\w*/.test(texto)
+    || /\b(?:ferid|feriu|machuc|lesion|vitima)\w*.*\b(?:carro|veiculo|transito|acidente)\b/.test(texto)
+  ) {
+    naturezas = [
+      'Acidente de trânsito (Com pessoa ferida ou morta)',
+      'Lesão corporal culposa em acidente de trânsito',
+    ];
+  }
+  return naturezas.flatMap((natureza) => fatos.filter((fato) => fato.natureza === natureza));
+}
+
 function indice(fatos: FatoPmsc[]): IndiceBusca<FatoPmsc> {
   let existente = indices.get(fatos);
   if (!existente) {
@@ -44,5 +61,10 @@ function indice(fatos: FatoPmsc[]): IndiceBusca<FatoPmsc> {
 export function buscarFatosPmsc(consulta: string, limite = 3, fatos = todosOsFatosPmsc()): FatoPmsc[] {
   const texto = normalizarBusca(consulta).trim();
   if (!texto || /^(?:fato|fatos|lista|natureza|potencial|ocorrencia)$/.test(texto)) return [];
-  return buscarNoIndice(consultaOperacional(consulta), indice(fatos), Math.min(3, Math.max(0, limite)));
+  const maximo = Math.min(3, Math.max(0, limite));
+  return [
+    ...atalhosOperacionais(consulta, fatos),
+    ...buscarNoIndice(consultaOperacional(consulta), indice(fatos), maximo),
+  ].filter((fato, posicao, lista) => lista.findIndex((item) => item.natureza === fato.natureza) === posicao)
+    .slice(0, maximo);
 }

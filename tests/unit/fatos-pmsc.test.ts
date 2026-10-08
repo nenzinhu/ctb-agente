@@ -20,6 +20,10 @@ const FATOS: FatoPmsc[] = [
   { grupo: 'Perturbação', natureza: 'Perturbação do trabalho ou sossego alheios', potencialOfensivo: 'Menor', pagina: 23, versao: '10/06/2019' },
   { grupo: 'Outras infrações penais', natureza: 'Vias de fato', potencialOfensivo: 'Menor Condicionado', pagina: 22, versao: '10/06/2019' },
   { grupo: 'Acidente de trânsito', natureza: 'Acidente de trânsito (Apenas danos materiais)', potencialOfensivo: 'Atípico', pagina: 1, versao: '10/06/2019' },
+  { grupo: 'Contra a vida', natureza: 'Suicídio', potencialOfensivo: 'Maior', pagina: 6, versao: '10/06/2019' },
+  { grupo: 'Contra a vida', natureza: 'Induzimento, instigação ou auxílio a suicídio', potencialOfensivo: 'Maior', pagina: 6, versao: '10/06/2019' },
+  { grupo: 'Acidente de trânsito', natureza: 'Acidente de trânsito (Com pessoa ferida ou morta)', potencialOfensivo: 'Atípico', pagina: 1, versao: '10/06/2019' },
+  { grupo: 'Crime de trânsito', natureza: 'Lesão corporal culposa em acidente de trânsito', potencialOfensivo: 'Menor Condicionado', pagina: 6, versao: '10/06/2019' },
 ];
 
 describe('catálogo Lista de Fatos PMSC Mobile', () => {
@@ -44,5 +48,17 @@ describe('catálogo Lista de Fatos PMSC Mobile', () => {
     expect(buscarFatosPmsc('fato', 3, FATOS)).toEqual([]);
     expect(buscarFatosPmsc('xyzqwerty', 3, FATOS)).toEqual([]);
     expect(buscarFatosPmsc('perdeu docs', 99, FATOS).length).toBeLessThanOrEqual(3);
+  });
+
+  it.each(['tentou se matar', 'quer tirar a própria vida', 'tent suic'])('entende tentativa de suicídio em “%s”', (consulta) => {
+    expect(buscarFatosPmsc(consulta, 3, FATOS)[0]?.natureza).toBe('Suicídio');
+  });
+
+  it('preserva as duas naturezas possíveis quando o acidente deixa pessoa ferida', () => {
+    const naturezas = buscarFatosPmsc('bateu o carro e feriu uma pessoa', 3, FATOS).map((fato) => fato.natureza);
+    expect(naturezas).toEqual(expect.arrayContaining([
+      'Acidente de trânsito (Com pessoa ferida ou morta)',
+      'Lesão corporal culposa em acidente de trânsito',
+    ]));
   });
 });

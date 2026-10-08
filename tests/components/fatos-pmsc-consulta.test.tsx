@@ -27,5 +27,6 @@ describe('FatosPmscConsulta', () => {
     expect(screen.getByText('Perturbação da tranquilidade')).toBeInTheDocument();
     expect(screen.getByText(/confira as alternativas/i)).toBeInTheDocument();
     expect(screen.getByText(/atualizada em 10\/06\/2019/i)).toBeInTheDocument();
+    expect(screen.queryByText(/^Página\s+22$/i)).not.toBeInTheDocument();
   });
 });

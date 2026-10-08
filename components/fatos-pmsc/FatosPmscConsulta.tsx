@@ -11,7 +11,6 @@ interface Alternativa {
   grupo: string;
   natureza: string;
   potencialOfensivo: string;
-  pagina: number;
   versao: string;
   compatibilidade: string;
 }
@@ -102,7 +101,6 @@ export default function FatosPmscConsulta() {
                   <dl className="mt-4 space-y-3 text-sm">
                     <div><dt className="font-semibold text-ds-subtle">Grupo</dt><dd>{item.grupo}</dd></div>
                     <div><dt className="font-semibold text-ds-subtle">Potencial ofensivo</dt><dd>{item.potencialOfensivo}</dd></div>
-                    <div><dt className="font-semibold text-ds-subtle">Fonte</dt><dd>Página {item.pagina}</dd></div>
                   </dl>
                 </article>
               ))}
