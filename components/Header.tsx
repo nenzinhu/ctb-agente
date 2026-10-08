@@ -8,6 +8,7 @@ import Icone from './ui/Icone';
 const SECOES: ItemNav[] = [
   { href: '/', label: 'Consulta CTB', curto: 'Consulta', icone: 'busca', tambem: ['/consulta'] },
   { href: '/pop', label: 'POP-PMSC', curto: 'POP', icone: 'escudo' },
+  { href: '/enquadramento', label: 'Enquadramento guiado', curto: 'Guiado', icone: 'lista' },
   { href: '/professor', label: 'Professor Emérito', curto: 'Emérito', icone: 'professor' },
   { href: '/favoritos', label: 'Favoritos', curto: 'Favoritos', icone: 'estrela' },
   { href: '/apostila', label: 'Apostila IA', curto: 'Apostila', icone: 'livro' },

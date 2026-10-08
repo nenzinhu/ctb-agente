@@ -14,6 +14,7 @@ const PUBLIC_SHELL_ROUTES = new Set([
   '/apostila',
   '/comprimir-pdf',
   '/consulta',
+  '/enquadramento',
   '/favoritos',
   '/gerador-pdf',
   '/offline',
