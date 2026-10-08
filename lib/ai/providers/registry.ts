@@ -11,6 +11,7 @@ import { OrcaRouterProvider } from './orcarouter';
 import { AnyApiProvider } from './anyapi';
 import { OpenAICompatibleProvider } from './openai-compatible';
 import type { AIProvider } from './base';
+import { getProviderHealth, recordProviderFailure, recordProviderSuccess, type ProviderHealth } from './health';
 
 export interface ProviderDescriptor {
   id: string;
@@ -237,6 +238,7 @@ export interface ProviderStatus {
   cadastro: string;
   ordem: number;
   configurado: boolean;
+  saude: ProviderHealth;
 }
 
 /**
@@ -254,6 +256,7 @@ export function listProviders(): ProviderStatus[] {
     cadastro: provider.cadastro,
     ordem: index + 1,
     configurado: Boolean(process.env[provider.envVar]),
+    saude: getProviderHealth(provider.id),
   }));
 }
 
@@ -350,20 +353,25 @@ export async function pingProvider(providerId: string, modelo?: string): Promise
       config.timeoutMs
     );
 
+    const latenciaMs = Date.now() - inicio;
+    recordProviderSuccess(descriptor.id, modeloUsado, latenciaMs);
+
     return {
       provider: descriptor.nome,
       ok: true,
       modeloUsado,
-      latenciaMs: Date.now() - inicio,
+      latenciaMs,
       resposta: resposta.trim().slice(0, 80),
     };
   } catch (error) {
+    const mensagem = error instanceof Error ? error.message : 'Falha desconhecida';
+    recordProviderFailure(descriptor.id, modeloUsado, mensagem);
     return {
       provider: descriptor.nome,
       ok: false,
       modeloUsado,
       latenciaMs: Date.now() - inicio,
-      erro: error instanceof Error ? error.message : 'Falha desconhecida',
+      erro: mensagem,
     };
   }
 }

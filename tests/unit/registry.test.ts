@@ -1,10 +1,12 @@
 import { listProviders, PROVIDERS, pingProvider } from '@/lib/ai/providers/registry';
+import { clearProviderHealth } from '@/lib/ai/providers/health';
 
 describe('AI provider registry', () => {
   const originalEnv = { ...process.env };
 
   afterEach(() => {
     process.env = { ...originalEnv };
+    clearProviderHealth();
   });
 
   it('includes nous, orcarouter and anyapi alongside the original chain', () => {
@@ -46,5 +48,22 @@ describe('AI provider registry', () => {
   it('exposes the full model list on the status object', () => {
     const openrouter = listProviders().find((p) => p.id === 'openrouter');
     expect(openrouter?.modelos.length).toBeGreaterThan(1);
+  });
+
+  it('expõe no painel o resultado operacional do último teste real', async () => {
+    process.env.GROQ_API_KEY = 'test-key';
+    const originalFetch = global.fetch;
+    (global as { fetch: unknown }).fetch = jest.fn(async () => ({
+      ok: true,
+      json: async () => ({ choices: [{ message: { content: 'ok' } }] }),
+    }));
+    try {
+      await expect(pingProvider('groq')).resolves.toMatchObject({ ok: true });
+      expect(listProviders().find((p) => p.id === 'groq')?.saude).toMatchObject({
+        status: 'funcionando', modeloTestado: expect.any(String), latenciaMs: expect.any(Number),
+      });
+    } finally {
+      (global as { fetch: unknown }).fetch = originalFetch;
+    }
   });
 });

@@ -6,6 +6,12 @@ import type { AIModel, AIProvider } from './base';
 import { PROVIDERS } from './registry';
 import { getAIPreference, type AIPreference } from '../preference';
 import { pareceRespostaEmIngles, promptReescreverEmPortugues } from '../portugues';
+import {
+  isProviderAvailable,
+  providerHealthRank,
+  recordProviderFailure,
+  recordProviderSuccess,
+} from './health';
 
 interface Elo {
   id: string;
@@ -86,8 +92,13 @@ export class ProviderChain implements AIProvider {
    * provider with its own default model.
    */
   tentativas(preferencia: AIPreference | null): Array<{ elo: Elo; modelo: string }> {
-    const preferido = preferencia && this.elos.find((e) => e.id === preferencia.providerId);
-    const resto = this.elos.filter((e) => e !== preferido).map((elo) => ({ elo, modelo: elo.modeloPadrao }));
+    const disponiveis = this.elos.filter((e) => isProviderAvailable(e.id));
+    const preferido = preferencia && disponiveis.find((e) => e.id === preferencia.providerId);
+    const resto = disponiveis
+      .filter((e) => e !== preferido)
+      .map((elo, ordem) => ({ elo, modelo: elo.modeloPadrao, ordem }))
+      .sort((a, b) => providerHealthRank(a.elo.id) - providerHealthRank(b.elo.id) || a.ordem - b.ordem)
+      .map(({ elo, modelo }) => ({ elo, modelo }));
     return preferido ? [{ elo: preferido, modelo: preferencia!.modelo }, ...resto] : resto;
   }
 
@@ -129,11 +140,14 @@ export class ProviderChain implements AIProvider {
 
     let lastError: Error | null = null;
     for (const { elo, modelo } of this.tentativas(await getAIPreference())) {
+      const inicio = Date.now();
       try {
         const texto = await withRetry(() => gerarEmPortugues(elo.provider, prompt, modelo, maxTokens, temperature));
+        recordProviderSuccess(elo.id, modelo, Date.now() - inicio);
         return { texto, provedor: elo.provider.name, modelo };
       } catch (error) {
         lastError = error instanceof Error ? error : new Error(String(error));
+        recordProviderFailure(elo.id, modelo, lastError.message);
         console.warn(`O provedor ${elo.provider.name} (${modelo}) falhou; tentando o próximo.`, error);
       }
     }
@@ -158,9 +172,16 @@ export class ProviderChain implements AIProvider {
 
     const tentativas = this.tentativas(await getAIPreference());
     const tentar = async ({ elo, modelo }: { elo: Elo; modelo: string }) => {
-      const texto = await withRetry(() => gerarEmPortugues(elo.provider, prompt, modelo, maxTokens, temperature));
-      if (!texto.trim()) throw new Error(`${elo.provider.name} (${modelo}) respondeu vazio`);
-      return { texto, provedor: elo.provider.name, modelo };
+      const inicio = Date.now();
+      try {
+        const texto = await withRetry(() => gerarEmPortugues(elo.provider, prompt, modelo, maxTokens, temperature));
+        if (!texto.trim()) throw new Error(`${elo.provider.name} (${modelo}) respondeu vazio`);
+        recordProviderSuccess(elo.id, modelo, Date.now() - inicio);
+        return { texto, provedor: elo.provider.name, modelo };
+      } catch (error) {
+        recordProviderFailure(elo.id, modelo, error instanceof Error ? error.message : String(error));
+        throw error;
+      }
     };
 
     try {

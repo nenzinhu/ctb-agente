@@ -1,11 +1,13 @@
 import { ProviderChain } from '@/lib/ai/providers/chain';
 import { listProviders, PROVIDERS } from '@/lib/ai/providers/registry';
+import { clearProviderHealth } from '@/lib/ai/providers/health';
 
 describe('ProviderChain', () => {
   const originalEnv = { ...process.env };
 
   afterEach(() => {
     process.env = { ...originalEnv };
+    clearProviderHealth();
   });
 
   it('is built from the full registry', () => {
@@ -92,6 +94,31 @@ describe('ProviderChain', () => {
       const resultado = await new ProviderChain().generateRapido('x', 8);
       expect(resultado.texto).toBe('rápida');
       expect(resultado.provedor).toBe('Mistral');
+    } finally {
+      (global as { fetch: unknown }).fetch = originalFetch;
+    }
+  });
+
+  it('rebaixa um provedor após falha e usa primeiro o que respondeu', async () => {
+    for (const p of PROVIDERS) delete process.env[p.envVar];
+    process.env.GROQ_API_KEY = 'k';
+    process.env.MISTRAL_API_KEY = 'k';
+
+    const originalFetch = global.fetch;
+    const chamadas: string[] = [];
+    (global as { fetch: unknown }).fetch = jest.fn(async (url: string) => {
+      chamadas.push(url.includes('groq') ? 'groq' : 'mistral');
+      if (url.includes('groq')) return { ok: false, status: 404, statusText: '', text: async () => '{}' };
+      return { ok: true, json: async () => ({ choices: [{ message: { content: 'resposta' } }] }) };
+    });
+
+    try {
+      const chain = new ProviderChain();
+      await chain.generateDetailed('x', 8);
+      await chain.generateDetailed('x', 8);
+      await chain.generateDetailed('x', 8);
+      expect(chamadas.filter((item) => item === 'groq')).toHaveLength(1);
+      expect(chamadas.filter((item) => item === 'mistral')).toHaveLength(3);
     } finally {
       (global as { fetch: unknown }).fetch = originalFetch;
     }
