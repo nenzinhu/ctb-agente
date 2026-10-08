@@ -3,8 +3,9 @@
 import { databaseAdminConfigured, supabaseAdmin } from '@/lib/db/client';
 import { embeddingChain } from '@/lib/ai/embeddings';
 import { MigrationPendingError, isMissingSchemaError, type Colecao } from '@/lib/ingestion/documents';
-import { reciprocalRankFusion } from './fusion';
 import { expandirSinonimos } from './sinonimos';
+import { reordenarListasBusca, type ColecaoRanking } from './reranker';
+import { rerankearComProvedores } from './provider-reranker';
 
 export interface TrechoEncontrado {
   id: string;
@@ -18,6 +19,12 @@ export interface TrechoEncontrado {
 }
 
 type Linha = Omit<TrechoEncontrado, 'score'>;
+
+const COLECAO_RANKING: Record<Colecao, ColecaoRanking> = {
+  ctb: 'ctb',
+  pop: 'pop',
+  natureza_potencial: 'natureza_pmsc',
+};
 
 const CANDIDATOS = 20;
 const TEMPO_EMBEDDING_MS = 4_000;
@@ -84,5 +91,6 @@ export async function buscarTrechos(consulta: string, colecao: Colecao, limite =
     return [];
   });
   const [texto, vetor] = await Promise.all([textoPromise, porVetor(consulta, colecao)]);
-  return reciprocalRankFusion([texto, vetor]).slice(0, limite);
+  const local = reordenarListasBusca(consulta, COLECAO_RANKING[colecao], texto, vetor);
+  return (await rerankearComProvedores(consulta, local)).slice(0, limite);
 }

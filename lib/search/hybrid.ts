@@ -1,8 +1,9 @@
 // Hybrid search over the CTB provisions: full-text (tsvector) + semantic (pgvector)
 import { searchByTsvector } from './bm25';
 import { searchByVector } from './vector';
-import { reciprocalRankFusion } from './fusion';
 import { expandirSinonimos } from './sinonimos';
+import { reordenarListasBusca } from './reranker';
+import { rerankearComProvedores } from './provider-reranker';
 import { getSettings } from '../config/settings';
 
 export interface RankedResult {
@@ -16,6 +17,8 @@ interface Linha {
   id: string;
   numero_dispositivo: string;
   texto: string;
+  rank?: number;
+  similarity?: number;
 }
 
 const TEMPO_TEXTO_MS = 1_500;
@@ -99,7 +102,8 @@ export async function hybridSearch(query: string, limit = 5): Promise<RankedResu
   ]);
 
   const peso = await getPesoInfracoes();
-  return priorizarInfracoes(reciprocalRankFusion([texto, vetor]), peso)
+  const local = priorizarInfracoes(reordenarListasBusca(query, 'ctb', texto, vetor), peso);
+  return (await rerankearComProvedores(query, local))
     .slice(0, limit)
     .map(({ id, numero_dispositivo, texto: conteudo, score }) => ({ id, numero_dispositivo, texto: conteudo, score }));
 }
