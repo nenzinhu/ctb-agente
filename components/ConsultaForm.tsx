@@ -107,7 +107,7 @@ export default function ConsultaForm({ autoFocus = false, exemplos = [] }: Consu
           autoFocus={autoFocus}
           enterKeyHint="search"
           rows={4}
-          controlClassName="min-h-[124px] resize-y leading-relaxed"
+          controlClassName="mobile-query-field min-h-[108px] resize-y leading-relaxed sm:min-h-[124px]"
           hint="Use código, artigo, parte da palavra, abreviações ou gírias como “zap”, “bafom” e “doc atrasado”. Enter consulta; Shift + Enter cria uma nova linha."
           erro={erro?.doCampo ? erro.mensagem : null}
           acao={<BotaoVoz ditado={ditado} />}
@@ -130,7 +130,7 @@ export default function ConsultaForm({ autoFocus = false, exemplos = [] }: Consu
         carregando={loading}
         textoCarregando="Consultando..."
         disabled={!query.trim()}
-        className="w-full text-base"
+        className="min-h-[48px] w-full text-base"
       >
         Consultar
       </PrimaryButton>

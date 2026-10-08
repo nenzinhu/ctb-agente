@@ -352,6 +352,15 @@ body::before {
   .consultation-lead {
     @apply mt-2 max-w-2xl text-base leading-relaxed text-ds-subtle sm:text-lg;
   }
+  .mobile-home-intro .consultation-title {
+    @apply text-2xl sm:text-[2.75rem];
+  }
+  .mobile-home-intro .consultation-lead {
+    @apply text-sm sm:text-lg;
+  }
+  .mobile-query-field {
+    field-sizing: content;
+  }
   .consultation-card {
     @apply border-t-4 border-t-ds-primary;
   }

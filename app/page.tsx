@@ -21,8 +21,8 @@ const ATALHOS: { href: string; titulo: string; texto: string; icone: NomeIcone }
 
 export default function Home() {
   return (
-    <main className="page max-w-6xl space-y-7 sm:space-y-9">
-      <div className="consultation-intro">
+    <main className="page max-w-6xl space-y-5 sm:space-y-9">
+      <div className="consultation-intro mobile-home-intro">
         <p className="eyebrow">Apoio à fiscalização</p>
         <h1 className="consultation-title">CTB Agente</h1>
         <p className="consultation-lead">Da situação ao enquadramento, com a fonte para conferir.</p>
@@ -32,7 +32,7 @@ export default function Home() {
         <SectionCard titulo="Consultar infrações e artigos" icone="busca" className="min-w-0 consultation-card">
           <ConsultaModes atual="ctb" />
           <ConsultaForm exemplos={EXEMPLOS} />
-          <RecentQueries />
+          <div id="consultas-recentes" className="scroll-mt-24"><RecentQueries /></div>
         </SectionCard>
 
         <aside className="min-w-0 space-y-5" aria-label="Ajuda para consultar">

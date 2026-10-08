@@ -23,11 +23,11 @@ const SECOES: ItemNav[] = [
 export default function Header() {
   return (
     <header className="ds-header sticky top-0 z-40 print:hidden">
-      <div className="mx-auto flex h-[52px] max-w-6xl items-center gap-2 px-4 sm:h-14 sm:gap-3 sm:px-6">
-        <Link href="/" aria-label="CTB Agente — início" className="flex min-w-0 items-center gap-2.5 rounded-control">
+      <div className="mx-auto flex h-12 max-w-6xl items-center gap-2 px-3 sm:h-14 sm:gap-3 sm:px-6">
+        <Link href="/" aria-label="CTB Agente — início" className="mobile-header-brand flex min-w-0 items-center gap-2 rounded-control sm:gap-2.5">
           {/* Decorative: the link's aria-label already names it */}
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/brasao-cpmrv.png" alt="" width={38} height={48} className="h-11 w-auto shrink-0 drop-shadow sm:h-12" />
+          <img src="/brasao-cpmrv.png" alt="" width={38} height={48} className="h-9 w-auto shrink-0 drop-shadow sm:h-12" />
           <span className="min-w-0">
             <span className="header-title block">
               <span className="text-ds-accent">CTB</span> Agente
@@ -44,14 +44,14 @@ export default function Header() {
               visitor is anonymous caches the redirect to /admin/login in the
               client router, and the stale entry then swallows the navigation
               right after a successful login. */}
-          <Link href="/admin" prefetch={false} aria-label="Painel administrativo" title="Painel administrativo" className="header-pill">
+          <Link href="/admin" prefetch={false} aria-label="Painel administrativo" title="Painel administrativo" className="header-pill hidden md:inline-flex">
             <Icone nome="engrenagem" tamanho={17} />
             <span className="hidden lg:inline">Painel</span>
           </Link>
         </div>
       </div>
 
-      <div className="header-strip">
+      <div data-testid="desktop-navigation" className="header-strip hidden md:block">
         <div className="mx-auto max-w-6xl px-4 sm:px-6">
           <NavTabs itens={SECOES} />
         </div>
