@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from 'next';
 import './globals.css';
 import Header from '@/components/Header';
+import MobileNavigation from '@/components/mobile/MobileNavigation';
 
 export const metadata: Metadata = {
   title: { default: 'CTB Agente', template: '%s · CTB Agente' },
@@ -53,6 +54,7 @@ export default function RootLayout({
         <div id="conteudo" tabIndex={-1} className="outline-none">
           {children}
         </div>
+        <MobileNavigation />
       </body>
     </html>
   );

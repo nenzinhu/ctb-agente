@@ -200,6 +200,12 @@ body {
   isolation: isolate;
 }
 
+@media (max-width: 767px) {
+  body {
+    padding-bottom: calc(4.5rem + env(safe-area-inset-bottom));
+  }
+}
+
 /* A restrained green wash keeps the search and source documents in focus. */
 body::before {
   content: '';
@@ -543,6 +549,59 @@ body::before {
     background-color: var(--ds-header-pill);
     border-color: var(--ds-header-pill-border);
   }
+
+  .mobile-nav {
+    @apply fixed inset-x-0 bottom-0 z-40 grid grid-cols-4 border-t border-ds-line bg-ds-surface shadow-overlay;
+    min-height: calc(4.5rem + env(safe-area-inset-bottom));
+    padding: 0.35rem 0.25rem max(0.35rem, env(safe-area-inset-bottom));
+  }
+  .mobile-nav-action {
+    @apply flex min-h-[52px] min-w-0 flex-col items-center justify-center gap-0.5 rounded-control px-1 text-[10px] font-semibold text-ds-subtle transition-colors duration-200;
+  }
+  .mobile-nav-action[aria-current='page'] {
+    @apply bg-ds-primary-soft text-ds-primary-strong;
+  }
+  .mobile-sheet-layer {
+    @apply fixed inset-0 z-50;
+  }
+  .mobile-sheet-backdrop {
+    @apply absolute inset-0 h-full w-full bg-black/50;
+  }
+  .mobile-sheet {
+    @apply absolute inset-x-0 bottom-0 max-h-[85dvh] overflow-y-auto rounded-t-[24px] border-t border-ds-line bg-ds-surface px-4 pb-5 shadow-overlay;
+    padding-bottom: max(1.25rem, env(safe-area-inset-bottom));
+    animation: mobile-sheet-in 180ms ease-out;
+  }
+  .mobile-sheet-handle {
+    @apply mx-auto my-2 h-1 w-10 rounded-full bg-ds-subtle/35;
+  }
+  .mobile-sheet-header {
+    @apply flex items-center justify-between gap-3 border-b border-ds-line pb-3;
+  }
+  .mobile-sheet-header h2 {
+    @apply text-lg font-bold text-ds-text;
+  }
+  .mobile-sheet-content {
+    @apply pt-3;
+  }
+  .mobile-sheet-link {
+    @apply flex min-h-[60px] items-center gap-3 rounded-control border border-ds-line bg-ds-surface p-3 text-ds-text transition-colors duration-200 hover:border-ds-primary hover:bg-ds-primary-soft;
+  }
+  .mobile-sheet-link-icon {
+    @apply grid h-10 w-10 shrink-0 place-items-center rounded-control bg-ds-primary-soft text-ds-primary-strong;
+  }
+  .mobile-sheet-link strong,
+  .mobile-sheet-link small {
+    @apply block;
+  }
+  .mobile-sheet-link small {
+    @apply mt-0.5 text-xs text-ds-subtle;
+  }
+}
+
+@keyframes mobile-sheet-in {
+  from { transform: translateY(24px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
 }
 
 @media (min-width: 768px) {
