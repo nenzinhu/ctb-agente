@@ -6,7 +6,7 @@
 import { GroqProvider } from './groq';
 import { NVIDIAProvider } from './nvidia';
 import { OpenRouterProvider } from './openrouter';
-import { NousProvider } from './nous';
+import { NOUS_FREE_MODELS, NousProvider } from './nous';
 import { OrcaRouterProvider } from './orcarouter';
 import { AnyApiProvider } from './anyapi';
 import { OpenAICompatibleProvider } from './openai-compatible';
@@ -160,14 +160,7 @@ export const PROVIDERS: ProviderDescriptor[] = [
     id: 'nous',
     nome: 'Nous Portal',
     envVar: 'NOUS_API_KEY',
-    modelos: [
-      'deepseek/deepseek-v4-flash-0731',
-      'meituan/longcat-2.0:free',
-      'qwen/qwen3.7-flash',
-      'mistralai/mistral-nemo',
-      'openai/gpt-oss-120b',
-      'meta-llama/llama-3.1-8b-instruct',
-    ],
+    modelos: [...NOUS_FREE_MODELS],
     papel: 'resposta analitica',
     cadastro: 'https://portal.nousresearch.com',
     criar: () =>

@@ -50,6 +50,21 @@ describe('AI provider registry', () => {
     expect(openrouter?.modelos.length).toBeGreaterThan(1);
   });
 
+  it('mantém no Nous Portal somente os nove modelos gratuitos aprovados', () => {
+    const nous = listProviders().find((p) => p.id === 'nous');
+    expect(nous?.modelos).toEqual([
+      'inclusionai/ling-3.0-flash-fin',
+      'inclusionai/ling-3.0-flash-sante:free',
+      'inclusionai/ling-3.1-flash',
+      'meituan/longcat-2.0:free',
+      'meituan/longcat-2.5-preview',
+      'poolside/laguna-s-2.1',
+      'poolside/laguna-xs-2.1',
+      'stepfun/step-3.7-flash',
+      'upstage/solar-mini-4',
+    ]);
+  });
+
   it('expõe no painel o resultado operacional do último teste real', async () => {
     process.env.GROQ_API_KEY = 'test-key';
     const originalFetch = global.fetch;
