@@ -1,6 +1,6 @@
 // GET /api/health — liveness probe used by the deployment guide and CI smoke tests
 import { NextResponse } from 'next/server';
-import { databaseAdminConfigured, databaseConfigured, supabase } from '@/lib/db/client';
+import { databaseAdminConfigured, databaseConfigured, supabase, supabaseAdmin } from '@/lib/db/client';
 import { listProviders } from '@/lib/ai/providers/registry';
 import { getSettings } from '@/lib/config/settings';
 
@@ -77,11 +77,15 @@ export async function GET() {
     }
 
     try {
-      const { error } = await supabase
-        .from('cache_respostas')
-        .select('*', { count: 'exact', head: true })
-        .limit(1);
-      if (error) cache = 'indisponivel';
+      if (!databaseAdminConfigured) {
+        cache = 'indisponivel';
+      } else {
+        const { error } = await supabaseAdmin
+          .from('cache_respostas')
+          .select('*', { count: 'exact', head: true })
+          .limit(1);
+        if (error) cache = 'indisponivel';
+      }
     } catch {
       cache = 'indisponivel';
     }
@@ -99,7 +103,9 @@ export async function GET() {
 
 
   if (!databaseAdminConfigured) {
-    avisos.push('Escritas administrativas indisponíveis: defina SUPABASE_SERVICE_ROLE_KEY.');
+    avisos.push(
+      'Escritas administrativas indisponíveis: defina SUPABASE_SECRET_KEY ou SUPABASE_SERVICE_ROLE_KEY.'
+    );
   }
 
   if (embeddings === 'indisponivel') {

@@ -29,7 +29,7 @@ Aplicativo PWA que permite consulta interativa da legislação de trânsito (Có
 
 ## 🏗️ Stack
 
-- **Frontend:** Next.js 15, React 19, TailwindCSS (PWA)
+- **Frontend:** Next.js 16, React 19, TailwindCSS e Serwist (PWA)
 - **Backend:** Next.js API Routes
 - **Database:** Supabase PostgreSQL + pgvector
 - **Search:** BM25 (tsvector) + pgvector embeddings
@@ -89,6 +89,7 @@ Aplicar as migrations no Supabase (SQL Editor), na ordem:
 8. `scripts/migrations-008-rag-indexacao.sql` (busca sem acento/OR, índice HNSW, base de POPs e novos formatos no bucket)
 9. `scripts/migrations-009-config-extended.sql` (configurações avançadas de busca, chunking, provedores e cache)
 10. `scripts/migrations-010-rag-precision-performance.sql` (prefixos, cobertura mínima, corte de baixa similaridade e limites seguros)
+11. `supabase/migrations/20261008032635_security_hardening.sql` (protege cache, IPs bloqueados e RPCs privilegiadas)
 
 A migration 007 é opcional: sem ela o app continua funcionando (rate limit
 legado e invalidação via fallback), mas perde a atomicidade anti-rajada e a
@@ -113,11 +114,22 @@ Depois, popular a base com dados de exemplo:
 npm run seed
 ```
 
+> `npm run seed` serve apenas para desenvolvimento. Em produção, use o CTB
+> incluído no painel e revise os enquadramentos contra as fichas MBFT oficiais.
+
+Antes de indexar a produção, execute `scripts/audit-supabase.sql` no SQL Editor,
+exporte a coluna `audit` como JSON e valide sem fornecer credenciais ao script:
+
+```bash
+npm run check:supabase-audit -- /caminho/auditoria.json
+```
+
 ## 🧪 Scripts
 
 | Comando | O que faz |
 |---|---|
-| `npm run dev` | Servidor de desenvolvimento |
+| `npm run dev` | Servidor de desenvolvimento com Turbopack |
+| `npm run dev:webpack` | Servidor de desenvolvimento com webpack (fallback) |
 | `npm run build` | Build de produção |
 | `npm run typecheck` | `tsc --noEmit` em todo o projeto |
 | `npm test` | Testes unitários, de componentes e de rotas (Jest) |
@@ -125,6 +137,7 @@ npm run seed
 | `npm run seed` | Popula o corpus inicial |
 | `npm run icons` | (Re)gera os ícones PWA sem dependências |
 | `npm run check:health` | Smoke check do deploy (health + rotas públicas) |
+| `npm run check:supabase-audit -- arquivo.json` | Interpreta a auditoria somente leitura do Supabase |
 
 ## ⏰ Cron
 

@@ -1,5 +1,5 @@
 // PDF cache: a dossiê only changes when the corpus or the requested sections change.
-import { databaseConfigured, supabase, supabaseAdmin } from '@/lib/db/client';
+import { databaseAdminConfigured, supabaseAdmin } from '@/lib/db/client';
 import { getCounters } from '@/lib/db/queries';
 
 export { buildPdfCacheKey } from './themes';
@@ -21,9 +21,9 @@ export async function getCorpusVersion(): Promise<string> {
  * @returns PDF bytes or null when missing/expired
  */
 export async function getCachedPdf(key: string): Promise<Buffer | null> {
-  if (!databaseConfigured) return null;
+  if (!databaseAdminConfigured) return null;
   try {
-    const { data, error } = await supabase
+    const { data, error } = await supabaseAdmin
       .from('cache_respostas')
       .select('resposta_completa, ttl_dias, data_ultimo_acesso')
       .eq('hash_pergunta', key)
@@ -53,7 +53,7 @@ export async function getCachedPdf(key: string): Promise<Buffer | null> {
  * @param tema - Theme label, kept for the admin panel
  */
 export async function setCachedPdf(key: string, pdf: Buffer, tema: string): Promise<void> {
-  if (!databaseConfigured) return;
+  if (!databaseAdminConfigured) return;
   try {
     const { error } = await supabaseAdmin.from('cache_respostas').upsert(
       {

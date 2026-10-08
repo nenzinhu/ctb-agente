@@ -11,6 +11,7 @@ import AdminProvedores from '@/components/admin/AdminProvedores';
 import AdminUso from '@/components/admin/AdminUso';
 import AdminLimites from '@/components/admin/AdminLimites';
 import AdminRagFineTuning from '@/components/admin/AdminRagFineTuning';
+import AdminCorpusAudit from '@/components/admin/AdminCorpusAudit';
 import Icone, { type NomeIcone } from '@/components/ui/Icone';
 import SectionCard from '@/components/ui/SectionCard';
 import TitleCard from '@/components/ui/TitleCard';
@@ -26,12 +27,13 @@ interface DashboardStats {
   lastUpdated: string | null;
 }
 
-type Aba = 'documentos' | 'pop' | 'enquadramentos' | 'rag' | 'provedores' | 'uso' | 'limites';
+type Aba = 'documentos' | 'pop' | 'enquadramentos' | 'revisao' | 'rag' | 'provedores' | 'uso' | 'limites';
 
 const ABAS: { id: Aba; label: string; icone: NomeIcone }[] = [
   { id: 'documentos', label: 'Base CTB', icone: 'livro' },
   { id: 'pop', label: 'POP-PMSC', icone: 'escudo' },
   { id: 'enquadramentos', label: 'Enquadramentos', icone: 'lista' },
+  { id: 'revisao', label: 'Revisão da base', icone: 'check' },
   { id: 'rag', label: 'RAG e ajuste fino', icone: 'busca' },
   { id: 'provedores', label: 'Provedores de IA', icone: 'faisca' },
   { id: 'uso', label: 'Uso', icone: 'relogio' },
@@ -209,6 +211,7 @@ export default function AdminDashboard() {
         )}
 
         {aba === 'enquadramentos' && <AdminEnquadramentos />}
+        {aba === 'revisao' && <AdminCorpusAudit />}
         {aba === 'rag' && <AdminRagFineTuning />}
         {aba === 'provedores' && <AdminProvedores />}
         {aba === 'uso' && <AdminUso />}

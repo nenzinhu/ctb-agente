@@ -73,6 +73,11 @@ import { GET as documentos } from '@/app/api/admin/documents/route';
 import { GET as estatisticas } from '@/app/api/admin/stats/route';
 
 const COOKIE = 'admin_session';
+const ADMIN_ENV_ORIGINAL = {
+  username: process.env.ADMIN_USERNAME,
+  passwordHash: process.env.ADMIN_PASSWORD_HASH,
+  sessionSecret: process.env.ADMIN_SESSION_SECRET,
+};
 
 /**
  * Build a JSON request for the route handlers
@@ -90,9 +95,21 @@ function requisicao(url: string, body?: unknown): NextRequest {
 
 describe('Admin API', () => {
   beforeEach(() => {
+    process.env.ADMIN_USERNAME = 'nenzinhu';
+    delete process.env.ADMIN_PASSWORD_HASH;
+    delete process.env.ADMIN_SESSION_SECRET;
     cookieStore.clear();
     dbConfigurado = true;
     for (const chave of Object.keys(respostas)) delete respostas[chave];
+  });
+
+  afterAll(() => {
+    if (ADMIN_ENV_ORIGINAL.username === undefined) delete process.env.ADMIN_USERNAME;
+    else process.env.ADMIN_USERNAME = ADMIN_ENV_ORIGINAL.username;
+    if (ADMIN_ENV_ORIGINAL.passwordHash === undefined) delete process.env.ADMIN_PASSWORD_HASH;
+    else process.env.ADMIN_PASSWORD_HASH = ADMIN_ENV_ORIGINAL.passwordHash;
+    if (ADMIN_ENV_ORIGINAL.sessionSecret === undefined) delete process.env.ADMIN_SESSION_SECRET;
+    else process.env.ADMIN_SESSION_SECRET = ADMIN_ENV_ORIGINAL.sessionSecret;
   });
 
   describe('POST /api/admin/login', () => {

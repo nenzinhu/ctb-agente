@@ -49,7 +49,7 @@ export async function POST(request: NextRequest) {
       {
         error: 'database_not_configured',
         message:
-          'Banco de dados não configurado: defina NEXT_PUBLIC_SUPABASE_URL e NEXT_PUBLIC_SUPABASE_ANON_KEY.',
+          'Banco de dados não configurado: defina NEXT_PUBLIC_SUPABASE_URL e NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY (ou NEXT_PUBLIC_SUPABASE_ANON_KEY).',
       },
       { status: 503 }
     );

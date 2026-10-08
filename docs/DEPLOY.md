@@ -44,6 +44,9 @@ No SQL Editor do Supabase, aplique **nesta ordem**:
 10. `scripts/migrations-010-rag-precision-performance.sql` — pesquisa por
    prefixos, cobertura mínima para consultas longas, limiar de similaridade
    vetorial e marcador de versão conferido por `/api/health`.
+11. `supabase/migrations/20261008032635_security_hardening.sql` — remove o
+    acesso anônimo ao cache e à lista de IPs bloqueados e restringe as RPCs
+    `SECURITY DEFINER` ao cliente privilegiado do servidor.
 
 Depois da 008: `/admin` → Base CTB → **Indexar agora** carrega o CTB
 compilado que acompanha o app (`data/acervo/`). Trechos indexados antes
@@ -77,6 +80,18 @@ npm run seed                       # popula dispositivos, enquadramentos e juris
 > (armazenados em centavos) e amparos legais antes de usar em produção — ou
 > cadastre tudo pelo painel `/admin` → Enquadramentos.
 
+Em produção, não execute o seed. Rode `scripts/audit-supabase.sql` no SQL
+Editor, exporte a única coluna `audit` como JSON e confira localmente:
+
+```bash
+npm run check:supabase-audit -- /caminho/auditoria.json
+```
+
+Só depois de eliminar os itens `BLOQUEIO`, use `/admin` → Base CTB →
+**Indexar agora**, gere os vetores pendentes e abra **Revisão da base**. Essa
+revisão compara os registros do banco com as 411 fichas MBFT, mas nunca altera
+ou exclui enquadramentos automaticamente.
+
 ## 3. Variáveis de ambiente na Vercel
 
 Settings → Environment Variables, marcadas para **Production** (e Preview, se quiser):
@@ -84,8 +99,10 @@ Settings → Environment Variables, marcadas para **Production** (e Preview, se 
 | Variável | Origem | Para que serve |
 |---|---|---|
 | `NEXT_PUBLIC_SUPABASE_URL` | Supabase → Settings → API | Conexão do banco |
-| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Supabase → Settings → API | Leitura pública |
-| `SUPABASE_SERVICE_ROLE_KEY` | Supabase → Settings → API | Escritas do painel, cache e seed |
+| `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` | Supabase → Settings → API Keys | Leitura pública (recomendado) |
+| `SUPABASE_SECRET_KEY` | Supabase → Settings → API Keys | Escritas do painel, cache e seed (somente servidor) |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Supabase → Settings → API | Alternativa legada à chave publicável |
+| `SUPABASE_SERVICE_ROLE_KEY` | Supabase → Settings → API | Alternativa legada à chave secreta |
 | `ADMIN_USERNAME` | você (opcional; padrão `nenzinhu`) | Usuário do painel master |
 | `ADMIN_PASSWORD_HASH` | bcrypt (abaixo) | Login do painel master |
 | `GROQ_API_KEY` | Groq Console | Provedor 1 (resposta rápida) / voz |
@@ -171,3 +188,5 @@ E2E_SEEDED=1 npm run test:e2e   # inclui os fluxos que exigem base populada
   troque por um logo oficial quando existir.
 - Projetos de lei vêm da API de dados abertos da Câmara e podem falhar; o
   dossiê é gerado mesmo assim, marcando a seção como sem resultados.
+- O PWA mantém somente a interface e ativos estáticos para abertura offline.
+  APIs, painel administrativo e respostas jurídicas são sempre buscados na rede.

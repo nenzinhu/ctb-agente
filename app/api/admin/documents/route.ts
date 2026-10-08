@@ -65,7 +65,7 @@ export async function GET(request: NextRequest) {
         pendentesVetor: 0,
         migracaoPendente: false,
         bancoConfigurado: false,
-        message: 'Banco não configurado: defina NEXT_PUBLIC_SUPABASE_URL e SUPABASE_SERVICE_ROLE_KEY.',
+        message: 'Banco não configurado: defina NEXT_PUBLIC_SUPABASE_URL e SUPABASE_SECRET_KEY (ou SUPABASE_SERVICE_ROLE_KEY).',
       },
       { status: 200 }
     );

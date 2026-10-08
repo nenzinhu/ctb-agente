@@ -31,7 +31,12 @@ jest.mock('../../lib/db/client', () => {
     Promise.resolve({ data: linha ? [linha] : [], error: erro }).then(resolve);
 
   const client = { from: () => chain };
-  return { databaseConfigured: true, supabase: client, supabaseAdmin: client };
+  return {
+    databaseConfigured: true,
+    databaseAdminConfigured: true,
+    supabase: client,
+    supabaseAdmin: client,
+  };
 });
 
 import {

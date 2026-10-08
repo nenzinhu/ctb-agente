@@ -21,7 +21,12 @@ jest.mock('../../lib/db/client', () => {
   };
 
   const client = { from: (tabela: string) => chain(tabela) };
-  return { databaseConfigured: true, supabase: client, supabaseAdmin: client };
+  return {
+    databaseConfigured: true,
+    databaseAdminConfigured: true,
+    supabase: client,
+    supabaseAdmin: client,
+  };
 });
 
 import {
