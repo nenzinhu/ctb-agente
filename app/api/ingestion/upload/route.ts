@@ -40,11 +40,12 @@ const UploadRequestSchema = z.discriminatedUnion('colecao', [
     dataVigenciaFim: z.string().datetime().optional().nullable(),
   }),
   z.object({ ...Base, colecao: z.literal('pop') }),
+  z.object({ ...Base, colecao: z.literal('natureza_potencial') }),
 ]);
 
 /**
  * POST /api/ingestion/upload
- * Body: { storagePath, fileName, colecao: 'ctb' | 'pop', ... } — the file
+ * Body: { storagePath, fileName, colecao: 'ctb' | 'pop' | 'natureza_potencial', ... } — the file
  * itself already lives in Supabase Storage at `storagePath`. Without
  * `colecao` the request is a CTB upload (the original contract).
  */
@@ -266,7 +267,7 @@ export async function GET(): Promise<NextResponse> {
           fields: {
             storagePath: 'Caminho retornado por /api/admin/documents/upload-url',
             fileName: 'Nome original do arquivo',
-            colecao: 'ctb (padrão) | pop',
+            colecao: 'ctb (padrão) | pop | natureza_potencial',
             titulo: 'Título opcional para exibição',
             normaId: 'Somente CTB: identificador da norma à qual o documento pertence',
             documentType: 'Somente CTB: lei | resolucao | portaria | manual',

@@ -6,9 +6,9 @@ import crypto from 'crypto';
 import { databaseConfigured, supabaseAdmin } from '@/lib/db/client';
 import type { FormatoDocumento } from './formats';
 
-export type Colecao = 'ctb' | 'pop';
+export type Colecao = 'ctb' | 'pop' | 'natureza_potencial';
 
-export const COLECOES: Colecao[] = ['ctb', 'pop'];
+export const COLECOES: Colecao[] = ['ctb', 'pop', 'natureza_potencial'];
 
 export interface DocumentoRegistro {
   id: string;

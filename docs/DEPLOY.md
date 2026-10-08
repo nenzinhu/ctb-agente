@@ -47,6 +47,8 @@ No SQL Editor do Supabase, aplique **nesta ordem**:
 11. `supabase/migrations/20261008032635_security_hardening.sql` — remove o
     acesso anônimo ao cache e à lista de IPs bloqueados e restringe as RPCs
     `SECURITY DEFINER` ao cliente privilegiado do servidor.
+12. `scripts/migrations-012-fatos-pmsc.sql` — adiciona a coleção
+    `natureza_potencial` à base de documentos da Lista de Fatos PMSC Mobile.
 
 Depois da 008: `/admin` → Base CTB → **Indexar agora** carrega o CTB
 compilado que acompanha o app (`data/acervo/`). Trechos indexados antes

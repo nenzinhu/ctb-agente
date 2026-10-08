@@ -1,0 +1,2550 @@
+--- Página 1 ---
+## Acidente de trânsito (Apenas danos materiais)
+Grupo: Acidente de trânsito
+Natureza: Acidente de trânsito (Apenas danos materiais)
+Potencial ofensivo: Atípico
+--- Página 1 ---
+## Acidente de trânsito (Com pessoa ferida ou morta)
+Grupo: Acidente de trânsito
+Natureza: Acidente de trânsito (Com pessoa ferida ou morta)
+Potencial ofensivo: Atípico
+--- Página 1 ---
+## Comércio ilegal de arma de fogo
+Grupo: Arma de fogo
+Natureza: Comércio ilegal de arma de fogo
+Potencial ofensivo: Maior
+--- Página 1 ---
+## Disparo de arma de fogo
+Grupo: Arma de fogo
+Natureza: Disparo de arma de fogo
+Potencial ofensivo: Maior
+--- Página 1 ---
+## Modificar características de arma de fogo
+Grupo: Arma de fogo
+Natureza: Modificar características de arma de fogo
+Potencial ofensivo: Maior
+--- Página 1 ---
+## Omissão de cautela na guarda de arma de fogo
+Grupo: Arma de fogo
+Natureza: Omissão de cautela na guarda de arma de fogo
+Potencial ofensivo: Menor
+--- Página 1 ---
+## Porte ilegal de arma de fogo de uso permitido
+Grupo: Arma de fogo
+Natureza: Porte ilegal de arma de fogo de uso permitido
+Potencial ofensivo: Maior
+--- Página 1 ---
+## Porte ilegal de munição ou acessório de uso permitido
+Grupo: Arma de fogo
+Natureza: Porte ilegal de munição ou acessório de uso permitido
+Potencial ofensivo: Maior
+--- Página 1 ---
+## Porte ou posse de arma branca ou simulacro
+Grupo: Arma de fogo
+Natureza: Porte ou posse de arma branca ou simulacro
+Potencial ofensivo: Menor
+--- Página 1 ---
+## Posse irregular de arma de fogo de uso permitido
+Grupo: Arma de fogo
+Natureza: Posse irregular de arma de fogo de uso permitido
+Potencial ofensivo: Maior
+--- Página 1 ---
+## Posse irregular de munição ou acessório de uso permitido
+Grupo: Arma de fogo
+Natureza: Posse irregular de munição ou acessório de uso permitido
+Potencial ofensivo: Maior
+--- Página 1 ---
+## Posse ou porte de arma de fogo com sinal identificador suprimido ou adulterado
+Grupo: Arma de fogo
+Natureza: Posse ou porte de arma de fogo com sinal identificador suprimido ou adulterado
+Potencial ofensivo: Maior
+--- Página 1 ---
+## Posse ou porte ilegal de arma de fogo de uso restrito
+Grupo: Arma de fogo
+Natureza: Posse ou porte ilegal de arma de fogo de uso restrito
+Potencial ofensivo: Maior
+--- Página 1 ---
+## Posse ou porte ilegal de munição ou acessório de uso restrito
+Grupo: Arma de fogo
+Natureza: Posse ou porte ilegal de munição ou acessório de uso restrito
+Potencial ofensivo: Maior
+--- Página 1 ---
+## Produzir, recarregar, reciclar ou adulterar munição
+Grupo: Arma de fogo
+Natureza: Produzir, recarregar, reciclar ou adulterar munição
+Potencial ofensivo: Maior
+--- Página 1 ---
+## Suprimir ou alterar sinais identificadores de arma de fogo
+Grupo: Arma de fogo
+Natureza: Suprimir ou alterar sinais identificadores de arma de fogo
+Potencial ofensivo: Maior
+--- Página 1 ---
+## Vender, entregar ou fornecer arma de fogo, acessório, munição ou explosivo a criança ou adolescente
+Grupo: Arma de fogo
+Natureza: Vender, entregar ou fornecer arma de fogo, acessório, munição ou explosivo a criança ou adolescente
+Potencial ofensivo: Maior
+--- Página 1 ---
+## Apoio a defesa civil
+Grupo: Auxílio/Apoio
+Natureza: Apoio a defesa civil
+Potencial ofensivo: Atípico
+--- Página 1 ---
+## Apoio a instituições privadas
+Grupo: Auxílio/Apoio
+Natureza: Apoio a instituições privadas
+Potencial ofensivo: Atípico
+--- Página 1 ---
+## Apoio a órgãos da administração pública
+Grupo: Auxílio/Apoio
+Natureza: Apoio a órgãos da administração pública
+Potencial ofensivo: Atípico
+--- Página 1 ---
+## Apoio ao ministério público
+Grupo: Auxílio/Apoio
+Natureza: Apoio ao ministério público
+Potencial ofensivo: Atípico
+--- Página 1 ---
+## Apoio ao poder judiciário
+Grupo: Auxílio/Apoio
+Natureza: Apoio ao poder judiciário
+Potencial ofensivo: Atípico
+--- Página 1 ---
+## Apoio aos órgãos de segurança pública
+Grupo: Auxílio/Apoio
+Natureza: Apoio aos órgãos de segurança pública
+Potencial ofensivo: Atípico
+--- Página 2 ---
+## Apoio as forças armadas
+Grupo: Auxílio/Apoio
+Natureza: Apoio as forças armadas
+Potencial ofensivo: Atípico
+--- Página 2 ---
+## Auxílio a comunidade ou pessoa com problema de saúde
+Grupo: Auxílio/Apoio
+Natureza: Auxílio a comunidade ou pessoa com problema de saúde
+Potencial ofensivo: Atípico
+--- Página 2 ---
+## Cumprimento de Mandado de Busca e Apreensão
+Grupo: Auxílio/Apoio
+Natureza: Cumprimento de Mandado de Busca e Apreensão
+Potencial ofensivo: Atípico
+--- Página 2 ---
+## Parto emergencial
+Grupo: Auxílio/Apoio
+Natureza: Parto emergencial
+Potencial ofensivo: Atípico
+--- Página 2 ---
+## Perda de documentos ou objetos
+Grupo: Auxílio/Apoio
+Natureza: Perda de documentos ou objetos
+Potencial ofensivo: Atípico
+--- Página 2 ---
+## Reaparecimento de pessoa
+Grupo: Auxílio/Apoio
+Natureza: Reaparecimento de pessoa
+Potencial ofensivo: Atípico
+--- Página 2 ---
+## Reintegração de posse
+Grupo: Auxílio/Apoio
+Natureza: Reintegração de posse
+Potencial ofensivo: Atípico
+--- Página 2 ---
+## Averiguação de pessoa em atitude suspeita
+Grupo: Averiguação
+Natureza: Averiguação de pessoa em atitude suspeita
+Potencial ofensivo: Atípico
+--- Página 2 ---
+## Averiguação de veículo suspeito
+Grupo: Averiguação
+Natureza: Averiguação de veículo suspeito
+Potencial ofensivo: Atípico
+--- Página 2 ---
+## Encontro ou recuperação de bem/objeto
+Grupo: Averiguação
+Natureza: Encontro ou recuperação de bem/objeto
+Potencial ofensivo: Atípico
+--- Página 2 ---
+## Fiscalização de Ambulantes
+Grupo: Averiguação
+Natureza: Fiscalização de Ambulantes
+Potencial ofensivo: Atípico
+--- Página 2 ---
+## Fiscalização de apenados em regime aberto
+Grupo: Averiguação
+Natureza: Fiscalização de apenados em regime aberto
+Potencial ofensivo: Atípico
+--- Página 2 ---
+## Fiscalização de ordem pública em estabelecimentos comerciais e eventos
+Grupo: Averiguação
+Natureza: Fiscalização de ordem pública em estabelecimentos comerciais e eventos
+Potencial ofensivo: Atípico
+--- Página 2 ---
+## Ameaça de bomba/artefatos explosivos
+Grupo: Bomba/Explosivo
+Natureza: Ameaça de bomba/artefatos explosivos
+Potencial ofensivo: Maior
+--- Página 2 ---
+## Explosão (Acidente)
+Grupo: Bomba/Explosivo
+Natureza: Explosão (Acidente)
+Potencial ofensivo: Atípico
+--- Página 2 ---
+## Explosão (Crime) - Culposa
+Grupo: Bomba/Explosivo
+Natureza: Explosão (Crime) - Culposa
+Potencial ofensivo: Menor
+--- Página 2 ---
+## Explosão (Crime) - Dolosa
+Grupo: Bomba/Explosivo
+Natureza: Explosão (Crime) - Dolosa
+Potencial ofensivo: Maior
+--- Página 2 ---
+## Fabrico, fornecimento, aquisição, posse ou transporte de explosivos, gás tóxico ou asfixiante
+Grupo: Bomba/Explosivo
+Natureza: Fabrico, fornecimento, aquisição, posse ou transporte de explosivos, gás tóxico ou asfixiante
+Potencial ofensivo: Menor
+--- Página 2 ---
+## Posse ou porte de artefato explosivo ou incendiário
+Grupo: Bomba/Explosivo
+Natureza: Posse ou porte de artefato explosivo ou incendiário
+Potencial ofensivo: Maior
+--- Página 2 ---
+## Afogamento
+Grupo: Busca e salvamento
+Natureza: Afogamento
+Potencial ofensivo: Atípico
+--- Página 2 ---
+## Desaparecimento de pessoa
+Grupo: Busca e salvamento
+Natureza: Desaparecimento de pessoa
+Potencial ofensivo: Atípico
+--- Página 2 ---
+## Embarcação a deriva
+Grupo: Busca e salvamento
+Natureza: Embarcação a deriva
+Potencial ofensivo: Atípico
+--- Página 2 ---
+## Pessoa presa na edificação
+Grupo: Busca e salvamento
+Natureza: Pessoa presa na edificação
+Potencial ofensivo: Atípico
+--- Página 3 ---
+## Soterramento
+Grupo: Busca e salvamento
+Natureza: Soterramento
+Potencial ofensivo: Atípico
+--- Página 3 ---
+## Vazamento de gás
+Grupo: Busca e salvamento
+Natureza: Vazamento de gás
+Potencial ofensivo: Atípico
+--- Página 3 ---
+## Infração administrativa de trânsito
+Grupo: Conflito de trânsito
+Natureza: Infração administrativa de trânsito
+Potencial ofensivo: Atípico
+--- Página 3 ---
+## Medidas administrativas do CTB (Art. 269)
+Grupo: Conflito de trânsito
+Natureza: Medidas administrativas do CTB (Art. 269)
+Potencial ofensivo: Atípico
+--- Página 3 ---
+## Semáforos ou placas de sinalização danificados
+Grupo: Conflito de trânsito
+Natureza: Semáforos ou placas de sinalização danificados
+Potencial ofensivo: Atípico
+--- Página 3 ---
+## Abandonar idoso em hospital, casa de saúde ou em entidade
+Grupo: Contra a pessoa
+Natureza: Abandonar idoso em hospital, casa de saúde ou em entidade
+Potencial ofensivo: Menor
+--- Página 3 ---
+## Abandono de incapaz
+Grupo: Contra a pessoa
+Natureza: Abandono de incapaz
+Potencial ofensivo: Maior
+--- Página 3 ---
+## Abandono intelectual
+Grupo: Contra a pessoa
+Natureza: Abandono intelectual
+Potencial ofensivo: Menor
+--- Página 3 ---
+## Abandono material
+Grupo: Contra a pessoa
+Natureza: Abandono material
+Potencial ofensivo: Maior
+--- Página 3 ---
+## Abuso de incapazes
+Grupo: Contra a pessoa
+Natureza: Abuso de incapazes
+Potencial ofensivo: Maior
+--- Página 3 ---
+## Alienação parental
+Grupo: Contra a pessoa
+Natureza: Alienação parental
+Potencial ofensivo: Menor
+--- Página 3 ---
+## Ameaça
+Grupo: Contra a pessoa
+Natureza: Ameaça
+Potencial ofensivo: Menor Condicionado
+--- Página 3 ---
+## Calúnia
+Grupo: Contra a pessoa
+Natureza: Calúnia
+Potencial ofensivo: Menor Condicionado
+--- Página 3 ---
+## Condicionamento de atendimento médico-hospitalar emergencial
+Grupo: Contra a pessoa
+Natureza: Condicionamento de atendimento médico-hospitalar emergencial
+Potencial ofensivo: Menor
+--- Página 3 ---
+## Constrangimento ilegal
+Grupo: Contra a pessoa
+Natureza: Constrangimento ilegal
+Potencial ofensivo: Menor
+--- Página 3 ---
+## Deixar de prestar assistência ao idoso ou dificultar sua assistência à saúde ou não pedir o socorro
+Grupo: Contra a pessoa
+Natureza: Deixar de prestar assistência ao idoso ou dificultar sua assistência à saúde ou não pedir o socorro
+Potencial ofensivo: Menor
+--- Página 3 ---
+## Deixar de recompor cadáver, devolvendo-lhe aspecto condigno, para sepultamento ou deixar de entregar ou retardar sua entrega aos familiares ou interessados
+Grupo: Contra a pessoa
+Natureza: Deixar de recompor cadáver, devolvendo-lhe aspecto condigno, para sepultamento ou deixar de entregar ou retardar sua entrega aos familiares ou interessados
+Potencial ofensivo: Menor
+--- Página 3 ---
+## Descumprimento de medida protetiva de urgência
+Grupo: Contra a pessoa
+Natureza: Descumprimento de medida protetiva de urgência
+Potencial ofensivo: Menor
+--- Página 3 ---
+## Desdenhar, humilhar, menosprezar ou discriminar pessoa idosa
+Grupo: Contra a pessoa
+Natureza: Desdenhar, humilhar, menosprezar ou discriminar pessoa idosa
+Potencial ofensivo: Menor
+--- Página 3 ---
+## Difamação
+Grupo: Contra a pessoa
+Natureza: Difamação
+Potencial ofensivo: Menor Condicionado
+--- Página 3 ---
+## Discriminação dos portadores de HIV e doentes de AIDS
+Grupo: Contra a pessoa
+Natureza: Discriminação dos portadores de HIV e doentes de AIDS
+Potencial ofensivo: Menor
+--- Página 3 ---
+## Discriminar idoso, dificultando o acesso ao exercício da cidadania
+Grupo: Contra a pessoa
+Natureza: Discriminar idoso, dificultando o acesso ao exercício da cidadania
+Potencial ofensivo: Menor
+--- Página 3 ---
+## Expor a perigo a integridade e a saúde, física, psíquica do idoso resultando lesão corporal grave
+Grupo: Contra a pessoa
+Natureza: Expor a perigo a integridade e a saúde, física, psíquica do idoso resultando lesão corporal grave
+Potencial ofensivo: Menor
+--- Página 4 ---
+## Expor a perigo a integridade e a saúde, física, psíquica do idoso submetendo-o a condições desumanas
+Grupo: Contra a pessoa
+Natureza: Expor a perigo a integridade e a saúde, física, psíquica do idoso submetendo-o a condições desumanas
+Potencial ofensivo: Menor
+--- Página 4 ---
+## Exposição ou abandono de recém-nascido
+Grupo: Contra a pessoa
+Natureza: Exposição ou abandono de recém-nascido
+Potencial ofensivo: Maior
+--- Página 4 ---
+## Extorsão
+Grupo: Contra a pessoa
+Natureza: Extorsão
+Potencial ofensivo: Maior
+--- Página 4 ---
+## Impedir o acesso ao uso de transportes públicos por racismo
+Grupo: Contra a pessoa
+Natureza: Impedir o acesso ao uso de transportes públicos por racismo
+Potencial ofensivo: Maior
+--- Página 4 ---
+## Impedir o acesso ou recusar atendimento em locais esportivos, casas de diversões ou clubes sociais abertos ao público por racismo
+Grupo: Contra a pessoa
+Natureza: Impedir o acesso ou recusar atendimento em locais esportivos, casas de diversões ou clubes sociais abertos ao público por racismo
+Potencial ofensivo: Maior
+--- Página 4 ---
+## Impedir o acesso ou recusar atendimento em restaurantes, bares ou locais semelhantes abertos ao público por racismo
+Grupo: Contra a pessoa
+Natureza: Impedir o acesso ou recusar atendimento em restaurantes, bares ou locais semelhantes abertos ao público por racismo
+Potencial ofensivo: Maior
+--- Página 4 ---
+## Impedir o acesso ou recusar hospedagem em hotel, pensão, ou qualquer estabelecimento similar por racismo
+Grupo: Contra a pessoa
+Natureza: Impedir o acesso ou recusar hospedagem em hotel, pensão, ou qualquer estabelecimento similar por racismo
+Potencial ofensivo: Maior
+--- Página 4 ---
+## Injúria
+Grupo: Contra a pessoa
+Natureza: Injúria
+Potencial ofensivo: Menor Condicionado
+--- Página 4 ---
+## Injúria qualificada pelo preconceito
+Grupo: Contra a pessoa
+Natureza: Injúria qualificada pelo preconceito
+Potencial ofensivo: Menor Condicionado
+--- Página 4 ---
+## Intimidação sistemática (Bullying)
+Grupo: Contra a pessoa
+Natureza: Intimidação sistemática (Bullying)
+Potencial ofensivo: Atípico
+--- Página 4 ---
+## Lesão corporal - Culposa
+Grupo: Contra a pessoa
+Natureza: Lesão corporal - Culposa
+Potencial ofensivo: Menor Condicionado
+--- Página 4 ---
+## Lesão corporal grave ou gravíssima - Dolosa
+Grupo: Contra a pessoa
+Natureza: Lesão corporal grave ou gravíssima - Dolosa
+Potencial ofensivo: Maior
+--- Página 4 ---
+## Lesão corporal leve - Dolosa
+Grupo: Contra a pessoa
+Natureza: Lesão corporal leve - Dolosa
+Potencial ofensivo: Menor Condicionado
+--- Página 4 ---
+## Maus-tratos
+Grupo: Contra a pessoa
+Natureza: Maus-tratos
+Potencial ofensivo: Menor
+--- Página 4 ---
+## Omissão de socorro
+Grupo: Contra a pessoa
+Natureza: Omissão de socorro
+Potencial ofensivo: Menor
+--- Página 4 ---
+## Perigo de contágio de moléstia grave
+Grupo: Contra a pessoa
+Natureza: Perigo de contágio de moléstia grave
+Potencial ofensivo: Menor Condicionado
+--- Página 4 ---
+## Perigo de contágio venéreo
+Grupo: Contra a pessoa
+Natureza: Perigo de contágio venéreo
+Potencial ofensivo: Menor Condicionado
+--- Página 4 ---
+## Perigo para a vida ou saúde de outrem
+Grupo: Contra a pessoa
+Natureza: Perigo para a vida ou saúde de outrem
+Potencial ofensivo: Menor
+--- Página 4 ---
+## Pessoa morta em confronto por agente público em serviço
+Grupo: Contra a pessoa
+Natureza: Pessoa morta em confronto por agente público em serviço
+Potencial ofensivo: Maior
+--- Página 4 ---
+## Pessoa morta em confronto por agente público fora de serviço
+Grupo: Contra a pessoa
+Natureza: Pessoa morta em confronto por agente público fora de serviço
+Potencial ofensivo: Maior
+--- Página 4 ---
+## Praticar, induzir ou incitar discriminação de pessoa em razão de sua deficiência
+Grupo: Contra a pessoa
+Natureza: Praticar, induzir ou incitar discriminação de pessoa em razão de sua deficiência
+Potencial ofensivo: Menor
+--- Página 4 ---
+## Prometer ou entregar filho a terceiro, mediante pagamento
+Grupo: Contra a pessoa
+Natureza: Prometer ou entregar filho a terceiro, mediante pagamento
+Potencial ofensivo: Maior
+--- Página 4 ---
+## Publicar anúncio ou apelo público em desacordo com o disposto no art. 11 da Lei 9.434/1997
+Grupo: Contra a pessoa
+Natureza: Publicar anúncio ou apelo público em desacordo com o disposto no art. 11 da Lei 9.434/1997
+Potencial ofensivo: Menor
+--- Página 5 ---
+## Racismo (Praticar, induzir ou incitar a discriminação ou preconceito de raça, cor, etnia, religião ou procedência nacional)
+Grupo: Contra a pessoa
+Natureza: Racismo (Praticar, induzir ou incitar a discriminação ou preconceito de raça, cor, etnia, religião ou procedência nacional)
+Potencial ofensivo: Maior
+--- Página 5 ---
+## Realizar transplante ou enxerto em desacordo com dispositivos legais
+Grupo: Contra a pessoa
+Natureza: Realizar transplante ou enxerto em desacordo com dispositivos legais
+Potencial ofensivo: Menor
+--- Página 5 ---
+## Realizar transplante ou enxerto utilizando tecidos, órgãos ou partes do corpo humano de que se tem ciência terem sido obtidos em desacordo com os dispositivos legais
+Grupo: Contra a pessoa
+Natureza: Realizar transplante ou enxerto utilizando tecidos, órgãos ou partes do corpo humano de que se tem ciência terem sido obtidos em desacordo com os dispositivos legais
+Potencial ofensivo: Maior
+--- Página 5 ---
+## Recolher, transportar, guardar ou distribuir partes do corpo humano de que se tem ciência terem sido obtidos em desacordo com os dispositivos legais
+Grupo: Contra a pessoa
+Natureza: Recolher, transportar, guardar ou distribuir partes do corpo humano de que se tem ciência terem sido obtidos em desacordo com os dispositivos legais
+Potencial ofensivo: Menor
+--- Página 5 ---
+## Recusar ou impedir acesso a estabelecimento comercial, negando servir cliente ou comprador por racismo
+Grupo: Contra a pessoa
+Natureza: Recusar ou impedir acesso a estabelecimento comercial, negando servir cliente ou comprador por racismo
+Potencial ofensivo: Maior
+--- Página 5 ---
+## Redução a condição análoga à de escravo
+Grupo: Contra a pessoa
+Natureza: Redução a condição análoga à de escravo
+Potencial ofensivo: Maior
+--- Página 5 ---
+## Rixa
+Grupo: Contra a pessoa
+Natureza: Rixa
+Potencial ofensivo: Menor
+--- Página 5 ---
+## Sequestro e cárcere privado
+Grupo: Contra a pessoa
+Natureza: Sequestro e cárcere privado
+Potencial ofensivo: Maior
+--- Página 5 ---
+## Tortura
+Grupo: Contra a pessoa
+Natureza: Tortura
+Potencial ofensivo: Maior
+--- Página 5 ---
+## Abandono de incapaz com resultado morte
+Grupo: Contra a vida
+Natureza: Abandono de incapaz com resultado morte
+Potencial ofensivo: Maior
+--- Página 5 ---
+## Aborto provocado pela gestante
+Grupo: Contra a vida
+Natureza: Aborto provocado pela gestante
+Potencial ofensivo: Maior
+--- Página 5 ---
+## Aborto provocado por terceiro com consentimento da gestante
+Grupo: Contra a vida
+Natureza: Aborto provocado por terceiro com consentimento da gestante
+Potencial ofensivo: Maior
+--- Página 5 ---
+## Aborto provocado por terceiro seguido de morte da gestante
+Grupo: Contra a vida
+Natureza: Aborto provocado por terceiro seguido de morte da gestante
+Potencial ofensivo: Maior
+--- Página 5 ---
+## Aborto provocado por terceiro sem consentimento da gestante
+Grupo: Contra a vida
+Natureza: Aborto provocado por terceiro sem consentimento da gestante
+Potencial ofensivo: Maior
+--- Página 5 ---
+## Encontro de feto abandonado
+Grupo: Contra a vida
+Natureza: Encontro de feto abandonado
+Potencial ofensivo: Maior
+--- Página 5 ---
+## Estupro com resultado morte
+Grupo: Contra a vida
+Natureza: Estupro com resultado morte
+Potencial ofensivo: Maior
+--- Página 5 ---
+## Estupro de vulnerável com resultado morte
+Grupo: Contra a vida
+Natureza: Estupro de vulnerável com resultado morte
+Potencial ofensivo: Maior
+--- Página 5 ---
+## Expor a perigo a integridade e a saúde, física, psíquica do idoso resultando morte
+Grupo: Contra a vida
+Natureza: Expor a perigo a integridade e a saúde, física, psíquica do idoso resultando morte
+Potencial ofensivo: Maior
+--- Página 5 ---
+## Exposição ou abandono de recém-nascido com resultado morte
+Grupo: Contra a vida
+Natureza: Exposição ou abandono de recém-nascido com resultado morte
+Potencial ofensivo: Maior
+--- Página 5 ---
+## Extorsão com resultado morte
+Grupo: Contra a vida
+Natureza: Extorsão com resultado morte
+Potencial ofensivo: Maior
+--- Página 5 ---
+## Extorsão mediante sequestro com resultado morte
+Grupo: Contra a vida
+Natureza: Extorsão mediante sequestro com resultado morte
+Potencial ofensivo: Maior
+--- Página 5 ---
+## Feminicídio
+Grupo: Contra a vida
+Natureza: Feminicídio
+Potencial ofensivo: Maior
+--- Página 6 ---
+## Homicídio - Culposo
+Grupo: Contra a vida
+Natureza: Homicídio - Culposo
+Potencial ofensivo: Maior
+--- Página 6 ---
+## Homicídio - Doloso
+Grupo: Contra a vida
+Natureza: Homicídio - Doloso
+Potencial ofensivo: Maior
+--- Página 6 ---
+## Induzimento, instigação ou auxílio a suicídio
+Grupo: Contra a vida
+Natureza: Induzimento, instigação ou auxílio a suicídio
+Potencial ofensivo: Maior
+--- Página 6 ---
+## Infanticídio
+Grupo: Contra a vida
+Natureza: Infanticídio
+Potencial ofensivo: Maior
+--- Página 6 ---
+## Latrocínio
+Grupo: Contra a vida
+Natureza: Latrocínio
+Potencial ofensivo: Maior
+--- Página 6 ---
+## Maus-tratos seguido de morte
+Grupo: Contra a vida
+Natureza: Maus-tratos seguido de morte
+Potencial ofensivo: Maior
+--- Página 6 ---
+## Morte acidental
+Grupo: Contra a vida
+Natureza: Morte acidental
+Potencial ofensivo: Atípico
+--- Página 6 ---
+## Morte aparentemente natural
+Grupo: Contra a vida
+Natureza: Morte aparentemente natural
+Potencial ofensivo: Atípico
+--- Página 6 ---
+## Omissão de socorro com resultado morte
+Grupo: Contra a vida
+Natureza: Omissão de socorro com resultado morte
+Potencial ofensivo: Menor
+--- Página 6 ---
+## Pessoa ferida em confronto por agente público em serviço
+Grupo: Contra a vida
+Natureza: Pessoa ferida em confronto por agente público em serviço
+Potencial ofensivo: Maior
+--- Página 6 ---
+## Pessoa ferida em confronto por agente público fora de serviço
+Grupo: Contra a vida
+Natureza: Pessoa ferida em confronto por agente público fora de serviço
+Potencial ofensivo: Maior
+--- Página 6 ---
+## Suicídio
+Grupo: Contra a vida
+Natureza: Suicídio
+Potencial ofensivo: Maior
+--- Página 6 ---
+## Tortura seguida de morte
+Grupo: Contra a vida
+Natureza: Tortura seguida de morte
+Potencial ofensivo: Maior
+--- Página 6 ---
+## Afastar-se o condutor do veículo do local do acidente, para fugir à responsabilidade
+Grupo: Crime de trânsito
+Natureza: Afastar-se o condutor do veículo do local do acidente, para fugir à responsabilidade
+Potencial ofensivo: Menor
+--- Página 6 ---
+## Deixar de entregar documento de habilitação no prazo pela violação da suspensão ou proibição de dirigir
+Grupo: Crime de trânsito
+Natureza: Deixar de entregar documento de habilitação no prazo pela violação da suspensão ou proibição de dirigir
+Potencial ofensivo: Menor
+--- Página 6 ---
+## Deixar o condutor de veículo de prestar socorro à vítima
+Grupo: Crime de trânsito
+Natureza: Deixar o condutor de veículo de prestar socorro à vítima
+Potencial ofensivo: Menor
+--- Página 6 ---
+## Dirigir sem habilitação ou permissão, ou cassado o direito de dirigir, gerando perigo de dano
+Grupo: Crime de trânsito
+Natureza: Dirigir sem habilitação ou permissão, ou cassado o direito de dirigir, gerando perigo de dano
+Potencial ofensivo: Menor
+--- Página 6 ---
+## Dirigir sob efeito de álcool e/ou droga - embriaguez ao volante
+Grupo: Crime de trânsito
+Natureza: Dirigir sob efeito de álcool e/ou droga - embriaguez ao volante
+Potencial ofensivo: Maior
+--- Página 6 ---
+## Homicídio culposo em acidente de trânsito
+Grupo: Crime de trânsito
+Natureza: Homicídio culposo em acidente de trânsito
+Potencial ofensivo: Maior
+--- Página 6 ---
+## Inovar, artificiosamente, em acidente de trânsito com vítima a fim de induzir a erro agente público
+Grupo: Crime de trânsito
+Natureza: Inovar, artificiosamente, em acidente de trânsito com vítima a fim de induzir a erro agente público
+Potencial ofensivo: Menor
+--- Página 6 ---
+## Lesão corporal culposa em acidente de trânsito
+Grupo: Crime de trânsito
+Natureza: Lesão corporal culposa em acidente de trânsito
+Potencial ofensivo: Menor Condicionado
+--- Página 6 ---
+## Participar de racha ou exibição de manobra perigosa, sem autorização, gerando situação de risco a incolumidade
+Grupo: Crime de trânsito
+Natureza: Participar de racha ou exibição de manobra perigosa, sem autorização, gerando situação de risco a incolumidade
+Potencial ofensivo: Maior
+--- Página 6 ---
+## Participar de racha ou exibição de manobra perigosa, sem autorização, resultando em lesão corporal de natureza grave
+Grupo: Crime de trânsito
+Natureza: Participar de racha ou exibição de manobra perigosa, sem autorização, resultando em lesão corporal de natureza grave
+Potencial ofensivo: Maior
+--- Página 7 ---
+## Participar de racha ou exibição de manobra perigosa, sem autorização, resultando em morte
+Grupo: Crime de trânsito
+Natureza: Participar de racha ou exibição de manobra perigosa, sem autorização, resultando em morte
+Potencial ofensivo: Maior
+--- Página 7 ---
+## Permitir, confiar ou entregar direção de veículo automotor a pessoa não habilitada, com habilitação cassada, com o direito de dirigir suspenso ou sem condições de conduzi-lo com segurança
+Grupo: Crime de trânsito
+Natureza: Permitir, confiar ou entregar direção de veículo automotor a pessoa não habilitada, com habilitação cassada, com o direito de dirigir suspenso ou sem condições de conduzi-lo com segurança
+Potencial ofensivo: Menor
+--- Página 7 ---
+## Trafegar em velocidade incompatível com a segurança em locais com grande movimentação de pessoas, gerando perigo de dano
+Grupo: Crime de trânsito
+Natureza: Trafegar em velocidade incompatível com a segurança em locais com grande movimentação de pessoas, gerando perigo de dano
+Potencial ofensivo: Menor
+--- Página 7 ---
+## Violar a suspensão ou a proibição de se obter a permissão ou a habilitação para dirigir
+Grupo: Crime de trânsito
+Natureza: Violar a suspensão ou a proibição de se obter a permissão ou a habilitação para dirigir
+Potencial ofensivo: Menor
+--- Página 7 ---
+## Dano
+Grupo: Dano
+Natureza: Dano
+Potencial ofensivo: Menor Condicionado
+--- Página 7 ---
+## Dano contra patrimônio público
+Grupo: Dano
+Natureza: Dano contra patrimônio público
+Potencial ofensivo: Maior
+--- Página 7 ---
+## Dano em coisa de valor artístico, arqueológico ou histórico
+Grupo: Dano
+Natureza: Dano em coisa de valor artístico, arqueológico ou histórico
+Potencial ofensivo: Menor
+--- Página 7 ---
+## Tirar, suprimir, destruir ou danificar coisa própria, que se acha em poder de terceiro por determinação judicial ou convenção
+Grupo: Dano
+Natureza: Tirar, suprimir, destruir ou danificar coisa própria, que se acha em poder de terceiro por determinação judicial ou convenção
+Potencial ofensivo: Menor
+--- Página 7 ---
+## Deixar de alertar, por recomendações escritas ostensivas, sobre a periculosidade do serviço
+Grupo: Defesa do consumidor
+Natureza: Deixar de alertar, por recomendações escritas ostensivas, sobre a periculosidade do serviço
+Potencial ofensivo: Menor
+--- Página 7 ---
+## Deixar de corrigir informação de consumidor de cadastro, ficha ou registro que sabe ser inexata
+Grupo: Defesa do consumidor
+Natureza: Deixar de corrigir informação de consumidor de cadastro, ficha ou registro que sabe ser inexata
+Potencial ofensivo: Menor
+--- Página 7 ---
+## Deixar de entregar termo de garantia adequadamente preenchido e com especificação clara do conteúdo
+Grupo: Defesa do consumidor
+Natureza: Deixar de entregar termo de garantia adequadamente preenchido e com especificação clara do conteúdo
+Potencial ofensivo: Menor
+--- Página 7 ---
+## Deixar de retirar do mercado, quando determinado, produtos nocivos ou perigosos
+Grupo: Defesa do consumidor
+Natureza: Deixar de retirar do mercado, quando determinado, produtos nocivos ou perigosos
+Potencial ofensivo: Menor
+--- Página 7 ---
+## Desacordo comercial
+Grupo: Defesa do consumidor
+Natureza: Desacordo comercial
+Potencial ofensivo: Atípico
+--- Página 7 ---
+## Empregar na reparação de produtos, peça ou componente de reposição usado, sem autorização do consumidor
+Grupo: Defesa do consumidor
+Natureza: Empregar na reparação de produtos, peça ou componente de reposição usado, sem autorização do consumidor
+Potencial ofensivo: Menor
+--- Página 7 ---
+## Executar serviço de alto grau de periculosidade, contrariando determinação de autoridade competente
+Grupo: Defesa do consumidor
+Natureza: Executar serviço de alto grau de periculosidade, contrariando determinação de autoridade competente
+Potencial ofensivo: Menor
+--- Página 7 ---
+## Fabricar, vender, expor à venda, ter em depósito para vender ou entregar a consumo coisa ou substância nociva à saúde - Culposo
+Grupo: Defesa do Consumidor
+Natureza: Fabricar, vender, expor à venda, ter em depósito para vender ou entregar a consumo coisa ou substância nociva à saúde - Culposo
+Potencial ofensivo: Maior
+--- Página 7 ---
+## Fabricar, vender, expor à venda, ter em depósito para vender ou entregar a consumo coisa ou substância nociva à saúde - Doloso
+Grupo: Defesa do Consumidor
+Natureza: Fabricar, vender, expor à venda, ter em depósito para vender ou entregar a consumo coisa ou substância nociva à saúde - Doloso
+Potencial ofensivo: Maior
+--- Página 7 ---
+## Falsificação, corrupção, adulteração ou alteração de produtos destinados a fins terapêuticos ou medicinais - Doloso
+Grupo: Defesa do Consumidor
+Natureza: Falsificação, corrupção, adulteração ou alteração de produtos destinados a fins terapêuticos ou medicinais - Doloso
+Potencial ofensivo: Menor
+--- Página 7 ---
+## Favorecer ou preferir comprador ou freguês em detrimento de outro
+Grupo: Defesa do consumidor
+Natureza: Favorecer ou preferir comprador ou freguês em detrimento de outro
+Potencial ofensivo: Menor
+--- Página 7 ---
+## Fazer afirmação falsa ou enganosa sobre natureza, característica, qualidade de produto ou serviço ou patrocinar a oferta
+Grupo: Defesa do consumidor
+Natureza: Fazer afirmação falsa ou enganosa sobre natureza, característica, qualidade de produto ou serviço ou patrocinar a oferta
+Potencial ofensivo: Menor
+--- Página 7 ---
+## Fazer ou promover publicidade que sabe ou deveria saber ser capaz de induzir o consumidor a se comportar de forma prejudicial ou perigosa
+Grupo: Defesa do consumidor
+Natureza: Fazer ou promover publicidade que sabe ou deveria saber ser capaz de induzir o consumidor a se comportar de forma prejudicial ou perigosa
+Potencial ofensivo: Menor
+--- Página 7 ---
+## Fazer ou promover publicidade que sabe ou deveria saber ser enganosa ou abusiva
+Grupo: Defesa do consumidor
+Natureza: Fazer ou promover publicidade que sabe ou deveria saber ser enganosa ou abusiva
+Potencial ofensivo: Menor
+--- Página 7 ---
+## Fazer, promover publicidade capaz de induzir consumidor a se comportar prejudicialmente a sua saúde
+Grupo: Defesa do consumidor
+Natureza: Fazer, promover publicidade capaz de induzir consumidor a se comportar prejudicialmente a sua saúde
+Potencial ofensivo: Menor
+--- Página 8 ---
+## Fraudar preços
+Grupo: Defesa do consumidor
+Natureza: Fraudar preços
+Potencial ofensivo: Maior
+--- Página 8 ---
+## Impedir, dificultar acesso do consumidor a informações sobre ele em cadastro, fichas e registros
+Grupo: Defesa do consumidor
+Natureza: Impedir, dificultar acesso do consumidor a informações sobre ele em cadastro, fichas e registros
+Potencial ofensivo: Menor
+--- Página 8 ---
+## Invólucro ou recipiente com falsa indicação
+Grupo: Defesa do Consumidor
+Natureza: Invólucro ou recipiente com falsa indicação
+Potencial ofensivo: Maior
+--- Página 8 ---
+## Omitir dizeres sobre sinais de nocividade de produtos, nas embalagens, invólucros ou recipientes - Culposo
+Grupo: Defesa do consumidor
+Natureza: Omitir dizeres sobre sinais de nocividade de produtos, nas embalagens, invólucros ou recipientes - Culposo
+Potencial ofensivo: Menor
+--- Página 8 ---
+## Omitir dizeres sobre sinais de nocividade de produtos, nas embalagens, invólucros ou recipientes - Doloso
+Grupo: Defesa do consumidor
+Natureza: Omitir dizeres sobre sinais de nocividade de produtos, nas embalagens, invólucros ou recipientes - Doloso
+Potencial ofensivo: Menor
+--- Página 8 ---
+## Recusar em comércio serviços essenciais, sonegar mercadoria ou recusar venda para pronto pagamento
+Grupo: Defesa do consumidor
+Natureza: Recusar em comércio serviços essenciais, sonegar mercadoria ou recusar venda para pronto pagamento
+Potencial ofensivo: Menor
+--- Página 8 ---
+## Retenção ilegal de documento de identificação
+Grupo: Defesa do Consumidor
+Natureza: Retenção ilegal de documento de identificação
+Potencial ofensivo: Menor
+--- Página 8 ---
+## Utilizar, na cobrança de dívidas, de constrangimento que exponha o consumidor a ridículo
+Grupo: Defesa do consumidor
+Natureza: Utilizar, na cobrança de dívidas, de constrangimento que exponha o consumidor a ridículo
+Potencial ofensivo: Menor
+--- Página 8 ---
+## Vender ou expor à venda mercadoria em desacordo com as prescrições legais
+Grupo: Defesa do consumidor
+Natureza: Vender ou expor à venda mercadoria em desacordo com as prescrições legais
+Potencial ofensivo: Maior
+--- Página 8 ---
+## Vender, expor à venda, ter em depósito ou ceder substância destinada à falsificação de produtos alimentícios, terapêuticos ou medicinais
+Grupo: Defesa do Consumidor
+Natureza: Vender, expor à venda, ter em depósito ou ceder substância destinada à falsificação de produtos alimentícios, terapêuticos ou medicinais
+Potencial ofensivo: Maior
+--- Página 8 ---
+## Vender, expor à venda, ter em depósito para vender ou entregar a consumo produto com falsa indicação ou processo proibido
+Grupo: Defesa do Consumidor
+Natureza: Vender, expor à venda, ter em depósito para vender ou entregar a consumo produto com falsa indicação ou processo proibido
+Potencial ofensivo: Maior
+--- Página 8 ---
+## Vender, possuir para expor à venda, ou entregar mercadoria, em condições impróprias ao consumo
+Grupo: Defesa do consumidor
+Natureza: Vender, possuir para expor à venda, ou entregar mercadoria, em condições impróprias ao consumo
+Potencial ofensivo: Maior
+--- Página 8 ---
+## Dano causado por fenômenos naturais
+Grupo: Desastre natural
+Natureza: Dano causado por fenômenos naturais
+Potencial ofensivo: Atípico
+--- Página 8 ---
+## Desabamento ou desmoronamento (Acidente)
+Grupo: Desastre natural
+Natureza: Desabamento ou desmoronamento (Acidente)
+Potencial ofensivo: Atípico
+--- Página 8 ---
+## Inundaçãoou alagamento (Acidente)
+Grupo: Desastre natural
+Natureza: Inundaçãoou alagamento (Acidente)
+Potencial ofensivo: Atípico
+--- Página 8 ---
+## Queda de árvore
+Grupo: Desastre Natural
+Natureza: Queda de árvore
+Potencial ofensivo: Atípico
+--- Página 8 ---
+## Queda de granizo
+Grupo: Desastre Natural
+Natureza: Queda de granizo
+Potencial ofensivo: Atípico
+--- Página 8 ---
+## Vendaval, Tornado, Ciclone, Furacão
+Grupo: Desastre Natural
+Natureza: Vendaval, Tornado, Ciclone, Furacão
+Potencial ofensivo: Atípico
+--- Página 8 ---
+## Advertência (Programa Silêncio Urbano)
+Grupo: Desordem
+Natureza: Advertência (Programa Silêncio Urbano)
+Potencial ofensivo: Atípico
+--- Página 8 ---
+## Apresentar-se publicamente em estado de embriaguez, de modo que cause escândalo ou ponha em perigo a segurança própria ou alheia
+Grupo: Desordem
+Natureza: Apresentar-se publicamente em estado de embriaguez, de modo que cause escândalo ou ponha em perigo a segurança própria ou alheia
+Potencial ofensivo: Menor
+--- Página 8 ---
+## Arremessar ou derramar em via pública ou outro, coisa ofensiva ou que moleste alguém
+Grupo: Desordem
+Natureza: Arremessar ou derramar em via pública ou outro, coisa ofensiva ou que moleste alguém
+Potencial ofensivo: Menor
+--- Página 8 ---
+## Arremesso de projétil
+Grupo: Desordem
+Natureza: Arremesso de projétil
+Potencial ofensivo: Menor
+--- Página 8 ---
+## Atentado contra a liberdade de associação
+Grupo: Desordem
+Natureza: Atentado contra a liberdade de associação
+Potencial ofensivo: Menor
+--- Página 9 ---
+## Atentado contra a liberdade de trabalho
+Grupo: Desordem
+Natureza: Atentado contra a liberdade de trabalho
+Potencial ofensivo: Menor
+--- Página 9 ---
+## Atentado contra a segurança de serviço de utilidade pública
+Grupo: Desordem
+Natureza: Atentado contra a segurança de serviço de utilidade pública
+Potencial ofensivo: Maior
+--- Página 9 ---
+## Atentado contra a segurança de transporte público - Doloso
+Grupo: Desordem
+Natureza: Atentado contra a segurança de transporte público - Doloso
+Potencial ofensivo: Maior
+--- Página 9 ---
+## Buracos/Obstáculos em via pública
+Grupo: Desordem
+Natureza: Buracos/Obstáculos em via pública
+Potencial ofensivo: Atípico
+--- Página 9 ---
+## Deflagrar perigosamente, queimar fogo de artifício ou soltar balão em via pública, sem licença
+Grupo: Desordem
+Natureza: Deflagrar perigosamente, queimar fogo de artifício ou soltar balão em via pública, sem licença
+Potencial ofensivo: Menor
+--- Página 9 ---
+## Deixar de colocar na via pública, sinal ou obstáculo, determinado em lei ou pela autoridade e destinado a evitar perigo a transeuntes
+Grupo: Desordem
+Natureza: Deixar de colocar na via pública, sinal ou obstáculo, determinado em lei ou pela autoridade e destinado a evitar perigo a transeuntes
+Potencial ofensivo: Menor
+--- Página 9 ---
+## Deixar unidade médica de saúde sem alta ou liberação médica
+Grupo: Desordem
+Natureza: Deixar unidade médica de saúde sem alta ou liberação médica
+Potencial ofensivo: Atípico
+--- Página 9 ---
+## Descumprimento da Lei n. 17.477/18 (Comércio e consumo de cerveja nos Estádios e Arenas Desportivas)
+Grupo: Desordem
+Natureza: Descumprimento da Lei n. 17.477/18 (Comércio e consumo de cerveja nos Estádios e Arenas Desportivas)
+Potencial ofensivo: Atípico
+--- Página 9 ---
+## Descumprimento de condicão/ordem/medida judicial
+Grupo: Desordem
+Natureza: Descumprimento de condicão/ordem/medida judicial
+Potencial ofensivo: Atípico
+--- Página 9 ---
+## Estabelecimento comercial funcionando em desacordo com a lei, licença ou alvará
+Grupo: Desordem
+Natureza: Estabelecimento comercial funcionando em desacordo com a lei, licença ou alvará
+Potencial ofensivo: Menor
+--- Página 9 ---
+## Impedir ou perturbar serviço de estrada de ferro - Culposo
+Grupo: Desordem
+Natureza: Impedir ou perturbar serviço de estrada de ferro - Culposo
+Potencial ofensivo: Menor
+--- Página 9 ---
+## Impedir ou perturbar serviço de estrada de ferro - Doloso
+Grupo: Desordem
+Natureza: Impedir ou perturbar serviço de estrada de ferro - Doloso
+Potencial ofensivo: Maior
+--- Página 9 ---
+## Invasão de estabelecimento industrial, comercial ou agrícola (Sabotagem)
+Grupo: Desordem
+Natureza: Invasão de estabelecimento industrial, comercial ou agrícola (Sabotagem)
+Potencial ofensivo: Maior
+--- Página 9 ---
+## Lixo entulho em via pública
+Grupo: Desordem
+Natureza: Lixo entulho em via pública
+Potencial ofensivo: Atípico
+--- Página 9 ---
+## Material de obras em passeio público
+Grupo: Desordem
+Natureza: Material de obras em passeio público
+Potencial ofensivo: Atípico
+--- Página 9 ---
+## Objetos oferecendo perigo
+Grupo: Desordem
+Natureza: Objetos oferecendo perigo
+Potencial ofensivo: Menor
+--- Página 9 ---
+## Obra ou construção em desacordo com a lei ou licença
+Grupo: Desordem
+Natureza: Obra ou construção em desacordo com a lei ou licença
+Potencial ofensivo: Menor
+--- Página 9 ---
+## Paralisação de trabalho de interesse coletivo
+Grupo: Desordem
+Natureza: Paralisação de trabalho de interesse coletivo
+Potencial ofensivo: Menor
+--- Página 9 ---
+## Paralisação do trabalho com violência ou perturbação da ordem
+Grupo: Desordem
+Natureza: Paralisação do trabalho com violência ou perturbação da ordem
+Potencial ofensivo: Menor
+--- Página 9 ---
+## Paralisação ou manifestação de greve de trabalhadores
+Grupo: Desordem
+Natureza: Paralisação ou manifestação de greve de trabalhadores
+Potencial ofensivo: Atípico
+--- Página 9 ---
+## Participar de associação, de mais de 5 pessoas, que se reúnam periodicamente (Associação secreta)
+Grupo: Desordem
+Natureza: Participar de associação, de mais de 5 pessoas, que se reúnam periodicamente (Associação secreta)
+Potencial ofensivo: Menor
+--- Página 9 ---
+## Portar, em estádio ou imediações, em evento esportivo, quaisquer instrumentos para prática de violência
+Grupo: Desordem
+Natureza: Portar, em estádio ou imediações, em evento esportivo, quaisquer instrumentos para prática de violência
+Potencial ofensivo: Menor
+--- Página 9 ---
+## Promover tumulto ou incitar a violência, ou invadir local restrito a competidores em eventos esportivos
+Grupo: Desordem
+Natureza: Promover tumulto ou incitar a violência, ou invadir local restrito a competidores em eventos esportivos
+Potencial ofensivo: Menor
+--- Página 10 ---
+## Promover tumulto, praticar ou incitar a violência num raio de 5 Km do local de realização do evento esportivo
+Grupo: Desordem
+Natureza: Promover tumulto, praticar ou incitar a violência num raio de 5 Km do local de realização do evento esportivo
+Potencial ofensivo: Menor
+--- Página 10 ---
+## Provocar abusivamente emissão de fumaça, vapor ou gás
+Grupo: Desordem
+Natureza: Provocar abusivamente emissão de fumaça, vapor ou gás
+Potencial ofensivo: Menor
+--- Página 10 ---
+## Provocar ou irritar animal, expondo a perigo a segurança alheia
+Grupo: Desordem
+Natureza: Provocar ou irritar animal, expondo a perigo a segurança alheia
+Potencial ofensivo: Menor
+--- Página 10 ---
+## Provocar tumulto
+Grupo: Desordem
+Natureza: Provocar tumulto
+Potencial ofensivo: Menor
+--- Página 10 ---
+## Remover qualquer outro sinal de serviço público (Remoção de sinal de serviço público)
+Grupo: Desordem
+Natureza: Remover qualquer outro sinal de serviço público (Remoção de sinal de serviço público)
+Potencial ofensivo: Menor
+--- Página 10 ---
+## Servir bebidas alcoólicas a pessoa que o agente sabe estar judicialmente proibida de frequentar lugares onde se consome bebida de tal natureza
+Grupo: Desordem
+Natureza: Servir bebidas alcoólicas a pessoa que o agente sabe estar judicialmente proibida de frequentar lugares onde se consome bebida de tal natureza
+Potencial ofensivo: Menor
+--- Página 10 ---
+## Servir bebidas alcoólicas a pessoa que o agente sabe sofrer das faculdades mentais
+Grupo: Desordem
+Natureza: Servir bebidas alcoólicas a pessoa que o agente sabe sofrer das faculdades mentais
+Potencial ofensivo: Menor
+--- Página 10 ---
+## Servir bebidas alcoólicas a quem se acha em estado de embriaguez
+Grupo: Desordem
+Natureza: Servir bebidas alcoólicas a quem se acha em estado de embriaguez
+Potencial ofensivo: Menor
+--- Página 10 ---
+## Trote ou perturbação de serviço de utilidade pública
+Grupo: Desordem
+Natureza: Trote ou perturbação de serviço de utilidade pública
+Potencial ofensivo: Menor
+--- Página 10 ---
+## Uso de cerol em pipas ou similares
+Grupo: Desordem
+Natureza: Uso de cerol em pipas ou similares
+Potencial ofensivo: Menor
+--- Página 10 ---
+## Vazamento de rede de água ou esgoto
+Grupo: Desordem
+Natureza: Vazamento de rede de água ou esgoto
+Potencial ofensivo: Atípico
+--- Página 10 ---
+## Adquirir, possuir ou armazenar registro contendo cenas de sexo explícito ou pornográfica com criança ou adolescente
+Grupo: Dignidade sexual
+Natureza: Adquirir, possuir ou armazenar registro contendo cenas de sexo explícito ou pornográfica com criança ou adolescente
+Potencial ofensivo: Maior
+--- Página 10 ---
+## Aliciar criança para se exibir de forma pornográfica
+Grupo: Dignidade sexual
+Natureza: Aliciar criança para se exibir de forma pornográfica
+Potencial ofensivo: Maior
+--- Página 10 ---
+## Aliciar, assediar criança com o fim de praticar ato libidinoso com ela
+Grupo: Dignidade sexual
+Natureza: Aliciar, assediar criança com o fim de praticar ato libidinoso com ela
+Potencial ofensivo: Maior
+--- Página 10 ---
+## Assédio sexual
+Grupo: Dignidade sexual
+Natureza: Assédio sexual
+Potencial ofensivo: Maior
+--- Página 10 ---
+## Ato obsceno
+Grupo: Dignidade sexual
+Natureza: Ato obsceno
+Potencial ofensivo: Menor
+--- Página 10 ---
+## Escrito ou objeto obsceno
+Grupo: Dignidade sexual
+Natureza: Escrito ou objeto obsceno
+Potencial ofensivo: Menor
+--- Página 10 ---
+## Estupro
+Grupo: Dignidade sexual
+Natureza: Estupro
+Potencial ofensivo: Maior
+--- Página 10 ---
+## Estupro coletivo
+Grupo: Dignidade sexual
+Natureza: Estupro coletivo
+Potencial ofensivo: Maior
+--- Página 10 ---
+## Estupro de vulnerável
+Grupo: Dignidade sexual
+Natureza: Estupro de vulnerável
+Potencial ofensivo: Maior
+--- Página 10 ---
+## Facilitar acesso à criança de material contendo cena de sexo explícito com o fim de praticar ato libidinoso com ela
+Grupo: Dignidade sexual
+Natureza: Facilitar acesso à criança de material contendo cena de sexo explícito com o fim de praticar ato libidinoso com ela
+Potencial ofensivo: Maior
+--- Página 10 ---
+## Favorecimento da prostituição ou outra forma de exploração sexual
+Grupo: Dignidade sexual
+Natureza: Favorecimento da prostituição ou outra forma de exploração sexual
+Potencial ofensivo: Maior
+--- Página 10 ---
+## Favorecimento da prostituição ou outra forma de exploração sexual de menor ou de vulnerável
+Grupo: Dignidade sexual
+Natureza: Favorecimento da prostituição ou outra forma de exploração sexual de menor ou de vulnerável
+Potencial ofensivo: Maior
+--- Página 11 ---
+## Importunação sexual
+Grupo: Dignidade sexual
+Natureza: Importunação sexual
+Potencial ofensivo: Maior
+--- Página 11 ---
+## Induzir alguém menor de 14 anos a satisfazer a lascívia de outrem (Corrupção de menores)
+Grupo: Dignidade sexual
+Natureza: Induzir alguém menor de 14 anos a satisfazer a lascívia de outrem (Corrupção de menores)
+Potencial ofensivo: Maior
+--- Página 11 ---
+## Manter estabelecimento em que ocorra exploração sexual (Casa de prostituição)
+Grupo: Dignidade sexual
+Natureza: Manter estabelecimento em que ocorra exploração sexual (Casa de prostituição)
+Potencial ofensivo: Maior
+--- Página 11 ---
+## Mediação para servir a lascívia de outrem
+Grupo: Dignidade sexual
+Natureza: Mediação para servir a lascívia de outrem
+Potencial ofensivo: Maior
+--- Página 11 ---
+## Oferecer, divulgar registros que contenham cenas de sexo explícito ou pornográfica envolvendo criança ou adolescente
+Grupo: Dignidade sexual
+Natureza: Oferecer, divulgar registros que contenham cenas de sexo explícito ou pornográfica envolvendo criança ou adolescente
+Potencial ofensivo: Maior
+--- Página 11 ---
+## Oferecer, trocar, disponibilizar, transmitir, vender ou expor à venda, distribuir, publicar ou divulgar registro audiovisual que contenha cena de estupro de vulnerável ou que faça apologia ou induza a sua prática, ou, sem o consentimento da vítima, cena de sexo, nudez ou pornografia
+Grupo: Dignidade sexual
+Natureza: Oferecer, trocar, disponibilizar, transmitir, vender ou expor à venda, distribuir, publicar ou divulgar registro audiovisual que contenha cena de estupro de vulnerável ou que faça apologia ou induza a sua prática, ou, sem o consentimento da vítima, cena de sexo, nudez ou pornografia
+Potencial ofensivo: Maior
+--- Página 11 ---
+## Possuir ou gerenciar local em que há submissão de criança ou adolescente à prostituição ou à exploração sexual
+Grupo: Dignidade sexual
+Natureza: Possuir ou gerenciar local em que há submissão de criança ou adolescente à prostituição ou à exploração sexual
+Potencial ofensivo: Maior
+--- Página 11 ---
+## Praticar contra alguém e sem a sua anuência ato libidinoso com o objetivo de satisfazer a própria lascívia ou a de terceiro
+Grupo: Dignidade sexual
+Natureza: Praticar contra alguém e sem a sua anuência ato libidinoso com o objetivo de satisfazer a própria lascívia ou a de terceiro
+Potencial ofensivo: Maior
+--- Página 11 ---
+## Praticar contra alguém e sem a sua anuência ato libidinoso com o objetivo de satisfazer a própria lascívia ou a de terceiro
+Grupo: Dignidade sexual
+Natureza: Praticar contra alguém e sem a sua anuência ato libidinoso com o objetivo de satisfazer a própria lascívia ou a de terceiro
+Potencial ofensivo: Maior
+--- Página 11 ---
+## Produzir, dirigir, fotografar, filmar, registrar cena de sexo explícito ou pornográfica de criança ou adolescente
+Grupo: Dignidade sexual
+Natureza: Produzir, dirigir, fotografar, filmar, registrar cena de sexo explícito ou pornográfica de criança ou adolescente
+Potencial ofensivo: Maior
+--- Página 11 ---
+## Realizar em lugar público ou acessível ao público ou pelo rádio, audição ou recitação de caráter obsceno
+Grupo: Dignidade sexual
+Natureza: Realizar em lugar público ou acessível ao público ou pelo rádio, audição ou recitação de caráter obsceno
+Potencial ofensivo: Menor
+--- Página 11 ---
+## Realizar, em lugar público ou acessível ao público, representação teatral de caráter obsceno
+Grupo: Dignidade sexual
+Natureza: Realizar, em lugar público ou acessível ao público, representação teatral de caráter obsceno
+Potencial ofensivo: Menor
+--- Página 11 ---
+## Registro não autorizado da intimidade sexual
+Grupo: Dignidade sexual
+Natureza: Registro não autorizado da intimidade sexual
+Potencial ofensivo: Maior
+--- Página 11 ---
+## Rufianismo
+Grupo: Dignidade sexual
+Natureza: Rufianismo
+Potencial ofensivo: Maior
+--- Página 11 ---
+## Satisfação de lascívia mediante presença de criança ou adolescente
+Grupo: Dignidade sexual
+Natureza: Satisfação de lascívia mediante presença de criança ou adolescente
+Potencial ofensivo: Maior
+--- Página 11 ---
+## Submeter criança ou adolescente à prostituição ou à exploração sexual
+Grupo: Dignidade sexual
+Natureza: Submeter criança ou adolescente à prostituição ou à exploração sexual
+Potencial ofensivo: Maior
+--- Página 11 ---
+## Tráfico internacional de pessoa para fim de exploração sexual
+Grupo: Dignidade sexual
+Natureza: Tráfico internacional de pessoa para fim de exploração sexual
+Potencial ofensivo: Maior
+--- Página 11 ---
+## Tráfico interno de pessoa para fim de exploração sexual
+Grupo: Dignidade sexual
+Natureza: Tráfico interno de pessoa para fim de exploração sexual
+Potencial ofensivo: Maior
+--- Página 11 ---
+## Vender ou expor à venda fotografia, vídeo ou outro registro que contenha cena de sexo explícito ou pornográfica envolvendo criança ou adolescente
+Grupo: Dignidade sexual
+Natureza: Vender ou expor à venda fotografia, vídeo ou outro registro que contenha cena de sexo explícito ou pornográfica envolvendo criança ou adolescente
+Potencial ofensivo: Maior
+--- Página 11 ---
+## Violação sexual mediante fraude
+Grupo: Dignidade sexual
+Natureza: Violação sexual mediante fraude
+Potencial ofensivo: Maior
+--- Página 11 ---
+## Disparo de alarme
+Grupo: Disparo de Alarme
+Natureza: Disparo de alarme
+Potencial ofensivo: Atípico
+--- Página 11 ---
+## Associação para o tráfico de drogas
+Grupo: Drogas
+Natureza: Associação para o tráfico de drogas
+Potencial ofensivo: Maior
+--- Página 12 ---
+## Colaborar como informante do grupo, organização ou associação destinados ao tráfico de drogas
+Grupo: Drogas
+Natureza: Colaborar como informante do grupo, organização ou associação destinados ao tráfico de drogas
+Potencial ofensivo: Maior
+--- Página 12 ---
+## Conduzir embarcação ou aeronave após o consumo de drogas
+Grupo: Drogas
+Natureza: Conduzir embarcação ou aeronave após o consumo de drogas
+Potencial ofensivo: Maior
+--- Página 12 ---
+## Fabricar, oferecer, vender, maquinário, destinado à fabricação, preparação ou produção de drogas
+Grupo: Drogas
+Natureza: Fabricar, oferecer, vender, maquinário, destinado à fabricação, preparação ou produção de drogas
+Potencial ofensivo: Maior
+--- Página 12 ---
+## Financiar ou custear a prática de qualquer dos crimes previstos nos arts. 33, caput e § 1º, e 34 da Lei 11.343/2006
+Grupo: Drogas
+Natureza: Financiar ou custear a prática de qualquer dos crimes previstos nos arts. 33, caput e § 1º, e 34 da Lei 11.343/2006
+Potencial ofensivo: Maior
+--- Página 12 ---
+## Oferecer drogas, eventualmente, sem objetivo de lucro a pessoa de seu relacionamento para juntos consumirem
+Grupo: Drogas
+Natureza: Oferecer drogas, eventualmente, sem objetivo de lucro a pessoa de seu relacionamento para juntos consumirem
+Potencial ofensivo: Menor
+--- Página 12 ---
+## Posse ou porte de drogas para uso pessoal
+Grupo: Drogas
+Natureza: Posse ou porte de drogas para uso pessoal
+Potencial ofensivo: Menor
+--- Página 12 ---
+## Tráfico de drogas
+Grupo: Drogas
+Natureza: Tráfico de drogas
+Potencial ofensivo: Maior
+--- Página 12 ---
+## Causar, dano físico ao equipamento usado na votação ou na totalização de votos ou a suas partes
+Grupo: Eleições
+Natureza: Causar, dano físico ao equipamento usado na votação ou na totalização de votos ou a suas partes
+Potencial ofensivo: Menor
+--- Página 12 ---
+## Coagir alguém a votar, ou não votar, em determinado candidato ou partido, usando violência ou grave ameaça
+Grupo: Eleições
+Natureza: Coagir alguém a votar, ou não votar, em determinado candidato ou partido, usando violência ou grave ameaça
+Potencial ofensivo: Maior
+--- Página 12 ---
+## Contratar pessoa para emitir mensagens ou comentários na internet para ofender a honra ou denegrir a imagem de candidato, partido ou coligação
+Grupo: Eleições
+Natureza: Contratar pessoa para emitir mensagens ou comentários na internet para ofender a honra ou denegrir a imagem de candidato, partido ou coligação
+Potencial ofensivo: Menor
+--- Página 12 ---
+## Dar, oferecer, prometer, solicitar, receber, para si ou para outrem, dinheiro ou qualquer outra vantagem, para obter ou dar voto
+Grupo: Eleições
+Natureza: Dar, oferecer, prometer, solicitar, receber, para si ou para outrem, dinheiro ou qualquer outra vantagem, para obter ou dar voto
+Potencial ofensivo: Maior
+--- Página 12 ---
+## Descumprimento de procedimentos para apuração eleitoral
+Grupo: Eleições
+Natureza: Descumprimento de procedimentos para apuração eleitoral
+Potencial ofensivo: Menor
+--- Página 12 ---
+## Destruir, suprimir ou ocultar urna contendo votos, ou documentos relativos à eleição.
+Grupo: Eleições
+Natureza: Destruir, suprimir ou ocultar urna contendo votos, ou documentos relativos à eleição.
+Potencial ofensivo: Maior
+--- Página 12 ---
+## Falsificar, no todo ou em parte, documento particular ou alterar documento particular verdadeiro, para fins eleitorais
+Grupo: Eleições
+Natureza: Falsificar, no todo ou em parte, documento particular ou alterar documento particular verdadeiro, para fins eleitorais
+Potencial ofensivo: Maior
+--- Página 12 ---
+## Falsificar, no todo ou em parte, documento público, ou alterar documento público verdadeiro, para fins eleitorais
+Grupo: Eleições
+Natureza: Falsificar, no todo ou em parte, documento público, ou alterar documento público verdadeiro, para fins eleitorais
+Potencial ofensivo: Maior
+--- Página 12 ---
+## Fazer uso de qualquer dos documentos falsificados ou alterados, a que se referem os artigos. 348 a 352 da Lei Lei 4.737/1965
+Grupo: Eleições
+Natureza: Fazer uso de qualquer dos documentos falsificados ou alterados, a que se referem os artigos. 348 a 352 da Lei Lei 4.737/1965
+Potencial ofensivo: Maior
+--- Página 12 ---
+## Fornecer alimento ou transporte coletivo para eleitores
+Grupo: Eleições
+Natureza: Fornecer alimento ou transporte coletivo para eleitores
+Potencial ofensivo: Maior
+--- Página 12 ---
+## Impedir ou embaraçar o exercício do voto
+Grupo: Eleições
+Natureza: Impedir ou embaraçar o exercício do voto
+Potencial ofensivo: Maior
+--- Página 12 ---
+## Majorar os preços de utilidades e serviços necessários à realização de eleições
+Grupo: Eleições
+Natureza: Majorar os preços de utilidades e serviços necessários à realização de eleições
+Potencial ofensivo: Menor
+--- Página 12 ---
+## Obter, para uso próprio ou de outrem, documento público ou particular, material ou ideologicamente falso para fins eleitorais
+Grupo: Eleições
+Natureza: Obter, para uso próprio ou de outrem, documento público ou particular, material ou ideologicamente falso para fins eleitorais
+Potencial ofensivo: Maior
+--- Página 12 ---
+## Ocultar, sonegar, açambarcar ou recusar no dia da eleição, o fornecimento de utilidades, alimentação e meios de transporte, ou conceder exclusividade a determinado partido ou candidato
+Grupo: Eleições
+Natureza: Ocultar, sonegar, açambarcar ou recusar no dia da eleição, o fornecimento de utilidades, alimentação e meios de transporte, ou conceder exclusividade a determinado partido ou candidato
+Potencial ofensivo: Menor
+--- Página 12 ---
+## Promover desordem que prejudique os trabalhos eleitorais
+Grupo: Eleições
+Natureza: Promover desordem que prejudique os trabalhos eleitorais
+Potencial ofensivo: Menor
+--- Página 12 ---
+## Realizar boca de urna no dia da eleição
+Grupo: Eleições
+Natureza: Realizar boca de urna no dia da eleição
+Potencial ofensivo: Menor
+--- Página 13 ---
+## Realizar propaganda política de qualquer natureza no dia das eleições
+Grupo: Eleições
+Natureza: Realizar propaganda política de qualquer natureza no dia das eleições
+Potencial ofensivo: Menor
+--- Página 13 ---
+## Recusar ou abandonar o serviço eleitoral sem justa causa
+Grupo: Eleições
+Natureza: Recusar ou abandonar o serviço eleitoral sem justa causa
+Potencial ofensivo: Menor
+--- Página 13 ---
+## Reter título eleitoral contra a vontade do eleitor
+Grupo: Eleições
+Natureza: Reter título eleitoral contra a vontade do eleitor
+Potencial ofensivo: Menor
+--- Página 13 ---
+## Utilização, no dia da eleição, de alto-falantes e amplificadores de som ou promoção de comício ou carreata
+Grupo: Eleições
+Natureza: Utilização, no dia da eleição, de alto-falantes e amplificadores de som ou promoção de comício ou carreata
+Potencial ofensivo: Menor
+--- Página 13 ---
+## Valer-se o servidor público da sua autoridade para coagir alguém a votar ou não votar em determinado candidato ou partido
+Grupo: Eleições
+Natureza: Valer-se o servidor público da sua autoridade para coagir alguém a votar ou não votar em determinado candidato ou partido
+Potencial ofensivo: Menor
+--- Página 13 ---
+## Violar ou tentar violar o sigilo do voto
+Grupo: Eleições
+Natureza: Violar ou tentar violar o sigilo do voto
+Potencial ofensivo: Menor
+--- Página 13 ---
+## Votar ou tentar votar mais de uma vez, ou em lugar de outrem
+Grupo: Eleições
+Natureza: Votar ou tentar votar mais de uma vez, ou em lugar de outrem
+Potencial ofensivo: Maior
+--- Página 13 ---
+## Adulteração de sinal identificador de veículo automotor
+Grupo: Fraudes
+Natureza: Adulteração de sinal identificador de veículo automotor
+Potencial ofensivo: Maior
+--- Página 13 ---
+## Agiotagem
+Grupo: Fraudes
+Natureza: Agiotagem
+Potencial ofensivo: Menor
+--- Página 13 ---
+## Apropriação indébita
+Grupo: Fraudes
+Natureza: Apropriação indébita
+Potencial ofensivo: Maior
+--- Página 13 ---
+## Certidão ou atestado ideologicamente falso
+Grupo: Fraudes
+Natureza: Certidão ou atestado ideologicamente falso
+Potencial ofensivo: Menor
+--- Página 13 ---
+## Charlatanismo
+Grupo: Fraudes
+Natureza: Charlatanismo
+Potencial ofensivo: Menor
+--- Página 13 ---
+## Coação no curso do processo
+Grupo: Fraudes
+Natureza: Coação no curso do processo
+Potencial ofensivo: Maior
+--- Página 13 ---
+## Concussão
+Grupo: Fraudes
+Natureza: Concussão
+Potencial ofensivo: Maior
+--- Página 13 ---
+## Contrabando
+Grupo: Fraudes
+Natureza: Contrabando
+Potencial ofensivo: Maior
+--- Página 13 ---
+## Corrupção ativa
+Grupo: Fraudes
+Natureza: Corrupção ativa
+Potencial ofensivo: Maior
+--- Página 13 ---
+## Corrupção ativa de testemunha
+Grupo: Fraudes
+Natureza: Corrupção ativa de testemunha
+Potencial ofensivo: Maior
+--- Página 13 ---
+## Corrupção passiva
+Grupo: Fraudes
+Natureza: Corrupção passiva
+Potencial ofensivo: Maior
+--- Página 13 ---
+## Curandeirismo
+Grupo: Fraudes
+Natureza: Curandeirismo
+Potencial ofensivo: Menor
+--- Página 13 ---
+## Deixar de efetuar o pagamento de prestação alimentícia (Pensão)
+Grupo: Fraudes
+Natureza: Deixar de efetuar o pagamento de prestação alimentícia (Pensão)
+Potencial ofensivo: Maior
+--- Página 13 ---
+## Deixar o locador, dentro de cento e oitenta dias após a entrega do imóvel, de usá-lo para o fim declarado ou, usando-o, não o fizer pelo prazo mínimo de um ano
+Grupo: Fraudes
+Natureza: Deixar o locador, dentro de cento e oitenta dias após a entrega do imóvel, de usá-lo para o fim declarado ou, usando-o, não o fizer pelo prazo mínimo de um ano
+Potencial ofensivo: Menor
+--- Página 13 ---
+## Descaminho
+Grupo: Fraudes
+Natureza: Descaminho
+Potencial ofensivo: Maior
+--- Página 13 ---
+## Estelionato
+Grupo: Fraudes
+Natureza: Estelionato
+Potencial ofensivo: Maior
+--- Página 14 ---
+## Exercício ilegal da medicina, arte dentária ou farmacêutica
+Grupo: Fraudes
+Natureza: Exercício ilegal da medicina, arte dentária ou farmacêutica
+Potencial ofensivo: Menor
+--- Página 14 ---
+## Exercício ilegal de profissão ou atividade
+Grupo: Fraudes
+Natureza: Exercício ilegal de profissão ou atividade
+Potencial ofensivo: Menor
+--- Página 14 ---
+## Exigir, por motivo de locação ou sublocação, quantia ou valor além do aluguel e encargos permitidos
+Grupo: Fraudes
+Natureza: Exigir, por motivo de locação ou sublocação, quantia ou valor além do aluguel e encargos permitidos
+Potencial ofensivo: Menor Condicionado
+--- Página 14 ---
+## Fabricar, adquirir, fornecer, possuir ou guardar objeto destinado à falsificação de papéis públicos
+Grupo: Fraudes
+Natureza: Fabricar, adquirir, fornecer, possuir ou guardar objeto destinado à falsificação de papéis públicos
+Potencial ofensivo: Maior
+--- Página 14 ---
+## Facilitação de contrabando ou descaminho
+Grupo: Fraudes
+Natureza: Facilitação de contrabando ou descaminho
+Potencial ofensivo: Maior
+--- Página 14 ---
+## Falsa identidade
+Grupo: Fraudes
+Natureza: Falsa identidade
+Potencial ofensivo: Menor
+--- Página 14 ---
+## Falsidade de atestado médico
+Grupo: Fraudes
+Natureza: Falsidade de atestado médico
+Potencial ofensivo: Menor
+--- Página 14 ---
+## Falsidade ideológica
+Grupo: Fraudes
+Natureza: Falsidade ideológica
+Potencial ofensivo: Maior
+--- Página 14 ---
+## Falsificação de documento particular
+Grupo: Fraudes
+Natureza: Falsificação de documento particular
+Potencial ofensivo: Maior
+--- Página 14 ---
+## Falsificação de documento público
+Grupo: Fraudes
+Natureza: Falsificação de documento público
+Potencial ofensivo: Maior
+--- Página 14 ---
+## Falsificação de papéis públicos
+Grupo: Fraudes
+Natureza: Falsificação de papéis públicos
+Potencial ofensivo: Maior
+--- Página 14 ---
+## Fingir-se funcionário público (Simulação da qualidade de funcionário)
+Grupo: Fraudes
+Natureza: Fingir-se funcionário público (Simulação da qualidade de funcionário)
+Potencial ofensivo: Menor
+--- Página 14 ---
+## Fornecer, desviar, facilitar distribuição de ingressos para venda por preço superior ao do bilhete (Cambista)
+Grupo: Fraudes
+Natureza: Fornecer, desviar, facilitar distribuição de ingressos para venda por preço superior ao do bilhete (Cambista)
+Potencial ofensivo: Menor
+--- Página 14 ---
+## Fraude no comércio
+Grupo: Fraudes
+Natureza: Fraude no comércio
+Potencial ofensivo: Menor
+--- Página 14 ---
+## Fraude processual
+Grupo: Fraudes
+Natureza: Fraude processual
+Potencial ofensivo: Menor
+--- Página 14 ---
+## Impressão de bilhetes de loteria não legal
+Grupo: Fraudes
+Natureza: Impressão de bilhetes de loteria não legal
+Potencial ofensivo: Menor
+--- Página 14 ---
+## Improbidade administrativa (Prejuízo ao erário)
+Grupo: Fraudes
+Natureza: Improbidade administrativa (Prejuízo ao erário)
+Potencial ofensivo: Maior
+--- Página 14 ---
+## Inserção de dados falsos em sistema de informações
+Grupo: Fraudes
+Natureza: Inserção de dados falsos em sistema de informações
+Potencial ofensivo: Maior
+--- Página 14 ---
+## Jogo de azar
+Grupo: Fraudes
+Natureza: Jogo de azar
+Potencial ofensivo: Menor
+--- Página 14 ---
+## Jogo do bicho
+Grupo: Fraudes
+Natureza: Jogo do bicho
+Potencial ofensivo: Menor
+--- Página 14 ---
+## Loteria não autorizada
+Grupo: Fraudes
+Natureza: Loteria não autorizada
+Potencial ofensivo: Maior
+--- Página 14 ---
+## Modificação ou alteração não autorizada de sistema de informações
+Grupo: Fraudes
+Natureza: Modificação ou alteração não autorizada de sistema de informações
+Potencial ofensivo: Menor
+--- Página 14 ---
+## Moeda falsa
+Grupo: Fraudes
+Natureza: Moeda falsa
+Potencial ofensivo: Maior
+--- Página 15 ---
+## Negar saldar despesas com refeição, hotel ou meio de transporte (Outras fraudes)
+Grupo: Fraudes
+Natureza: Negar saldar despesas com refeição, hotel ou meio de transporte (Outras fraudes)
+Potencial ofensivo: Menor Condicionado
+--- Página 15 ---
+## Participar de jogo de azar como ponteiro ou apostador
+Grupo: Fraudes
+Natureza: Participar de jogo de azar como ponteiro ou apostador
+Potencial ofensivo: Menor
+--- Página 15 ---
+## Peculato - Culposo
+Grupo: Fraudes
+Natureza: Peculato - Culposo
+Potencial ofensivo: Maior
+--- Página 15 ---
+## Peculato - Doloso
+Grupo: Fraudes
+Natureza: Peculato - Doloso
+Potencial ofensivo: Maior
+--- Página 15 ---
+## Petrechos para falsificação de moeda
+Grupo: Fraudes
+Natureza: Petrechos para falsificação de moeda
+Potencial ofensivo: Maior
+--- Página 15 ---
+## Prisão civil por falta de pagamento de prestação alimentícia
+Grupo: Fraudes
+Natureza: Prisão civil por falta de pagamento de prestação alimentícia
+Potencial ofensivo: Maior
+--- Página 15 ---
+## Receptação
+Grupo: Fraudes
+Natureza: Receptação
+Potencial ofensivo: Maior
+--- Página 15 ---
+## Receptação - Culposa
+Grupo: Fraudes
+Natureza: Receptação - Culposa
+Potencial ofensivo: Menor
+--- Página 15 ---
+## Receptação de animal
+Grupo: Fraudes
+Natureza: Receptação de animal
+Potencial ofensivo: Maior
+--- Página 15 ---
+## Recusa de moeda de curso legal
+Grupo: Fraudes
+Natureza: Recusa de moeda de curso legal
+Potencial ofensivo: Menor
+--- Página 15 ---
+## Recusar dados ou indicação concernentes à própria identidade
+Grupo: Fraudes
+Natureza: Recusar dados ou indicação concernentes à própria identidade
+Potencial ofensivo: Menor
+--- Página 15 ---
+## Uso de documento falso
+Grupo: Fraudes
+Natureza: Uso de documento falso
+Potencial ofensivo: Maior
+--- Página 15 ---
+## Uso ilegítimo de uniforme ou distintivo
+Grupo: Fraudes
+Natureza: Uso ilegítimo de uniforme ou distintivo
+Potencial ofensivo: Menor
+--- Página 15 ---
+## Vender ingressos de evento esportivo, por preço superior ao estampado no bilhete (Cambista)
+Grupo: Fraudes
+Natureza: Vender ingressos de evento esportivo, por preço superior ao estampado no bilhete (Cambista)
+Potencial ofensivo: Menor
+--- Página 15 ---
+## Violação de direito autoral com intuito de lucro (Distribuição)
+Grupo: Fraudes
+Natureza: Violação de direito autoral com intuito de lucro (Distribuição)
+Potencial ofensivo: Maior
+--- Página 15 ---
+## Violação de direito autoral com intuito de lucro (Oferecimento)
+Grupo: Fraudes
+Natureza: Violação de direito autoral com intuito de lucro (Oferecimento)
+Potencial ofensivo: Maior
+--- Página 15 ---
+## Violação de direito autoral com intuito de lucro (Reprodução)
+Grupo: Fraudes
+Natureza: Violação de direito autoral com intuito de lucro (Reprodução)
+Potencial ofensivo: Maior
+--- Página 15 ---
+## Violação de direito autoral sem intuito de lucro (Pirataria)
+Grupo: Fraudes
+Natureza: Violação de direito autoral sem intuito de lucro (Pirataria)
+Potencial ofensivo: Menor Condicionado
+--- Página 15 ---
+## Fabricar, ceder ou vender instrumento usualmente empregado na prática de crime de furto
+Grupo: Furto
+Natureza: Fabricar, ceder ou vender instrumento usualmente empregado na prática de crime de furto
+Potencial ofensivo: Menor
+--- Página 15 ---
+## Furto
+Grupo: Furto
+Natureza: Furto
+Potencial ofensivo: Maior
+--- Página 15 ---
+## Furto de coisa comum
+Grupo: Furto
+Natureza: Furto de coisa comum
+Potencial ofensivo: Menor Condicionado
+--- Página 15 ---
+## Possuir instrumento de emprego usual na prática de furto, sem motivo justificado
+Grupo: Furto
+Natureza: Possuir instrumento de emprego usual na prática de furto, sem motivo justificado
+Potencial ofensivo: Menor
+--- Página 15 ---
+## Incêndio (Acidente)
+Grupo: Incêndio
+Natureza: Incêndio (Acidente)
+Potencial ofensivo: Atípico
+--- Página 16 ---
+## Incêndio (Crime) - Culposo
+Grupo: Incêndio
+Natureza: Incêndio (Crime) - Culposo
+Potencial ofensivo: Menor
+--- Página 16 ---
+## Incêndio (Crime) - Doloso
+Grupo: Incêndio
+Natureza: Incêndio (Crime) - Doloso
+Potencial ofensivo: Maior
+--- Página 16 ---
+## Abandonar produtos e substâncias ou utilizar em desacordo com as normas ambientais e de segurança
+Grupo: Meio ambiente
+Natureza: Abandonar produtos e substâncias ou utilizar em desacordo com as normas ambientais e de segurança
+Potencial ofensivo: Maior
+--- Página 16 ---
+## Adquirir, distribuir e revender ilegalmente derivados de petróleo ou combustíveis líquidos carburantes
+Grupo: Meio ambiente
+Natureza: Adquirir, distribuir e revender ilegalmente derivados de petróleo ou combustíveis líquidos carburantes
+Potencial ofensivo: Maior
+--- Página 16 ---
+## Alteração de local especialmente protegido
+Grupo: Meio ambiente
+Natureza: Alteração de local especialmente protegido
+Potencial ofensivo: Menor
+--- Página 16 ---
+## Alterar ilegalmente ou sem autorização o aspecto ou estrutura de edificação ou local especialmente protegido
+Grupo: Meio ambiente
+Natureza: Alterar ilegalmente ou sem autorização o aspecto ou estrutura de edificação ou local especialmente protegido
+Potencial ofensivo: Maior
+--- Página 16 ---
+## Animal em perigo e/ou provocando perigo iminente
+Grupo: Meio ambiente
+Natureza: Animal em perigo e/ou provocando perigo iminente
+Potencial ofensivo: Atípico
+--- Página 16 ---
+## Animal morto em via pública
+Grupo: Meio ambiente
+Natureza: Animal morto em via pública
+Potencial ofensivo: Atípico
+--- Página 16 ---
+## Animal solto em via pública
+Grupo: Meio ambiente
+Natureza: Animal solto em via pública
+Potencial ofensivo: Menor
+--- Página 16 ---
+## Caça não autorizada
+Grupo: Meio ambiente
+Natureza: Caça não autorizada
+Potencial ofensivo: Menor
+--- Página 16 ---
+## Causar dano direto ou indireto às unidades de conservação, independentemente de sua localização
+Grupo: Meio ambiente
+Natureza: Causar dano direto ou indireto às unidades de conservação, independentemente de sua localização
+Potencial ofensivo: Maior
+--- Página 16 ---
+## Causar degradação em viveiros, açudes ou estações de aquicultura de domínio público
+Grupo: Meio ambiente
+Natureza: Causar degradação em viveiros, açudes ou estações de aquicultura de domínio público
+Potencial ofensivo: Maior
+--- Página 16 ---
+## Causar poluição hídrica interrompendo abastecimento água
+Grupo: Meio ambiente
+Natureza: Causar poluição hídrica interrompendo abastecimento água
+Potencial ofensivo: Maior
+--- Página 16 ---
+## Causar poluição provocando a saída dos habitantes das áreas afetadas
+Grupo: Meio ambiente
+Natureza: Causar poluição provocando a saída dos habitantes das áreas afetadas
+Potencial ofensivo: Maior
+--- Página 16 ---
+## Causar poluição que resultem danos à saúde humana, ou a mortandade de animais ou destruição da flora
+Grupo: Meio ambiente
+Natureza: Causar poluição que resultem danos à saúde humana, ou a mortandade de animais ou destruição da flora
+Potencial ofensivo: Maior
+--- Página 16 ---
+## Comercializar motosserra ou utilizá-la em florestas e nas demais formas de vegetação, sem licença ou registro
+Grupo: Meio ambiente
+Natureza: Comercializar motosserra ou utilizá-la em florestas e nas demais formas de vegetação, sem licença ou registro
+Potencial ofensivo: Menor
+--- Página 16 ---
+## Conduzir animal, na via pública, pondo em perigo a segurança alheia
+Grupo: Meio ambiente
+Natureza: Conduzir animal, na via pública, pondo em perigo a segurança alheia
+Potencial ofensivo: Menor
+--- Página 16 ---
+## Construir ilegalmente ou sem autorização legal em solo não edificável
+Grupo: Meio ambiente
+Natureza: Construir ilegalmente ou sem autorização legal em solo não edificável
+Potencial ofensivo: Menor
+--- Página 16 ---
+## Construir, reformar, instalar ou fazer funcionar estabelecimento, obras ou serviços potencialmente poluidores, sem licença, autorização ou contra a lei
+Grupo: Meio ambiente
+Natureza: Construir, reformar, instalar ou fazer funcionar estabelecimento, obras ou serviços potencialmente poluidores, sem licença, autorização ou contra a lei
+Potencial ofensivo: Menor
+--- Página 16 ---
+## Cortar árvores em floresta de preservação permanente, sem permissão da autoridade competente
+Grupo: Meio ambiente
+Natureza: Cortar árvores em floresta de preservação permanente, sem permissão da autoridade competente
+Potencial ofensivo: Maior
+--- Página 16 ---
+## Cortar ou transformar em carvão madeira de lei, para uso industrial ou qualquer outra exploração econômica ou não
+Grupo: Meio ambiente
+Natureza: Cortar ou transformar em carvão madeira de lei, para uso industrial ou qualquer outra exploração econômica ou não
+Potencial ofensivo: Menor
+--- Página 16 ---
+## Deixar de adotar medidas de precaução em caso de risco de dano ambiental grave ou irreversível
+Grupo: Meio ambiente
+Natureza: Deixar de adotar medidas de precaução em caso de risco de dano ambiental grave ou irreversível
+Potencial ofensivo: Maior
+--- Página 16 ---
+## Deixar de recuperar a área pesquisada ou explorada, nos termos da autorização, licença ou determinação do órgão competente
+Grupo: Meio ambiente
+Natureza: Deixar de recuperar a área pesquisada ou explorada, nos termos da autorização, licença ou determinação do órgão competente
+Potencial ofensivo: Menor
+--- Página 17 ---
+## Desabamento ou desmoronamento (Crime) - Culposo
+Grupo: Meio ambiente
+Natureza: Desabamento ou desmoronamento (Crime) - Culposo
+Potencial ofensivo: Menor
+--- Página 17 ---
+## Desabamento ou desmoronamento (Crime) - Doloso
+Grupo: Meio ambiente
+Natureza: Desabamento ou desmoronamento (Crime) - Doloso
+Potencial ofensivo: Maior
+--- Página 17 ---
+## Descumprimento de obrigação de relevante interesse ambiental
+Grupo: Meio ambiente
+Natureza: Descumprimento de obrigação de relevante interesse ambiental
+Potencial ofensivo: Maior
+--- Página 17 ---
+## Desmatar, explorar economicamente, degradar floresta em terras públicas ou devolutas, sem autorização
+Grupo: Meio ambiente
+Natureza: Desmatar, explorar economicamente, degradar floresta em terras públicas ou devolutas, sem autorização
+Potencial ofensivo: Maior
+--- Página 17 ---
+## Destruir, danificar floresta de preservação permanente ou usá-la com infringência das normas de proteção
+Grupo: Meio ambiente
+Natureza: Destruir, danificar floresta de preservação permanente ou usá-la com infringência das normas de proteção
+Potencial ofensivo: Maior
+--- Página 17 ---
+## Destruir, danificar florestas nativas, plantadas, vegetação de dunas, objeto de especial preservação
+Grupo: Meio ambiente
+Natureza: Destruir, danificar florestas nativas, plantadas, vegetação de dunas, objeto de especial preservação
+Potencial ofensivo: Menor
+--- Página 17 ---
+## Destruir, danificar vegetação do Bioma Mata Atlântica ou usá-la com infringência das normas de proteção
+Grupo: Meio ambiente
+Natureza: Destruir, danificar vegetação do Bioma Mata Atlântica ou usá-la com infringência das normas de proteção
+Potencial ofensivo: Maior
+--- Página 17 ---
+## Destruir, danificar, lesar plantas de ornamentação de logradouros públicos ou privados
+Grupo: Meio ambiente
+Natureza: Destruir, danificar, lesar plantas de ornamentação de logradouros públicos ou privados
+Potencial ofensivo: Menor
+--- Página 17 ---
+## Destruir, inutilizar ou deteriorar arquivo, registro, museu, biblioteca, pinacoteca, instalação científica ou similar protegido por lei, ato administrativo ou decisão judicial - Doloso
+Grupo: Meio ambiente
+Natureza: Destruir, inutilizar ou deteriorar arquivo, registro, museu, biblioteca, pinacoteca, instalação científica ou similar protegido por lei, ato administrativo ou decisão judicial - Doloso
+Potencial ofensivo: Maior
+--- Página 17 ---
+## Destruir, inutilizar ou deteriorar bem protegido por lei, ato administrativo ou decisão judicial - Culposo
+Grupo: Meio ambiente
+Natureza: Destruir, inutilizar ou deteriorar bem protegido por lei, ato administrativo ou decisão judicial - Culposo
+Potencial ofensivo: Maior
+--- Página 17 ---
+## Destruir, inutilizar ou deteriorar bem protegido por lei, ato administrativo ou decisão judicial - Doloso
+Grupo: Meio ambiente
+Natureza: Destruir, inutilizar ou deteriorar bem protegido por lei, ato administrativo ou decisão judicial - Doloso
+Potencial ofensivo: Maior
+--- Página 17 ---
+## Dificultar ou impedir o uso das praias devido a poluição
+Grupo: Meio ambiente
+Natureza: Dificultar ou impedir o uso das praias devido a poluição
+Potencial ofensivo: Maior
+--- Página 17 ---
+## Disseminar doença ou praga ou espécies que possam causar dano à agricultura, à pecuária, à fauna, à flora ou aos ecossistemas
+Grupo: Meio ambiente
+Natureza: Disseminar doença ou praga ou espécies que possam causar dano à agricultura, à pecuária, à fauna, à flora ou aos ecossistemas
+Potencial ofensivo: Maior
+--- Página 17 ---
+## Efetuar loteamento ou desmembramento do solo sem autorização ou em desacordo com as disposições legais
+Grupo: Meio ambiente
+Natureza: Efetuar loteamento ou desmembramento do solo sem autorização ou em desacordo com as disposições legais
+Potencial ofensivo: Maior
+--- Página 17 ---
+## Elaborar ou apresentar, no licenciamento, concessão florestal ou procedimento administrativo, estudo, laudo ou relatório ambiental falso ou enganoso
+Grupo: Meio ambiente
+Natureza: Elaborar ou apresentar, no licenciamento, concessão florestal ou procedimento administrativo, estudo, laudo ou relatório ambiental falso ou enganoso
+Potencial ofensivo: Maior
+--- Página 17 ---
+## Enxames de outros insetos
+Grupo: Meio ambiente
+Natureza: Enxames de outros insetos
+Potencial ofensivo: Atípico
+--- Página 17 ---
+## Executar pesquisa de recursos minerais sem autorização, permissão, concessão ou licença
+Grupo: Meio ambiente
+Natureza: Executar pesquisa de recursos minerais sem autorização, permissão, concessão ou licença
+Potencial ofensivo: Menor
+--- Página 17 ---
+## Explorar campos naturais de invertebrados aquáticos e algas, sem licença, permissão ou autorização
+Grupo: Meio ambiente
+Natureza: Explorar campos naturais de invertebrados aquáticos e algas, sem licença, permissão ou autorização
+Potencial ofensivo: Maior
+--- Página 17 ---
+## Exportar peles e couros de anfíbios e répteis, sem autorização da autoridade ambiental competente
+Grupo: Meio ambiente
+Natureza: Exportar peles e couros de anfíbios e répteis, sem autorização da autoridade ambiental competente
+Potencial ofensivo: Maior
+--- Página 17 ---
+## Extrair de florestas de domínio público ou consideradas de preservação permanente, sem prévia autorização, pedra, areia, cal ou qualquer espécie de minerais
+Grupo: Meio ambiente
+Natureza: Extrair de florestas de domínio público ou consideradas de preservação permanente, sem prévia autorização, pedra, areia, cal ou qualquer espécie de minerais
+Potencial ofensivo: Menor
+--- Página 17 ---
+## Fabricar, vender, transportar, soltar balões que possam provocar incêndios
+Grupo: Meio ambiente
+Natureza: Fabricar, vender, transportar, soltar balões que possam provocar incêndios
+Potencial ofensivo: Maior
+--- Página 17 ---
+## Farra do boi
+Grupo: Meio ambiente
+Natureza: Farra do boi
+Potencial ofensivo: Menor
+--- Página 18 ---
+## Fundear embarcações, lançar detritos sobre bancos de moluscos ou corais, devidamente demarcados
+Grupo: Meio ambiente
+Natureza: Fundear embarcações, lançar detritos sobre bancos de moluscos ou corais, devidamente demarcados
+Potencial ofensivo: Maior
+--- Página 18 ---
+## Impedir a procriação da fauna, sem licença, autorização ou em desacordo com a obtida
+Grupo: Meio ambiente
+Natureza: Impedir a procriação da fauna, sem licença, autorização ou em desacordo com a obtida
+Potencial ofensivo: Menor
+--- Página 18 ---
+## Impedir ou dificultar a regeneração natural de florestas e demais formas de vegetação
+Grupo: Meio ambiente
+Natureza: Impedir ou dificultar a regeneração natural de florestas e demais formas de vegetação
+Potencial ofensivo: Menor
+--- Página 18 ---
+## Introdução ou abandono de animais em propriedade alheia
+Grupo: Meio ambiente
+Natureza: Introdução ou abandono de animais em propriedade alheia
+Potencial ofensivo: Menor Condicionado
+--- Página 18 ---
+## Introduzir espécime animal no País, sem parecer técnico oficial favorável e respectiva licença
+Grupo: Meio ambiente
+Natureza: Introduzir espécime animal no País, sem parecer técnico oficial favorável e respectiva licença
+Potencial ofensivo: Maior
+--- Página 18 ---
+## Inundação (Crime)
+Grupo: Meio ambiente
+Natureza: Inundação (Crime)
+Potencial ofensivo: Maior
+--- Página 18 ---
+## Manusear resíduos perigosos de forma diversa da estabelecida em lei ou regulamento
+Grupo: Meio ambiente
+Natureza: Manusear resíduos perigosos de forma diversa da estabelecida em lei ou regulamento
+Potencial ofensivo: Maior
+--- Página 18 ---
+## Maus-tratos contra animais
+Grupo: Meio ambiente
+Natureza: Maus-tratos contra animais
+Potencial ofensivo: Menor
+--- Página 18 ---
+## Modificar, danificar ou destruir ninho, abrigo ou criadouro natural
+Grupo: Meio ambiente
+Natureza: Modificar, danificar ou destruir ninho, abrigo ou criadouro natural
+Potencial ofensivo: Menor
+--- Página 18 ---
+## Obstar ou dificultar a ação fiscalizadora do poder público no trato de questões ambientais
+Grupo: Meio ambiente
+Natureza: Obstar ou dificultar a ação fiscalizadora do poder público no trato de questões ambientais
+Potencial ofensivo: Maior
+--- Página 18 ---
+## Omissão de cautela na guarda ou condução de animais
+Grupo: Meio ambiente
+Natureza: Omissão de cautela na guarda ou condução de animais
+Potencial ofensivo: Menor
+--- Página 18 ---
+## Penetrar em local de conservação com instrumento para caça ou para explorar produto florestal, sem licença
+Grupo: Meio ambiente
+Natureza: Penetrar em local de conservação com instrumento para caça ou para explorar produto florestal, sem licença
+Potencial ofensivo: Menor
+--- Página 18 ---
+## Perigo de inundação (Crime)
+Grupo: Meio ambiente
+Natureza: Perigo de inundação (Crime)
+Potencial ofensivo: Maior
+--- Página 18 ---
+## Pesca predatória
+Grupo: Meio ambiente
+Natureza: Pesca predatória
+Potencial ofensivo: Maior
+--- Página 18 ---
+## Pescar com uso de explosivos ou substâncias que, em contato com a água, produzam efeito semelhante
+Grupo: Meio ambiente
+Natureza: Pescar com uso de explosivos ou substâncias que, em contato com a água, produzam efeito semelhante
+Potencial ofensivo: Maior
+--- Página 18 ---
+## Pescar em período no qual a pesca seja proibida ou em lugares interditados por órgão competente
+Grupo: Meio ambiente
+Natureza: Pescar em período no qual a pesca seja proibida ou em lugares interditados por órgão competente
+Potencial ofensivo: Maior
+--- Página 18 ---
+## Pescar espécies que devam ser preservadas ou espécimes com tamanhos inferiores aos permitidos
+Grupo: Meio ambiente
+Natureza: Pescar espécies que devam ser preservadas ou espécimes com tamanhos inferiores aos permitidos
+Potencial ofensivo: Maior
+--- Página 18 ---
+## Pescar mediante a utilização de substâncias tóxicas ou outro meio proibido pela autoridade competente
+Grupo: Meio ambiente
+Natureza: Pescar mediante a utilização de substâncias tóxicas ou outro meio proibido pela autoridade competente
+Potencial ofensivo: Maior
+--- Página 18 ---
+## Pichação
+Grupo: Meio ambiente
+Natureza: Pichação
+Potencial ofensivo: Menor
+--- Página 18 ---
+## Poluir por resíduos sólidos, líquidos, gasosos, detritos em desacordo com as exigências estabelecidas
+Grupo: Meio ambiente
+Natureza: Poluir por resíduos sólidos, líquidos, gasosos, detritos em desacordo com as exigências estabelecidas
+Potencial ofensivo: Maior
+--- Página 18 ---
+## Produzir, importar, armazenar produto tóxico a humano ou meio ambiente, em desacordo com a lei
+Grupo: Meio ambiente
+Natureza: Produzir, importar, armazenar produto tóxico a humano ou meio ambiente, em desacordo com a lei
+Potencial ofensivo: Maior
+--- Página 18 ---
+## Provocar incêndio em mata ou floresta - Culposo
+Grupo: Meio ambiente
+Natureza: Provocar incêndio em mata ou floresta - Culposo
+Potencial ofensivo: Menor
+--- Página 18 ---
+## Provocar incêndio em mata ou floresta - Doloso
+Grupo: Meio ambiente
+Natureza: Provocar incêndio em mata ou floresta - Doloso
+Potencial ofensivo: Maior
+--- Página 19 ---
+## Provocar, pela emissão de efluentes ou materiais, o perecimento de espécimes da fauna aquática
+Grupo: Meio ambiente
+Natureza: Provocar, pela emissão de efluentes ou materiais, o perecimento de espécimes da fauna aquática
+Potencial ofensivo: Maior
+--- Página 19 ---
+## Realizar experiência dolorosa ou cruel em animal vivo quando existirem recursos alternativos
+Grupo: Meio ambiente
+Natureza: Realizar experiência dolorosa ou cruel em animal vivo quando existirem recursos alternativos
+Potencial ofensivo: Menor
+--- Página 19 ---
+## Receber, adquirir madeira, lenha, carvão ou produtos vegetais, sem exigir a licença do vendedor
+Grupo: Meio ambiente
+Natureza: Receber, adquirir madeira, lenha, carvão ou produtos vegetais, sem exigir a licença do vendedor
+Potencial ofensivo: Menor
+--- Página 19 ---
+## Tornar uma área, urbana ou rural, imprópria para a ocupação humana, devido a poluição
+Grupo: Meio ambiente
+Natureza: Tornar uma área, urbana ou rural, imprópria para a ocupação humana, devido a poluição
+Potencial ofensivo: Maior
+--- Página 19 ---
+## Transportar, comercializar, beneficiar, industrializar espécimes de coleta, apanha e pesca proibida
+Grupo: Meio ambiente
+Natureza: Transportar, comercializar, beneficiar, industrializar espécimes de coleta, apanha e pesca proibida
+Potencial ofensivo: Maior
+--- Página 19 ---
+## Usar gás liqüefeito de petróleo em motores de qualquer espécie, saunas, caldeiras e aquecimento de piscinas, ou para fins automotivos, em desacordo com a lei
+Grupo: Meio ambiente
+Natureza: Usar gás liqüefeito de petróleo em motores de qualquer espécie, saunas, caldeiras e aquecimento de piscinas, ou para fins automotivos, em desacordo com a lei
+Potencial ofensivo: Maior
+--- Página 19 ---
+## Vender, adquirir, guardar, transportar ovos, larvas ou espécimes da fauna silvestre, nativa ou em rota migratória
+Grupo: Meio ambiente
+Natureza: Vender, adquirir, guardar, transportar ovos, larvas ou espécimes da fauna silvestre, nativa ou em rota migratória
+Potencial ofensivo: Menor
+--- Página 19 ---
+## Vender, transportar, guardar madeira, lenha, carvão e outros produtos vegetal, sem licença válida
+Grupo: Meio ambiente
+Natureza: Vender, transportar, guardar madeira, lenha, carvão e outros produtos vegetal, sem licença válida
+Potencial ofensivo: Menor
+--- Página 19 ---
+## Abandono de função
+Grupo: Outras infrações penais
+Natureza: Abandono de função
+Potencial ofensivo: Menor
+--- Página 19 ---
+## Abuso na prática de aviação
+Grupo: Outras infrações penais
+Natureza: Abuso na prática de aviação
+Potencial ofensivo: Menor
+--- Página 19 ---
+## Advocacia administrativa
+Grupo: Outras infrações penais
+Natureza: Advocacia administrativa
+Potencial ofensivo: Menor
+--- Página 19 ---
+## Alteração de limites
+Grupo: Outras infrações penais
+Natureza: Alteração de limites
+Potencial ofensivo: Menor Condicionado
+--- Página 19 ---
+## Apologia ao crime ou a criminoso
+Grupo: Outras infrações penais
+Natureza: Apologia ao crime ou a criminoso
+Potencial ofensivo: Menor
+--- Página 19 ---
+## Apropriar ou desviar bens, proventos, pensão ou qualquer outro rendimento de idoso
+Grupo: Outras infrações penais
+Natureza: Apropriar ou desviar bens, proventos, pensão ou qualquer outro rendimento de idoso
+Potencial ofensivo: Atípico
+--- Página 19 ---
+## Associação criminosa
+Grupo: Outras infrações penais
+Natureza: Associação criminosa
+Potencial ofensivo: Maior
+--- Página 19 ---
+## Auto-acusação falsa
+Grupo: Outras infrações penais
+Natureza: Auto-acusação falsa
+Potencial ofensivo: Menor
+--- Página 19 ---
+## Comunicação falsa de crime ou de contravenção
+Grupo: Outras infrações penais
+Natureza: Comunicação falsa de crime ou de contravenção
+Potencial ofensivo: Menor
+--- Página 19 ---
+## Constituição de milícia privada
+Grupo: Outras infrações penais
+Natureza: Constituição de milícia privada
+Potencial ofensivo: Maior
+--- Página 19 ---
+## Corromper ou facilitar a corrupção de menor de 18 anos, com ele praticando infração penal ou induzindo-o a praticá-la
+Grupo: Outras infrações penais
+Natureza: Corromper ou facilitar a corrupção de menor de 18 anos, com ele praticando infração penal ou induzindo-o a praticá-la
+Potencial ofensivo: Maior
+--- Página 19 ---
+## Deixar de comunicar à autoridade competente, crimes de ação pública incondicionada que teve conhecimento no exercício de função pública
+Grupo: Outras infrações penais
+Natureza: Deixar de comunicar à autoridade competente, crimes de ação pública incondicionada que teve conhecimento no exercício de função pública
+Potencial ofensivo: Menor
+--- Página 19 ---
+## Deixar de cumprir, retardar, frustrar a execução de ordem judicial nas ações em que for parte o idoso
+Grupo: Outras infrações penais
+Natureza: Deixar de cumprir, retardar, frustrar a execução de ordem judicial nas ações em que for parte o idoso
+Potencial ofensivo: Atípico
+--- Página 19 ---
+## Denúncia de crime ou contravenção
+Grupo: Outras infrações penais
+Natureza: Denúncia de crime ou contravenção
+Potencial ofensivo: Atípico
+--- Página 19 ---
+## Denunciação caluniosa
+Grupo: Outras infrações penais
+Natureza: Denunciação caluniosa
+Potencial ofensivo: Maior
+--- Página 20 ---
+## Desacato
+Grupo: Outras infrações penais
+Natureza: Desacato
+Potencial ofensivo: Menor
+--- Página 20 ---
+## Desobediência
+Grupo: Outras infrações penais
+Natureza: Desobediência
+Potencial ofensivo: Menor
+--- Página 20 ---
+## Desobediência à decisão judicial
+Grupo: Outras infrações penais
+Natureza: Desobediência à decisão judicial
+Potencial ofensivo: Menor
+--- Página 20 ---
+## Destruição, subtração ou ocultação de cadáver
+Grupo: Outras infrações penais
+Natureza: Destruição, subtração ou ocultação de cadáver
+Potencial ofensivo: Maior
+--- Página 20 ---
+## Direção perigosa de veículo em via pública
+Grupo: Outras infrações penais
+Natureza: Direção perigosa de veículo em via pública
+Potencial ofensivo: Menor
+--- Página 20 ---
+## Dirigir aeronave sem estar devidamente licenciado (Direção não licenciada de aeronave)
+Grupo: Outras infrações penais
+Natureza: Dirigir aeronave sem estar devidamente licenciado (Direção não licenciada de aeronave)
+Potencial ofensivo: Menor
+--- Página 20 ---
+## Dirigir, sem a devida habilitação, veículo em via pública ou embarcação a motor em águas públicas
+Grupo: Outras infrações penais
+Natureza: Dirigir, sem a devida habilitação, veículo em via pública ou embarcação a motor em águas públicas
+Potencial ofensivo: Menor
+--- Página 20 ---
+## Exercício arbitrário das próprias razões
+Grupo: Outras infrações penais
+Natureza: Exercício arbitrário das próprias razões
+Potencial ofensivo: Menor Condicionado
+--- Página 20 ---
+## Falso testemunho ou falsa perícia
+Grupo: Outras infrações penais
+Natureza: Falso testemunho ou falsa perícia
+Potencial ofensivo: Maior
+--- Página 20 ---
+## Homofobia
+Grupo: Outras infrações penais
+Natureza: Homofobia
+Potencial ofensivo: Menor
+--- Página 20 ---
+## Incitação ao crime
+Grupo: Outras infrações penais
+Natureza: Incitação ao crime
+Potencial ofensivo: Menor
+--- Página 20 ---
+## Instalar ou utilizar de telecomunicações, sem observância dos preceitos legais ou regulamentares
+Grupo: Outras infrações penais
+Natureza: Instalar ou utilizar de telecomunicações, sem observância dos preceitos legais ou regulamentares
+Potencial ofensivo: Menor
+--- Página 20 ---
+## Invasão de dispositivo informático
+Grupo: Outras infrações penais
+Natureza: Invasão de dispositivo informático
+Potencial ofensivo: Menor Condicionado
+--- Página 20 ---
+## Invasão de propriedade (Esbulho possessório)
+Grupo: Outras infrações penais
+Natureza: Invasão de propriedade (Esbulho possessório)
+Potencial ofensivo: Menor Condicionado
+--- Página 20 ---
+## Manter custódia de doente mental, sem autorização ou de forma indevida
+Grupo: Outras infrações penais
+Natureza: Manter custódia de doente mental, sem autorização ou de forma indevida
+Potencial ofensivo: Menor
+--- Página 20 ---
+## Obrigar ou coagir a usar mercadorias de determinado estabelecimento em virtude de dívida
+Grupo: Outras infrações penais
+Natureza: Obrigar ou coagir a usar mercadorias de determinado estabelecimento em virtude de dívida
+Potencial ofensivo: Menor
+--- Página 20 ---
+## Obstar o acesso de alguém a qualquer cargo público por motivo de idade
+Grupo: Outras infrações penais
+Natureza: Obstar o acesso de alguém a qualquer cargo público por motivo de idade
+Potencial ofensivo: Atípico
+--- Página 20 ---
+## Permitir que menor de dezoito anos frequente casa de jogos e outros
+Grupo: Outras infrações penais
+Natureza: Permitir que menor de dezoito anos frequente casa de jogos e outros
+Potencial ofensivo: Menor
+--- Página 20 ---
+## Permitir que menor de dezoito anos frequente espetáculo ofensivo ou outro
+Grupo: Outras infrações penais
+Natureza: Permitir que menor de dezoito anos frequente espetáculo ofensivo ou outro
+Potencial ofensivo: Menor
+--- Página 20 ---
+## Permitir que menor de dezoito anos mendigue ou sirva de mendigo
+Grupo: Outras infrações penais
+Natureza: Permitir que menor de dezoito anos mendigue ou sirva de mendigo
+Potencial ofensivo: Menor
+--- Página 20 ---
+## Permitir que menor de dezoito anos resida ou trabalhe em casa de prostituição
+Grupo: Outras infrações penais
+Natureza: Permitir que menor de dezoito anos resida ou trabalhe em casa de prostituição
+Potencial ofensivo: Menor
+--- Página 20 ---
+## Praticar atos de terrorismo, por razões de xenofobia, discriminação ou preconceito de raça, cor, etnia e religião, com a finalidade de provocar terror social ou generalizado
+Grupo: Outras infrações penais
+Natureza: Praticar atos de terrorismo, por razões de xenofobia, discriminação ou preconceito de raça, cor, etnia e religião, com a finalidade de provocar terror social ou generalizado
+Potencial ofensivo: Maior
+--- Página 20 ---
+## Prevaricação
+Grupo: Outras infrações penais
+Natureza: Prevaricação
+Potencial ofensivo: Menor
+--- Página 21 ---
+## Privar, criança ou adolescente de liberdade, sem estar em flagrante ou sem ordem da autoridade competente
+Grupo: Outras infrações penais
+Natureza: Privar, criança ou adolescente de liberdade, sem estar em flagrante ou sem ordem da autoridade competente
+Potencial ofensivo: Menor
+--- Página 21 ---
+## Queixa da atuação da Polícia Militar
+Grupo: Outras infrações penais
+Natureza: Queixa da atuação da Polícia Militar
+Potencial ofensivo: Atípico
+--- Página 21 ---
+## Queixa da atuação de outros órgãos públicos
+Grupo: Outras infrações penais
+Natureza: Queixa da atuação de outros órgãos públicos
+Potencial ofensivo: Atípico
+--- Página 21 ---
+## Receber em estabelecimento psiquiátrico, e nele internar, sem as formalidades legais, pessoa apresentada como doente mental
+Grupo: Outras infrações penais
+Natureza: Receber em estabelecimento psiquiátrico, e nele internar, sem as formalidades legais, pessoa apresentada como doente mental
+Potencial ofensivo: Menor
+--- Página 21 ---
+## Recusar, retardar ou dificultar atendimento ou deixar de prestar assistência à saúde, sem justa causa, a pessoa idosa
+Grupo: Outras infrações penais
+Natureza: Recusar, retardar ou dificultar atendimento ou deixar de prestar assistência à saúde, sem justa causa, a pessoa idosa
+Potencial ofensivo: Atípico
+--- Página 21 ---
+## Resistência
+Grupo: Outras infrações penais
+Natureza: Resistência
+Potencial ofensivo: Menor
+--- Página 21 ---
+## Reter o cartão magnético de conta bancária relativa a benefícios, proventos ou pensão do idoso
+Grupo: Outras infrações penais
+Natureza: Reter o cartão magnético de conta bancária relativa a benefícios, proventos ou pensão do idoso
+Potencial ofensivo: Atípico
+--- Página 21 ---
+## Subtração de incapaz
+Grupo: Outras infrações penais
+Natureza: Subtração de incapaz
+Potencial ofensivo: Menor
+--- Página 21 ---
+## Subtração, ocultação ou inutilização de material de salvamento
+Grupo: Outras infrações penais
+Natureza: Subtração, ocultação ou inutilização de material de salvamento
+Potencial ofensivo: Maior
+--- Página 21 ---
+## Subtrair criança ou adolescente ao poder de quem o tem sob sua guarda em virtude de lei ou ordem judicial, com o fim de colocação em lar substituto
+Grupo: Outras infrações penais
+Natureza: Subtrair criança ou adolescente ao poder de quem o tem sob sua guarda em virtude de lei ou ordem judicial, com o fim de colocação em lar substituto
+Potencial ofensivo: Maior
+--- Página 21 ---
+## Supressão ou alteração de marca em animais
+Grupo: Outras infrações penais
+Natureza: Supressão ou alteração de marca em animais
+Potencial ofensivo: Maior
+--- Página 21 ---
+## Tráfico de influência
+Grupo: Outras infrações penais
+Natureza: Tráfico de influência
+Potencial ofensivo: Maior
+--- Página 21 ---
+## Usurpação de função pública
+Grupo: Outras infrações penais
+Natureza: Usurpação de função pública
+Potencial ofensivo: Maior
+--- Página 21 ---
+## Vender, fornecer ou entregar a menor bebida alcoólica ou produtos que possam causar dependência física ou psíquica
+Grupo: Outras infrações penais
+Natureza: Vender, fornecer ou entregar a menor bebida alcoólica ou produtos que possam causar dependência física ou psíquica
+Potencial ofensivo: Maior
+--- Página 21 ---
+## Vender, fornecer ou entregar a menor fogos de artifício
+Grupo: Outras infrações penais
+Natureza: Vender, fornecer ou entregar a menor fogos de artifício
+Potencial ofensivo: Menor
+--- Página 21 ---
+## Vias de fato
+Grupo: Outras infrações penais
+Natureza: Vias de fato
+Potencial ofensivo: Menor Condicionado
+--- Página 21 ---
+## Vilipêndio a cadáver
+Grupo: Outras infrações penais
+Natureza: Vilipêndio a cadáver
+Potencial ofensivo: Maior
+--- Página 21 ---
+## Violação de correspondência
+Grupo: Outras infrações penais
+Natureza: Violação de correspondência
+Potencial ofensivo: Menor Condicionado
+--- Página 21 ---
+## Violação de domicílio
+Grupo: Outras infrações penais
+Natureza: Violação de domicílio
+Potencial ofensivo: Menor
+--- Página 21 ---
+## Violação de sepultura
+Grupo: Outras infrações penais
+Natureza: Violação de sepultura
+Potencial ofensivo: Maior
+--- Página 21 ---
+## Violação de sigilo funcional
+Grupo: Outras infrações penais
+Natureza: Violação de sigilo funcional
+Potencial ofensivo: Menor
+--- Página 21 ---
+## Violação do segredo profissional
+Grupo: Outras infrações penais
+Natureza: Violação do segredo profissional
+Potencial ofensivo: Menor Condicionado
+--- Página 21 ---
+## Violência arbitrária
+Grupo: Outras infrações penais
+Natureza: Violência arbitrária
+Potencial ofensivo: Maior
+--- Página 22 ---
+## Acidente aéreo
+Grupo: Outros acidentes
+Natureza: Acidente aéreo
+Potencial ofensivo: Atípico
+--- Página 22 ---
+## Acidente ferroviário
+Grupo: Outros acidentes
+Natureza: Acidente ferroviário
+Potencial ofensivo: Atípico
+--- Página 22 ---
+## Acidente hidroviário
+Grupo: Outros acidentes
+Natureza: Acidente hidroviário
+Potencial ofensivo: Atípico
+--- Página 22 ---
+## Acidente marítimo
+Grupo: Outros acidentes
+Natureza: Acidente marítimo
+Potencial ofensivo: Atípico
+--- Página 22 ---
+## Impedimento ou perturbação de cerimônia funerária
+Grupo: Perturbação
+Natureza: Impedimento ou perturbação de cerimônia funerária
+Potencial ofensivo: Menor
+--- Página 22 ---
+## Perturbação da tranquilidade
+Grupo: Perturbação
+Natureza: Perturbação da tranquilidade
+Potencial ofensivo: Menor
+--- Página 22 ---
+## Perturbação do trabalho ou sossego alheios
+Grupo: Perturbação
+Natureza: Perturbação do trabalho ou sossego alheios
+Potencial ofensivo: Menor
+--- Página 22 ---
+## Reincidência (Programa Silêncio Urbano)
+Grupo: Perturbação
+Natureza: Reincidência (Programa Silêncio Urbano)
+Potencial ofensivo: Atípico
+--- Página 22 ---
+## Reincidência Continuada (Programa Silêncio Urbano)
+Grupo: Perturbação
+Natureza: Reincidência Continuada (Programa Silêncio Urbano)
+Potencial ofensivo: Atípico
+--- Página 22 ---
+## Ultraje a culto e impedimento ou perturbação de ato a ele relativo
+Grupo: Perturbação
+Natureza: Ultraje a culto e impedimento ou perturbação de ato a ele relativo
+Potencial ofensivo: Menor
+--- Página 22 ---
+## Extorsão (Sequestro relâmpago)
+Grupo: Roubo
+Natureza: Extorsão (Sequestro relâmpago)
+Potencial ofensivo: Maior
+--- Página 22 ---
+## Extorsão mediante sequestro
+Grupo: Roubo
+Natureza: Extorsão mediante sequestro
+Potencial ofensivo: Maior
+--- Página 22 ---
+## Roubo
+Grupo: Roubo
+Natureza: Roubo
+Potencial ofensivo: Maior
+--- Página 22 ---
+## Acidente com material radioativo
+Grupo: Saúde pública
+Natureza: Acidente com material radioativo
+Potencial ofensivo: Atípico
+--- Página 22 ---
+## Corromper ou poluir água potável - Culposa
+Grupo: Saúde pública
+Natureza: Corromper ou poluir água potável - Culposa
+Potencial ofensivo: Menor
+--- Página 22 ---
+## Corromper ou poluir água potável - Dolosa
+Grupo: Saúde pública
+Natureza: Corromper ou poluir água potável - Dolosa
+Potencial ofensivo: Maior
+--- Página 22 ---
+## Difusão de doença ou praga - Culposa
+Grupo: Saúde pública
+Natureza: Difusão de doença ou praga - Culposa
+Potencial ofensivo: Menor
+--- Página 22 ---
+## Difusão de doença ou praga - Dolosa
+Grupo: Saúde pública
+Natureza: Difusão de doença ou praga - Dolosa
+Potencial ofensivo: Maior
+--- Página 22 ---
+## Epidemia - Culposa
+Grupo: Saúde pública
+Natureza: Epidemia - Culposa
+Potencial ofensivo: Menor
+--- Página 22 ---
+## Epidemia - Dolosa
+Grupo: Saúde pública
+Natureza: Epidemia - Dolosa
+Potencial ofensivo: Maior
+--- Página 22 ---
+## Fornecer substância medicinal em desacordo com receita médica - Culposo
+Grupo: Saúde pública
+Natureza: Fornecer substância medicinal em desacordo com receita médica - Culposo
+Potencial ofensivo: Menor
+--- Página 22 ---
+## Fornecer substância medicinal em desacordo com receita médica - Doloso
+Grupo: Saúde pública
+Natureza: Fornecer substância medicinal em desacordo com receita médica - Doloso
+Potencial ofensivo: Maior
+--- Página 22 ---
+## Negligência médica
+Grupo: Saúde pública
+Natureza: Negligência médica
+Potencial ofensivo: Atípico
+--- Página 23 ---
+## Arrebatamento de preso
+Grupo: Sistema prisional
+Natureza: Arrebatamento de preso
+Potencial ofensivo: Maior
+--- Página 23 ---
+## Cumprimento de Mandado de Prisão/Apreensão de Adolescente
+Grupo: Sistema prisional
+Natureza: Cumprimento de Mandado de Prisão/Apreensão de Adolescente
+Potencial ofensivo: Atípico
+--- Página 23 ---
+## Fuga ou evasão de pessoa presa, apreendida ou custodiada
+Grupo: Sistema prisional
+Natureza: Fuga ou evasão de pessoa presa, apreendida ou custodiada
+Potencial ofensivo: Atípico
+--- Página 23 ---
+## Ingressar em estabelecimento prisional portando telefone celular sem autorização legal
+Grupo: Sistema prisional
+Natureza: Ingressar em estabelecimento prisional portando telefone celular sem autorização legal
+Potencial ofensivo: Menor
+--- Página 23 ---
+## Motim de presos
+Grupo: Sistema prisional
+Natureza: Motim de presos
+Potencial ofensivo: Menor
+--- Página 23 ---
+## Promover ou facilitar a fuga de pessoa presa ou submetida a medida de segurança
+Grupo: Sistema prisional
+Natureza: Promover ou facilitar a fuga de pessoa presa ou submetida a medida de segurança
+Potencial ofensivo: Menor
+--- Página 23 ---
+## Recaptura de foragido/evadido
+Grupo: Sistema prisional
+Natureza: Recaptura de foragido/evadido
+Potencial ofensivo: Atípico

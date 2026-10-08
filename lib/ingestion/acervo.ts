@@ -18,7 +18,7 @@ export interface ItemAcervo {
   normaId?: string;
   documentType?: TipoNorma;
   paginas: number;
-  fonte: string;
+  fonte?: string;
 }
 
 export const ACERVO: ItemAcervo[] = [
@@ -33,6 +33,14 @@ export const ACERVO: ItemAcervo[] = [
     documentType: 'lei',
     paginas: 93,
     fonte: 'https://www.planalto.gov.br/ccivil_03/leis/l9503compilado.htm',
+  },
+  {
+    id: 'fatos-pmsc-mobile',
+    titulo: 'Lista de Fatos (PMSC Mobile)',
+    descricao: '510 naturezas com grupo e potencial ofensivo, conforme a lista atualizada em 10/06/2019.',
+    arquivo: 'data/acervo/fatos-pmsc-mobile.txt',
+    colecao: 'natureza_potencial',
+    paginas: 23,
   },
 ];
 

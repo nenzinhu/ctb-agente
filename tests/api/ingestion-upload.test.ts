@@ -175,6 +175,18 @@ describe('POST /api/ingestion/upload', () => {
     expect(processChunks).not.toHaveBeenCalled();
   });
 
+  it('indexes the natureza potencial collection into the document base', async () => {
+    const resposta = await POST(requisicao({
+      storagePath: 'fatos.txt',
+      fileName: 'fatos.txt',
+      colecao: 'natureza_potencial',
+      titulo: 'Lista de Fatos (PMSC Mobile)',
+    }));
+    expect(resposta.status).toBe(200);
+    expect(createDocument).toHaveBeenCalledWith(expect.objectContaining({ colecao: 'natureza_potencial' }));
+    expect(processTrechos).toHaveBeenCalledWith(expect.objectContaining({ documentoId: 'doc-1' }));
+  });
+
   it('asks for migration 008 before accepting a POP', async () => {
     const { MigrationPendingError } = jest.requireActual('../../lib/ingestion/documents');
     findDocumentByHash.mockRejectedValueOnce(new MigrationPendingError());

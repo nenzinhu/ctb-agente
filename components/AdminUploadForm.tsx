@@ -42,7 +42,7 @@ const COMPRESSOES: { value: Compressao; label: string; ajuda: string }[] = [
  * any PDF through; the CTB base keeps the lossless default.
  */
 function compressaoPadrao(colecao: Colecao): Compressao {
-  if (colecao === 'pop' && typeof Worker !== 'undefined') return 'texto';
+  if (colecao !== 'ctb' && typeof Worker !== 'undefined') return 'texto';
   return compressionSupported() ? 'gzip' : 'nenhuma';
 }
 
