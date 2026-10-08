@@ -28,5 +28,7 @@ describe('FatosPmscConsulta', () => {
     expect(screen.getByText(/confira as alternativas/i)).toBeInTheDocument();
     expect(screen.getByText(/atualizada em 10\/06\/2019/i)).toBeInTheDocument();
     expect(screen.queryByText(/^Página\s+22$/i)).not.toBeInTheDocument();
+    expect(screen.getByRole('region', { name: /naturezas encontradas/i })).toHaveClass('mobile-results-enter');
+    expect(screen.getByText('Perturbação do trabalho ou sossego alheios').closest('article')).toHaveClass('mobile-result-card');
   });
 });

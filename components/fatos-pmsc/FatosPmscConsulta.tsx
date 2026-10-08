@@ -62,11 +62,11 @@ export default function FatosPmscConsulta() {
               hint="Aceita abreviações, gírias, erros de digitação, palavras incompletas e frases. Não informe dados pessoais."
               erro={erro}
               acao={<BotaoVoz ditado={ditado} />}
-              controlClassName="min-h-[124px] resize-y leading-relaxed"
+              controlClassName="mobile-query-field min-h-[108px] resize-y leading-relaxed sm:min-h-[124px]"
             />
             <AvisoVoz ditado={ditado} />
           </div>
-          <PrimaryButton type="submit" icone="busca" carregando={carregando} textoCarregando="Consultando…" disabled={consulta.trim().length < 3} className="w-full">
+          <PrimaryButton type="submit" icone="busca" carregando={carregando} textoCarregando="Consultando…" disabled={consulta.trim().length < 3} className="min-h-12 w-full">
             Consultar lista
           </PrimaryButton>
           <div className="border-t border-ds-line pt-4">
@@ -83,7 +83,7 @@ export default function FatosPmscConsulta() {
       </SectionCard>
 
       {alternativas ? (
-        <section className="space-y-4" aria-labelledby="resultado-fatos">
+        <section className="mobile-results-enter space-y-4" aria-labelledby="resultado-fatos">
           <div className="rounded-control border border-ds-line bg-ds-surface p-4">
             <h2 id="resultado-fatos" className="flex items-center gap-2 font-semibold text-ds-text"><Icone nome="lista" tamanho={18} /> Naturezas encontradas</h2>
             <p className="mt-1 text-sm text-ds-subtle">
@@ -95,7 +95,7 @@ export default function FatosPmscConsulta() {
           ) : (
             <div className="grid gap-4 lg:grid-cols-3">
               {alternativas.map((item) => (
-                <article key={`${item.grupo}:${item.natureza}`} className="card card-pad min-w-0">
+                <article key={`${item.grupo}:${item.natureza}`} className="mobile-result-card card card-pad min-w-0">
                   <span className="badge-brand">{item.compatibilidade}</span>
                   <h3 className="mt-3 text-lg font-semibold leading-snug text-ds-text">{item.natureza}</h3>
                   <dl className="mt-4 space-y-3 text-sm">

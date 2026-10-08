@@ -24,7 +24,7 @@ export default function ResultChoices({ label, hint, options, value, onChange }:
           return (
             <label
               key={option.value}
-              className={`flex min-w-0 cursor-pointer items-start gap-3 rounded-xl border p-3 transition-colors sm:p-4 ${
+              className={`mobile-result-card flex min-h-11 min-w-0 cursor-pointer items-start gap-3 rounded-xl border p-3 transition-colors sm:p-4 ${
                 selected
                   ? 'border-ds-primary bg-ds-primary-soft'
                   : 'border-ds-line bg-ds-surface hover:border-ds-primary'

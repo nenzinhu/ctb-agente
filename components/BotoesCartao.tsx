@@ -74,13 +74,13 @@ export default function BotoesCartao({ card, onChange }: BotoesCartaoProps) {
         onClick={alternarFavorito}
         aria-pressed={favorito}
         title="Salva o cartão neste aparelho"
-        className={favorito ? 'btn-primary btn-sm' : 'btn-secondary btn-sm'}
+        className={`${favorito ? 'btn-primary btn-sm' : 'btn-secondary btn-sm'} mobile-result-action`}
       >
         <Icone nome="estrela" tamanho={16} className={favorito ? 'fill-current' : ''} />
         {favorito ? 'Salvo' : 'Salvar'}
       </button>
 
-      <button type="button" onClick={compartilhar} title="Compartilhar o cartão" className="btn-secondary btn-sm">
+      <button type="button" onClick={compartilhar} title="Compartilhar o cartão" className="btn-secondary btn-sm mobile-result-action">
         <Icone nome="compartilhar" tamanho={16} />
         Compartilhar
       </button>

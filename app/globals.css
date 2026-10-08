@@ -613,6 +613,36 @@ body::before {
   to { transform: translateY(0); opacity: 1; }
 }
 
+.mobile-results-enter {
+  animation: mobile-results-in 200ms ease-out;
+}
+
+.mobile-result-card {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.mobile-result-action {
+  min-height: 2.75rem;
+}
+
+.mobile-table-scroll {
+  max-width: 100%;
+  overflow-x: auto;
+  overscroll-behavior-inline: contain;
+}
+
+@keyframes mobile-results-in {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media (max-width: 380px) {
+  .mobile-result-toolbar > * {
+    width: 100%;
+  }
+}
+
 @media (min-width: 768px) {
   .nav-tabs {
     mask-image: none;

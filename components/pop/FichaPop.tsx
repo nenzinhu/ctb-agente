@@ -73,7 +73,8 @@ export default function FichaPop({ pop }: { pop: Pop }) {
           {pop.fundamentacao.length === 0 ? (
             <p className="text-sm text-ds-subtle">—</p>
           ) : (
-            <table className="w-full text-left text-sm">
+            <div className="mobile-table-scroll">
+            <table className="w-full min-w-[34rem] text-left text-sm">
               <thead>
                 <tr className="border-b border-ds-line">
                   <th scope="col" className="stat-label py-1.5 pr-3 font-semibold">Legislação/Doutrina</th>
@@ -89,6 +90,7 @@ export default function FichaPop({ pop }: { pop: Pop }) {
                 ))}
               </tbody>
             </table>
+            </div>
           )}
         </Secao>
 
