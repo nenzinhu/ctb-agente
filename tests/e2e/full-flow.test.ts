@@ -12,6 +12,36 @@ test.describe('CTB Agente — fluxo completo', () => {
     await expect(page.getByRole('link', { name: /Comprimir PDF.*somente texto/i })).toBeVisible();
   });
 
+  test('a apresentação institucional cabe em tela pequena', async ({ page }) => {
+    await page.setViewportSize({ width: 360, height: 800 });
+    await page.goto('/');
+
+    await expect(page.getByText(/Aplicativo de apoio ao agente em campo/)).toBeVisible();
+    await expect(page.getByText('CTB Agente — desenvolvido pelo Cabo Jeferson')).toBeVisible();
+    const semRolagemHorizontal = await page.evaluate(
+      () => document.documentElement.scrollWidth <= document.documentElement.clientWidth,
+    );
+    expect(semRolagemHorizontal).toBe(true);
+  });
+
+  test('movimento reduzido mantém a consulta visível e utilizável', async ({ page }) => {
+    await page.emulateMedia({ reducedMotion: 'reduce' });
+    await page.goto('/');
+    await page.reload();
+
+    const campo = page.getByLabel('Sua consulta');
+    await expect(campo).toBeVisible();
+    await campo.fill('art. 165');
+    await expect(campo).toHaveValue('art. 165');
+  });
+
+  test('o rodapé é global e a animação fica restrita à home', async ({ page }) => {
+    await page.goto('/apostila');
+
+    await expect(page.getByText('CTB Agente — desenvolvido pelo Cabo Jeferson')).toBeVisible();
+    await expect(page.locator('[data-home-reveal]')).toHaveCount(0);
+  });
+
   test('o modo sol pode ser alternado e persiste', async ({ page }) => {
     await page.goto('/');
 

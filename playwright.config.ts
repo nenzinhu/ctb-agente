@@ -2,6 +2,7 @@ import { defineConfig, devices } from '@playwright/test';
 
 const PORT = Number(process.env.E2E_PORT || 3210);
 const BASE_URL = process.env.E2E_BASE_URL || `http://localhost:${PORT}`;
+const CHROMIUM_EXECUTABLE = process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH;
 
 /**
  * End-to-end configuration.
@@ -19,6 +20,7 @@ export default defineConfig({
   timeout: 30_000,
   use: {
     baseURL: BASE_URL,
+    launchOptions: CHROMIUM_EXECUTABLE ? { executablePath: CHROMIUM_EXECUTABLE } : undefined,
     trace: 'on-first-retry',
     screenshot: 'only-on-failure',
   },
