@@ -34,6 +34,10 @@ function makeFile(name: string, sizeBytes: number, type = 'application/pdf'): Fi
 async function fillMetadata() {
   const normaInput = screen.getByLabelText(/norma/i);
   await userEvent.type(normaInput, 'ctb');
+  await userEvent.type(screen.getByLabelText('Fonte oficial'), 'https://www.planalto.gov.br/');
+  await userEvent.type(screen.getByLabelText('Versão'), 'CTB compilado 2026');
+  await userEvent.type(screen.getByLabelText('Vigente desde'), '2024-01-01');
+  await userEvent.type(screen.getByLabelText('Conferido em'), '2026-09-01');
 }
 
 describe('AdminUploadForm', () => {
@@ -41,6 +45,14 @@ describe('AdminUploadForm', () => {
     jest.clearAllMocks();
     jest.restoreAllMocks();
     delete (global as { fetch?: typeof fetch }).fetch;
+  });
+
+  it('mostra os quatro metadados oficiais obrigatórios', () => {
+    render(<AdminUploadForm />);
+    expect(screen.getByLabelText('Fonte oficial')).toBeRequired();
+    expect(screen.getByLabelText('Versão')).toBeRequired();
+    expect(screen.getByLabelText('Vigente desde')).toBeRequired();
+    expect(screen.getByLabelText('Conferido em')).toBeRequired();
   });
 
   it('rejects an oversized file locally, without calling fetch', async () => {
@@ -68,6 +80,19 @@ describe('AdminUploadForm', () => {
 
     expect(fetchMock).not.toHaveBeenCalled();
     expect(await screen.findByText(/informe a norma/i)).toBeInTheDocument();
+  });
+
+  it('bloqueia o envio quando um metadado oficial está vazio', async () => {
+    const fetchMock = jest.fn();
+    global.fetch = fetchMock as unknown as typeof fetch;
+    const { container } = render(<AdminUploadForm />);
+    await userEvent.type(screen.getByLabelText(/norma/i), 'ctb');
+
+    const input = container.querySelector('input[type="file"]') as HTMLInputElement;
+    await userEvent.upload(input, makeFile('ctb.pdf', 1024));
+
+    expect(fetchMock).not.toHaveBeenCalled();
+    expect(await screen.findByText(/fonte, versão, vigência e conferência/i)).toBeInTheDocument();
   });
 
   it('uploads straight to Storage, then tells the server to process it', async () => {
@@ -101,7 +126,14 @@ describe('AdminUploadForm', () => {
 
     const ingestCall = fetchMock.mock.calls.find(([url]) => url === '/api/ingestion/upload');
     const ingestBody = JSON.parse((ingestCall?.[1] as RequestInit).body as string);
-    expect(ingestBody).toMatchObject({ storagePath: '123-ctb.pdf', normaId: 'ctb' });
+    expect(ingestBody).toMatchObject({
+      storagePath: '123-ctb.pdf',
+      normaId: 'ctb',
+      fonteOficial: 'https://www.planalto.gov.br/',
+      versao: 'CTB compilado 2026',
+      vigenteDesde: '2024-01-01',
+      conferidoEm: '2026-09-01',
+    });
   });
 
   it('infers the content type from the extension when the browser reports none', async () => {

@@ -53,6 +53,10 @@ export default function AdminUploadForm({ onUploadSuccess, colecao = 'ctb', comp
   const [fileProgress, setFileProgress] = useState<{ current: number; total: number } | null>(null);
   const [normaId, setNormaId] = useState('');
   const [titulo, setTitulo] = useState('');
+  const [fonteOficial, setFonteOficial] = useState('');
+  const [versao, setVersao] = useState('');
+  const [vigenteDesde, setVigenteDesde] = useState('');
+  const [conferidoEm, setConferidoEm] = useState('');
   const [documentType, setDocumentType] = useState<(typeof DOCUMENT_TYPES)[number]['value']>('lei');
   const [compressao, setCompressao] = useState<Compressao>(() => compressaoPadrao(colecao));
   const [stage, setStage] = useState<string | null>(null);
@@ -69,6 +73,10 @@ export default function AdminUploadForm({ onUploadSuccess, colecao = 'ctb', comp
 
     if (ehCtb && !normaId.trim()) {
       setErros(['Informe a norma antes de enviar o arquivo.']);
+      return;
+    }
+    if (!fonteOficial.trim() || !versao.trim() || !vigenteDesde || !conferidoEm) {
+      setErros(['Informe fonte, versão, vigência e conferência antes de enviar o arquivo.']);
       return;
     }
 
@@ -106,6 +114,10 @@ export default function AdminUploadForm({ onUploadSuccess, colecao = 'ctb', comp
             await enviarDocumento(file, {
               colecao,
               compressao,
+              fonteOficial: fonteOficial.trim(),
+              versao: versao.trim(),
+              vigenteDesde,
+              conferidoEm,
               // A custom title only makes sense for a single file.
               titulo: lista.length === 1 ? titulo : undefined,
               normaId: ehCtb ? normaId.trim() : undefined,
@@ -190,6 +202,64 @@ export default function AdminUploadForm({ onUploadSuccess, colecao = 'ctb', comp
           </p>
         )}
       </div>
+
+      <fieldset className="space-y-2">
+        <legend className="label">Identificação da fonte oficial</legend>
+        <div className={`grid gap-4 ${compacto ? '' : 'sm:grid-cols-2'}`}>
+          <label className="block" htmlFor={`${idPrefixo}-fonte`}>
+            <span className="label">Fonte oficial</span>
+            <input
+              id={`${idPrefixo}-fonte`}
+              type="text"
+              value={fonteOficial}
+              onChange={(event) => setFonteOficial(event.target.value)}
+              placeholder="Órgão ou endereço oficial"
+              disabled={isUploading}
+              required
+              className="input"
+            />
+          </label>
+          <label className="block" htmlFor={`${idPrefixo}-versao`}>
+            <span className="label">Versão</span>
+            <input
+              id={`${idPrefixo}-versao`}
+              type="text"
+              value={versao}
+              onChange={(event) => setVersao(event.target.value)}
+              placeholder="Ex.: compilado em 2026"
+              disabled={isUploading}
+              required
+              className="input"
+            />
+          </label>
+          <label className="block" htmlFor={`${idPrefixo}-vigencia`}>
+            <span className="label">Vigente desde</span>
+            <input
+              id={`${idPrefixo}-vigencia`}
+              type="date"
+              value={vigenteDesde}
+              onChange={(event) => setVigenteDesde(event.target.value)}
+              disabled={isUploading}
+              required
+              className="input"
+            />
+          </label>
+          <label className="block" htmlFor={`${idPrefixo}-conferencia`}>
+            <span className="label">Conferido em</span>
+            <input
+              id={`${idPrefixo}-conferencia`}
+              type="date"
+              value={conferidoEm}
+              onChange={(event) => setConferidoEm(event.target.value)}
+              max={new Date().toISOString().slice(0, 10)}
+              disabled={isUploading}
+              required
+              className="input"
+            />
+          </label>
+        </div>
+        <p className="hint">Esses dados permitem conferir a vigência e identificar rapidamente conteúdo desatualizado.</p>
+      </fieldset>
 
       <fieldset>
         <legend className="label">Compressão antes de enviar</legend>

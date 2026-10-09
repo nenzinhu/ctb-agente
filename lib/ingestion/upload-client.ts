@@ -32,6 +32,10 @@ export function limiteDeOrigem(arquivo: File, compressao: Compressao): number {
 export interface EnvioOpcoes {
   colecao: Colecao;
   compressao: Compressao;
+  fonteOficial: string;
+  versao: string;
+  vigenteDesde: string;
+  conferidoEm: string;
   titulo?: string;
   normaId?: string;
   documentType?: string;
@@ -156,6 +160,10 @@ export async function enviarDocumento(original: File, opcoes: EnvioOpcoes): Prom
       fileName: arquivo.name,
       colecao: opcoes.colecao,
       titulo,
+      fonteOficial: opcoes.fonteOficial,
+      versao: opcoes.versao,
+      vigenteDesde: opcoes.vigenteDesde,
+      conferidoEm: opcoes.conferidoEm,
       ...(opcoes.colecao === 'ctb' ? { normaId: opcoes.normaId, documentType: opcoes.documentType } : {}),
     }),
   });

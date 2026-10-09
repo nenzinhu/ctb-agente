@@ -17,11 +17,21 @@ interface DocumentListProps {
 }
 
 function formatarData(iso: string): string {
+  const dataIso = /^(\d{4})-(\d{2})-(\d{2})$/.exec(iso);
+  if (dataIso) return `${dataIso[3]}/${dataIso[2]}/${dataIso[1]}`;
   const data = new Date(iso);
   return Number.isNaN(data.getTime()) ? '' : data.toLocaleDateString('pt-BR');
 }
 
 const FORMATO_ROTULO: Record<string, string> = { pdf: 'PDF', docx: 'DOCX', doc: 'DOC', md: 'MD', txt: 'TXT' };
+
+interface EdicaoMetadata {
+  id: string;
+  fonteOficial: string;
+  versao: string;
+  vigenteDesde: string;
+  conferidoEm: string;
+}
 
 export default function DocumentList({ colecao, refreshTrigger, onChange }: DocumentListProps) {
   const [dados, setDados] = useState<DocumentosResposta | null>(null);
@@ -29,6 +39,7 @@ export default function DocumentList({ colecao, refreshTrigger, onChange }: Docu
   const [aviso, setAviso] = useState<string | null>(null);
   const [ocupado, setOcupado] = useState<string | null>(null);
   const [busca, setBusca] = useState('');
+  const [edicao, setEdicao] = useState<EdicaoMetadata | null>(null);
   const [vetores, setVetores] = useState<{ rodando: boolean; mensagem: string | null }>({ rodando: false, mensagem: null });
 
   const carregar = useCallback(async () => {
@@ -92,6 +103,40 @@ export default function DocumentList({ colecao, refreshTrigger, onChange }: Docu
     }
   };
 
+  const editar = (documento: DocumentoRegistro) => {
+    setEdicao({
+      id: documento.id,
+      fonteOficial: documento.fonte_oficial ?? '',
+      versao: documento.versao ?? '',
+      vigenteDesde: documento.vigente_desde ?? '',
+      conferidoEm: documento.conferido_em ?? '',
+    });
+  };
+
+  const salvarMetadata = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (!edicao) return;
+    setOcupado(`metadata:${edicao.id}`);
+    setAviso(null);
+    try {
+      const resposta = await fetch('/api/admin/documents', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ...edicao, situacao: 'vigente' }),
+      });
+      const corpo = await resposta.json().catch(() => ({}));
+      if (!resposta.ok) throw new Error(corpo.message || corpo.error || 'Falha ao revisar o documento.');
+      setAviso('Metadados oficiais atualizados.');
+      setEdicao(null);
+      await carregar();
+      onChange?.();
+    } catch (error) {
+      setAviso(error instanceof Error ? error.message : 'Falha ao revisar o documento.');
+    } finally {
+      setOcupado(null);
+    }
+  };
+
   if (erro) {
     return (
       <div className="alert-error" role="alert">
@@ -135,6 +180,16 @@ export default function DocumentList({ colecao, refreshTrigger, onChange }: Docu
           <p>
             <strong>Falta a migração 008.</strong> Rode <code>scripts/migrations-008-rag-indexacao.sql</code> no Editor SQL
             do Supabase para listar e gerenciar documentos, corrigir a busca e habilitar a base de POPs.
+          </p>
+        </div>
+      )}
+
+      {dados.migracaoQualidadePendente && (
+        <div className="alert-warn">
+          <Icone nome="base" className="mt-0.5 shrink-0 text-ds-warn" />
+          <p>
+            <strong>Falta a migração 011.</strong> Os documentos continuam consultáveis, mas a revisão de fonte e vigência
+            só poderá ser salva após aplicar <code>scripts/migrations-011-document-quality.sql</code>.
           </p>
         </div>
       )}
@@ -183,7 +238,7 @@ export default function DocumentList({ colecao, refreshTrigger, onChange }: Docu
       ) : (
         <ul className="divide-y divide-ds-line overflow-hidden rounded-control border border-ds-line">
           {documentos.map((doc) => (
-            <li key={doc.id} className="flex flex-col gap-3 bg-ds-surface p-4 sm:flex-row sm:items-center">
+            <li key={doc.id} className="flex flex-col gap-3 bg-ds-surface p-4 sm:flex-row sm:flex-wrap sm:items-center">
               <span className="hidden h-10 w-10 shrink-0 place-items-center rounded-control border-2 border-ds-primary text-ds-primary sm:grid">
                 <Icone nome="arquivo" />
               </span>
@@ -199,16 +254,59 @@ export default function DocumentList({ colecao, refreshTrigger, onChange }: Docu
                   {doc.trechos_sem_vetor > 0 && <span className="text-ds-warn">{doc.trechos_sem_vetor} sem vetor</span>}
                   <span>{formatarData(doc.criado_em)}</span>
                 </p>
+                <p className="mt-2 flex flex-wrap gap-x-3 gap-y-1 text-xs">
+                  {!doc.fonte_oficial || !doc.versao || !doc.conferido_em || doc.situacao === 'revisar' ? (
+                    <span className="font-semibold text-ds-warn">Revisão necessária</span>
+                  ) : (
+                    <>
+                      <span className="text-ds-text">versão: {doc.versao}</span>
+                      <span className="text-ds-subtle">conferido em {formatarData(doc.conferido_em)}</span>
+                    </>
+                  )}
+                </p>
               </div>
-              <button
-                type="button"
-                className="btn-danger btn-sm self-start sm:self-auto"
-                onClick={() => excluir(doc)}
-                disabled={ocupado === doc.id}
-              >
-                <Icone nome="lixeira" tamanho={15} />
-                {ocupado === doc.id ? 'Excluindo…' : 'Excluir'}
-              </button>
+              <div className="flex flex-wrap gap-2 self-start sm:self-auto">
+                <button type="button" className="btn-secondary btn-sm" onClick={() => editar(doc)}>
+                  Revisar dados
+                </button>
+                <button
+                  type="button"
+                  className="btn-danger btn-sm"
+                  onClick={() => excluir(doc)}
+                  disabled={ocupado === doc.id}
+                >
+                  <Icone nome="lixeira" tamanho={15} />
+                  {ocupado === doc.id ? 'Excluindo…' : 'Excluir'}
+                </button>
+              </div>
+              {edicao?.id === doc.id && (
+                <form className="w-full border-t border-ds-line pt-4" onSubmit={salvarMetadata}>
+                  <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+                    <label className="block">
+                      <span className="label">Fonte oficial</span>
+                      <input className="input" required value={edicao.fonteOficial} onChange={(event) => setEdicao({ ...edicao, fonteOficial: event.target.value })} />
+                    </label>
+                    <label className="block">
+                      <span className="label">Versão</span>
+                      <input className="input" required value={edicao.versao} onChange={(event) => setEdicao({ ...edicao, versao: event.target.value })} />
+                    </label>
+                    <label className="block">
+                      <span className="label">Vigente desde</span>
+                      <input className="input" type="date" required value={edicao.vigenteDesde} onChange={(event) => setEdicao({ ...edicao, vigenteDesde: event.target.value })} />
+                    </label>
+                    <label className="block">
+                      <span className="label">Conferido em</span>
+                      <input className="input" type="date" required max={new Date().toISOString().slice(0, 10)} value={edicao.conferidoEm} onChange={(event) => setEdicao({ ...edicao, conferidoEm: event.target.value })} />
+                    </label>
+                  </div>
+                  <div className="mt-3 flex flex-wrap gap-2">
+                    <button type="submit" className="btn-primary btn-sm" disabled={ocupado === `metadata:${doc.id}`}>
+                      {ocupado === `metadata:${doc.id}` ? 'Salvando…' : 'Salvar metadados'}
+                    </button>
+                    <button type="button" className="btn-secondary btn-sm" onClick={() => setEdicao(null)}>Cancelar</button>
+                  </div>
+                </form>
+              )}
             </li>
           ))}
 
