@@ -10,6 +10,7 @@ const SECOES: ItemNav[] = [
   { href: '/pop', label: 'POP-PMSC', curto: 'POP', icone: 'escudo' },
   { href: '/enquadramento', label: 'Enquadramento guiado', curto: 'Guiado', icone: 'lista' },
   { href: '/fatos-pmsc', label: 'Lista de Fatos (PMSC Mobile)', curto: 'Fatos', icone: 'arquivo' },
+  { href: '/pesos-dimensoes', label: 'Pesos e Dimensões', curto: 'Pesos', icone: 'balanca' },
   { href: '/professor', label: 'Professor Emérito', curto: 'Emérito', icone: 'professor' },
   { href: '/favoritos', label: 'Favoritos', curto: 'Favoritos', icone: 'estrela' },
   { href: '/apostila', label: 'Apostila IA', curto: 'Apostila', icone: 'livro' },
