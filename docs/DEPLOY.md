@@ -157,6 +157,7 @@ npm run check:health -- --versao=<sha> --espera=60     # exigir um commit, com p
 | Consulta por artigo | `art. 165` → normas aplicáveis e citações validadas |
 | Dossiê | `/gerador-pdf` → escolher tema → "Baixar PDF" gera arquivo |
 | POP-PMSC | `/pop` → pergunta → resposta com trechos (POP, seção e página) |
+| Pesos e Dimensões | `/pesos-dimensoes` → calcular um caso por nota e outro por balança; conferir código, valor, memória e fontes |
 | Comprimir PDF | `/comprimir-pdf` → Máxima → "Baixar PDF" e "Baixar .txt" |
 | Painel | `/admin` → login → abas Base CTB, POP-PMSC, Enquadramentos, Provedores de IA, Uso, Limites |
 | Voz | no formulário, "Ditar consulta por voz" (requer `GROQ_API_KEY` e HTTPS) |
@@ -180,6 +181,9 @@ E2E_SEEDED=1 npm run test:e2e   # inclui os fluxos que exigem base populada
   consultas, 7 dias para PDFs) e são invalidados quando a base muda.
 - **Uso:** `/admin` → Uso traz consultas por dia, cache hit, perguntas sem
   resposta (lacunas da base) e falhas por recurso.
+- **Pesos e Dimensões:** o catálogo, a Resolução 882 e as fichas MBFT usadas
+  pela ferramenta são embarcados no deploy. Não exigem migration ou seed. A
+  explicação por IA é opcional; sem provedor, a API devolve os trechos oficiais.
 - **Rollback:** Vercel → Deployments → promover um deployment anterior.
 
 ## 8. Limitações conhecidas
@@ -192,3 +196,6 @@ E2E_SEEDED=1 npm run test:e2e   # inclui os fluxos que exigem base populada
   dossiê é gerado mesmo assim, marcando a seção como sem resultados.
 - O PWA mantém somente a interface e ativos estáticos para abertura offline.
   APIs, painel administrativo e respostas jurídicas são sempre buscados na rede.
+- A fonte embarcada de pesos e dimensões corresponde ao PDF da Resolução
+  CONTRAN nº 882/2021 publicado em 24/12/2021 e não declara incorporar
+  alterações posteriores. Atualize e valide o corpus sempre que a norma mudar.

@@ -12,6 +12,7 @@ Aplicativo PWA que permite consulta interativa da legislação de trânsito (Có
 - Busca sem depender de acento nem de todas as palavras (`habilitacao` acha "habilitação"), com gírias de campo expandidas (ex.: "bafômetro" → etilômetro)
 - CTB compilado (Lei 9.503/97, 93 páginas) incluído no app: um clique em Painel → Base CTB → "Indexar agora"
 - Aba **POP-PMSC** (`/pop`): perguntas sobre os Procedimentos Operacionais Padrão respondidas só com os trechos indexados, citando POP, seção e página
+- Aba **Pesos e Dimensões** (`/pesos-dimensoes`): catálogo visual de caminhões/CVC, cálculo de PBT/PBTC e capacidade de carga, fiscalização por nota ou balança, excesso por eixo/CMT, código, valor estimado, responsável, providência e fontes
 - Anexo de documentos em PDF, DOC, DOCX, MD e TXT (vários de uma vez), com indexação por artigo/seção e página
 - **Comprimir PDF** (`/comprimir-pdf`) no próprio aparelho: Leve, Forte ou Máxima (somente texto, sem design, + `.txt`)
 - Respostas estruturadas com enquadramento legal, gravidade, pontos, multa
@@ -50,9 +51,16 @@ Camadas, de fora para dentro: `app/` → `components/` → `lib/`.
   - `lib/ingestion/` — leitura dos formatos (`parser.ts`), corte estrutural por artigo/seção com página (`chunker.ts`) e indexação (`indexar.ts`).
   - `lib/search/` — busca híbrida (palavras + vetores) unida por Reciprocal Rank Fusion (`fusion.ts`).
   - `lib/rag/pop.ts` — recuperação e resposta fundamentada da aba POP-PMSC.
+  - `lib/pesos-dimensoes/` — catálogo, cálculo determinístico, fiscalização e RAG local citado da Resolução CONTRAN nº 882/2021 e fichas de peso do MBFT.
   - `lib/pdf-tools/` — compressor de PDF que roda no navegador (pdf.js + gravador de PDF mínimo).
 
 `lib/` nunca importa de `components/` nem de `app/`.
+
+### Fonte de Pesos e Dimensões
+
+A calculadora usa a edição da Resolução CONTRAN nº 882/2021 publicada no DOU em 24/12/2021, armazenada em `data/acervo/resolucao-contran-882-2021.txt`, e as fichas de peso do MBFT já incluídas no projeto. Limites, tolerâncias, códigos e valores são calculados por funções locais: a IA apenas redige explicações a partir dos trechos recuperados. Por isso, o cálculo continua disponível sem Supabase e sem chave de IA.
+
+O arquivo anexado não é apresentado como texto consolidado posterior. Antes do uso operacional, confirme eventuais alterações normativas, os dados técnicos do veículo, a sinalização e a AET. Para atualizar a fonte, substitua o texto preservando a separação de páginas por quebra de formulário (`\f`), revise o catálogo em `data/pesos-dimensoes/configuracoes.json` e execute os testes de pesos e dimensões.
 
 ## 📋 Roadmap
 
