@@ -25,7 +25,11 @@ jest.mock('../../lib/response/cache', () => ({
 
 let provedores: string[] = ['Groq'];
 const buscarPops = jest.fn();
-jest.mock('../../lib/pop/pops', () => ({ buscarPops: (...args: unknown[]) => buscarPops(...args) }));
+const sugerirPops = jest.fn();
+jest.mock('../../lib/pop/pops', () => ({
+  buscarPops: (...args: unknown[]) => buscarPops(...args),
+  sugerirPops: (...args: unknown[]) => sugerirPops(...args),
+}));
 
 const generateDetailed = jest.fn();
 jest.mock('../../lib/ai/providers/chain', () => ({
@@ -69,6 +73,7 @@ describe('POST /api/pop/consulta', () => {
     checkRateLimit.mockResolvedValue({ allowed: true, remaining: 20, blocked: false, registroId: 'r1' });
     buscarTrechos.mockResolvedValue([trecho(1), trecho(2)]);
     buscarPops.mockReturnValue([]);
+    sugerirPops.mockReturnValue([{ numero: '003', titulo: 'USO DE ALGEMA' }]);
     generateDetailed.mockResolvedValue({ texto: 'Informe a central [1] e aborde [2][7].', provedor: 'Groq', modelo: 'llama' });
   });
 
@@ -85,8 +90,8 @@ describe('POST /api/pop/consulta', () => {
     ]);
     expect(setCachedValue).toHaveBeenCalled();
     // Responses based on the previous ranking must be recomputed with new sources.
-    expect(getCachedValue).toHaveBeenCalledWith('pop:v7:como abordar uma pessoa?');
-    expect(setCachedValue.mock.calls[0][0]).toBe('pop:v7:como abordar uma pessoa?');
+    expect(getCachedValue).toHaveBeenCalledWith('pop:v8:como abordar uma pessoa?');
+    expect(setCachedValue.mock.calls[0][0]).toBe('pop:v8:como abordar uma pessoa?');
   });
 
   it('filters personal data before searching, logging or prompting', async () => {
@@ -117,15 +122,15 @@ describe('POST /api/pop/consulta', () => {
     expect(corpo.aviso).toMatch(/não respondeu/);
   });
 
-  it('answers from the models, flagged as general, when the POPs have nothing', async () => {
+  it('never asks a model for an operational answer when no official POP source was found', async () => {
     buscarTrechos.mockResolvedValue([]);
-    generateDetailed.mockResolvedValue({ texto: '1. Isole o local.', provedor: 'Groq', modelo: 'llama' });
     const corpo = await (await perguntar('Pergunta sem relação')).json();
 
-    expect(corpo.geral).toBe(true);
-    expect(corpo.semResposta).toBe(false);
-    expect(corpo.resposta).toBe('1. Isole o local.');
-    expect(generateDetailed.mock.calls[0][0]).toMatch(/não trazem a resposta/);
+    expect(corpo.geral).toBe(false);
+    expect(corpo.semResposta).toBe(true);
+    expect(corpo.resposta).toBeNull();
+    expect(generateDetailed).not.toHaveBeenCalled();
+    expect(corpo.sugestoes).toEqual([{ numero: '003', titulo: 'USO DE ALGEMA' }]);
   });
 
   it('does not answer an absent explicit POP from another procedure or general AI', async () => {
@@ -138,15 +143,16 @@ describe('POST /api/pop/consulta', () => {
     expect(setCachedValue).not.toHaveBeenCalled();
   });
 
-  it('also falls back to the general answer when the excerpts do not answer', async () => {
+  it('keeps the official excerpts but does not make a second ungrounded call', async () => {
     generateDetailed
-      .mockResolvedValueOnce({ texto: 'Não encontrei essa informação nos POPs indexados.', provedor: 'Groq', modelo: 'llama' })
-      .mockResolvedValueOnce({ texto: 'Procedimento geral [3].', provedor: 'Groq', modelo: 'llama' });
+      .mockResolvedValueOnce({ texto: 'Não encontrei essa informação nos POPs indexados.', provedor: 'Groq', modelo: 'llama' });
     const corpo = await (await perguntar('Como abordar uma pessoa?')).json();
 
-    expect(corpo.geral).toBe(true);
-    expect(corpo.resposta).toBe('Procedimento geral.');
+    expect(corpo.geral).toBe(false);
+    expect(corpo.semResposta).toBe(true);
+    expect(corpo.resposta).toBeNull();
     expect(corpo.fontes).toHaveLength(2);
+    expect(generateDetailed).toHaveBeenCalledTimes(1);
   });
 
   it('reports "not found" and logs it as unanswered when nothing matches and the AI fails', async () => {

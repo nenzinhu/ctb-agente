@@ -1,4 +1,4 @@
-import { buscarFichas } from '@/lib/mbft/fichas';
+import { buscarFichas, todasAsFichas } from '@/lib/mbft/fichas';
 import { buscarPops } from '@/lib/pop/pops';
 import { extractArticleRef } from '@/lib/query/router';
 
@@ -38,7 +38,12 @@ export function sugerirBusca(consulta: string, fonte: FonteSugestao, limite = 5)
     });
   }
 
-  for (const ficha of buscarFichas(texto, limite)) {
+  const prefixoCodigo = /^(?:c[oó]digo\s*)?(\d{3,4})$/i.exec(texto)?.[1];
+  const fichas = prefixoCodigo
+    ? todasAsFichas().filter((ficha) => ficha.codigo.replace(/\D/g, '').startsWith(prefixoCodigo)).slice(0, limite)
+    : buscarFichas(texto, limite);
+
+  for (const ficha of fichas) {
     sugestoes.push({
       valor: ficha.codigo,
       tipo: 'Infração MBFT',

@@ -12,6 +12,20 @@ interface HealthRag {
   avisos: string[];
 }
 
+interface ProviderRag {
+  id: string;
+  nome: string;
+  configurado: boolean;
+  modeloPadrao: string;
+  saude: {
+    status: 'funcionando' | 'degradado' | 'indisponivel' | 'nao_testado';
+    modeloTestado: string | null;
+    latenciaMs: number | null;
+    ultimoTesteEm: string | null;
+    ultimoErro?: string | null;
+  };
+}
+
 function Estado({ ok, children }: { ok: boolean; children: React.ReactNode }) {
   return (
     <span className={ok ? 'badge bg-ds-success/10 text-ds-success' : 'badge bg-ds-warn/10 text-ds-text'}>
@@ -30,6 +44,8 @@ const ETAPAS = [
 /** Explains the live retrieval pipeline and keeps model training distinct. */
 export default function AdminRagFineTuning() {
   const [health, setHealth] = useState<HealthRag | null>(null);
+  const [providers, setProviders] = useState<ProviderRag[]>([]);
+  const [testando, setTestando] = useState<string | null>(null);
   const [erro, setErro] = useState(false);
 
   useEffect(() => {
@@ -40,6 +56,37 @@ export default function AdminRagFineTuning() {
       .catch(() => ativo && setErro(true));
     return () => { ativo = false; };
   }, []);
+
+  useEffect(() => {
+    fetch('/api/admin/providers', { cache: 'no-store' })
+      .then(async (resposta) => resposta.json())
+      .then((dados) => setProviders(Array.isArray(dados.providers) ? dados.providers : []))
+      .catch(() => setProviders([]));
+  }, []);
+
+  const testarProvider = async (provider: ProviderRag) => {
+    setTestando(provider.id);
+    try {
+      const resposta = await fetch('/api/admin/providers', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ providerId: provider.id, modelo: provider.saude.modeloTestado ?? provider.modeloPadrao }),
+      });
+      const resultado = await resposta.json();
+      setProviders((atuais) => atuais.map((item) => item.id === provider.id ? {
+        ...item,
+        saude: {
+          status: resultado.ok ? 'funcionando' : 'degradado',
+          modeloTestado: resultado.modeloUsado,
+          latenciaMs: resultado.latenciaMs,
+          ultimoTesteEm: new Date().toISOString(),
+          ultimoErro: resultado.erro ?? null,
+        },
+      } : item));
+    } finally {
+      setTestando(null);
+    }
+  };
 
   return (
     <div className="space-y-6">
@@ -66,6 +113,35 @@ export default function AdminRagFineTuning() {
             </li>
           ))}
         </ol>
+      </section>
+
+      <section className="card card-pad">
+        <h2 className="text-xl font-bold text-ds-text">Saúde dos provedores de IA</h2>
+        <p className="mt-1 text-sm text-ds-subtle">Configurado não significa disponível: estes estados vêm das tentativas reais desta instância.</p>
+        <ul className="mt-4 grid gap-3 sm:grid-cols-2">
+          {providers.map((provider) => {
+            const status = provider.configurado ? provider.saude.status : 'não configurado';
+            const funcionando = status === 'funcionando';
+            return (
+              <li key={provider.id} className="rounded-xl border border-ds-line p-4">
+                <p className={`font-semibold ${funcionando ? 'text-ds-success' : 'text-ds-text'}`}>{provider.nome} · {status.replace('_', ' ')}</p>
+                <p className="mt-1 text-xs text-ds-subtle">
+                  {provider.saude.modeloTestado ?? provider.modeloPadrao}
+                  {provider.saude.latenciaMs !== null ? ` · ${provider.saude.latenciaMs} ms` : ' · ainda não testado'}
+                </p>
+                {provider.saude.ultimoErro && <p className="mt-1 text-xs text-ds-danger">{provider.saude.ultimoErro}</p>}
+                <button
+                  type="button"
+                  className="btn-secondary btn-sm mt-3"
+                  disabled={!provider.configurado || testando === provider.id}
+                  onClick={() => void testarProvider(provider)}
+                >
+                  {testando === provider.id ? 'Testando…' : 'Testar novamente'}
+                </button>
+              </li>
+            );
+          })}
+        </ul>
       </section>
 
       <section className="card card-pad">

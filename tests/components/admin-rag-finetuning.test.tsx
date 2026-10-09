@@ -7,15 +7,17 @@ describe('AdminRagFineTuning', () => {
   });
 
   it('explica RAG e ajuste fino separadamente e mostra o diagnóstico atual', async () => {
-    global.fetch = jest.fn(async () => ({
+    global.fetch = jest.fn(async (url: string) => ({
       ok: true,
-      json: async () => ({
-        banco: 'ok',
-        bancoEscrita: 'ok',
-        embeddings: 'indisponivel',
-        esquemaRag: 9,
-        avisos: ['Aplique a migração 010.', 'Defina MISTRAL_API_KEY.'],
-      }),
+      json: async () => url === '/api/admin/providers'
+        ? ({ providers: [{
+            id: 'groq', nome: 'Groq', configurado: true,
+            saude: { status: 'funcionando', modeloTestado: 'llama', latenciaMs: 42, ultimoTesteEm: '2026-10-08T10:00:00.000Z' },
+          }] })
+        : ({
+            banco: 'ok', bancoEscrita: 'ok', embeddings: 'indisponivel', esquemaRag: 9,
+            avisos: ['Aplique a migração 010.', 'Defina MISTRAL_API_KEY.'],
+          }),
     })) as unknown as typeof fetch;
 
     render(<AdminRagFineTuning />);
@@ -29,5 +31,7 @@ describe('AdminRagFineTuning', () => {
     expect(screen.getByText(/Esquema RAG 9/i)).toBeInTheDocument();
     expect(screen.getByText(/Aplique a migração 010/i)).toBeInTheDocument();
     expect(screen.getByText(/Defina MISTRAL_API_KEY/i)).toBeInTheDocument();
+    expect(await screen.findByText(/Groq · funcionando/i)).toBeInTheDocument();
+    expect(screen.getByText(/llama · 42 ms/i)).toBeInTheDocument();
   });
 });

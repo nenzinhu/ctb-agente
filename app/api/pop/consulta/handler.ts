@@ -8,9 +8,9 @@ import { buscarTrechos } from '@/lib/search/trechos';
 import { MigrationPendingError } from '@/lib/ingestion/documents';
 import { ProviderChain } from '@/lib/ai/providers/chain';
 import { getCachedValue, setCachedValue } from '@/lib/response/cache';
-import { buscarPops } from '@/lib/pop/pops';
+import { buscarPops, sugerirPops } from '@/lib/pop/pops';
 import { numeroPop } from '@/lib/query/router';
-import { ehSemResposta, fontesDosPops, montarPrompt, montarPromptGeral, validarCitacoes, type FontePop, type RespostaPop } from '@/lib/rag/pop';
+import { ehSemResposta, fontesDosPops, montarPrompt, validarCitacoes, type FontePop, type RespostaPop } from '@/lib/rag/pop';
 
 export type PopErro = 'rate_limit_exceeded' | 'ip_blocked' | 'turnstile_failed' | 'migration_pending' | 'internal_error';
 
@@ -27,8 +27,8 @@ const TEMPO_IA_MS = 18_000;
 
 function chaveCache(pergunta: string): string {
   // A new ranking must not reuse an answer grounded in the old source list.
-  // v7 discards answers cached before the mixed-language pt-BR guard.
-  return `pop:v7:${pergunta.toLowerCase().replace(/\s+/g, ' ').trim()}`;
+  // v8 discards answers that could have been written without an official POP source.
+  return `pop:v8:${pergunta.toLowerCase().replace(/\s+/g, ' ').trim()}`;
 }
 
 async function gerarResposta(
@@ -116,11 +116,9 @@ export async function responderPop(pergunta: string, ip: string, turnstileToken?
     let aviso: string | undefined;
     let semResposta = fontes.length === 0;
 
-    let semIA = false;
     if (fontes.length > 0) {
       const gerada = await gerarResposta(montarPrompt(filtrada, fontes));
       if (gerada === null) {
-        semIA = true;
         aviso = 'Nenhum provedor de IA configurado: veja abaixo os trechos mais relevantes dos POPs.';
       } else if ('erro' in gerada) {
         aviso = 'A IA não respondeu agora. Os trechos mais relevantes dos POPs estão abaixo.';
@@ -128,19 +126,7 @@ export async function responderPop(pergunta: string, ip: string, turnstileToken?
         resposta = validarCitacoes(gerada.texto, fontes.length).texto || null;
         modelo = gerada.modelo;
         semResposta = resposta === null || ehSemResposta(resposta);
-      }
-    }
-
-    // The POPs don't cover it: answer from the models' general knowledge,
-    // flagged as such in the UI.
-    let geral = false;
-    if (semResposta && !semIA && !numero) {
-      const gerada = await gerarResposta(montarPromptGeral(filtrada));
-      if (gerada && !('erro' in gerada) && gerada.texto.trim()) {
-        resposta = validarCitacoes(gerada.texto, 0).texto;
-        modelo = gerada.modelo;
-        geral = true;
-        semResposta = false;
+        if (semResposta) resposta = null;
       }
     }
 
@@ -151,8 +137,11 @@ export async function responderPop(pergunta: string, ip: string, turnstileToken?
       fontes,
       modelo,
       aviso,
-      geral,
+      geral: false,
       pops,
+      sugestoes: fontes.length === 0 && !numero
+        ? sugerirPops(filtrada, 3).map(({ numero: numeroPop, titulo }) => ({ numero: numeroPop, titulo }))
+        : [],
       cache_hit: false,
       tempo_ms: Date.now() - inicio,
     };

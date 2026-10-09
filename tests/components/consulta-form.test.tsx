@@ -21,4 +21,10 @@ describe('ConsultaForm', () => {
     const button = screen.getByRole('button', { name: /Consultar/ });
     expect(button).toBeDisabled();
   });
+
+  it('usa uma área de consulta compacta no mobile e mantém ação de toque grande', () => {
+    render(<ConsultaForm />);
+    expect(screen.getByLabelText('Sua consulta')).toHaveClass('mobile-query-field');
+    expect(screen.getByRole('button', { name: /Consultar/ })).toHaveClass('min-h-[48px]');
+  });
 });

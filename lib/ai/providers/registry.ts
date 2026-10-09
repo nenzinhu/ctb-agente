@@ -6,11 +6,12 @@
 import { GroqProvider } from './groq';
 import { NVIDIAProvider } from './nvidia';
 import { OpenRouterProvider } from './openrouter';
-import { NousProvider } from './nous';
+import { NOUS_FREE_MODELS, NousProvider } from './nous';
 import { OrcaRouterProvider } from './orcarouter';
 import { AnyApiProvider } from './anyapi';
 import { OpenAICompatibleProvider } from './openai-compatible';
 import type { AIProvider } from './base';
+import { getProviderHealth, recordProviderFailure, recordProviderSuccess, type ProviderHealth } from './health';
 
 export interface ProviderDescriptor {
   id: string;
@@ -159,14 +160,7 @@ export const PROVIDERS: ProviderDescriptor[] = [
     id: 'nous',
     nome: 'Nous Portal',
     envVar: 'NOUS_API_KEY',
-    modelos: [
-      'deepseek/deepseek-v4-flash-0731',
-      'meituan/longcat-2.0:free',
-      'qwen/qwen3.7-flash',
-      'mistralai/mistral-nemo',
-      'openai/gpt-oss-120b',
-      'meta-llama/llama-3.1-8b-instruct',
-    ],
+    modelos: [...NOUS_FREE_MODELS],
     papel: 'resposta analitica',
     cadastro: 'https://portal.nousresearch.com',
     criar: () =>
@@ -237,6 +231,7 @@ export interface ProviderStatus {
   cadastro: string;
   ordem: number;
   configurado: boolean;
+  saude: ProviderHealth;
 }
 
 /**
@@ -254,6 +249,7 @@ export function listProviders(): ProviderStatus[] {
     cadastro: provider.cadastro,
     ordem: index + 1,
     configurado: Boolean(process.env[provider.envVar]),
+    saude: getProviderHealth(provider.id),
   }));
 }
 
@@ -350,20 +346,25 @@ export async function pingProvider(providerId: string, modelo?: string): Promise
       config.timeoutMs
     );
 
+    const latenciaMs = Date.now() - inicio;
+    recordProviderSuccess(descriptor.id, modeloUsado, latenciaMs);
+
     return {
       provider: descriptor.nome,
       ok: true,
       modeloUsado,
-      latenciaMs: Date.now() - inicio,
+      latenciaMs,
       resposta: resposta.trim().slice(0, 80),
     };
   } catch (error) {
+    const mensagem = error instanceof Error ? error.message : 'Falha desconhecida';
+    recordProviderFailure(descriptor.id, modeloUsado, mensagem);
     return {
       provider: descriptor.nome,
       ok: false,
       modeloUsado,
       latenciaMs: Date.now() - inicio,
-      erro: error instanceof Error ? error.message : 'Falha desconhecida',
+      erro: mensagem,
     };
   }
 }

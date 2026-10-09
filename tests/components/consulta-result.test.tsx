@@ -171,10 +171,12 @@ describe('ConsultaResult', () => {
   });
 
   it('offers save and share actions for a successful card', () => {
-    render(<ConsultaResult card={mockCard} />);
+    const { container } = render(<ConsultaResult card={mockCard} />);
 
     expect(screen.getByRole('button', { name: /Salvar/ })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /Compartilhar/ })).toBeInTheDocument();
+    expect(container.firstChild).toHaveClass('mobile-results-enter');
+    expect(screen.getByRole('button', { name: /Salvar/ })).toHaveClass('mobile-result-action');
   });
 
   it('hides the actions when nothing was found', () => {

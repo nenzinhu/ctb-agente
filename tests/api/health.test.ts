@@ -31,7 +31,18 @@ jest.mock('../../lib/db/client', () => ({
       return chain;
     },
   },
-  supabaseAdmin: {},
+  supabaseAdmin: {
+    from: (tabela: string) => {
+      const chain: Record<string, unknown> = {};
+      chain.select = () => chain;
+      chain.limit = () => chain;
+      chain.eq = () => chain;
+      chain.maybeSingle = () => Promise.resolve(respostas[tabela] ?? { error: null, data: null });
+      chain.then = (resolve: (value: unknown) => unknown) =>
+        Promise.resolve(respostas[tabela] ?? { error: null, count: 5 }).then(resolve);
+      return chain;
+    },
+  },
 }));
 
 import { GET } from '@/app/api/health/route';

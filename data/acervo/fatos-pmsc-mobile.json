@@ -1,0 +1,3572 @@
+[
+  {
+    "grupo": "Acidente de trânsito",
+    "natureza": "Acidente de trânsito (Apenas danos materiais)",
+    "potencialOfensivo": "Atípico",
+    "pagina": 1,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Acidente de trânsito",
+    "natureza": "Acidente de trânsito (Com pessoa ferida ou morta)",
+    "potencialOfensivo": "Atípico",
+    "pagina": 1,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Arma de fogo",
+    "natureza": "Comércio ilegal de arma de fogo",
+    "potencialOfensivo": "Maior",
+    "pagina": 1,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Arma de fogo",
+    "natureza": "Disparo de arma de fogo",
+    "potencialOfensivo": "Maior",
+    "pagina": 1,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Arma de fogo",
+    "natureza": "Modificar características de arma de fogo",
+    "potencialOfensivo": "Maior",
+    "pagina": 1,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Arma de fogo",
+    "natureza": "Omissão de cautela na guarda de arma de fogo",
+    "potencialOfensivo": "Menor",
+    "pagina": 1,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Arma de fogo",
+    "natureza": "Porte ilegal de arma de fogo de uso permitido",
+    "potencialOfensivo": "Maior",
+    "pagina": 1,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Arma de fogo",
+    "natureza": "Porte ilegal de munição ou acessório de uso permitido",
+    "potencialOfensivo": "Maior",
+    "pagina": 1,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Arma de fogo",
+    "natureza": "Porte ou posse de arma branca ou simulacro",
+    "potencialOfensivo": "Menor",
+    "pagina": 1,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Arma de fogo",
+    "natureza": "Posse irregular de arma de fogo de uso permitido",
+    "potencialOfensivo": "Maior",
+    "pagina": 1,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Arma de fogo",
+    "natureza": "Posse irregular de munição ou acessório de uso permitido",
+    "potencialOfensivo": "Maior",
+    "pagina": 1,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Arma de fogo",
+    "natureza": "Posse ou porte de arma de fogo com sinal identificador suprimido ou adulterado",
+    "potencialOfensivo": "Maior",
+    "pagina": 1,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Arma de fogo",
+    "natureza": "Posse ou porte ilegal de arma de fogo de uso restrito",
+    "potencialOfensivo": "Maior",
+    "pagina": 1,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Arma de fogo",
+    "natureza": "Posse ou porte ilegal de munição ou acessório de uso restrito",
+    "potencialOfensivo": "Maior",
+    "pagina": 1,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Arma de fogo",
+    "natureza": "Produzir, recarregar, reciclar ou adulterar munição",
+    "potencialOfensivo": "Maior",
+    "pagina": 1,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Arma de fogo",
+    "natureza": "Suprimir ou alterar sinais identificadores de arma de fogo",
+    "potencialOfensivo": "Maior",
+    "pagina": 1,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Arma de fogo",
+    "natureza": "Vender, entregar ou fornecer arma de fogo, acessório, munição ou explosivo a criança ou adolescente",
+    "potencialOfensivo": "Maior",
+    "pagina": 1,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Auxílio/Apoio",
+    "natureza": "Apoio a defesa civil",
+    "potencialOfensivo": "Atípico",
+    "pagina": 1,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Auxílio/Apoio",
+    "natureza": "Apoio a instituições privadas",
+    "potencialOfensivo": "Atípico",
+    "pagina": 1,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Auxílio/Apoio",
+    "natureza": "Apoio a órgãos da administração pública",
+    "potencialOfensivo": "Atípico",
+    "pagina": 1,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Auxílio/Apoio",
+    "natureza": "Apoio ao ministério público",
+    "potencialOfensivo": "Atípico",
+    "pagina": 1,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Auxílio/Apoio",
+    "natureza": "Apoio ao poder judiciário",
+    "potencialOfensivo": "Atípico",
+    "pagina": 1,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Auxílio/Apoio",
+    "natureza": "Apoio aos órgãos de segurança pública",
+    "potencialOfensivo": "Atípico",
+    "pagina": 1,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Auxílio/Apoio",
+    "natureza": "Apoio as forças armadas",
+    "potencialOfensivo": "Atípico",
+    "pagina": 2,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Auxílio/Apoio",
+    "natureza": "Auxílio a comunidade ou pessoa com problema de saúde",
+    "potencialOfensivo": "Atípico",
+    "pagina": 2,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Auxílio/Apoio",
+    "natureza": "Cumprimento de Mandado de Busca e Apreensão",
+    "potencialOfensivo": "Atípico",
+    "pagina": 2,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Auxílio/Apoio",
+    "natureza": "Parto emergencial",
+    "potencialOfensivo": "Atípico",
+    "pagina": 2,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Auxílio/Apoio",
+    "natureza": "Perda de documentos ou objetos",
+    "potencialOfensivo": "Atípico",
+    "pagina": 2,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Auxílio/Apoio",
+    "natureza": "Reaparecimento de pessoa",
+    "potencialOfensivo": "Atípico",
+    "pagina": 2,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Auxílio/Apoio",
+    "natureza": "Reintegração de posse",
+    "potencialOfensivo": "Atípico",
+    "pagina": 2,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Averiguação",
+    "natureza": "Averiguação de pessoa em atitude suspeita",
+    "potencialOfensivo": "Atípico",
+    "pagina": 2,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Averiguação",
+    "natureza": "Averiguação de veículo suspeito",
+    "potencialOfensivo": "Atípico",
+    "pagina": 2,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Averiguação",
+    "natureza": "Encontro ou recuperação de bem/objeto",
+    "potencialOfensivo": "Atípico",
+    "pagina": 2,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Averiguação",
+    "natureza": "Fiscalização de Ambulantes",
+    "potencialOfensivo": "Atípico",
+    "pagina": 2,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Averiguação",
+    "natureza": "Fiscalização de apenados em regime aberto",
+    "potencialOfensivo": "Atípico",
+    "pagina": 2,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Averiguação",
+    "natureza": "Fiscalização de ordem pública em estabelecimentos comerciais e eventos",
+    "potencialOfensivo": "Atípico",
+    "pagina": 2,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Bomba/Explosivo",
+    "natureza": "Ameaça de bomba/artefatos explosivos",
+    "potencialOfensivo": "Maior",
+    "pagina": 2,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Bomba/Explosivo",
+    "natureza": "Explosão (Acidente)",
+    "potencialOfensivo": "Atípico",
+    "pagina": 2,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Bomba/Explosivo",
+    "natureza": "Explosão (Crime) - Culposa",
+    "potencialOfensivo": "Menor",
+    "pagina": 2,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Bomba/Explosivo",
+    "natureza": "Explosão (Crime) - Dolosa",
+    "potencialOfensivo": "Maior",
+    "pagina": 2,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Bomba/Explosivo",
+    "natureza": "Fabrico, fornecimento, aquisição, posse ou transporte de explosivos, gás tóxico ou asfixiante",
+    "potencialOfensivo": "Menor",
+    "pagina": 2,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Bomba/Explosivo",
+    "natureza": "Posse ou porte de artefato explosivo ou incendiário",
+    "potencialOfensivo": "Maior",
+    "pagina": 2,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Busca e salvamento",
+    "natureza": "Afogamento",
+    "potencialOfensivo": "Atípico",
+    "pagina": 2,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Busca e salvamento",
+    "natureza": "Desaparecimento de pessoa",
+    "potencialOfensivo": "Atípico",
+    "pagina": 2,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Busca e salvamento",
+    "natureza": "Embarcação a deriva",
+    "potencialOfensivo": "Atípico",
+    "pagina": 2,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Busca e salvamento",
+    "natureza": "Pessoa presa na edificação",
+    "potencialOfensivo": "Atípico",
+    "pagina": 2,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Busca e salvamento",
+    "natureza": "Soterramento",
+    "potencialOfensivo": "Atípico",
+    "pagina": 3,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Busca e salvamento",
+    "natureza": "Vazamento de gás",
+    "potencialOfensivo": "Atípico",
+    "pagina": 3,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Conflito de trânsito",
+    "natureza": "Infração administrativa de trânsito",
+    "potencialOfensivo": "Atípico",
+    "pagina": 3,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Conflito de trânsito",
+    "natureza": "Medidas administrativas do CTB (Art. 269)",
+    "potencialOfensivo": "Atípico",
+    "pagina": 3,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Conflito de trânsito",
+    "natureza": "Semáforos ou placas de sinalização danificados",
+    "potencialOfensivo": "Atípico",
+    "pagina": 3,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Contra a pessoa",
+    "natureza": "Abandonar idoso em hospital, casa de saúde ou em entidade",
+    "potencialOfensivo": "Menor",
+    "pagina": 3,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Contra a pessoa",
+    "natureza": "Abandono de incapaz",
+    "potencialOfensivo": "Maior",
+    "pagina": 3,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Contra a pessoa",
+    "natureza": "Abandono intelectual",
+    "potencialOfensivo": "Menor",
+    "pagina": 3,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Contra a pessoa",
+    "natureza": "Abandono material",
+    "potencialOfensivo": "Maior",
+    "pagina": 3,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Contra a pessoa",
+    "natureza": "Abuso de incapazes",
+    "potencialOfensivo": "Maior",
+    "pagina": 3,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Contra a pessoa",
+    "natureza": "Alienação parental",
+    "potencialOfensivo": "Menor",
+    "pagina": 3,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Contra a pessoa",
+    "natureza": "Ameaça",
+    "potencialOfensivo": "Menor Condicionado",
+    "pagina": 3,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Contra a pessoa",
+    "natureza": "Calúnia",
+    "potencialOfensivo": "Menor Condicionado",
+    "pagina": 3,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Contra a pessoa",
+    "natureza": "Condicionamento de atendimento médico-hospitalar emergencial",
+    "potencialOfensivo": "Menor",
+    "pagina": 3,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Contra a pessoa",
+    "natureza": "Constrangimento ilegal",
+    "potencialOfensivo": "Menor",
+    "pagina": 3,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Contra a pessoa",
+    "natureza": "Deixar de prestar assistência ao idoso ou dificultar sua assistência à saúde ou não pedir o socorro",
+    "potencialOfensivo": "Menor",
+    "pagina": 3,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Contra a pessoa",
+    "natureza": "Deixar de recompor cadáver, devolvendo-lhe aspecto condigno, para sepultamento ou deixar de entregar ou retardar sua entrega aos familiares ou interessados",
+    "potencialOfensivo": "Menor",
+    "pagina": 3,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Contra a pessoa",
+    "natureza": "Descumprimento de medida protetiva de urgência",
+    "potencialOfensivo": "Menor",
+    "pagina": 3,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Contra a pessoa",
+    "natureza": "Desdenhar, humilhar, menosprezar ou discriminar pessoa idosa",
+    "potencialOfensivo": "Menor",
+    "pagina": 3,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Contra a pessoa",
+    "natureza": "Difamação",
+    "potencialOfensivo": "Menor Condicionado",
+    "pagina": 3,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Contra a pessoa",
+    "natureza": "Discriminação dos portadores de HIV e doentes de AIDS",
+    "potencialOfensivo": "Menor",
+    "pagina": 3,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Contra a pessoa",
+    "natureza": "Discriminar idoso, dificultando o acesso ao exercício da cidadania",
+    "potencialOfensivo": "Menor",
+    "pagina": 3,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Contra a pessoa",
+    "natureza": "Expor a perigo a integridade e a saúde, física, psíquica do idoso resultando lesão corporal grave",
+    "potencialOfensivo": "Menor",
+    "pagina": 3,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Contra a pessoa",
+    "natureza": "Expor a perigo a integridade e a saúde, física, psíquica do idoso submetendo-o a condições desumanas",
+    "potencialOfensivo": "Menor",
+    "pagina": 4,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Contra a pessoa",
+    "natureza": "Exposição ou abandono de recém-nascido",
+    "potencialOfensivo": "Maior",
+    "pagina": 4,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Contra a pessoa",
+    "natureza": "Extorsão",
+    "potencialOfensivo": "Maior",
+    "pagina": 4,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Contra a pessoa",
+    "natureza": "Impedir o acesso ao uso de transportes públicos por racismo",
+    "potencialOfensivo": "Maior",
+    "pagina": 4,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Contra a pessoa",
+    "natureza": "Impedir o acesso ou recusar atendimento em locais esportivos, casas de diversões ou clubes sociais abertos ao público por racismo",
+    "potencialOfensivo": "Maior",
+    "pagina": 4,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Contra a pessoa",
+    "natureza": "Impedir o acesso ou recusar atendimento em restaurantes, bares ou locais semelhantes abertos ao público por racismo",
+    "potencialOfensivo": "Maior",
+    "pagina": 4,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Contra a pessoa",
+    "natureza": "Impedir o acesso ou recusar hospedagem em hotel, pensão, ou qualquer estabelecimento similar por racismo",
+    "potencialOfensivo": "Maior",
+    "pagina": 4,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Contra a pessoa",
+    "natureza": "Injúria",
+    "potencialOfensivo": "Menor Condicionado",
+    "pagina": 4,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Contra a pessoa",
+    "natureza": "Injúria qualificada pelo preconceito",
+    "potencialOfensivo": "Menor Condicionado",
+    "pagina": 4,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Contra a pessoa",
+    "natureza": "Intimidação sistemática (Bullying)",
+    "potencialOfensivo": "Atípico",
+    "pagina": 4,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Contra a pessoa",
+    "natureza": "Lesão corporal - Culposa",
+    "potencialOfensivo": "Menor Condicionado",
+    "pagina": 4,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Contra a pessoa",
+    "natureza": "Lesão corporal grave ou gravíssima - Dolosa",
+    "potencialOfensivo": "Maior",
+    "pagina": 4,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Contra a pessoa",
+    "natureza": "Lesão corporal leve - Dolosa",
+    "potencialOfensivo": "Menor Condicionado",
+    "pagina": 4,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Contra a pessoa",
+    "natureza": "Maus-tratos",
+    "potencialOfensivo": "Menor",
+    "pagina": 4,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Contra a pessoa",
+    "natureza": "Omissão de socorro",
+    "potencialOfensivo": "Menor",
+    "pagina": 4,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Contra a pessoa",
+    "natureza": "Perigo de contágio de moléstia grave",
+    "potencialOfensivo": "Menor Condicionado",
+    "pagina": 4,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Contra a pessoa",
+    "natureza": "Perigo de contágio venéreo",
+    "potencialOfensivo": "Menor Condicionado",
+    "pagina": 4,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Contra a pessoa",
+    "natureza": "Perigo para a vida ou saúde de outrem",
+    "potencialOfensivo": "Menor",
+    "pagina": 4,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Contra a pessoa",
+    "natureza": "Pessoa morta em confronto por agente público em serviço",
+    "potencialOfensivo": "Maior",
+    "pagina": 4,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Contra a pessoa",
+    "natureza": "Pessoa morta em confronto por agente público fora de serviço",
+    "potencialOfensivo": "Maior",
+    "pagina": 4,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Contra a pessoa",
+    "natureza": "Praticar, induzir ou incitar discriminação de pessoa em razão de sua deficiência",
+    "potencialOfensivo": "Menor",
+    "pagina": 4,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Contra a pessoa",
+    "natureza": "Prometer ou entregar filho a terceiro, mediante pagamento",
+    "potencialOfensivo": "Maior",
+    "pagina": 4,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Contra a pessoa",
+    "natureza": "Publicar anúncio ou apelo público em desacordo com o disposto no art. 11 da Lei 9.434/1997",
+    "potencialOfensivo": "Menor",
+    "pagina": 4,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Contra a pessoa",
+    "natureza": "Racismo (Praticar, induzir ou incitar a discriminação ou preconceito de raça, cor, etnia, religião ou procedência nacional)",
+    "potencialOfensivo": "Maior",
+    "pagina": 5,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Contra a pessoa",
+    "natureza": "Realizar transplante ou enxerto em desacordo com dispositivos legais",
+    "potencialOfensivo": "Menor",
+    "pagina": 5,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Contra a pessoa",
+    "natureza": "Realizar transplante ou enxerto utilizando tecidos, órgãos ou partes do corpo humano de que se tem ciência terem sido obtidos em desacordo com os dispositivos legais",
+    "potencialOfensivo": "Maior",
+    "pagina": 5,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Contra a pessoa",
+    "natureza": "Recolher, transportar, guardar ou distribuir partes do corpo humano de que se tem ciência terem sido obtidos em desacordo com os dispositivos legais",
+    "potencialOfensivo": "Menor",
+    "pagina": 5,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Contra a pessoa",
+    "natureza": "Recusar ou impedir acesso a estabelecimento comercial, negando servir cliente ou comprador por racismo",
+    "potencialOfensivo": "Maior",
+    "pagina": 5,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Contra a pessoa",
+    "natureza": "Redução a condição análoga à de escravo",
+    "potencialOfensivo": "Maior",
+    "pagina": 5,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Contra a pessoa",
+    "natureza": "Rixa",
+    "potencialOfensivo": "Menor",
+    "pagina": 5,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Contra a pessoa",
+    "natureza": "Sequestro e cárcere privado",
+    "potencialOfensivo": "Maior",
+    "pagina": 5,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Contra a pessoa",
+    "natureza": "Tortura",
+    "potencialOfensivo": "Maior",
+    "pagina": 5,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Contra a vida",
+    "natureza": "Abandono de incapaz com resultado morte",
+    "potencialOfensivo": "Maior",
+    "pagina": 5,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Contra a vida",
+    "natureza": "Aborto provocado pela gestante",
+    "potencialOfensivo": "Maior",
+    "pagina": 5,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Contra a vida",
+    "natureza": "Aborto provocado por terceiro com consentimento da gestante",
+    "potencialOfensivo": "Maior",
+    "pagina": 5,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Contra a vida",
+    "natureza": "Aborto provocado por terceiro seguido de morte da gestante",
+    "potencialOfensivo": "Maior",
+    "pagina": 5,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Contra a vida",
+    "natureza": "Aborto provocado por terceiro sem consentimento da gestante",
+    "potencialOfensivo": "Maior",
+    "pagina": 5,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Contra a vida",
+    "natureza": "Encontro de feto abandonado",
+    "potencialOfensivo": "Maior",
+    "pagina": 5,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Contra a vida",
+    "natureza": "Estupro com resultado morte",
+    "potencialOfensivo": "Maior",
+    "pagina": 5,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Contra a vida",
+    "natureza": "Estupro de vulnerável com resultado morte",
+    "potencialOfensivo": "Maior",
+    "pagina": 5,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Contra a vida",
+    "natureza": "Expor a perigo a integridade e a saúde, física, psíquica do idoso resultando morte",
+    "potencialOfensivo": "Maior",
+    "pagina": 5,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Contra a vida",
+    "natureza": "Exposição ou abandono de recém-nascido com resultado morte",
+    "potencialOfensivo": "Maior",
+    "pagina": 5,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Contra a vida",
+    "natureza": "Extorsão com resultado morte",
+    "potencialOfensivo": "Maior",
+    "pagina": 5,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Contra a vida",
+    "natureza": "Extorsão mediante sequestro com resultado morte",
+    "potencialOfensivo": "Maior",
+    "pagina": 5,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Contra a vida",
+    "natureza": "Feminicídio",
+    "potencialOfensivo": "Maior",
+    "pagina": 5,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Contra a vida",
+    "natureza": "Homicídio - Culposo",
+    "potencialOfensivo": "Maior",
+    "pagina": 6,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Contra a vida",
+    "natureza": "Homicídio - Doloso",
+    "potencialOfensivo": "Maior",
+    "pagina": 6,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Contra a vida",
+    "natureza": "Induzimento, instigação ou auxílio a suicídio",
+    "potencialOfensivo": "Maior",
+    "pagina": 6,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Contra a vida",
+    "natureza": "Infanticídio",
+    "potencialOfensivo": "Maior",
+    "pagina": 6,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Contra a vida",
+    "natureza": "Latrocínio",
+    "potencialOfensivo": "Maior",
+    "pagina": 6,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Contra a vida",
+    "natureza": "Maus-tratos seguido de morte",
+    "potencialOfensivo": "Maior",
+    "pagina": 6,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Contra a vida",
+    "natureza": "Morte acidental",
+    "potencialOfensivo": "Atípico",
+    "pagina": 6,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Contra a vida",
+    "natureza": "Morte aparentemente natural",
+    "potencialOfensivo": "Atípico",
+    "pagina": 6,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Contra a vida",
+    "natureza": "Omissão de socorro com resultado morte",
+    "potencialOfensivo": "Menor",
+    "pagina": 6,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Contra a vida",
+    "natureza": "Pessoa ferida em confronto por agente público em serviço",
+    "potencialOfensivo": "Maior",
+    "pagina": 6,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Contra a vida",
+    "natureza": "Pessoa ferida em confronto por agente público fora de serviço",
+    "potencialOfensivo": "Maior",
+    "pagina": 6,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Contra a vida",
+    "natureza": "Suicídio",
+    "potencialOfensivo": "Maior",
+    "pagina": 6,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Contra a vida",
+    "natureza": "Tortura seguida de morte",
+    "potencialOfensivo": "Maior",
+    "pagina": 6,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Crime de trânsito",
+    "natureza": "Afastar-se o condutor do veículo do local do acidente, para fugir à responsabilidade",
+    "potencialOfensivo": "Menor",
+    "pagina": 6,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Crime de trânsito",
+    "natureza": "Deixar de entregar documento de habilitação no prazo pela violação da suspensão ou proibição de dirigir",
+    "potencialOfensivo": "Menor",
+    "pagina": 6,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Crime de trânsito",
+    "natureza": "Deixar o condutor de veículo de prestar socorro à vítima",
+    "potencialOfensivo": "Menor",
+    "pagina": 6,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Crime de trânsito",
+    "natureza": "Dirigir sem habilitação ou permissão, ou cassado o direito de dirigir, gerando perigo de dano",
+    "potencialOfensivo": "Menor",
+    "pagina": 6,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Crime de trânsito",
+    "natureza": "Dirigir sob efeito de álcool e/ou droga - embriaguez ao volante",
+    "potencialOfensivo": "Maior",
+    "pagina": 6,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Crime de trânsito",
+    "natureza": "Homicídio culposo em acidente de trânsito",
+    "potencialOfensivo": "Maior",
+    "pagina": 6,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Crime de trânsito",
+    "natureza": "Inovar, artificiosamente, em acidente de trânsito com vítima a fim de induzir a erro agente público",
+    "potencialOfensivo": "Menor",
+    "pagina": 6,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Crime de trânsito",
+    "natureza": "Lesão corporal culposa em acidente de trânsito",
+    "potencialOfensivo": "Menor Condicionado",
+    "pagina": 6,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Crime de trânsito",
+    "natureza": "Participar de racha ou exibição de manobra perigosa, sem autorização, gerando situação de risco a incolumidade",
+    "potencialOfensivo": "Maior",
+    "pagina": 6,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Crime de trânsito",
+    "natureza": "Participar de racha ou exibição de manobra perigosa, sem autorização, resultando em lesão corporal de natureza grave",
+    "potencialOfensivo": "Maior",
+    "pagina": 6,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Crime de trânsito",
+    "natureza": "Participar de racha ou exibição de manobra perigosa, sem autorização, resultando em morte",
+    "potencialOfensivo": "Maior",
+    "pagina": 7,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Crime de trânsito",
+    "natureza": "Permitir, confiar ou entregar direção de veículo automotor a pessoa não habilitada, com habilitação cassada, com o direito de dirigir suspenso ou sem condições de conduzi-lo com segurança",
+    "potencialOfensivo": "Menor",
+    "pagina": 7,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Crime de trânsito",
+    "natureza": "Trafegar em velocidade incompatível com a segurança em locais com grande movimentação de pessoas, gerando perigo de dano",
+    "potencialOfensivo": "Menor",
+    "pagina": 7,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Crime de trânsito",
+    "natureza": "Violar a suspensão ou a proibição de se obter a permissão ou a habilitação para dirigir",
+    "potencialOfensivo": "Menor",
+    "pagina": 7,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Dano",
+    "natureza": "Dano",
+    "potencialOfensivo": "Menor Condicionado",
+    "pagina": 7,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Dano",
+    "natureza": "Dano contra patrimônio público",
+    "potencialOfensivo": "Maior",
+    "pagina": 7,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Dano",
+    "natureza": "Dano em coisa de valor artístico, arqueológico ou histórico",
+    "potencialOfensivo": "Menor",
+    "pagina": 7,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Dano",
+    "natureza": "Tirar, suprimir, destruir ou danificar coisa própria, que se acha em poder de terceiro por determinação judicial ou convenção",
+    "potencialOfensivo": "Menor",
+    "pagina": 7,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Defesa do consumidor",
+    "natureza": "Deixar de alertar, por recomendações escritas ostensivas, sobre a periculosidade do serviço",
+    "potencialOfensivo": "Menor",
+    "pagina": 7,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Defesa do consumidor",
+    "natureza": "Deixar de corrigir informação de consumidor de cadastro, ficha ou registro que sabe ser inexata",
+    "potencialOfensivo": "Menor",
+    "pagina": 7,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Defesa do consumidor",
+    "natureza": "Deixar de entregar termo de garantia adequadamente preenchido e com especificação clara do conteúdo",
+    "potencialOfensivo": "Menor",
+    "pagina": 7,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Defesa do consumidor",
+    "natureza": "Deixar de retirar do mercado, quando determinado, produtos nocivos ou perigosos",
+    "potencialOfensivo": "Menor",
+    "pagina": 7,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Defesa do consumidor",
+    "natureza": "Desacordo comercial",
+    "potencialOfensivo": "Atípico",
+    "pagina": 7,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Defesa do consumidor",
+    "natureza": "Empregar na reparação de produtos, peça ou componente de reposição usado, sem autorização do consumidor",
+    "potencialOfensivo": "Menor",
+    "pagina": 7,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Defesa do consumidor",
+    "natureza": "Executar serviço de alto grau de periculosidade, contrariando determinação de autoridade competente",
+    "potencialOfensivo": "Menor",
+    "pagina": 7,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Defesa do Consumidor",
+    "natureza": "Fabricar, vender, expor à venda, ter em depósito para vender ou entregar a consumo coisa ou substância nociva à saúde - Culposo",
+    "potencialOfensivo": "Maior",
+    "pagina": 7,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Defesa do Consumidor",
+    "natureza": "Fabricar, vender, expor à venda, ter em depósito para vender ou entregar a consumo coisa ou substância nociva à saúde - Doloso",
+    "potencialOfensivo": "Maior",
+    "pagina": 7,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Defesa do Consumidor",
+    "natureza": "Falsificação, corrupção, adulteração ou alteração de produtos destinados a fins terapêuticos ou medicinais - Doloso",
+    "potencialOfensivo": "Menor",
+    "pagina": 7,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Defesa do consumidor",
+    "natureza": "Favorecer ou preferir comprador ou freguês em detrimento de outro",
+    "potencialOfensivo": "Menor",
+    "pagina": 7,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Defesa do consumidor",
+    "natureza": "Fazer afirmação falsa ou enganosa sobre natureza, característica, qualidade de produto ou serviço ou patrocinar a oferta",
+    "potencialOfensivo": "Menor",
+    "pagina": 7,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Defesa do consumidor",
+    "natureza": "Fazer ou promover publicidade que sabe ou deveria saber ser capaz de induzir o consumidor a se comportar de forma prejudicial ou perigosa",
+    "potencialOfensivo": "Menor",
+    "pagina": 7,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Defesa do consumidor",
+    "natureza": "Fazer ou promover publicidade que sabe ou deveria saber ser enganosa ou abusiva",
+    "potencialOfensivo": "Menor",
+    "pagina": 7,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Defesa do consumidor",
+    "natureza": "Fazer, promover publicidade capaz de induzir consumidor a se comportar prejudicialmente a sua saúde",
+    "potencialOfensivo": "Menor",
+    "pagina": 7,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Defesa do consumidor",
+    "natureza": "Fraudar preços",
+    "potencialOfensivo": "Maior",
+    "pagina": 8,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Defesa do consumidor",
+    "natureza": "Impedir, dificultar acesso do consumidor a informações sobre ele em cadastro, fichas e registros",
+    "potencialOfensivo": "Menor",
+    "pagina": 8,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Defesa do Consumidor",
+    "natureza": "Invólucro ou recipiente com falsa indicação",
+    "potencialOfensivo": "Maior",
+    "pagina": 8,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Defesa do consumidor",
+    "natureza": "Omitir dizeres sobre sinais de nocividade de produtos, nas embalagens, invólucros ou recipientes - Culposo",
+    "potencialOfensivo": "Menor",
+    "pagina": 8,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Defesa do consumidor",
+    "natureza": "Omitir dizeres sobre sinais de nocividade de produtos, nas embalagens, invólucros ou recipientes - Doloso",
+    "potencialOfensivo": "Menor",
+    "pagina": 8,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Defesa do consumidor",
+    "natureza": "Recusar em comércio serviços essenciais, sonegar mercadoria ou recusar venda para pronto pagamento",
+    "potencialOfensivo": "Menor",
+    "pagina": 8,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Defesa do Consumidor",
+    "natureza": "Retenção ilegal de documento de identificação",
+    "potencialOfensivo": "Menor",
+    "pagina": 8,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Defesa do consumidor",
+    "natureza": "Utilizar, na cobrança de dívidas, de constrangimento que exponha o consumidor a ridículo",
+    "potencialOfensivo": "Menor",
+    "pagina": 8,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Defesa do consumidor",
+    "natureza": "Vender ou expor à venda mercadoria em desacordo com as prescrições legais",
+    "potencialOfensivo": "Maior",
+    "pagina": 8,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Defesa do Consumidor",
+    "natureza": "Vender, expor à venda, ter em depósito ou ceder substância destinada à falsificação de produtos alimentícios, terapêuticos ou medicinais",
+    "potencialOfensivo": "Maior",
+    "pagina": 8,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Defesa do Consumidor",
+    "natureza": "Vender, expor à venda, ter em depósito para vender ou entregar a consumo produto com falsa indicação ou processo proibido",
+    "potencialOfensivo": "Maior",
+    "pagina": 8,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Defesa do consumidor",
+    "natureza": "Vender, possuir para expor à venda, ou entregar mercadoria, em condições impróprias ao consumo",
+    "potencialOfensivo": "Maior",
+    "pagina": 8,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Desastre natural",
+    "natureza": "Dano causado por fenômenos naturais",
+    "potencialOfensivo": "Atípico",
+    "pagina": 8,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Desastre natural",
+    "natureza": "Desabamento ou desmoronamento (Acidente)",
+    "potencialOfensivo": "Atípico",
+    "pagina": 8,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Desastre natural",
+    "natureza": "Inundaçãoou alagamento (Acidente)",
+    "potencialOfensivo": "Atípico",
+    "pagina": 8,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Desastre Natural",
+    "natureza": "Queda de árvore",
+    "potencialOfensivo": "Atípico",
+    "pagina": 8,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Desastre Natural",
+    "natureza": "Queda de granizo",
+    "potencialOfensivo": "Atípico",
+    "pagina": 8,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Desastre Natural",
+    "natureza": "Vendaval, Tornado, Ciclone, Furacão",
+    "potencialOfensivo": "Atípico",
+    "pagina": 8,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Desordem",
+    "natureza": "Advertência (Programa Silêncio Urbano)",
+    "potencialOfensivo": "Atípico",
+    "pagina": 8,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Desordem",
+    "natureza": "Apresentar-se publicamente em estado de embriaguez, de modo que cause escândalo ou ponha em perigo a segurança própria ou alheia",
+    "potencialOfensivo": "Menor",
+    "pagina": 8,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Desordem",
+    "natureza": "Arremessar ou derramar em via pública ou outro, coisa ofensiva ou que moleste alguém",
+    "potencialOfensivo": "Menor",
+    "pagina": 8,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Desordem",
+    "natureza": "Arremesso de projétil",
+    "potencialOfensivo": "Menor",
+    "pagina": 8,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Desordem",
+    "natureza": "Atentado contra a liberdade de associação",
+    "potencialOfensivo": "Menor",
+    "pagina": 8,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Desordem",
+    "natureza": "Atentado contra a liberdade de trabalho",
+    "potencialOfensivo": "Menor",
+    "pagina": 9,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Desordem",
+    "natureza": "Atentado contra a segurança de serviço de utilidade pública",
+    "potencialOfensivo": "Maior",
+    "pagina": 9,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Desordem",
+    "natureza": "Atentado contra a segurança de transporte público - Doloso",
+    "potencialOfensivo": "Maior",
+    "pagina": 9,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Desordem",
+    "natureza": "Buracos/Obstáculos em via pública",
+    "potencialOfensivo": "Atípico",
+    "pagina": 9,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Desordem",
+    "natureza": "Deflagrar perigosamente, queimar fogo de artifício ou soltar balão em via pública, sem licença",
+    "potencialOfensivo": "Menor",
+    "pagina": 9,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Desordem",
+    "natureza": "Deixar de colocar na via pública, sinal ou obstáculo, determinado em lei ou pela autoridade e destinado a evitar perigo a transeuntes",
+    "potencialOfensivo": "Menor",
+    "pagina": 9,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Desordem",
+    "natureza": "Deixar unidade médica de saúde sem alta ou liberação médica",
+    "potencialOfensivo": "Atípico",
+    "pagina": 9,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Desordem",
+    "natureza": "Descumprimento da Lei n. 17.477/18 (Comércio e consumo de cerveja nos Estádios e Arenas Desportivas)",
+    "potencialOfensivo": "Atípico",
+    "pagina": 9,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Desordem",
+    "natureza": "Descumprimento de condicão/ordem/medida judicial",
+    "potencialOfensivo": "Atípico",
+    "pagina": 9,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Desordem",
+    "natureza": "Estabelecimento comercial funcionando em desacordo com a lei, licença ou alvará",
+    "potencialOfensivo": "Menor",
+    "pagina": 9,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Desordem",
+    "natureza": "Impedir ou perturbar serviço de estrada de ferro - Culposo",
+    "potencialOfensivo": "Menor",
+    "pagina": 9,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Desordem",
+    "natureza": "Impedir ou perturbar serviço de estrada de ferro - Doloso",
+    "potencialOfensivo": "Maior",
+    "pagina": 9,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Desordem",
+    "natureza": "Invasão de estabelecimento industrial, comercial ou agrícola (Sabotagem)",
+    "potencialOfensivo": "Maior",
+    "pagina": 9,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Desordem",
+    "natureza": "Lixo entulho em via pública",
+    "potencialOfensivo": "Atípico",
+    "pagina": 9,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Desordem",
+    "natureza": "Material de obras em passeio público",
+    "potencialOfensivo": "Atípico",
+    "pagina": 9,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Desordem",
+    "natureza": "Objetos oferecendo perigo",
+    "potencialOfensivo": "Menor",
+    "pagina": 9,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Desordem",
+    "natureza": "Obra ou construção em desacordo com a lei ou licença",
+    "potencialOfensivo": "Menor",
+    "pagina": 9,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Desordem",
+    "natureza": "Paralisação de trabalho de interesse coletivo",
+    "potencialOfensivo": "Menor",
+    "pagina": 9,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Desordem",
+    "natureza": "Paralisação do trabalho com violência ou perturbação da ordem",
+    "potencialOfensivo": "Menor",
+    "pagina": 9,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Desordem",
+    "natureza": "Paralisação ou manifestação de greve de trabalhadores",
+    "potencialOfensivo": "Atípico",
+    "pagina": 9,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Desordem",
+    "natureza": "Participar de associação, de mais de 5 pessoas, que se reúnam periodicamente (Associação secreta)",
+    "potencialOfensivo": "Menor",
+    "pagina": 9,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Desordem",
+    "natureza": "Portar, em estádio ou imediações, em evento esportivo, quaisquer instrumentos para prática de violência",
+    "potencialOfensivo": "Menor",
+    "pagina": 9,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Desordem",
+    "natureza": "Promover tumulto ou incitar a violência, ou invadir local restrito a competidores em eventos esportivos",
+    "potencialOfensivo": "Menor",
+    "pagina": 9,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Desordem",
+    "natureza": "Promover tumulto, praticar ou incitar a violência num raio de 5 Km do local de realização do evento esportivo",
+    "potencialOfensivo": "Menor",
+    "pagina": 10,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Desordem",
+    "natureza": "Provocar abusivamente emissão de fumaça, vapor ou gás",
+    "potencialOfensivo": "Menor",
+    "pagina": 10,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Desordem",
+    "natureza": "Provocar ou irritar animal, expondo a perigo a segurança alheia",
+    "potencialOfensivo": "Menor",
+    "pagina": 10,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Desordem",
+    "natureza": "Provocar tumulto",
+    "potencialOfensivo": "Menor",
+    "pagina": 10,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Desordem",
+    "natureza": "Remover qualquer outro sinal de serviço público (Remoção de sinal de serviço público)",
+    "potencialOfensivo": "Menor",
+    "pagina": 10,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Desordem",
+    "natureza": "Servir bebidas alcoólicas a pessoa que o agente sabe estar judicialmente proibida de frequentar lugares onde se consome bebida de tal natureza",
+    "potencialOfensivo": "Menor",
+    "pagina": 10,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Desordem",
+    "natureza": "Servir bebidas alcoólicas a pessoa que o agente sabe sofrer das faculdades mentais",
+    "potencialOfensivo": "Menor",
+    "pagina": 10,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Desordem",
+    "natureza": "Servir bebidas alcoólicas a quem se acha em estado de embriaguez",
+    "potencialOfensivo": "Menor",
+    "pagina": 10,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Desordem",
+    "natureza": "Trote ou perturbação de serviço de utilidade pública",
+    "potencialOfensivo": "Menor",
+    "pagina": 10,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Desordem",
+    "natureza": "Uso de cerol em pipas ou similares",
+    "potencialOfensivo": "Menor",
+    "pagina": 10,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Desordem",
+    "natureza": "Vazamento de rede de água ou esgoto",
+    "potencialOfensivo": "Atípico",
+    "pagina": 10,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Dignidade sexual",
+    "natureza": "Adquirir, possuir ou armazenar registro contendo cenas de sexo explícito ou pornográfica com criança ou adolescente",
+    "potencialOfensivo": "Maior",
+    "pagina": 10,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Dignidade sexual",
+    "natureza": "Aliciar criança para se exibir de forma pornográfica",
+    "potencialOfensivo": "Maior",
+    "pagina": 10,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Dignidade sexual",
+    "natureza": "Aliciar, assediar criança com o fim de praticar ato libidinoso com ela",
+    "potencialOfensivo": "Maior",
+    "pagina": 10,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Dignidade sexual",
+    "natureza": "Assédio sexual",
+    "potencialOfensivo": "Maior",
+    "pagina": 10,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Dignidade sexual",
+    "natureza": "Ato obsceno",
+    "potencialOfensivo": "Menor",
+    "pagina": 10,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Dignidade sexual",
+    "natureza": "Escrito ou objeto obsceno",
+    "potencialOfensivo": "Menor",
+    "pagina": 10,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Dignidade sexual",
+    "natureza": "Estupro",
+    "potencialOfensivo": "Maior",
+    "pagina": 10,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Dignidade sexual",
+    "natureza": "Estupro coletivo",
+    "potencialOfensivo": "Maior",
+    "pagina": 10,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Dignidade sexual",
+    "natureza": "Estupro de vulnerável",
+    "potencialOfensivo": "Maior",
+    "pagina": 10,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Dignidade sexual",
+    "natureza": "Facilitar acesso à criança de material contendo cena de sexo explícito com o fim de praticar ato libidinoso com ela",
+    "potencialOfensivo": "Maior",
+    "pagina": 10,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Dignidade sexual",
+    "natureza": "Favorecimento da prostituição ou outra forma de exploração sexual",
+    "potencialOfensivo": "Maior",
+    "pagina": 10,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Dignidade sexual",
+    "natureza": "Favorecimento da prostituição ou outra forma de exploração sexual de menor ou de vulnerável",
+    "potencialOfensivo": "Maior",
+    "pagina": 10,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Dignidade sexual",
+    "natureza": "Importunação sexual",
+    "potencialOfensivo": "Maior",
+    "pagina": 11,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Dignidade sexual",
+    "natureza": "Induzir alguém menor de 14 anos a satisfazer a lascívia de outrem (Corrupção de menores)",
+    "potencialOfensivo": "Maior",
+    "pagina": 11,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Dignidade sexual",
+    "natureza": "Manter estabelecimento em que ocorra exploração sexual (Casa de prostituição)",
+    "potencialOfensivo": "Maior",
+    "pagina": 11,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Dignidade sexual",
+    "natureza": "Mediação para servir a lascívia de outrem",
+    "potencialOfensivo": "Maior",
+    "pagina": 11,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Dignidade sexual",
+    "natureza": "Oferecer, divulgar registros que contenham cenas de sexo explícito ou pornográfica envolvendo criança ou adolescente",
+    "potencialOfensivo": "Maior",
+    "pagina": 11,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Dignidade sexual",
+    "natureza": "Oferecer, trocar, disponibilizar, transmitir, vender ou expor à venda, distribuir, publicar ou divulgar registro audiovisual que contenha cena de estupro de vulnerável ou que faça apologia ou induza a sua prática, ou, sem o consentimento da vítima, cena de sexo, nudez ou pornografia",
+    "potencialOfensivo": "Maior",
+    "pagina": 11,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Dignidade sexual",
+    "natureza": "Possuir ou gerenciar local em que há submissão de criança ou adolescente à prostituição ou à exploração sexual",
+    "potencialOfensivo": "Maior",
+    "pagina": 11,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Dignidade sexual",
+    "natureza": "Praticar contra alguém e sem a sua anuência ato libidinoso com o objetivo de satisfazer a própria lascívia ou a de terceiro",
+    "potencialOfensivo": "Maior",
+    "pagina": 11,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Dignidade sexual",
+    "natureza": "Praticar contra alguém e sem a sua anuência ato libidinoso com o objetivo de satisfazer a própria lascívia ou a de terceiro",
+    "potencialOfensivo": "Maior",
+    "pagina": 11,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Dignidade sexual",
+    "natureza": "Produzir, dirigir, fotografar, filmar, registrar cena de sexo explícito ou pornográfica de criança ou adolescente",
+    "potencialOfensivo": "Maior",
+    "pagina": 11,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Dignidade sexual",
+    "natureza": "Realizar em lugar público ou acessível ao público ou pelo rádio, audição ou recitação de caráter obsceno",
+    "potencialOfensivo": "Menor",
+    "pagina": 11,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Dignidade sexual",
+    "natureza": "Realizar, em lugar público ou acessível ao público, representação teatral de caráter obsceno",
+    "potencialOfensivo": "Menor",
+    "pagina": 11,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Dignidade sexual",
+    "natureza": "Registro não autorizado da intimidade sexual",
+    "potencialOfensivo": "Maior",
+    "pagina": 11,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Dignidade sexual",
+    "natureza": "Rufianismo",
+    "potencialOfensivo": "Maior",
+    "pagina": 11,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Dignidade sexual",
+    "natureza": "Satisfação de lascívia mediante presença de criança ou adolescente",
+    "potencialOfensivo": "Maior",
+    "pagina": 11,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Dignidade sexual",
+    "natureza": "Submeter criança ou adolescente à prostituição ou à exploração sexual",
+    "potencialOfensivo": "Maior",
+    "pagina": 11,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Dignidade sexual",
+    "natureza": "Tráfico internacional de pessoa para fim de exploração sexual",
+    "potencialOfensivo": "Maior",
+    "pagina": 11,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Dignidade sexual",
+    "natureza": "Tráfico interno de pessoa para fim de exploração sexual",
+    "potencialOfensivo": "Maior",
+    "pagina": 11,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Dignidade sexual",
+    "natureza": "Vender ou expor à venda fotografia, vídeo ou outro registro que contenha cena de sexo explícito ou pornográfica envolvendo criança ou adolescente",
+    "potencialOfensivo": "Maior",
+    "pagina": 11,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Dignidade sexual",
+    "natureza": "Violação sexual mediante fraude",
+    "potencialOfensivo": "Maior",
+    "pagina": 11,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Disparo de Alarme",
+    "natureza": "Disparo de alarme",
+    "potencialOfensivo": "Atípico",
+    "pagina": 11,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Drogas",
+    "natureza": "Associação para o tráfico de drogas",
+    "potencialOfensivo": "Maior",
+    "pagina": 11,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Drogas",
+    "natureza": "Colaborar como informante do grupo, organização ou associação destinados ao tráfico de drogas",
+    "potencialOfensivo": "Maior",
+    "pagina": 12,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Drogas",
+    "natureza": "Conduzir embarcação ou aeronave após o consumo de drogas",
+    "potencialOfensivo": "Maior",
+    "pagina": 12,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Drogas",
+    "natureza": "Fabricar, oferecer, vender, maquinário, destinado à fabricação, preparação ou produção de drogas",
+    "potencialOfensivo": "Maior",
+    "pagina": 12,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Drogas",
+    "natureza": "Financiar ou custear a prática de qualquer dos crimes previstos nos arts. 33, caput e § 1º, e 34 da Lei 11.343/2006",
+    "potencialOfensivo": "Maior",
+    "pagina": 12,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Drogas",
+    "natureza": "Oferecer drogas, eventualmente, sem objetivo de lucro a pessoa de seu relacionamento para juntos consumirem",
+    "potencialOfensivo": "Menor",
+    "pagina": 12,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Drogas",
+    "natureza": "Posse ou porte de drogas para uso pessoal",
+    "potencialOfensivo": "Menor",
+    "pagina": 12,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Drogas",
+    "natureza": "Tráfico de drogas",
+    "potencialOfensivo": "Maior",
+    "pagina": 12,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Eleições",
+    "natureza": "Causar, dano físico ao equipamento usado na votação ou na totalização de votos ou a suas partes",
+    "potencialOfensivo": "Menor",
+    "pagina": 12,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Eleições",
+    "natureza": "Coagir alguém a votar, ou não votar, em determinado candidato ou partido, usando violência ou grave ameaça",
+    "potencialOfensivo": "Maior",
+    "pagina": 12,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Eleições",
+    "natureza": "Contratar pessoa para emitir mensagens ou comentários na internet para ofender a honra ou denegrir a imagem de candidato, partido ou coligação",
+    "potencialOfensivo": "Menor",
+    "pagina": 12,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Eleições",
+    "natureza": "Dar, oferecer, prometer, solicitar, receber, para si ou para outrem, dinheiro ou qualquer outra vantagem, para obter ou dar voto",
+    "potencialOfensivo": "Maior",
+    "pagina": 12,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Eleições",
+    "natureza": "Descumprimento de procedimentos para apuração eleitoral",
+    "potencialOfensivo": "Menor",
+    "pagina": 12,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Eleições",
+    "natureza": "Destruir, suprimir ou ocultar urna contendo votos, ou documentos relativos à eleição.",
+    "potencialOfensivo": "Maior",
+    "pagina": 12,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Eleições",
+    "natureza": "Falsificar, no todo ou em parte, documento particular ou alterar documento particular verdadeiro, para fins eleitorais",
+    "potencialOfensivo": "Maior",
+    "pagina": 12,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Eleições",
+    "natureza": "Falsificar, no todo ou em parte, documento público, ou alterar documento público verdadeiro, para fins eleitorais",
+    "potencialOfensivo": "Maior",
+    "pagina": 12,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Eleições",
+    "natureza": "Fazer uso de qualquer dos documentos falsificados ou alterados, a que se referem os artigos. 348 a 352 da Lei Lei 4.737/1965",
+    "potencialOfensivo": "Maior",
+    "pagina": 12,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Eleições",
+    "natureza": "Fornecer alimento ou transporte coletivo para eleitores",
+    "potencialOfensivo": "Maior",
+    "pagina": 12,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Eleições",
+    "natureza": "Impedir ou embaraçar o exercício do voto",
+    "potencialOfensivo": "Maior",
+    "pagina": 12,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Eleições",
+    "natureza": "Majorar os preços de utilidades e serviços necessários à realização de eleições",
+    "potencialOfensivo": "Menor",
+    "pagina": 12,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Eleições",
+    "natureza": "Obter, para uso próprio ou de outrem, documento público ou particular, material ou ideologicamente falso para fins eleitorais",
+    "potencialOfensivo": "Maior",
+    "pagina": 12,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Eleições",
+    "natureza": "Ocultar, sonegar, açambarcar ou recusar no dia da eleição, o fornecimento de utilidades, alimentação e meios de transporte, ou conceder exclusividade a determinado partido ou candidato",
+    "potencialOfensivo": "Menor",
+    "pagina": 12,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Eleições",
+    "natureza": "Promover desordem que prejudique os trabalhos eleitorais",
+    "potencialOfensivo": "Menor",
+    "pagina": 12,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Eleições",
+    "natureza": "Realizar boca de urna no dia da eleição",
+    "potencialOfensivo": "Menor",
+    "pagina": 12,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Eleições",
+    "natureza": "Realizar propaganda política de qualquer natureza no dia das eleições",
+    "potencialOfensivo": "Menor",
+    "pagina": 13,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Eleições",
+    "natureza": "Recusar ou abandonar o serviço eleitoral sem justa causa",
+    "potencialOfensivo": "Menor",
+    "pagina": 13,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Eleições",
+    "natureza": "Reter título eleitoral contra a vontade do eleitor",
+    "potencialOfensivo": "Menor",
+    "pagina": 13,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Eleições",
+    "natureza": "Utilização, no dia da eleição, de alto-falantes e amplificadores de som ou promoção de comício ou carreata",
+    "potencialOfensivo": "Menor",
+    "pagina": 13,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Eleições",
+    "natureza": "Valer-se o servidor público da sua autoridade para coagir alguém a votar ou não votar em determinado candidato ou partido",
+    "potencialOfensivo": "Menor",
+    "pagina": 13,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Eleições",
+    "natureza": "Violar ou tentar violar o sigilo do voto",
+    "potencialOfensivo": "Menor",
+    "pagina": 13,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Eleições",
+    "natureza": "Votar ou tentar votar mais de uma vez, ou em lugar de outrem",
+    "potencialOfensivo": "Maior",
+    "pagina": 13,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Fraudes",
+    "natureza": "Adulteração de sinal identificador de veículo automotor",
+    "potencialOfensivo": "Maior",
+    "pagina": 13,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Fraudes",
+    "natureza": "Agiotagem",
+    "potencialOfensivo": "Menor",
+    "pagina": 13,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Fraudes",
+    "natureza": "Apropriação indébita",
+    "potencialOfensivo": "Maior",
+    "pagina": 13,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Fraudes",
+    "natureza": "Certidão ou atestado ideologicamente falso",
+    "potencialOfensivo": "Menor",
+    "pagina": 13,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Fraudes",
+    "natureza": "Charlatanismo",
+    "potencialOfensivo": "Menor",
+    "pagina": 13,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Fraudes",
+    "natureza": "Coação no curso do processo",
+    "potencialOfensivo": "Maior",
+    "pagina": 13,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Fraudes",
+    "natureza": "Concussão",
+    "potencialOfensivo": "Maior",
+    "pagina": 13,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Fraudes",
+    "natureza": "Contrabando",
+    "potencialOfensivo": "Maior",
+    "pagina": 13,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Fraudes",
+    "natureza": "Corrupção ativa",
+    "potencialOfensivo": "Maior",
+    "pagina": 13,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Fraudes",
+    "natureza": "Corrupção ativa de testemunha",
+    "potencialOfensivo": "Maior",
+    "pagina": 13,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Fraudes",
+    "natureza": "Corrupção passiva",
+    "potencialOfensivo": "Maior",
+    "pagina": 13,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Fraudes",
+    "natureza": "Curandeirismo",
+    "potencialOfensivo": "Menor",
+    "pagina": 13,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Fraudes",
+    "natureza": "Deixar de efetuar o pagamento de prestação alimentícia (Pensão)",
+    "potencialOfensivo": "Maior",
+    "pagina": 13,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Fraudes",
+    "natureza": "Deixar o locador, dentro de cento e oitenta dias após a entrega do imóvel, de usá-lo para o fim declarado ou, usando-o, não o fizer pelo prazo mínimo de um ano",
+    "potencialOfensivo": "Menor",
+    "pagina": 13,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Fraudes",
+    "natureza": "Descaminho",
+    "potencialOfensivo": "Maior",
+    "pagina": 13,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Fraudes",
+    "natureza": "Estelionato",
+    "potencialOfensivo": "Maior",
+    "pagina": 13,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Fraudes",
+    "natureza": "Exercício ilegal da medicina, arte dentária ou farmacêutica",
+    "potencialOfensivo": "Menor",
+    "pagina": 14,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Fraudes",
+    "natureza": "Exercício ilegal de profissão ou atividade",
+    "potencialOfensivo": "Menor",
+    "pagina": 14,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Fraudes",
+    "natureza": "Exigir, por motivo de locação ou sublocação, quantia ou valor além do aluguel e encargos permitidos",
+    "potencialOfensivo": "Menor Condicionado",
+    "pagina": 14,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Fraudes",
+    "natureza": "Fabricar, adquirir, fornecer, possuir ou guardar objeto destinado à falsificação de papéis públicos",
+    "potencialOfensivo": "Maior",
+    "pagina": 14,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Fraudes",
+    "natureza": "Facilitação de contrabando ou descaminho",
+    "potencialOfensivo": "Maior",
+    "pagina": 14,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Fraudes",
+    "natureza": "Falsa identidade",
+    "potencialOfensivo": "Menor",
+    "pagina": 14,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Fraudes",
+    "natureza": "Falsidade de atestado médico",
+    "potencialOfensivo": "Menor",
+    "pagina": 14,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Fraudes",
+    "natureza": "Falsidade ideológica",
+    "potencialOfensivo": "Maior",
+    "pagina": 14,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Fraudes",
+    "natureza": "Falsificação de documento particular",
+    "potencialOfensivo": "Maior",
+    "pagina": 14,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Fraudes",
+    "natureza": "Falsificação de documento público",
+    "potencialOfensivo": "Maior",
+    "pagina": 14,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Fraudes",
+    "natureza": "Falsificação de papéis públicos",
+    "potencialOfensivo": "Maior",
+    "pagina": 14,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Fraudes",
+    "natureza": "Fingir-se funcionário público (Simulação da qualidade de funcionário)",
+    "potencialOfensivo": "Menor",
+    "pagina": 14,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Fraudes",
+    "natureza": "Fornecer, desviar, facilitar distribuição de ingressos para venda por preço superior ao do bilhete (Cambista)",
+    "potencialOfensivo": "Menor",
+    "pagina": 14,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Fraudes",
+    "natureza": "Fraude no comércio",
+    "potencialOfensivo": "Menor",
+    "pagina": 14,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Fraudes",
+    "natureza": "Fraude processual",
+    "potencialOfensivo": "Menor",
+    "pagina": 14,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Fraudes",
+    "natureza": "Impressão de bilhetes de loteria não legal",
+    "potencialOfensivo": "Menor",
+    "pagina": 14,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Fraudes",
+    "natureza": "Improbidade administrativa (Prejuízo ao erário)",
+    "potencialOfensivo": "Maior",
+    "pagina": 14,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Fraudes",
+    "natureza": "Inserção de dados falsos em sistema de informações",
+    "potencialOfensivo": "Maior",
+    "pagina": 14,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Fraudes",
+    "natureza": "Jogo de azar",
+    "potencialOfensivo": "Menor",
+    "pagina": 14,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Fraudes",
+    "natureza": "Jogo do bicho",
+    "potencialOfensivo": "Menor",
+    "pagina": 14,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Fraudes",
+    "natureza": "Loteria não autorizada",
+    "potencialOfensivo": "Maior",
+    "pagina": 14,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Fraudes",
+    "natureza": "Modificação ou alteração não autorizada de sistema de informações",
+    "potencialOfensivo": "Menor",
+    "pagina": 14,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Fraudes",
+    "natureza": "Moeda falsa",
+    "potencialOfensivo": "Maior",
+    "pagina": 14,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Fraudes",
+    "natureza": "Negar saldar despesas com refeição, hotel ou meio de transporte (Outras fraudes)",
+    "potencialOfensivo": "Menor Condicionado",
+    "pagina": 15,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Fraudes",
+    "natureza": "Participar de jogo de azar como ponteiro ou apostador",
+    "potencialOfensivo": "Menor",
+    "pagina": 15,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Fraudes",
+    "natureza": "Peculato - Culposo",
+    "potencialOfensivo": "Maior",
+    "pagina": 15,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Fraudes",
+    "natureza": "Peculato - Doloso",
+    "potencialOfensivo": "Maior",
+    "pagina": 15,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Fraudes",
+    "natureza": "Petrechos para falsificação de moeda",
+    "potencialOfensivo": "Maior",
+    "pagina": 15,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Fraudes",
+    "natureza": "Prisão civil por falta de pagamento de prestação alimentícia",
+    "potencialOfensivo": "Maior",
+    "pagina": 15,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Fraudes",
+    "natureza": "Receptação",
+    "potencialOfensivo": "Maior",
+    "pagina": 15,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Fraudes",
+    "natureza": "Receptação - Culposa",
+    "potencialOfensivo": "Menor",
+    "pagina": 15,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Fraudes",
+    "natureza": "Receptação de animal",
+    "potencialOfensivo": "Maior",
+    "pagina": 15,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Fraudes",
+    "natureza": "Recusa de moeda de curso legal",
+    "potencialOfensivo": "Menor",
+    "pagina": 15,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Fraudes",
+    "natureza": "Recusar dados ou indicação concernentes à própria identidade",
+    "potencialOfensivo": "Menor",
+    "pagina": 15,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Fraudes",
+    "natureza": "Uso de documento falso",
+    "potencialOfensivo": "Maior",
+    "pagina": 15,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Fraudes",
+    "natureza": "Uso ilegítimo de uniforme ou distintivo",
+    "potencialOfensivo": "Menor",
+    "pagina": 15,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Fraudes",
+    "natureza": "Vender ingressos de evento esportivo, por preço superior ao estampado no bilhete (Cambista)",
+    "potencialOfensivo": "Menor",
+    "pagina": 15,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Fraudes",
+    "natureza": "Violação de direito autoral com intuito de lucro (Distribuição)",
+    "potencialOfensivo": "Maior",
+    "pagina": 15,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Fraudes",
+    "natureza": "Violação de direito autoral com intuito de lucro (Oferecimento)",
+    "potencialOfensivo": "Maior",
+    "pagina": 15,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Fraudes",
+    "natureza": "Violação de direito autoral com intuito de lucro (Reprodução)",
+    "potencialOfensivo": "Maior",
+    "pagina": 15,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Fraudes",
+    "natureza": "Violação de direito autoral sem intuito de lucro (Pirataria)",
+    "potencialOfensivo": "Menor Condicionado",
+    "pagina": 15,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Furto",
+    "natureza": "Fabricar, ceder ou vender instrumento usualmente empregado na prática de crime de furto",
+    "potencialOfensivo": "Menor",
+    "pagina": 15,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Furto",
+    "natureza": "Furto",
+    "potencialOfensivo": "Maior",
+    "pagina": 15,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Furto",
+    "natureza": "Furto de coisa comum",
+    "potencialOfensivo": "Menor Condicionado",
+    "pagina": 15,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Furto",
+    "natureza": "Possuir instrumento de emprego usual na prática de furto, sem motivo justificado",
+    "potencialOfensivo": "Menor",
+    "pagina": 15,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Incêndio",
+    "natureza": "Incêndio (Acidente)",
+    "potencialOfensivo": "Atípico",
+    "pagina": 15,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Incêndio",
+    "natureza": "Incêndio (Crime) - Culposo",
+    "potencialOfensivo": "Menor",
+    "pagina": 16,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Incêndio",
+    "natureza": "Incêndio (Crime) - Doloso",
+    "potencialOfensivo": "Maior",
+    "pagina": 16,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Meio ambiente",
+    "natureza": "Abandonar produtos e substâncias ou utilizar em desacordo com as normas ambientais e de segurança",
+    "potencialOfensivo": "Maior",
+    "pagina": 16,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Meio ambiente",
+    "natureza": "Adquirir, distribuir e revender ilegalmente derivados de petróleo ou combustíveis líquidos carburantes",
+    "potencialOfensivo": "Maior",
+    "pagina": 16,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Meio ambiente",
+    "natureza": "Alteração de local especialmente protegido",
+    "potencialOfensivo": "Menor",
+    "pagina": 16,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Meio ambiente",
+    "natureza": "Alterar ilegalmente ou sem autorização o aspecto ou estrutura de edificação ou local especialmente protegido",
+    "potencialOfensivo": "Maior",
+    "pagina": 16,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Meio ambiente",
+    "natureza": "Animal em perigo e/ou provocando perigo iminente",
+    "potencialOfensivo": "Atípico",
+    "pagina": 16,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Meio ambiente",
+    "natureza": "Animal morto em via pública",
+    "potencialOfensivo": "Atípico",
+    "pagina": 16,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Meio ambiente",
+    "natureza": "Animal solto em via pública",
+    "potencialOfensivo": "Menor",
+    "pagina": 16,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Meio ambiente",
+    "natureza": "Caça não autorizada",
+    "potencialOfensivo": "Menor",
+    "pagina": 16,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Meio ambiente",
+    "natureza": "Causar dano direto ou indireto às unidades de conservação, independentemente de sua localização",
+    "potencialOfensivo": "Maior",
+    "pagina": 16,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Meio ambiente",
+    "natureza": "Causar degradação em viveiros, açudes ou estações de aquicultura de domínio público",
+    "potencialOfensivo": "Maior",
+    "pagina": 16,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Meio ambiente",
+    "natureza": "Causar poluição hídrica interrompendo abastecimento água",
+    "potencialOfensivo": "Maior",
+    "pagina": 16,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Meio ambiente",
+    "natureza": "Causar poluição provocando a saída dos habitantes das áreas afetadas",
+    "potencialOfensivo": "Maior",
+    "pagina": 16,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Meio ambiente",
+    "natureza": "Causar poluição que resultem danos à saúde humana, ou a mortandade de animais ou destruição da flora",
+    "potencialOfensivo": "Maior",
+    "pagina": 16,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Meio ambiente",
+    "natureza": "Comercializar motosserra ou utilizá-la em florestas e nas demais formas de vegetação, sem licença ou registro",
+    "potencialOfensivo": "Menor",
+    "pagina": 16,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Meio ambiente",
+    "natureza": "Conduzir animal, na via pública, pondo em perigo a segurança alheia",
+    "potencialOfensivo": "Menor",
+    "pagina": 16,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Meio ambiente",
+    "natureza": "Construir ilegalmente ou sem autorização legal em solo não edificável",
+    "potencialOfensivo": "Menor",
+    "pagina": 16,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Meio ambiente",
+    "natureza": "Construir, reformar, instalar ou fazer funcionar estabelecimento, obras ou serviços potencialmente poluidores, sem licença, autorização ou contra a lei",
+    "potencialOfensivo": "Menor",
+    "pagina": 16,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Meio ambiente",
+    "natureza": "Cortar árvores em floresta de preservação permanente, sem permissão da autoridade competente",
+    "potencialOfensivo": "Maior",
+    "pagina": 16,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Meio ambiente",
+    "natureza": "Cortar ou transformar em carvão madeira de lei, para uso industrial ou qualquer outra exploração econômica ou não",
+    "potencialOfensivo": "Menor",
+    "pagina": 16,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Meio ambiente",
+    "natureza": "Deixar de adotar medidas de precaução em caso de risco de dano ambiental grave ou irreversível",
+    "potencialOfensivo": "Maior",
+    "pagina": 16,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Meio ambiente",
+    "natureza": "Deixar de recuperar a área pesquisada ou explorada, nos termos da autorização, licença ou determinação do órgão competente",
+    "potencialOfensivo": "Menor",
+    "pagina": 16,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Meio ambiente",
+    "natureza": "Desabamento ou desmoronamento (Crime) - Culposo",
+    "potencialOfensivo": "Menor",
+    "pagina": 17,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Meio ambiente",
+    "natureza": "Desabamento ou desmoronamento (Crime) - Doloso",
+    "potencialOfensivo": "Maior",
+    "pagina": 17,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Meio ambiente",
+    "natureza": "Descumprimento de obrigação de relevante interesse ambiental",
+    "potencialOfensivo": "Maior",
+    "pagina": 17,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Meio ambiente",
+    "natureza": "Desmatar, explorar economicamente, degradar floresta em terras públicas ou devolutas, sem autorização",
+    "potencialOfensivo": "Maior",
+    "pagina": 17,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Meio ambiente",
+    "natureza": "Destruir, danificar floresta de preservação permanente ou usá-la com infringência das normas de proteção",
+    "potencialOfensivo": "Maior",
+    "pagina": 17,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Meio ambiente",
+    "natureza": "Destruir, danificar florestas nativas, plantadas, vegetação de dunas, objeto de especial preservação",
+    "potencialOfensivo": "Menor",
+    "pagina": 17,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Meio ambiente",
+    "natureza": "Destruir, danificar vegetação do Bioma Mata Atlântica ou usá-la com infringência das normas de proteção",
+    "potencialOfensivo": "Maior",
+    "pagina": 17,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Meio ambiente",
+    "natureza": "Destruir, danificar, lesar plantas de ornamentação de logradouros públicos ou privados",
+    "potencialOfensivo": "Menor",
+    "pagina": 17,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Meio ambiente",
+    "natureza": "Destruir, inutilizar ou deteriorar arquivo, registro, museu, biblioteca, pinacoteca, instalação científica ou similar protegido por lei, ato administrativo ou decisão judicial - Doloso",
+    "potencialOfensivo": "Maior",
+    "pagina": 17,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Meio ambiente",
+    "natureza": "Destruir, inutilizar ou deteriorar bem protegido por lei, ato administrativo ou decisão judicial - Culposo",
+    "potencialOfensivo": "Maior",
+    "pagina": 17,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Meio ambiente",
+    "natureza": "Destruir, inutilizar ou deteriorar bem protegido por lei, ato administrativo ou decisão judicial - Doloso",
+    "potencialOfensivo": "Maior",
+    "pagina": 17,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Meio ambiente",
+    "natureza": "Dificultar ou impedir o uso das praias devido a poluição",
+    "potencialOfensivo": "Maior",
+    "pagina": 17,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Meio ambiente",
+    "natureza": "Disseminar doença ou praga ou espécies que possam causar dano à agricultura, à pecuária, à fauna, à flora ou aos ecossistemas",
+    "potencialOfensivo": "Maior",
+    "pagina": 17,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Meio ambiente",
+    "natureza": "Efetuar loteamento ou desmembramento do solo sem autorização ou em desacordo com as disposições legais",
+    "potencialOfensivo": "Maior",
+    "pagina": 17,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Meio ambiente",
+    "natureza": "Elaborar ou apresentar, no licenciamento, concessão florestal ou procedimento administrativo, estudo, laudo ou relatório ambiental falso ou enganoso",
+    "potencialOfensivo": "Maior",
+    "pagina": 17,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Meio ambiente",
+    "natureza": "Enxames de outros insetos",
+    "potencialOfensivo": "Atípico",
+    "pagina": 17,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Meio ambiente",
+    "natureza": "Executar pesquisa de recursos minerais sem autorização, permissão, concessão ou licença",
+    "potencialOfensivo": "Menor",
+    "pagina": 17,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Meio ambiente",
+    "natureza": "Explorar campos naturais de invertebrados aquáticos e algas, sem licença, permissão ou autorização",
+    "potencialOfensivo": "Maior",
+    "pagina": 17,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Meio ambiente",
+    "natureza": "Exportar peles e couros de anfíbios e répteis, sem autorização da autoridade ambiental competente",
+    "potencialOfensivo": "Maior",
+    "pagina": 17,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Meio ambiente",
+    "natureza": "Extrair de florestas de domínio público ou consideradas de preservação permanente, sem prévia autorização, pedra, areia, cal ou qualquer espécie de minerais",
+    "potencialOfensivo": "Menor",
+    "pagina": 17,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Meio ambiente",
+    "natureza": "Fabricar, vender, transportar, soltar balões que possam provocar incêndios",
+    "potencialOfensivo": "Maior",
+    "pagina": 17,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Meio ambiente",
+    "natureza": "Farra do boi",
+    "potencialOfensivo": "Menor",
+    "pagina": 17,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Meio ambiente",
+    "natureza": "Fundear embarcações, lançar detritos sobre bancos de moluscos ou corais, devidamente demarcados",
+    "potencialOfensivo": "Maior",
+    "pagina": 18,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Meio ambiente",
+    "natureza": "Impedir a procriação da fauna, sem licença, autorização ou em desacordo com a obtida",
+    "potencialOfensivo": "Menor",
+    "pagina": 18,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Meio ambiente",
+    "natureza": "Impedir ou dificultar a regeneração natural de florestas e demais formas de vegetação",
+    "potencialOfensivo": "Menor",
+    "pagina": 18,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Meio ambiente",
+    "natureza": "Introdução ou abandono de animais em propriedade alheia",
+    "potencialOfensivo": "Menor Condicionado",
+    "pagina": 18,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Meio ambiente",
+    "natureza": "Introduzir espécime animal no País, sem parecer técnico oficial favorável e respectiva licença",
+    "potencialOfensivo": "Maior",
+    "pagina": 18,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Meio ambiente",
+    "natureza": "Inundação (Crime)",
+    "potencialOfensivo": "Maior",
+    "pagina": 18,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Meio ambiente",
+    "natureza": "Manusear resíduos perigosos de forma diversa da estabelecida em lei ou regulamento",
+    "potencialOfensivo": "Maior",
+    "pagina": 18,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Meio ambiente",
+    "natureza": "Maus-tratos contra animais",
+    "potencialOfensivo": "Menor",
+    "pagina": 18,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Meio ambiente",
+    "natureza": "Modificar, danificar ou destruir ninho, abrigo ou criadouro natural",
+    "potencialOfensivo": "Menor",
+    "pagina": 18,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Meio ambiente",
+    "natureza": "Obstar ou dificultar a ação fiscalizadora do poder público no trato de questões ambientais",
+    "potencialOfensivo": "Maior",
+    "pagina": 18,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Meio ambiente",
+    "natureza": "Omissão de cautela na guarda ou condução de animais",
+    "potencialOfensivo": "Menor",
+    "pagina": 18,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Meio ambiente",
+    "natureza": "Penetrar em local de conservação com instrumento para caça ou para explorar produto florestal, sem licença",
+    "potencialOfensivo": "Menor",
+    "pagina": 18,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Meio ambiente",
+    "natureza": "Perigo de inundação (Crime)",
+    "potencialOfensivo": "Maior",
+    "pagina": 18,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Meio ambiente",
+    "natureza": "Pesca predatória",
+    "potencialOfensivo": "Maior",
+    "pagina": 18,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Meio ambiente",
+    "natureza": "Pescar com uso de explosivos ou substâncias que, em contato com a água, produzam efeito semelhante",
+    "potencialOfensivo": "Maior",
+    "pagina": 18,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Meio ambiente",
+    "natureza": "Pescar em período no qual a pesca seja proibida ou em lugares interditados por órgão competente",
+    "potencialOfensivo": "Maior",
+    "pagina": 18,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Meio ambiente",
+    "natureza": "Pescar espécies que devam ser preservadas ou espécimes com tamanhos inferiores aos permitidos",
+    "potencialOfensivo": "Maior",
+    "pagina": 18,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Meio ambiente",
+    "natureza": "Pescar mediante a utilização de substâncias tóxicas ou outro meio proibido pela autoridade competente",
+    "potencialOfensivo": "Maior",
+    "pagina": 18,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Meio ambiente",
+    "natureza": "Pichação",
+    "potencialOfensivo": "Menor",
+    "pagina": 18,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Meio ambiente",
+    "natureza": "Poluir por resíduos sólidos, líquidos, gasosos, detritos em desacordo com as exigências estabelecidas",
+    "potencialOfensivo": "Maior",
+    "pagina": 18,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Meio ambiente",
+    "natureza": "Produzir, importar, armazenar produto tóxico a humano ou meio ambiente, em desacordo com a lei",
+    "potencialOfensivo": "Maior",
+    "pagina": 18,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Meio ambiente",
+    "natureza": "Provocar incêndio em mata ou floresta - Culposo",
+    "potencialOfensivo": "Menor",
+    "pagina": 18,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Meio ambiente",
+    "natureza": "Provocar incêndio em mata ou floresta - Doloso",
+    "potencialOfensivo": "Maior",
+    "pagina": 18,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Meio ambiente",
+    "natureza": "Provocar, pela emissão de efluentes ou materiais, o perecimento de espécimes da fauna aquática",
+    "potencialOfensivo": "Maior",
+    "pagina": 19,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Meio ambiente",
+    "natureza": "Realizar experiência dolorosa ou cruel em animal vivo quando existirem recursos alternativos",
+    "potencialOfensivo": "Menor",
+    "pagina": 19,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Meio ambiente",
+    "natureza": "Receber, adquirir madeira, lenha, carvão ou produtos vegetais, sem exigir a licença do vendedor",
+    "potencialOfensivo": "Menor",
+    "pagina": 19,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Meio ambiente",
+    "natureza": "Tornar uma área, urbana ou rural, imprópria para a ocupação humana, devido a poluição",
+    "potencialOfensivo": "Maior",
+    "pagina": 19,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Meio ambiente",
+    "natureza": "Transportar, comercializar, beneficiar, industrializar espécimes de coleta, apanha e pesca proibida",
+    "potencialOfensivo": "Maior",
+    "pagina": 19,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Meio ambiente",
+    "natureza": "Usar gás liqüefeito de petróleo em motores de qualquer espécie, saunas, caldeiras e aquecimento de piscinas, ou para fins automotivos, em desacordo com a lei",
+    "potencialOfensivo": "Maior",
+    "pagina": 19,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Meio ambiente",
+    "natureza": "Vender, adquirir, guardar, transportar ovos, larvas ou espécimes da fauna silvestre, nativa ou em rota migratória",
+    "potencialOfensivo": "Menor",
+    "pagina": 19,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Meio ambiente",
+    "natureza": "Vender, transportar, guardar madeira, lenha, carvão e outros produtos vegetal, sem licença válida",
+    "potencialOfensivo": "Menor",
+    "pagina": 19,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Outras infrações penais",
+    "natureza": "Abandono de função",
+    "potencialOfensivo": "Menor",
+    "pagina": 19,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Outras infrações penais",
+    "natureza": "Abuso na prática de aviação",
+    "potencialOfensivo": "Menor",
+    "pagina": 19,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Outras infrações penais",
+    "natureza": "Advocacia administrativa",
+    "potencialOfensivo": "Menor",
+    "pagina": 19,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Outras infrações penais",
+    "natureza": "Alteração de limites",
+    "potencialOfensivo": "Menor Condicionado",
+    "pagina": 19,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Outras infrações penais",
+    "natureza": "Apologia ao crime ou a criminoso",
+    "potencialOfensivo": "Menor",
+    "pagina": 19,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Outras infrações penais",
+    "natureza": "Apropriar ou desviar bens, proventos, pensão ou qualquer outro rendimento de idoso",
+    "potencialOfensivo": "Atípico",
+    "pagina": 19,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Outras infrações penais",
+    "natureza": "Associação criminosa",
+    "potencialOfensivo": "Maior",
+    "pagina": 19,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Outras infrações penais",
+    "natureza": "Auto-acusação falsa",
+    "potencialOfensivo": "Menor",
+    "pagina": 19,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Outras infrações penais",
+    "natureza": "Comunicação falsa de crime ou de contravenção",
+    "potencialOfensivo": "Menor",
+    "pagina": 19,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Outras infrações penais",
+    "natureza": "Constituição de milícia privada",
+    "potencialOfensivo": "Maior",
+    "pagina": 19,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Outras infrações penais",
+    "natureza": "Corromper ou facilitar a corrupção de menor de 18 anos, com ele praticando infração penal ou induzindo-o a praticá-la",
+    "potencialOfensivo": "Maior",
+    "pagina": 19,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Outras infrações penais",
+    "natureza": "Deixar de comunicar à autoridade competente, crimes de ação pública incondicionada que teve conhecimento no exercício de função pública",
+    "potencialOfensivo": "Menor",
+    "pagina": 19,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Outras infrações penais",
+    "natureza": "Deixar de cumprir, retardar, frustrar a execução de ordem judicial nas ações em que for parte o idoso",
+    "potencialOfensivo": "Atípico",
+    "pagina": 19,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Outras infrações penais",
+    "natureza": "Denúncia de crime ou contravenção",
+    "potencialOfensivo": "Atípico",
+    "pagina": 19,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Outras infrações penais",
+    "natureza": "Denunciação caluniosa",
+    "potencialOfensivo": "Maior",
+    "pagina": 19,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Outras infrações penais",
+    "natureza": "Desacato",
+    "potencialOfensivo": "Menor",
+    "pagina": 20,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Outras infrações penais",
+    "natureza": "Desobediência",
+    "potencialOfensivo": "Menor",
+    "pagina": 20,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Outras infrações penais",
+    "natureza": "Desobediência à decisão judicial",
+    "potencialOfensivo": "Menor",
+    "pagina": 20,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Outras infrações penais",
+    "natureza": "Destruição, subtração ou ocultação de cadáver",
+    "potencialOfensivo": "Maior",
+    "pagina": 20,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Outras infrações penais",
+    "natureza": "Direção perigosa de veículo em via pública",
+    "potencialOfensivo": "Menor",
+    "pagina": 20,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Outras infrações penais",
+    "natureza": "Dirigir aeronave sem estar devidamente licenciado (Direção não licenciada de aeronave)",
+    "potencialOfensivo": "Menor",
+    "pagina": 20,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Outras infrações penais",
+    "natureza": "Dirigir, sem a devida habilitação, veículo em via pública ou embarcação a motor em águas públicas",
+    "potencialOfensivo": "Menor",
+    "pagina": 20,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Outras infrações penais",
+    "natureza": "Exercício arbitrário das próprias razões",
+    "potencialOfensivo": "Menor Condicionado",
+    "pagina": 20,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Outras infrações penais",
+    "natureza": "Falso testemunho ou falsa perícia",
+    "potencialOfensivo": "Maior",
+    "pagina": 20,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Outras infrações penais",
+    "natureza": "Homofobia",
+    "potencialOfensivo": "Menor",
+    "pagina": 20,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Outras infrações penais",
+    "natureza": "Incitação ao crime",
+    "potencialOfensivo": "Menor",
+    "pagina": 20,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Outras infrações penais",
+    "natureza": "Instalar ou utilizar de telecomunicações, sem observância dos preceitos legais ou regulamentares",
+    "potencialOfensivo": "Menor",
+    "pagina": 20,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Outras infrações penais",
+    "natureza": "Invasão de dispositivo informático",
+    "potencialOfensivo": "Menor Condicionado",
+    "pagina": 20,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Outras infrações penais",
+    "natureza": "Invasão de propriedade (Esbulho possessório)",
+    "potencialOfensivo": "Menor Condicionado",
+    "pagina": 20,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Outras infrações penais",
+    "natureza": "Manter custódia de doente mental, sem autorização ou de forma indevida",
+    "potencialOfensivo": "Menor",
+    "pagina": 20,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Outras infrações penais",
+    "natureza": "Obrigar ou coagir a usar mercadorias de determinado estabelecimento em virtude de dívida",
+    "potencialOfensivo": "Menor",
+    "pagina": 20,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Outras infrações penais",
+    "natureza": "Obstar o acesso de alguém a qualquer cargo público por motivo de idade",
+    "potencialOfensivo": "Atípico",
+    "pagina": 20,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Outras infrações penais",
+    "natureza": "Permitir que menor de dezoito anos frequente casa de jogos e outros",
+    "potencialOfensivo": "Menor",
+    "pagina": 20,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Outras infrações penais",
+    "natureza": "Permitir que menor de dezoito anos frequente espetáculo ofensivo ou outro",
+    "potencialOfensivo": "Menor",
+    "pagina": 20,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Outras infrações penais",
+    "natureza": "Permitir que menor de dezoito anos mendigue ou sirva de mendigo",
+    "potencialOfensivo": "Menor",
+    "pagina": 20,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Outras infrações penais",
+    "natureza": "Permitir que menor de dezoito anos resida ou trabalhe em casa de prostituição",
+    "potencialOfensivo": "Menor",
+    "pagina": 20,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Outras infrações penais",
+    "natureza": "Praticar atos de terrorismo, por razões de xenofobia, discriminação ou preconceito de raça, cor, etnia e religião, com a finalidade de provocar terror social ou generalizado",
+    "potencialOfensivo": "Maior",
+    "pagina": 20,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Outras infrações penais",
+    "natureza": "Prevaricação",
+    "potencialOfensivo": "Menor",
+    "pagina": 20,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Outras infrações penais",
+    "natureza": "Privar, criança ou adolescente de liberdade, sem estar em flagrante ou sem ordem da autoridade competente",
+    "potencialOfensivo": "Menor",
+    "pagina": 21,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Outras infrações penais",
+    "natureza": "Queixa da atuação da Polícia Militar",
+    "potencialOfensivo": "Atípico",
+    "pagina": 21,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Outras infrações penais",
+    "natureza": "Queixa da atuação de outros órgãos públicos",
+    "potencialOfensivo": "Atípico",
+    "pagina": 21,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Outras infrações penais",
+    "natureza": "Receber em estabelecimento psiquiátrico, e nele internar, sem as formalidades legais, pessoa apresentada como doente mental",
+    "potencialOfensivo": "Menor",
+    "pagina": 21,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Outras infrações penais",
+    "natureza": "Recusar, retardar ou dificultar atendimento ou deixar de prestar assistência à saúde, sem justa causa, a pessoa idosa",
+    "potencialOfensivo": "Atípico",
+    "pagina": 21,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Outras infrações penais",
+    "natureza": "Resistência",
+    "potencialOfensivo": "Menor",
+    "pagina": 21,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Outras infrações penais",
+    "natureza": "Reter o cartão magnético de conta bancária relativa a benefícios, proventos ou pensão do idoso",
+    "potencialOfensivo": "Atípico",
+    "pagina": 21,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Outras infrações penais",
+    "natureza": "Subtração de incapaz",
+    "potencialOfensivo": "Menor",
+    "pagina": 21,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Outras infrações penais",
+    "natureza": "Subtração, ocultação ou inutilização de material de salvamento",
+    "potencialOfensivo": "Maior",
+    "pagina": 21,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Outras infrações penais",
+    "natureza": "Subtrair criança ou adolescente ao poder de quem o tem sob sua guarda em virtude de lei ou ordem judicial, com o fim de colocação em lar substituto",
+    "potencialOfensivo": "Maior",
+    "pagina": 21,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Outras infrações penais",
+    "natureza": "Supressão ou alteração de marca em animais",
+    "potencialOfensivo": "Maior",
+    "pagina": 21,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Outras infrações penais",
+    "natureza": "Tráfico de influência",
+    "potencialOfensivo": "Maior",
+    "pagina": 21,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Outras infrações penais",
+    "natureza": "Usurpação de função pública",
+    "potencialOfensivo": "Maior",
+    "pagina": 21,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Outras infrações penais",
+    "natureza": "Vender, fornecer ou entregar a menor bebida alcoólica ou produtos que possam causar dependência física ou psíquica",
+    "potencialOfensivo": "Maior",
+    "pagina": 21,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Outras infrações penais",
+    "natureza": "Vender, fornecer ou entregar a menor fogos de artifício",
+    "potencialOfensivo": "Menor",
+    "pagina": 21,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Outras infrações penais",
+    "natureza": "Vias de fato",
+    "potencialOfensivo": "Menor Condicionado",
+    "pagina": 21,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Outras infrações penais",
+    "natureza": "Vilipêndio a cadáver",
+    "potencialOfensivo": "Maior",
+    "pagina": 21,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Outras infrações penais",
+    "natureza": "Violação de correspondência",
+    "potencialOfensivo": "Menor Condicionado",
+    "pagina": 21,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Outras infrações penais",
+    "natureza": "Violação de domicílio",
+    "potencialOfensivo": "Menor",
+    "pagina": 21,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Outras infrações penais",
+    "natureza": "Violação de sepultura",
+    "potencialOfensivo": "Maior",
+    "pagina": 21,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Outras infrações penais",
+    "natureza": "Violação de sigilo funcional",
+    "potencialOfensivo": "Menor",
+    "pagina": 21,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Outras infrações penais",
+    "natureza": "Violação do segredo profissional",
+    "potencialOfensivo": "Menor Condicionado",
+    "pagina": 21,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Outras infrações penais",
+    "natureza": "Violência arbitrária",
+    "potencialOfensivo": "Maior",
+    "pagina": 21,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Outros acidentes",
+    "natureza": "Acidente aéreo",
+    "potencialOfensivo": "Atípico",
+    "pagina": 22,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Outros acidentes",
+    "natureza": "Acidente ferroviário",
+    "potencialOfensivo": "Atípico",
+    "pagina": 22,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Outros acidentes",
+    "natureza": "Acidente hidroviário",
+    "potencialOfensivo": "Atípico",
+    "pagina": 22,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Outros acidentes",
+    "natureza": "Acidente marítimo",
+    "potencialOfensivo": "Atípico",
+    "pagina": 22,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Perturbação",
+    "natureza": "Impedimento ou perturbação de cerimônia funerária",
+    "potencialOfensivo": "Menor",
+    "pagina": 22,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Perturbação",
+    "natureza": "Perturbação da tranquilidade",
+    "potencialOfensivo": "Menor",
+    "pagina": 22,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Perturbação",
+    "natureza": "Perturbação do trabalho ou sossego alheios",
+    "potencialOfensivo": "Menor",
+    "pagina": 22,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Perturbação",
+    "natureza": "Reincidência (Programa Silêncio Urbano)",
+    "potencialOfensivo": "Atípico",
+    "pagina": 22,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Perturbação",
+    "natureza": "Reincidência Continuada (Programa Silêncio Urbano)",
+    "potencialOfensivo": "Atípico",
+    "pagina": 22,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Perturbação",
+    "natureza": "Ultraje a culto e impedimento ou perturbação de ato a ele relativo",
+    "potencialOfensivo": "Menor",
+    "pagina": 22,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Roubo",
+    "natureza": "Extorsão (Sequestro relâmpago)",
+    "potencialOfensivo": "Maior",
+    "pagina": 22,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Roubo",
+    "natureza": "Extorsão mediante sequestro",
+    "potencialOfensivo": "Maior",
+    "pagina": 22,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Roubo",
+    "natureza": "Roubo",
+    "potencialOfensivo": "Maior",
+    "pagina": 22,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Saúde pública",
+    "natureza": "Acidente com material radioativo",
+    "potencialOfensivo": "Atípico",
+    "pagina": 22,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Saúde pública",
+    "natureza": "Corromper ou poluir água potável - Culposa",
+    "potencialOfensivo": "Menor",
+    "pagina": 22,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Saúde pública",
+    "natureza": "Corromper ou poluir água potável - Dolosa",
+    "potencialOfensivo": "Maior",
+    "pagina": 22,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Saúde pública",
+    "natureza": "Difusão de doença ou praga - Culposa",
+    "potencialOfensivo": "Menor",
+    "pagina": 22,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Saúde pública",
+    "natureza": "Difusão de doença ou praga - Dolosa",
+    "potencialOfensivo": "Maior",
+    "pagina": 22,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Saúde pública",
+    "natureza": "Epidemia - Culposa",
+    "potencialOfensivo": "Menor",
+    "pagina": 22,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Saúde pública",
+    "natureza": "Epidemia - Dolosa",
+    "potencialOfensivo": "Maior",
+    "pagina": 22,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Saúde pública",
+    "natureza": "Fornecer substância medicinal em desacordo com receita médica - Culposo",
+    "potencialOfensivo": "Menor",
+    "pagina": 22,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Saúde pública",
+    "natureza": "Fornecer substância medicinal em desacordo com receita médica - Doloso",
+    "potencialOfensivo": "Maior",
+    "pagina": 22,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Saúde pública",
+    "natureza": "Negligência médica",
+    "potencialOfensivo": "Atípico",
+    "pagina": 22,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Sistema prisional",
+    "natureza": "Arrebatamento de preso",
+    "potencialOfensivo": "Maior",
+    "pagina": 23,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Sistema prisional",
+    "natureza": "Cumprimento de Mandado de Prisão/Apreensão de Adolescente",
+    "potencialOfensivo": "Atípico",
+    "pagina": 23,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Sistema prisional",
+    "natureza": "Fuga ou evasão de pessoa presa, apreendida ou custodiada",
+    "potencialOfensivo": "Atípico",
+    "pagina": 23,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Sistema prisional",
+    "natureza": "Ingressar em estabelecimento prisional portando telefone celular sem autorização legal",
+    "potencialOfensivo": "Menor",
+    "pagina": 23,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Sistema prisional",
+    "natureza": "Motim de presos",
+    "potencialOfensivo": "Menor",
+    "pagina": 23,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Sistema prisional",
+    "natureza": "Promover ou facilitar a fuga de pessoa presa ou submetida a medida de segurança",
+    "potencialOfensivo": "Menor",
+    "pagina": 23,
+    "versao": "10/06/2019"
+  },
+  {
+    "grupo": "Sistema prisional",
+    "natureza": "Recaptura de foragido/evadido",
+    "potencialOfensivo": "Atípico",
+    "pagina": 23,
+    "versao": "10/06/2019"
+  }
+]

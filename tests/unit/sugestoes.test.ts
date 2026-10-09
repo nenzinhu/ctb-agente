@@ -17,6 +17,12 @@ describe('sugestões instantâneas de busca', () => {
     }));
   });
 
+  it('sugere códigos MBFT por prefixo sem escolher uma infração automaticamente', () => {
+    const sugestoes = sugerirBusca('516', 'ctb');
+    expect(sugestoes.length).toBeGreaterThan(0);
+    expect(sugestoes.every((item) => item.tipo === 'Infração MBFT' && item.valor.startsWith('516-'))).toBe(true);
+  });
+
   it('sugere POP em linha identificada por número', () => {
     expect(sugerirBusca('baculejo', 'pop')[0]).toEqual(expect.objectContaining({
       valor: 'POP 002',

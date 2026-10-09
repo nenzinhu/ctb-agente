@@ -53,10 +53,11 @@ export interface DocumentoBusca<T> {
   item: T;
   titulo: string;
   corpo: string;
+  campos?: Array<{ texto: string; peso: number }>;
 }
 
 export interface IndiceBusca<T> {
-  documentos: Array<{ item: T; titulo: Set<string>; corpo: Set<string> }>;
+  documentos: Array<{ item: T; titulo: Set<string>; corpo: Set<string>; campos: Array<{ palavras: Set<string>; peso: number }> }>;
   frequencias: Map<string, number>;
 }
 
@@ -64,11 +65,12 @@ export interface IndiceBusca<T> {
 export function criarIndiceBusca<T>(documentos: DocumentoBusca<T>[]): IndiceBusca<T> {
   const frequencias = new Map<string, number>();
   return {
-    documentos: documentos.map(({ item, titulo, corpo }) => {
+    documentos: documentos.map(({ item, titulo, corpo, campos }) => {
       const t = new Set(palavrasBusca(titulo));
       const c = new Set(palavrasBusca(corpo));
+      const ponderados = (campos ?? []).map((campo) => ({ palavras: new Set(palavrasBusca(campo.texto)), peso: campo.peso }));
       for (const palavra of new Set([...t, ...c])) frequencias.set(palavra, (frequencias.get(palavra) ?? 0) + 1);
-      return { item, titulo: t, corpo: c };
+      return { item, titulo: t, corpo: c, campos: ponderados };
     }),
     frequencias,
   };
@@ -100,7 +102,7 @@ export function buscarNoIndice<T>(consulta: string, indice: IndiceBusca<T>, limi
     correspondencias.set(termo, candidatos);
   }
 
-  const resultados = indice.documentos.map(({ item, titulo, corpo }) => {
+  const resultados = indice.documentos.map(({ item, titulo, corpo, campos }) => {
     let pontos = 0;
     let cobertura = 0;
     for (const grupo of grupos) {
@@ -109,7 +111,8 @@ export function buscarNoIndice<T>(consulta: string, indice: IndiceBusca<T>, limi
         const valores = alternativa.map((termo) => {
           let valor = 0;
           for (const { palavra, qualidade, idf } of correspondencias.get(termo) ?? []) {
-            const campo = titulo.has(palavra) ? 3 : corpo.has(palavra) ? 1 : 0;
+            const pesoPonderado = Math.max(0, ...campos.filter((campo) => campo.palavras.has(palavra)).map((campo) => campo.peso));
+            const campo = Math.max(titulo.has(palavra) ? 3 : 0, pesoPonderado, corpo.has(palavra) ? 1 : 0);
             valor = Math.max(valor, campo * qualidade * idf);
           }
           return valor;

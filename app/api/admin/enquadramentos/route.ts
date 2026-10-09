@@ -9,7 +9,7 @@ import { invalidateResponseCache } from '@/lib/response/cache';
 const SEM_BANCO = {
   error: 'database_not_configured',
   message:
-    'Banco de dados não configurado: defina NEXT_PUBLIC_SUPABASE_URL e NEXT_PUBLIC_SUPABASE_ANON_KEY.',
+    'Banco de dados não configurado: defina NEXT_PUBLIC_SUPABASE_URL e NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY (ou NEXT_PUBLIC_SUPABASE_ANON_KEY).',
 };
 
 const EnquadramentoSchema = z.object({

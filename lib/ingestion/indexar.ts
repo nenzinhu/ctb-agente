@@ -63,7 +63,7 @@ export async function indexarDocumento(entrada: IndexarEntrada): Promise<Indexar
   const { colecao, fileName } = entrada;
 
   // Laws are cut by article; POPs and manuals by their section headings.
-  const modo = colecao === 'pop' || entrada.documentType === 'manual' ? 'secoes' : 'legal';
+  const modo = colecao !== 'ctb' || entrada.documentType === 'manual' ? 'secoes' : 'legal';
   const chunks = await chunkTextAsync(entrada.texto, undefined, modo);
   if (chunks.length === 0) return { status: 'vazio' };
 
@@ -98,12 +98,12 @@ export async function indexarDocumento(entrada: IndexarEntrada): Promise<Indexar
       ),
     });
   } catch (error) {
-    if (!(error instanceof MigrationPendingError) || colecao === 'pop') throw error;
+    if (!(error instanceof MigrationPendingError) || colecao !== 'ctb') throw error;
     console.warn('Migration 008 not applied: indexing the CTB document without the registry.');
   }
 
   const resultado =
-    colecao === 'pop'
+    colecao !== 'ctb'
       ? await processTrechos({ chunks, documentoId: documento!.id, titulo })
       : await processChunks({
           chunks,

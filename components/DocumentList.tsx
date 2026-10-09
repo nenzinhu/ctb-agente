@@ -168,7 +168,7 @@ export default function DocumentList({ colecao, refreshTrigger, onChange }: Docu
           <Icone nome="alerta" className="mt-0.5 shrink-0 text-ds-warn" />
           <p>
             <strong>Banco de dados não configurado.</strong> Defina <code>NEXT_PUBLIC_SUPABASE_URL</code>,{' '}
-            <code>NEXT_PUBLIC_SUPABASE_ANON_KEY</code> e <code>SUPABASE_SERVICE_ROLE_KEY</code> e aplique as migrations em{' '}
+            <code>NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY</code> e <code>SUPABASE_SECRET_KEY</code> (ou as chaves legadas equivalentes) e aplique as migrations em{' '}
             <code>scripts/</code>.
           </p>
         </div>

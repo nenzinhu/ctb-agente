@@ -144,7 +144,7 @@ export default function ConsultaResult({ card }: ConsultaResultProps) {
   // The sheet is always shown, even with nothing found: empty fields read "—".
   if (!card.sucesso) {
     return (
-      <div className="mt-6 space-y-5">
+      <div className="mobile-results-enter mt-6 space-y-5">
       <div className="card card-pad">
         <div className="flex items-start gap-3">
           <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-ds-warn/10 text-ds-warn">
@@ -179,8 +179,8 @@ export default function ConsultaResult({ card }: ConsultaResultProps) {
   ];
 
   return (
-    <div className="mt-6 space-y-5">
-      <div className="flex flex-wrap items-center justify-between gap-3 print:hidden">
+    <div className="mobile-results-enter mt-6 space-y-5">
+      <div className="mobile-result-toolbar flex flex-wrap items-center justify-between gap-3 print:hidden">
         <div role="tablist" aria-label="Forma de apresentação" className="tabs">
           {abas.map((aba) => (
             <button

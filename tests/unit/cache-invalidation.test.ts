@@ -23,6 +23,9 @@ jest.mock('../../lib/db/client', () => {
     get databaseConfigured() {
       return dbConfigurado;
     },
+    get databaseAdminConfigured() {
+      return dbConfigurado;
+    },
     supabase: {},
     supabaseAdmin: {
       rpc: (fn: string) => {

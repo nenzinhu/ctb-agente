@@ -8,7 +8,7 @@ interface ItemAcervoStatus {
   titulo: string;
   descricao: string;
   paginas: number;
-  fonte: string;
+  fonte?: string;
   indexado: boolean;
   documento?: { trechos: number; trechos_sem_vetor: number } | null;
 }
@@ -80,9 +80,11 @@ export default function AcervoCard({ onIndexado }: AcervoCardProps) {
             <p className="mt-0.5 text-sm text-ds-subtle">{item.descricao}</p>
             <p className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-ds-subtle">
               <span>{item.paginas} páginas</span>
-              <a href={item.fonte} target="_blank" rel="noopener noreferrer" className="font-medium text-ds-primary underline">
-                Fonte oficial
-              </a>
+              {item.fonte ? (
+                <a href={item.fonte} target="_blank" rel="noopener noreferrer" className="font-medium text-ds-primary underline">
+                  Fonte oficial
+                </a>
+              ) : null}
               {item.indexado && item.documento && <span>{item.documento.trechos} trechos na base</span>}
             </p>
           </div>

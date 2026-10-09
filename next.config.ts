@@ -1,10 +1,12 @@
 import type { NextConfig } from 'next';
-// @ts-ignore - next-pwa doesn't have type definitions
-import withPWA from 'next-pwa';
+import withSerwistInit from '@serwist/next';
 
 const nextConfig: NextConfig = {
   reactStrictMode: true,
   poweredByHeader: false,
+  // Development uses Turbopack; production uses webpack because Serwist's
+  // InjectManifest integration runs as a webpack plugin.
+  turbopack: {},
   images: {
     unoptimized: true,
   },
@@ -22,15 +24,21 @@ const nextConfig: NextConfig = {
     '/api/consulta': ['./data/acervo/mbft-fichas.json'],
     // lib/pop/pops.ts reads the POP manual built from the compiled PDF.
     '/api/pop/consulta': ['./data/acervo/pop-pmsc.json'],
+    '/api/fatos-pmsc': ['./data/acervo/fatos-pmsc-mobile.json'],
     '/api/explicar': ['./data/acervo/mbft-fichas.json', './data/acervo/pop-pmsc.json'],
     '/api/apostila': ['./data/acervo/mbft-fichas.json', './data/acervo/pop-pmsc.json'],
     '/api/professor': ['./data/acervo/mbft-fichas.json'],
   },
 };
 
-export default withPWA({
-  dest: 'public',
+const withSerwist = withSerwistInit({
+  swSrc: 'app/sw.ts',
+  swDest: 'public/sw.js',
+  disable: process.env.NODE_ENV !== 'production',
   register: true,
-  skipWaiting: true,
-  disable: process.env.NODE_ENV === 'development',
-})(nextConfig);
+  cacheOnNavigation: false,
+  additionalPrecacheEntries: [{ url: '/offline', revision: '1' }],
+  globPublicPatterns: ['icons/**/*', 'manifest.json', 'favicon.ico', 'brasao-cpmrv.*'],
+});
+
+export default withSerwist(nextConfig);

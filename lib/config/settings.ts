@@ -1,7 +1,7 @@
 // Runtime configuration backed by the `configuracoes` table.
 // Every read falls back to safe defaults when the database is unreachable,
 // so the app keeps working before the migrations are applied.
-import { databaseConfigured, supabase, supabaseAdmin } from '@/lib/db/client';
+import { databaseAdminConfigured, supabaseAdmin } from '@/lib/db/client';
 
 export interface AppSettings {
   consultas_por_hora: number;
@@ -52,13 +52,13 @@ export async function getSettings(): Promise<AppSettings> {
   }
 
   let settings = DEFAULT_SETTINGS;
-  if (!databaseConfigured) {
+  if (!databaseAdminConfigured) {
     cached = { settings, expiresAt: Date.now() + SETTINGS_CACHE_MS };
     return settings;
   }
 
   try {
-    const { data, error } = await supabase
+    const { data, error } = await supabaseAdmin
       .from('configuracoes')
       .select('valor')
       .eq('chave', SETTINGS_KEY)
@@ -145,9 +145,9 @@ export function sanitizeInt(value: number, min: number, max: number): number {
  * @returns Blocked IP addresses
  */
 export async function listBlockedIps(): Promise<string[]> {
-  if (!databaseConfigured) return [];
+  if (!databaseAdminConfigured) return [];
   try {
-    const { data, error } = await supabase
+    const { data, error } = await supabaseAdmin
       .from('ip_bloqueados')
       .select('ip')
       .order('criado_em', { ascending: false });
@@ -165,9 +165,9 @@ export async function listBlockedIps(): Promise<string[]> {
  * @returns True when the IP must be refused
  */
 export async function isIpBlocked(ip: string): Promise<boolean> {
-  if (!ip || !databaseConfigured) return false;
+  if (!ip || !databaseAdminConfigured) return false;
   try {
-    const { data, error } = await supabase
+    const { data, error } = await supabaseAdmin
       .from('ip_bloqueados')
       .select('ip')
       .eq('ip', ip)

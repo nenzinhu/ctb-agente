@@ -69,6 +69,28 @@ function PopsEncontrados({ pops }: { pops: Pop[] }) {
   );
 }
 
+export function PopsSugeridos({
+  sugestoes,
+  onSelect,
+}: {
+  sugestoes: Array<{ numero: string; titulo: string }>;
+  onSelect: (valor: string) => void;
+}) {
+  if (sugestoes.length === 0) return null;
+  return (
+    <section className="rounded-control border border-ds-line bg-ds-surface p-4" aria-label="Sugestões próximas de POPs">
+      <p className="font-semibold text-ds-text">Sugestões próximas — confira antes de selecionar</p>
+      <div className="mt-3 flex flex-wrap gap-2">
+        {sugestoes.map((pop) => (
+          <button key={pop.numero} type="button" className="chip" onClick={() => onSelect(`POP ${pop.numero}`)}>
+            POP {pop.numero} — {pop.titulo}
+          </button>
+        ))}
+      </div>
+    </section>
+  );
+}
+
 /** Seconds since `ativo` turned on, so a long wait shows it is still working. */
 function useSegundos(ativo: boolean): number {
   const [segundos, setSegundos] = useState(0);
@@ -269,6 +291,14 @@ export default function PopConsulta() {
               </div>
             </div>
           )}
+
+          <PopsSugeridos
+            sugestoes={resultado.sugestoes ?? []}
+            onSelect={(valor) => {
+              setPergunta(valor);
+              void perguntar(valor);
+            }}
+          />
 
           {resultado.aviso && (
             <div className="alert-info">

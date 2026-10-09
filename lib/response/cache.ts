@@ -2,7 +2,7 @@
 // Consultations are deterministic for a given corpus, so caching them keeps
 // the LLM quota for genuinely new questions.
 import crypto from 'crypto';
-import { databaseConfigured, supabase, supabaseAdmin } from '@/lib/db/client';
+import { databaseAdminConfigured, supabaseAdmin } from '@/lib/db/client';
 import type { CartaoEstruturado } from './response-types';
 
 const DEFAULT_TTL_DIAS = 30;
@@ -30,9 +30,9 @@ export function hashPergunta(consulta: string): string {
  * @returns The stored value, or null when missing/expired
  */
 export async function getCachedValue<T>(chave: string): Promise<T | null> {
-  if (!databaseConfigured) return null;
+  if (!databaseAdminConfigured) return null;
   try {
-    const { data, error } = await supabase
+    const { data, error } = await supabaseAdmin
       .from('cache_respostas')
       .select('resposta_completa, ttl_dias, data_ultimo_acesso')
       .eq('hash_pergunta', hashPergunta(chave))
@@ -56,7 +56,7 @@ export async function setCachedValue(
   valor: unknown,
   meta: { pergunta: string; modelo: string; tempoMs: number }
 ): Promise<void> {
-  if (!databaseConfigured) return;
+  if (!databaseAdminConfigured) return;
   try {
     const { error } = await supabaseAdmin.from('cache_respostas').upsert(
       {
@@ -83,10 +83,10 @@ export async function setCachedValue(
  * @returns Cached card or null when missing/expired
  */
 export async function getCachedCard(consulta: string): Promise<CartaoEstruturado | null> {
-  if (!databaseConfigured) return null;
+  if (!databaseAdminConfigured) return null;
   try {
     const hash = hashPergunta(chaveCartao(consulta));
-    const { data, error } = await supabase
+    const { data, error } = await supabaseAdmin
       .from('cache_respostas')
       .select('resposta_completa, ttl_dias, data_ultimo_acesso, citacoes_validadas')
       .eq('hash_pergunta', hash)
@@ -126,7 +126,7 @@ export async function setCachedCard(
   card: CartaoEstruturado,
   modelo = 'database'
 ): Promise<void> {
-  if (!card.sucesso || !databaseConfigured) return;
+  if (!card.sucesso || !databaseAdminConfigured) return;
 
   try {
     const { error } = await supabaseAdmin.from('cache_respostas').upsert(
@@ -163,12 +163,12 @@ export interface CacheStats {
  * @returns Cache counters
  */
 export async function getCacheStats(): Promise<CacheStats> {
-  if (!databaseConfigured) {
+  if (!databaseAdminConfigured) {
     return { total: 0, validas: 0, expiradas: 0, ultimoAcesso: null };
   }
 
   try {
-    const { data, error } = await supabase
+    const { data, error } = await supabaseAdmin
       .from('cache_respostas')
       .select('ttl_dias, data_ultimo_acesso')
       .limit(5000);
@@ -203,7 +203,7 @@ export async function getCacheStats(): Promise<CacheStats> {
  * @returns Number of removed entries (0 when the RPC errors)
  */
 export async function clearExpiredCache(): Promise<number> {
-  if (!databaseConfigured) return 0;
+  if (!databaseAdminConfigured) return 0;
 
   try {
     const { data, error } = await supabaseAdmin.rpc('purge_expired_cache');
@@ -242,7 +242,7 @@ export async function clearExpiredCache(): Promise<number> {
  * @returns Number of removed entries, -1 on failure
  */
 export async function invalidateResponseCache(): Promise<number> {
-  if (!databaseConfigured) return -1;
+  if (!databaseAdminConfigured) return -1;
 
   try {
     const { data, error } = await supabaseAdmin.rpc('bump_corpus_version');

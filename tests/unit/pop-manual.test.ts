@@ -1,6 +1,7 @@
 import { lerPops } from '@/lib/pop/parser';
-import { buscarPops, todosOsPops } from '@/lib/pop/pops';
+import { buscarPops, sugerirPops, todosOsPops } from '@/lib/pop/pops';
 import type { Pagina } from '@/lib/mbft/parser';
+import type { Pop } from '@/lib/pop/parser';
 
 const l = (...partes: [number, string][]) => partes.map(([x, texto]) => ({ x, texto }));
 const cabecalho = [
@@ -81,5 +82,31 @@ describe('buscarPops (manual incluído no app)', () => {
     expect(numeros('Quando é permitido o uso de algemas?')[0]).toBe('003');
     expect(numeros('barreira policial')[0]).toBe('105.1.1');
     expect(numeros('violência doméstica')[0]).toBe('201.4.6');
+  });
+
+  it('prioriza título e atividade crítica sobre menção apenas na fundamentação', () => {
+    const base = (numero: string, titulo: string): Pop => ({
+      numero, titulo, estabelecido: '', atualizado: '', execucao: '', pagina: 1,
+      material: [], fundamentacao: [], sequencia: [], atividadesCriticas: [], errosEvitar: [], anexos: [],
+    });
+    const apenasFundamentacao = base('900', 'ROTINA ADMINISTRATIVA');
+    apenasFundamentacao.fundamentacao = [{ norma: 'Manual de isolamento de perímetro', especificacao: '' }];
+    const operacional = base('901', 'PRESERVAÇÃO DO LOCAL');
+    operacional.atividadesCriticas = [{ texto: 'Realizar isolamento do perímetro.', nivel: 0 }];
+
+    expect(buscarPops('isolamento do perímetro', 2, [apenasFundamentacao, operacional])[0]?.numero)
+      .toBe('901');
+  });
+
+  it('oferece sugestão próxima sem tratá-la como resultado seguro', () => {
+    const base = (numero: string, titulo: string): Pop => ({
+      numero, titulo, estabelecido: '', atualizado: '', execucao: '', pagina: 1,
+      material: [], fundamentacao: [], sequencia: [], atividadesCriticas: [], errosEvitar: [], anexos: [],
+    });
+    const local = base('901', 'PRESERVAÇÃO DO LOCAL');
+    local.atividadesCriticas = [{ texto: 'Realizar isolamento do perímetro.', nivel: 0 }];
+
+    expect(buscarPops('isolamento helicóptero neve', 3, [local])).toEqual([]);
+    expect(sugerirPops('isolamento helicóptero neve', 3, [local]).map((p) => p.numero)).toEqual(['901']);
   });
 });
