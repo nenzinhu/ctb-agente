@@ -23,9 +23,15 @@ export default function Home() {
   return (
     <main className="page max-w-6xl space-y-7 sm:space-y-9">
       <div className="consultation-intro">
-        <p className="eyebrow">Apoio à fiscalização</p>
+        <p className="eyebrow">Ferramenta operacional para agentes de campo</p>
         <h1 className="consultation-title">CTB Agente</h1>
-        <p className="consultation-lead">Da situação ao enquadramento, com a fonte para conferir.</p>
+        <p className="consultation-lead">
+          Aplicativo de apoio ao agente em campo para consultar rapidamente o CTB, as fichas do MBFT e os POPs,
+          esclarecer dúvidas e conferir a fonte oficial antes da atuação.
+        </p>
+        <p className="mt-3 text-sm leading-relaxed text-ds-subtle">
+          Ferramenta de apoio. A decisão e o procedimento devem observar a norma e o documento vigente.
+        </p>
       </div>
 
       <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_320px]">
@@ -80,9 +86,6 @@ export default function Home() {
         </ul>
       </section>
 
-      <p className="border-t border-ds-line pt-5 text-center text-xs leading-relaxed text-ds-subtle">
-        Apoio à consulta de trânsito. Confira a fonte e a redação vigente antes de lavrar o AIT.
-      </p>
     </main>
   );
 }
