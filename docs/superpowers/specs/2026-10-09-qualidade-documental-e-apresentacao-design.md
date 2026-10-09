@@ -123,9 +123,9 @@ As ações serão contextuais:
 - **Gerar vetores pendentes**: reutiliza o fluxo existente;
 - **Revisar documento**: leva ao documento e seus metadados;
 - **Reenviar documento**: usado quando o arquivo original precisa ser reprocessado;
-- **Reindexar base local**: disponível apenas para os corpus empacotados, cuja fonte está no repositório.
+- **Validar base local**: recarrega o corpus empacotado e executa suas verificações sem alterar os arquivos publicados.
 
-Não haverá um botão enganoso de reindexação para arquivos enviados que já foram removidos do armazenamento temporário.
+Não haverá botão de reindexação no aplicativo: os arquivos enviados já foram removidos do armazenamento temporário, e os corpus locais só podem ser reconstruídos pelos scripts de importação durante o desenvolvimento. O painel indicará quando é necessário reenviar um documento ou reconstruir e publicar uma base local.
 
 ## 5. Critério “Base pronta para consulta”
 
