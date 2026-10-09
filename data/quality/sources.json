@@ -1,0 +1,29 @@
+[
+  {
+    "colecao": "ctb",
+    "arquivo": "data/acervo/ctb-lei-9503-compilado.txt",
+    "fonteOficial": "https://www.planalto.gov.br/ccivil_03/leis/l9503compilado.htm",
+    "versao": "Lei nº 9.503/1997 — texto compilado",
+    "vigenteDesde": null,
+    "conferidoEm": null,
+    "situacao": "revisar"
+  },
+  {
+    "colecao": "mbft",
+    "arquivo": "data/acervo/mbft-fichas.json",
+    "fonteOficial": "não informado",
+    "versao": "não informado",
+    "vigenteDesde": null,
+    "conferidoEm": null,
+    "situacao": "revisar"
+  },
+  {
+    "colecao": "pop",
+    "arquivo": "data/acervo/pop-pmsc.json",
+    "fonteOficial": "não informado",
+    "versao": "não informado",
+    "vigenteDesde": null,
+    "conferidoEm": null,
+    "situacao": "revisar"
+  }
+]

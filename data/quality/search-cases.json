@@ -1,0 +1,18 @@
+[
+  { "id": "mbft-codigo-51691", "colecao": "mbft", "consulta": "516-91", "categoria": "codigo", "esperados": ["516-91"], "comparacao": "exata", "maxPosicao": 1 },
+  { "id": "mbft-frase-cinto", "colecao": "mbft", "consulta": "condutor sem cinto", "categoria": "frase", "esperados": ["518-51"], "comparacao": "exata", "maxPosicao": 3 },
+  { "id": "mbft-frase-capacete", "colecao": "mbft", "consulta": "moto sem capacete", "categoria": "frase", "esperados": ["703-01"], "comparacao": "exata", "maxPosicao": 3 },
+  { "id": "mbft-frase-celular", "colecao": "mbft", "consulta": "segurando celular", "categoria": "frase", "esperados": ["763-31"], "comparacao": "exata", "maxPosicao": 3 },
+  { "id": "mbft-abreviacao-cnh", "colecao": "mbft", "consulta": "CNH cassada", "categoria": "abreviacao", "esperados": ["502-91"], "comparacao": "exata", "maxPosicao": 3 },
+  { "id": "mbft-fragmento-capac", "colecao": "mbft", "consulta": "capac", "categoria": "fragmento", "esperados": ["703-01"], "comparacao": "prefixo", "maxPosicao": 3 },
+  { "id": "mbft-giria-bafometro", "colecao": "mbft", "consulta": "bafômetro recusou", "categoria": "giria", "esperados": ["757-90"], "comparacao": "exata", "maxPosicao": 3 },
+  { "id": "pop-codigo-002", "colecao": "pop", "consulta": "POP 002", "categoria": "codigo", "esperados": ["002"], "comparacao": "exata", "maxPosicao": 1 },
+  { "id": "pop-frase-revista", "colecao": "pop", "consulta": "revista pessoal", "categoria": "frase", "esperados": ["002"], "comparacao": "exata", "maxPosicao": 3 },
+  { "id": "pop-frase-algema", "colecao": "pop", "consulta": "uso de algema", "categoria": "frase", "esperados": ["003"], "comparacao": "exata", "maxPosicao": 3 },
+  { "id": "pop-frase-perseguicao", "colecao": "pop", "consulta": "perseguição de veículo", "categoria": "frase", "esperados": ["006"], "comparacao": "exata", "maxPosicao": 3 },
+  { "id": "pop-erro-alguema", "colecao": "pop", "consulta": "alguema", "categoria": "erro", "esperados": ["003"], "comparacao": "exata", "maxPosicao": 3 },
+  { "id": "ctb-artigo-165", "colecao": "ctb", "consulta": "art. 165", "categoria": "artigo", "esperados": ["art. 165"], "comparacao": "exata", "maxPosicao": 1 },
+  { "id": "ctb-sinonimo-recusa", "colecao": "ctb", "consulta": "recusa bafômetro", "categoria": "sinonimo", "esperados": ["art. 165-A"], "comparacao": "exata", "maxPosicao": 3 },
+  { "id": "ctb-frase-calcada", "colecao": "ctb", "consulta": "estacionado na calçada", "categoria": "frase", "esperados": ["art. 181"], "comparacao": "prefixo", "maxPosicao": 3 },
+  { "id": "ctb-frase-cinto", "colecao": "ctb", "consulta": "dirigir sem cinto", "categoria": "frase", "esperados": ["art. 167"], "comparacao": "exata", "maxPosicao": 3 }
+]
