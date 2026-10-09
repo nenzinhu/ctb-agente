@@ -4,15 +4,23 @@ import { databaseConfigured, supabaseAdmin } from '@/lib/db/client';
 import {
   COLECOES,
   MigrationPendingError,
+  QualityMigrationPendingError,
   deleteDocument,
   isMissingSchemaError,
   listDocumentsWithQualityStatus,
   type Colecao,
   type DocumentoRegistro,
   type GrupoLegado,
+  updateDocumentMetadata,
 } from '@/lib/ingestion/documents';
 import { countPendingEmbeddings } from '@/lib/ingestion/backfill';
 import { invalidateResponseCache } from '@/lib/response/cache';
+import { DocumentoMetadataSchema } from '@/lib/quality/metadata';
+import { z } from 'zod';
+
+const AtualizacaoDocumentoSchema = DocumentoMetadataSchema.and(z.object({
+  id: z.string().uuid('Identificador de documento inválido.'),
+}));
 
 function colecaoDe(request: NextRequest): Colecao | undefined {
   const valor = request.nextUrl.searchParams.get('colecao');
@@ -105,6 +113,43 @@ export async function GET(request: NextRequest) {
   } catch (error) {
     console.error('Error fetching documents:', error);
     return NextResponse.json({ error: 'Não foi possível carregar os documentos.' }, { status: 500 });
+  }
+}
+
+/** Updates official-source metadata for an existing document. */
+export async function PATCH(request: NextRequest) {
+  if (!(await validateSession())) {
+    return NextResponse.json({ error: 'Não autorizado.' }, { status: 401 });
+  }
+  if (!databaseConfigured) {
+    return NextResponse.json({ error: 'database_not_configured', message: 'Banco não configurado.' }, { status: 503 });
+  }
+
+  let body: unknown;
+  try {
+    body = await request.json();
+  } catch {
+    return NextResponse.json({ error: 'invalid_json', message: 'Corpo da requisição inválido.' }, { status: 400 });
+  }
+  const parsed = AtualizacaoDocumentoSchema.safeParse(body);
+  if (!parsed.success) {
+    return NextResponse.json({
+      error: 'validation_error',
+      issues: parsed.error.issues.map((issue) => ({ campo: issue.path.join('.'), mensagem: issue.message })),
+    }, { status: 400 });
+  }
+
+  const { id, ...metadata } = parsed.data;
+  try {
+    const documento = await updateDocumentMetadata(id, metadata);
+    await invalidateResponseCache();
+    return NextResponse.json({ documento }, { status: 200 });
+  } catch (error) {
+    if (error instanceof QualityMigrationPendingError) {
+      return NextResponse.json({ error: 'quality_migration_pending', message: error.message }, { status: 503 });
+    }
+    console.error('Error updating document metadata:', error);
+    return NextResponse.json({ error: 'Não foi possível atualizar o documento.' }, { status: 500 });
   }
 }
 

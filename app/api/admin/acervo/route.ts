@@ -5,7 +5,12 @@ import { z } from 'zod';
 import { validateSession } from '@/lib/auth/session';
 import { databaseConfigured } from '@/lib/db/client';
 import { ACERVO, lerAcervo, nomeArquivoAcervo } from '@/lib/ingestion/acervo';
-import { MigrationPendingError, findDocumentByHash, hashConteudo } from '@/lib/ingestion/documents';
+import {
+  MigrationPendingError,
+  QualityMigrationPendingError,
+  findDocumentByHash,
+  hashConteudo,
+} from '@/lib/ingestion/documents';
 import { indexarDocumento } from '@/lib/ingestion/indexar';
 import { stripPageMarkers } from '@/lib/ingestion/pdf-text';
 
@@ -101,6 +106,9 @@ export async function POST(request: NextRequest) {
       },
     });
   } catch (error) {
+    if (error instanceof QualityMigrationPendingError) {
+      return NextResponse.json({ error: 'quality_migration_pending', message: error.message }, { status: 503 });
+    }
     if (error instanceof MigrationPendingError) {
       return NextResponse.json({ error: 'migration_pending', message: error.message }, { status: 503 });
     }

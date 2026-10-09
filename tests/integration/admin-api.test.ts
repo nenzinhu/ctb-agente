@@ -26,6 +26,7 @@ jest.mock('next/headers', () => ({
 type RespostaBanco = { data: unknown; error: unknown; count?: number };
 const respostas: Record<string, RespostaBanco | RespostaBanco[]> = {};
 let dbConfigurado = true;
+let ultimaAtualizacao: unknown = null;
 
 // Relative path on purpose: jest.mock resolves module ids with the default
 // resolver, which does not understand the "@/" alias used by the app code.
@@ -54,7 +55,10 @@ jest.mock('../../lib/db/client', () => {
     chain.single = () => resultado();
     chain.insert = () => resultado();
     chain.upsert = () => chain;
-    chain.update = () => chain;
+    chain.update = (valor: unknown) => {
+      ultimaAtualizacao = valor;
+      return chain;
+    };
     chain.delete = () => chain;
     chain.then = (resolve: (value: unknown) => unknown) => resultado().then(resolve);
 
@@ -75,7 +79,7 @@ import { NextRequest } from 'next/server';
 import { GET as loginStatus, POST as login } from '@/app/api/admin/login/route';
 import { POST as logout } from '@/app/api/admin/logout/route';
 import { GET as session } from '@/app/api/admin/session/route';
-import { GET as documentos } from '@/app/api/admin/documents/route';
+import { GET as documentos, PATCH as atualizarDocumento } from '@/app/api/admin/documents/route';
 import { GET as estatisticas } from '@/app/api/admin/stats/route';
 
 const COOKIE = 'admin_session';
@@ -86,9 +90,9 @@ const COOKIE = 'admin_session';
  * @param body - JSON payload
  * @returns NextRequest instance
  */
-function requisicao(url: string, body?: unknown): NextRequest {
+function requisicao(url: string, body?: unknown, method = 'POST'): NextRequest {
   return new NextRequest(`http://localhost${url}`, {
-    method: 'POST',
+    method,
     headers: { 'Content-Type': 'application/json' },
     body: body === undefined ? undefined : JSON.stringify(body),
   });
@@ -99,6 +103,7 @@ describe('Admin API', () => {
     cookieStore.clear();
     dbConfigurado = true;
     for (const chave of Object.keys(respostas)) delete respostas[chave];
+    ultimaAtualizacao = null;
   });
 
   describe('POST /api/admin/login', () => {
@@ -286,6 +291,60 @@ describe('Admin API', () => {
       const corpo = await resposta.json();
       expect(corpo.documentos).toEqual([]);
       expect(corpo.bancoConfigurado).toBe(false);
+    });
+  });
+
+  describe('PATCH /api/admin/documents', () => {
+    const metadata = {
+      id: '123e4567-e89b-12d3-a456-426614174000',
+      fonteOficial: 'https://www.planalto.gov.br/',
+      versao: 'CTB compilado 2026',
+      vigenteDesde: '2024-01-01',
+      conferidoEm: '2026-09-01',
+      situacao: 'vigente',
+    };
+
+    it('exige sessão administrativa', async () => {
+      const resposta = await atualizarDocumento(requisicao('/api/admin/documents', metadata, 'PATCH'));
+      expect(resposta.status).toBe(401);
+    });
+
+    it('rejeita corpo inválido com mensagens por campo', async () => {
+      await login(requisicao('/api/admin/login', { username: 'nenzinhu', password: 'x' }));
+      const resposta = await atualizarDocumento(requisicao(
+        '/api/admin/documents',
+        { ...metadata, conferidoEm: 'data inválida' },
+        'PATCH',
+      ));
+      expect(resposta.status).toBe(400);
+      expect(ultimaAtualizacao).toBeNull();
+    });
+
+    it('atualiza os metadados de um documento antigo', async () => {
+      await login(requisicao('/api/admin/login', { username: 'nenzinhu', password: 'x' }));
+      respostas.documentos = { data: { ...metadata, id: metadata.id }, error: null };
+
+      const resposta = await atualizarDocumento(requisicao('/api/admin/documents', metadata, 'PATCH'));
+      expect(resposta.status).toBe(200);
+      expect(ultimaAtualizacao).toMatchObject({
+        fonte_oficial: metadata.fonteOficial,
+        versao: metadata.versao,
+        vigente_desde: metadata.vigenteDesde,
+        conferido_em: metadata.conferidoEm,
+        situacao: 'vigente',
+      });
+    });
+
+    it('retorna 503 acionável sem a migration 011', async () => {
+      await login(requisicao('/api/admin/login', { username: 'nenzinhu', password: 'x' }));
+      respostas.documentos = {
+        data: null,
+        error: { code: 'PGRST204', message: "Could not find the 'fonte_oficial' column" },
+      };
+
+      const resposta = await atualizarDocumento(requisicao('/api/admin/documents', metadata, 'PATCH'));
+      expect(resposta.status).toBe(503);
+      expect((await resposta.json()).message).toMatch(/migrations-011-document-quality\.sql/);
     });
   });
 

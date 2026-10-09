@@ -93,6 +93,10 @@ const validBody = {
   fileName: 'ctb.txt',
   normaId: 'ctb',
   documentType: 'lei' as const,
+  fonteOficial: 'https://www.planalto.gov.br/ccivil_03/leis/l9503compilado.htm',
+  versao: 'Lei nº 9.503/1997 — compilada',
+  vigenteDesde: '2024-01-01',
+  conferidoEm: '2026-09-01',
 };
 
 describe('POST /api/ingestion/upload', () => {
@@ -113,6 +117,20 @@ describe('POST /api/ingestion/upload', () => {
   it('rejects a payload missing normaId', async () => {
     const resposta = await POST(requisicao({ ...validBody, normaId: undefined }));
     expect(resposta.status).toBe(400);
+    expect(download).not.toHaveBeenCalled();
+  });
+
+  it('exige os quatro metadados oficiais antes de baixar CTB ou POP', async () => {
+    const ctb = await POST(requisicao({ ...validBody, fonteOficial: undefined }));
+    const pop = await POST(requisicao({
+      storagePath: '1-pop.txt',
+      fileName: 'pop.txt',
+      colecao: 'pop',
+      titulo: 'POP 1.01',
+    }));
+
+    expect(ctb.status).toBe(400);
+    expect(pop.status).toBe(400);
     expect(download).not.toHaveBeenCalled();
   });
 
@@ -141,7 +159,16 @@ describe('POST /api/ingestion/upload', () => {
     expect(resposta.status).toBe(200);
 
     const corpo = await resposta.json();
-    expect(createDocument).toHaveBeenCalledWith(expect.objectContaining({ colecao: 'ctb', normaId: 'ctb', formato: 'txt' }));
+    expect(createDocument).toHaveBeenCalledWith(expect.objectContaining({
+      colecao: 'ctb',
+      normaId: 'ctb',
+      formato: 'txt',
+      fonteOficial: validBody.fonteOficial,
+      versao: validBody.versao,
+      vigenteDesde: validBody.vigenteDesde,
+      conferidoEm: validBody.conferidoEm,
+      situacao: 'vigente',
+    }));
     expect(processChunks).toHaveBeenCalledWith(expect.objectContaining({ documentoId: 'doc-1' }));
     expect(finalizeDocument).toHaveBeenCalled();
     expect(corpo.data).toMatchObject({ documentoId: 'doc-1', substituidos: 1, legado: false });
@@ -168,7 +195,7 @@ describe('POST /api/ingestion/upload', () => {
 
   it('indexes a POP into the document base, cut by sections', async () => {
     const resposta = await POST(
-      requisicao({ storagePath: '1-pop.txt', fileName: 'pop.txt', colecao: 'pop', titulo: 'POP 1.01' })
+      requisicao({ ...validBody, storagePath: '1-pop.txt', fileName: 'pop.txt', colecao: 'pop', titulo: 'POP 1.01' })
     );
     expect(resposta.status).toBe(200);
     expect(processTrechos).toHaveBeenCalledWith(expect.objectContaining({ documentoId: 'doc-1', titulo: 'POP 1.01' }));
@@ -179,9 +206,18 @@ describe('POST /api/ingestion/upload', () => {
     const { MigrationPendingError } = jest.requireActual('../../lib/ingestion/documents');
     findDocumentByHash.mockRejectedValueOnce(new MigrationPendingError());
 
-    const resposta = await POST(requisicao({ storagePath: '1-pop.txt', fileName: 'pop.txt', colecao: 'pop' }));
+    const resposta = await POST(requisicao({ ...validBody, storagePath: '1-pop.txt', fileName: 'pop.txt', colecao: 'pop' }));
     expect(resposta.status).toBe(503);
     expect((await resposta.json()).message).toMatch(/migrations-008/);
+  });
+
+  it('orienta aplicar a migration 011 quando os metadados não podem ser persistidos', async () => {
+    const { QualityMigrationPendingError } = jest.requireActual('../../lib/ingestion/documents');
+    createDocument.mockRejectedValueOnce(new QualityMigrationPendingError());
+
+    const resposta = await POST(requisicao(validBody));
+    expect(resposta.status).toBe(503);
+    expect((await resposta.json()).message).toMatch(/migrations-011-document-quality\.sql/);
   });
 
   it('removes the document row when no excerpt could be saved', async () => {

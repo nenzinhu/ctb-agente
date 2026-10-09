@@ -12,8 +12,9 @@ import { supabaseAdmin } from '@/lib/db/client';
 import { DOCUMENTS_BUCKET } from '@/lib/ingestion/storage';
 import { maybeGunzip } from '@/lib/ingestion/decompress';
 import { parseDocument } from '@/lib/ingestion/parser';
-import { MigrationPendingError } from '@/lib/ingestion/documents';
+import { MigrationPendingError, QualityMigrationPendingError } from '@/lib/ingestion/documents';
 import { indexarDocumento, type IndexarResultado } from '@/lib/ingestion/indexar';
+import { DocumentoMetadataSchema } from '@/lib/quality/metadata';
 
 // A full document is now parsed into hundreds of chunks, each needing an
 // embedding call before it's inserted. 60s is the highest value every
@@ -27,9 +28,10 @@ const Base = {
   storagePath: z.string().min(1),
   fileName: z.string().min(1),
   titulo: z.string().trim().max(200).optional(),
+  ...DocumentoMetadataSchema.shape,
 };
 
-const UploadRequestSchema = z.discriminatedUnion('colecao', [
+const UploadRequestBaseSchema = z.discriminatedUnion('colecao', [
   z.object({
     ...Base,
     colecao: z.literal('ctb'),
@@ -41,6 +43,7 @@ const UploadRequestSchema = z.discriminatedUnion('colecao', [
   }),
   z.object({ ...Base, colecao: z.literal('pop') }),
 ]);
+const UploadRequestSchema = UploadRequestBaseSchema.and(DocumentoMetadataSchema);
 
 /**
  * POST /api/ingestion/upload
@@ -135,6 +138,11 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       paginas: parsedDoc.pageCount,
       colecao: input.colecao,
       titulo: input.titulo,
+      fonteOficial: input.fonteOficial,
+      versao: input.versao,
+      vigenteDesde: input.vigenteDesde,
+      conferidoEm: input.conferidoEm,
+      situacao: input.situacao,
       ...(input.colecao === 'ctb'
         ? {
             normaId: input.normaId,
@@ -148,6 +156,9 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
 
     return respostaDaIndexacao(indexado, fileName, parsedDoc);
   } catch (error) {
+    if (error instanceof QualityMigrationPendingError) {
+      return NextResponse.json({ error: 'quality_migration_pending', message: error.message }, { status: 503 });
+    }
     if (error instanceof MigrationPendingError) {
       return NextResponse.json({ error: 'migration_pending', message: error.message }, { status: 503 });
     }

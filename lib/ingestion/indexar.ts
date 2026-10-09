@@ -18,6 +18,7 @@ import {
 } from './documents';
 import type { FormatoDocumento } from './formats';
 import { invalidateResponseCache } from '@/lib/response/cache';
+import type { SituacaoFonte } from '@/lib/quality/types';
 
 export type TipoNorma = 'lei' | 'resolucao' | 'portaria' | 'manual';
 
@@ -35,6 +36,11 @@ export interface IndexarEntrada {
   dataPublicacao?: string;
   dataVigenciaInicio?: string;
   dataVigenciaFim?: string | null;
+  fonteOficial?: string;
+  versao?: string;
+  vigenteDesde?: string;
+  conferidoEm?: string;
+  situacao?: SituacaoFonte;
 }
 
 export type IndexarResultado =
@@ -81,6 +87,15 @@ export async function indexarDocumento(entrada: IndexarEntrada): Promise<Indexar
       caracteres: textoPuro.length,
       normaId: colecao === 'ctb' ? entrada.normaId : undefined,
       tipo: colecao === 'ctb' ? entrada.documentType : undefined,
+      fonteOficial: entrada.fonteOficial,
+      versao: entrada.versao,
+      vigenteDesde: entrada.vigenteDesde,
+      conferidoEm: entrada.conferidoEm,
+      situacao: entrada.situacao ?? (
+        entrada.fonteOficial && entrada.versao && entrada.vigenteDesde && entrada.conferidoEm
+          ? 'vigente'
+          : 'revisar'
+      ),
     });
   } catch (error) {
     if (!(error instanceof MigrationPendingError) || colecao === 'pop') throw error;

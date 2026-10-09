@@ -5,6 +5,7 @@
 import crypto from 'crypto';
 import { databaseConfigured, supabaseAdmin } from '@/lib/db/client';
 import type { SituacaoFonte } from '@/lib/quality/types';
+import type { DocumentoMetadata } from '@/lib/quality/metadata';
 import type { FormatoDocumento } from './formats';
 
 export type Colecao = 'ctb' | 'pop';
@@ -56,6 +57,19 @@ export class MigrationPendingError extends Error {
     super('A base de documentos ainda não existe: aplique scripts/migrations-008-rag-indexacao.sql no Supabase.');
     this.name = 'MigrationPendingError';
   }
+}
+
+/** Thrown when document metadata from migration 011 cannot be persisted. */
+export class QualityMigrationPendingError extends Error {
+  constructor() {
+    super('A qualidade documental ainda não está configurada: aplique scripts/migrations-011-document-quality.sql no Supabase.');
+    this.name = 'QualityMigrationPendingError';
+  }
+}
+
+function isMissingQualityColumnError(error: unknown): boolean {
+  const mensagem = (error as { message?: string } | null)?.message ?? '';
+  return /(?:fonte_oficial|versao|vigente_desde|conferido_em|situacao).*(?:column|coluna)|(?:column|coluna).*(?:fonte_oficial|versao|vigente_desde|conferido_em|situacao)/i.test(mensagem);
 }
 
 /**
@@ -122,6 +136,7 @@ export async function findDocumentByHash(colecao: Colecao, hash: string): Promis
       .maybeSingle());
   }
   if (error) {
+    if (isMissingQualityColumnError(error)) throw new QualityMigrationPendingError();
     if (isMissingSchemaError(error)) throw new MigrationPendingError();
     throw new Error(error.message);
   }
@@ -171,6 +186,7 @@ export async function createDocument(novo: NovoDocumento): Promise<DocumentoRegi
     .select(CAMPOS)
     .single();
   if (error) {
+    if (isMissingQualityColumnError(error)) throw new QualityMigrationPendingError();
     if (isMissingSchemaError(error)) throw new MigrationPendingError();
     throw new Error(`Não foi possível registrar o documento: ${error.message}`);
   }
@@ -265,4 +281,30 @@ export async function listDocumentsWithQualityStatus(colecao?: Colecao): Promise
 
 export async function listDocuments(colecao?: Colecao): Promise<DocumentoRegistro[]> {
   return (await listDocumentsWithQualityStatus(colecao)).documentos;
+}
+
+export async function updateDocumentMetadata(
+  id: string,
+  metadata: DocumentoMetadata,
+): Promise<DocumentoRegistro> {
+  const { data, error } = await supabaseAdmin
+    .from('documentos')
+    .update({
+      fonte_oficial: metadata.fonteOficial,
+      versao: metadata.versao,
+      vigente_desde: metadata.vigenteDesde,
+      conferido_em: metadata.conferidoEm,
+      situacao: metadata.situacao,
+      atualizado_em: new Date().toISOString(),
+    })
+    .eq('id', id)
+    .select(CAMPOS)
+    .single();
+  if (error) {
+    if (isMissingQualityColumnError(error) || isMissingSchemaError(error)) {
+      throw new QualityMigrationPendingError();
+    }
+    throw new Error(`Não foi possível atualizar o documento: ${error.message}`);
+  }
+  return normalizarDocumento(data as Record<string, unknown>);
 }
