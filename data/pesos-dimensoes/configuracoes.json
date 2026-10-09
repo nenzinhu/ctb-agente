@@ -1,0 +1,218 @@
+[
+  {
+    "id": "rigido-2-eixos",
+    "nome": "Caminhão rígido — 2 eixos",
+    "codigo": "2C",
+    "apelidos": ["toco", "caminhão simples"],
+    "unidades": 1,
+    "quantidadeEixos": 2,
+    "comprimentoMinimoM": null,
+    "comprimentoMaximoM": 14,
+    "limiteTotalKg": 16000,
+    "requerAet": false,
+    "gruposEixo": [
+      { "id": "dianteiro", "nome": "Eixo dianteiro", "tipo": "isolado-2-pneus", "quantidadeEixos": 1, "limiteKg": 6000 },
+      { "id": "traseiro", "nome": "Eixo traseiro", "tipo": "isolado-4-pneus", "quantidadeEixos": 1, "limiteKg": 10000 }
+    ],
+    "fontes": [{ "documento": "Resolução CONTRAN nº 882/2021", "artigo": "Art. 6º, II e III", "pagina": 3, "url": "https://www.in.gov.br/en/web/dou/-/resolucao-contran-n-882-de-13-de-dezembro-de-2021-370017699" }]
+  },
+  {
+    "id": "truck-3-eixos",
+    "nome": "Caminhão truck — 3 eixos",
+    "codigo": "3C",
+    "apelidos": ["truck", "trucado"],
+    "unidades": 1,
+    "quantidadeEixos": 3,
+    "comprimentoMinimoM": null,
+    "comprimentoMaximoM": 14,
+    "limiteTotalKg": 23000,
+    "requerAet": false,
+    "gruposEixo": [
+      { "id": "dianteiro", "nome": "Eixo dianteiro", "tipo": "isolado-2-pneus", "quantidadeEixos": 1, "limiteKg": 6000 },
+      { "id": "tandem-traseiro", "nome": "Tandem traseiro", "tipo": "tandem-duplo", "quantidadeEixos": 2, "limiteKg": 17000 }
+    ],
+    "fontes": [{ "documento": "Resolução CONTRAN nº 882/2021", "artigo": "Art. 6º, II e V", "pagina": 3, "url": "https://www.in.gov.br/en/web/dou/-/resolucao-contran-n-882-de-13-de-dezembro-de-2021-370017699" }]
+  },
+  {
+    "id": "bitruck-4-eixos",
+    "nome": "Caminhão bitruck — 4 eixos",
+    "codigo": "4C",
+    "apelidos": ["bitruck", "bitrucado"],
+    "unidades": 1,
+    "quantidadeEixos": 4,
+    "comprimentoMinimoM": null,
+    "comprimentoMaximoM": 14,
+    "limiteTotalKg": 29000,
+    "requerAet": false,
+    "gruposEixo": [
+      { "id": "direcional-duplo", "nome": "Dois eixos direcionais", "tipo": "direcional-duplo", "quantidadeEixos": 2, "limiteKg": 12000 },
+      { "id": "tandem-traseiro", "nome": "Tandem traseiro", "tipo": "tandem-duplo", "quantidadeEixos": 2, "limiteKg": 17000 }
+    ],
+    "fontes": [{ "documento": "Resolução CONTRAN nº 882/2021", "artigo": "Art. 6º, I, a, IV e V", "pagina": 3, "url": "https://www.in.gov.br/en/web/dou/-/resolucao-contran-n-882-de-13-de-dezembro-de-2021-370017699" }]
+  },
+  {
+    "id": "cavalo-2s2",
+    "nome": "Cavalo 4x2 + semirreboque de 2 eixos",
+    "codigo": "2S2",
+    "apelidos": ["carreta dois eixos", "cavalo simples"],
+    "unidades": 2,
+    "quantidadeEixos": 4,
+    "comprimentoMinimoM": null,
+    "comprimentoMaximoM": 18.6,
+    "limiteTotalKg": 33000,
+    "requerAet": false,
+    "gruposEixo": [
+      { "id": "direcional", "nome": "Direcional do cavalo", "tipo": "isolado-2-pneus", "quantidadeEixos": 1, "limiteKg": 6000 },
+      { "id": "tracao", "nome": "Tração do cavalo", "tipo": "isolado-4-pneus", "quantidadeEixos": 1, "limiteKg": 10000 },
+      { "id": "semi-tandem", "nome": "Tandem do semirreboque", "tipo": "tandem-duplo", "quantidadeEixos": 2, "limiteKg": 17000 }
+    ],
+    "fontes": [{ "documento": "Resolução CONTRAN nº 882/2021", "artigo": "Art. 6º, I, c, II, III e V", "pagina": 3, "url": "https://www.in.gov.br/en/web/dou/-/resolucao-contran-n-882-de-13-de-dezembro-de-2021-370017699" }]
+  },
+  {
+    "id": "cavalo-2s3",
+    "nome": "Cavalo 4x2 + semirreboque de 3 eixos",
+    "codigo": "2S3",
+    "apelidos": ["carreta três eixos", "carreta LS simples"],
+    "unidades": 2,
+    "quantidadeEixos": 5,
+    "comprimentoMinimoM": 16,
+    "comprimentoMaximoM": 18.6,
+    "limiteTotalKg": 41500,
+    "requerAet": false,
+    "gruposEixo": [
+      { "id": "direcional", "nome": "Direcional do cavalo", "tipo": "isolado-2-pneus", "quantidadeEixos": 1, "limiteKg": 6000 },
+      { "id": "tracao", "nome": "Tração do cavalo", "tipo": "isolado-4-pneus", "quantidadeEixos": 1, "limiteKg": 10000 },
+      { "id": "semi-triplo", "nome": "Tandem triplo do semirreboque", "tipo": "tandem-triplo", "quantidadeEixos": 3, "limiteKg": 25500 }
+    ],
+    "fontes": [{ "documento": "Resolução CONTRAN nº 882/2021", "artigo": "Art. 6º, I, d, II, III e VII", "pagina": 3, "url": "https://www.in.gov.br/en/web/dou/-/resolucao-contran-n-882-de-13-de-dezembro-de-2021-370017699" }]
+  },
+  {
+    "id": "cavalo-3s2",
+    "nome": "Cavalo 6x2/6x4 + semirreboque de 2 eixos",
+    "codigo": "3S2",
+    "apelidos": ["carreta LS", "cavalo trucado dois eixos"],
+    "unidades": 2,
+    "quantidadeEixos": 5,
+    "comprimentoMinimoM": null,
+    "comprimentoMaximoM": 18.6,
+    "limiteTotalKg": 40000,
+    "requerAet": false,
+    "gruposEixo": [
+      { "id": "direcional", "nome": "Direcional do cavalo", "tipo": "isolado-2-pneus", "quantidadeEixos": 1, "limiteKg": 6000 },
+      { "id": "tracao-tandem", "nome": "Tandem de tração", "tipo": "tandem-duplo", "quantidadeEixos": 2, "limiteKg": 17000 },
+      { "id": "semi-tandem", "nome": "Tandem do semirreboque", "tipo": "tandem-duplo", "quantidadeEixos": 2, "limiteKg": 17000 }
+    ],
+    "fontes": [{ "documento": "Resolução CONTRAN nº 882/2021", "artigo": "Art. 6º, I, c, II e V", "pagina": 3, "url": "https://www.in.gov.br/en/web/dou/-/resolucao-contran-n-882-de-13-de-dezembro-de-2021-370017699" }]
+  },
+  {
+    "id": "cavalo-3s3",
+    "nome": "Cavalo 6x2/6x4 + semirreboque de 3 eixos",
+    "codigo": "3S3",
+    "apelidos": ["carreta LS três eixos", "cavalo trucado"],
+    "unidades": 2,
+    "quantidadeEixos": 6,
+    "comprimentoMinimoM": 16,
+    "comprimentoMaximoM": 18.6,
+    "limiteTotalKg": 48500,
+    "requerAet": false,
+    "gruposEixo": [
+      { "id": "direcional", "nome": "Direcional do cavalo", "tipo": "isolado-2-pneus", "quantidadeEixos": 1, "limiteKg": 6000 },
+      { "id": "tracao-tandem", "nome": "Tandem de tração", "tipo": "tandem-duplo", "quantidadeEixos": 2, "limiteKg": 17000 },
+      { "id": "semi-triplo", "nome": "Tandem triplo do semirreboque", "tipo": "tandem-triplo", "quantidadeEixos": 3, "limiteKg": 25500 }
+    ],
+    "fontes": [{ "documento": "Resolução CONTRAN nº 882/2021", "artigo": "Art. 6º, I, d, II, V e VII", "pagina": 3, "url": "https://www.in.gov.br/en/web/dou/-/resolucao-contran-n-882-de-13-de-dezembro-de-2021-370017699" }]
+  },
+  {
+    "id": "cavalo-3s4",
+    "nome": "Cavalo trucado + semirreboque de 4 eixos",
+    "codigo": "3S4",
+    "apelidos": ["carreta quatro eixos", "semi quatro eixos"],
+    "unidades": 2,
+    "quantidadeEixos": 7,
+    "comprimentoMinimoM": 17.5,
+    "comprimentoMaximoM": 18.6,
+    "limiteTotalKg": 58500,
+    "requerAet": false,
+    "observacao": "Exige configuração original/CAT e requisitos técnicos; fora deles o limite pode cair para 48,5 t ou 54,5 t.",
+    "gruposEixo": [
+      { "id": "direcional", "nome": "Direcional do cavalo", "tipo": "isolado-2-pneus", "quantidadeEixos": 1, "limiteKg": 6000 },
+      { "id": "tracao-tandem", "nome": "Tandem de tração", "tipo": "tandem-duplo", "quantidadeEixos": 2, "limiteKg": 17000 },
+      { "id": "semi-isolado", "nome": "Eixo distanciado do semirreboque", "tipo": "distanciado", "quantidadeEixos": 1, "limiteKg": 10000 },
+      { "id": "semi-triplo", "nome": "Tandem triplo do semirreboque", "tipo": "tandem-triplo", "quantidadeEixos": 3, "limiteKg": 25500 }
+    ],
+    "fontes": [{ "documento": "Resolução CONTRAN nº 882/2021", "artigo": "Art. 6º, I, f e §§ 1º e 2º", "pagina": 3, "url": "https://www.in.gov.br/en/web/dou/-/resolucao-contran-n-882-de-13-de-dezembro-de-2021-370017699" }]
+  },
+  {
+    "id": "caminhao-reboque",
+    "nome": "Caminhão truck + reboque de 3 eixos",
+    "codigo": "3C3",
+    "apelidos": ["romeu e julieta", "caminhão com reboque"],
+    "unidades": 2,
+    "quantidadeEixos": 6,
+    "comprimentoMinimoM": 17.5,
+    "comprimentoMaximoM": 19.8,
+    "limiteTotalKg": 48500,
+    "requerAet": false,
+    "gruposEixo": [
+      { "id": "direcional", "nome": "Direcional do caminhão", "tipo": "isolado-2-pneus", "quantidadeEixos": 1, "limiteKg": 6000 },
+      { "id": "truck-tandem", "nome": "Tandem do caminhão", "tipo": "tandem-duplo", "quantidadeEixos": 2, "limiteKg": 17000 },
+      { "id": "reboque-triplo", "nome": "Tandem triplo do reboque", "tipo": "tandem-triplo", "quantidadeEixos": 3, "limiteKg": 25500 }
+    ],
+    "fontes": [{ "documento": "Resolução CONTRAN nº 882/2021", "artigo": "Art. 6º, I, h, II, V e VII", "pagina": 3, "url": "https://www.in.gov.br/en/web/dou/-/resolucao-contran-n-882-de-13-de-dezembro-de-2021-370017699" }]
+  },
+  {
+    "id": "bitrem-7-eixos",
+    "nome": "Bitrem — 7 eixos",
+    "codigo": "3S2B2",
+    "apelidos": ["bitrem", "sete eixos"],
+    "unidades": 3,
+    "quantidadeEixos": 7,
+    "comprimentoMinimoM": 17.5,
+    "comprimentoMaximoM": 19.8,
+    "limiteTotalKg": 57000,
+    "requerAet": false,
+    "gruposEixo": [
+      { "id": "direcional", "nome": "Direcional do cavalo", "tipo": "isolado-2-pneus", "quantidadeEixos": 1, "limiteKg": 6000 },
+      { "id": "tracao", "nome": "Tandem de tração", "tipo": "tandem-duplo", "quantidadeEixos": 2, "limiteKg": 17000 },
+      { "id": "primeiro-semi", "nome": "Tandem do primeiro semirreboque", "tipo": "tandem-duplo", "quantidadeEixos": 2, "limiteKg": 17000 },
+      { "id": "segundo-semi", "nome": "Tandem do segundo semirreboque", "tipo": "tandem-duplo", "quantidadeEixos": 2, "limiteKg": 17000 }
+    ],
+    "fontes": [{ "documento": "Resolução CONTRAN nº 882/2021", "artigo": "Art. 6º, I, j", "pagina": 4, "url": "https://www.in.gov.br/en/web/dou/-/resolucao-contran-n-882-de-13-de-dezembro-de-2021-370017699" }]
+  },
+  {
+    "id": "rodotrem-9-eixos-aet",
+    "nome": "Rodotrem — 9 eixos com AET",
+    "codigo": "3S3D3",
+    "apelidos": ["rodotrem", "nove eixos"],
+    "unidades": 3,
+    "quantidadeEixos": 9,
+    "comprimentoMinimoM": 25,
+    "comprimentoMaximoM": 30,
+    "limiteTotalKg": 74000,
+    "requerAet": true,
+    "gruposEixo": [
+      { "id": "direcional", "nome": "Direcional do cavalo", "tipo": "isolado-2-pneus", "quantidadeEixos": 1, "limiteKg": 6000 },
+      { "id": "tracao", "nome": "Tandem de tração", "tipo": "tandem-duplo", "quantidadeEixos": 2, "limiteKg": 17000 },
+      { "id": "primeiro-semi", "nome": "Tandem triplo do primeiro semirreboque", "tipo": "tandem-triplo", "quantidadeEixos": 3, "limiteKg": 25500 },
+      { "id": "segundo-semi", "nome": "Tandem triplo do segundo semirreboque", "tipo": "tandem-triplo", "quantidadeEixos": 3, "limiteKg": 25500 }
+    ],
+    "fontes": [{ "documento": "Resolução CONTRAN nº 882/2021", "artigo": "Arts. 17 e 19", "pagina": 7, "url": "https://www.in.gov.br/en/web/dou/-/resolucao-contran-n-882-de-13-de-dezembro-de-2021-370017699" }]
+  },
+  {
+    "id": "especial-aet",
+    "nome": "Configuração especial conforme AET",
+    "codigo": "AET",
+    "apelidos": ["carga especial", "configuração especial"],
+    "unidades": 1,
+    "quantidadeEixos": 1,
+    "comprimentoMinimoM": null,
+    "comprimentoMaximoM": null,
+    "limiteTotalKg": null,
+    "requerAet": true,
+    "observacao": "Informe os limites autorizados e os grupos de eixos exatamente como constam na AET.",
+    "gruposEixo": [
+      { "id": "conforme-aet", "nome": "Eixos conforme AET", "tipo": "conforme-aet", "quantidadeEixos": 1, "limiteKg": null }
+    ],
+    "fontes": [{ "documento": "Resolução CONTRAN nº 882/2021", "artigo": "Arts. 11, 17 e 19", "pagina": 5, "url": "https://www.in.gov.br/en/web/dou/-/resolucao-contran-n-882-de-13-de-dezembro-de-2021-370017699" }]
+  }
+]

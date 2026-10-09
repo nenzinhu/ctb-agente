@@ -1,0 +1,1653 @@
+09/10/2026, 10:29                      RESOLUÇÃO CONTRAN Nº 882, DE 13 DE DEZEMBRO DE 2021 - RESOLUÇÃO CONTRAN Nº 882, DE 13 DE DEZEMBRO DE 2021 - DOU - Imprensa Nacional
+
+
+
+
+                                                             DIÁRIO OFICIAL DA UNIÃO
+                                                              Publicado em: 24/12/2021 | Edição: 242 | Seção: 1 | Página: 153
+                                                           Órgão: Ministério da Infraestrutura/Conselho Nacional de Trânsito
+
+
+                                                RESOLUÇÃO CONTRAN Nº 882, DE 13 DE DEZEMBRO DE 2021
+
+                                                                                      Estabelece os limites de pesos e dimensões para veículos que
+                                                                                      transitem por vias terrestres, referenda a Deliberação CONTRAN
+                                                                                      nº 246, de 25 de novembro de 2021, e dá outras providências.
+
+
+                          O CONSELHO NACIONAL DE TRÂNSITO (CONTRAN), no uso da competência que lhe conferem
+               os incisos I e X do caput do art. 12 e o art. 99 da Lei nº 9.503, de 23 de setembro de 1997, que institui o
+               Código de Trânsito Brasileiro (CTB), com base no que consta nos autos do processo administrativo nº
+               50000.029386/2021-42, resolve:
+
+                          Art. 1º Esta Resolução estabelece os limites de pesos e dimensões para veículos que transitem
+               por vias terrestres, referenda a Deliberação CONTRAN nº 246, de 25 de novembro de 2021, e dá outras
+               providências.
+
+                                 CAPÍTULO I
+
+                                 DAS DISPOSIÇÕES PRELIMINARES
+
+                          Art. 2º Nenhum veículo ou combinação de veículos poderá transitar com peso bruto total (PBT),
+               com peso bruto total combinado (PBTC) ou com peso bruto transmitido por eixo, superior ao fixado pelo
+               fabricante, nem ultrapassar a capacidade máxima de tração (CMT) da unidade tratora.
+
+                        Parágrafo único. Havendo divergência entre os limites de que trata o caput, deverá ser
+               obedecido o menor deles, considerado limite regulamentar.
+
+                                 CAPÍTULO II
+
+                                 DOS CONCEITOS E DEFINIÇÕES
+
+                                 Art. 3º Para o disposto nesta Resolução, considera-se:
+
+                        I - caminhão: veículo automotor destinado ao transporte de carga com PBT acima de 3.500
+               quilogramas, podendo tracionar ou arrastar outro veículo, respeitada a capacidade máxima de tração;
+
+                                 II - caminhão-trator: veículo automotor destinado a tracionar ou arrastar outro;
+
+                          III - Capacidade Máxima de Tração (CMT): peso máximo que a unidade de tração é capaz de
+               tracionar, indicado pelo fabricante, baseado em condições sobre suas limitações de geração e
+               multiplicação de momento de força e resistência dos elementos que compõem a transmissão;
+
+                         IV - lotação: carga útil máxima, incluindo condutor e passageiros, que o veículo transporta,
+               expressa em quilogramas para os veículos de carga, ou número de pessoas, para os veículos de
+               passageiros;
+
+                         V - Peso Bruto Total (PBT): peso máximo que o veículo transmite ao pavimento, constituído da
+               soma da tara mais a lotação;
+
+                         VI - Peso Bruto Total Combinado (PBTC): peso máximo transmitido ao pavimento pela
+               combinação de um caminhão-trator mais o seu semirreboque, ou do caminhão mais o seu reboque ou
+               reboques;
+
+                          VII - limite legal: pesos e capacidades máximas estabelecidos nesta Resolução, observado
+               limite estabelecido pela sinalização da via;
+
+                         VIII - limite técnico: pesos e capacidades máximas informados pelo fabricante, importador,
+               transformador ou implementador;
+
+
+
+https://www.in.gov.br/en/web/dou/-/resolucao-contran-n-882-de-13-de-dezembro-de-2021-370017699                                                                               1/27
+09/10/2026, 10:29                      RESOLUÇÃO CONTRAN Nº 882, DE 13 DE DEZEMBRO DE 2021 - RESOLUÇÃO CONTRAN Nº 882, DE 13 DE DEZEMBRO DE 2021 - DOU - Imprensa Nacional
+
+                         IX - Autorização Especial de Trânsito (AET): documento em formato eletrônico ou não, emitido
+               única e exclusivamente pelos OEER, ao veículo ou à combinação de veículos e/ou carga que não se
+               enquadrem nos limites de peso e dimensões;
+
+                          X - Autorização Específica (AE): documento em formato eletrônico ou não, emitido única e
+               exclusivamente pelos OEER, ao veículo de transporte coletivo de passageiros, ou ao veículo e a CVC,
+               utilizados no transporte de carga autorizados pelo CONTRAN à circulação até o sucateamento, que não se
+               enquadre nos limites de peso e dimensões;
+
+                         XI - limite regulamentar: menor valor entre o limite legal e o limite técnico e, para veículos
+               portadores de AET ou AE, o menor valor entre o limite autorizado e o limite técnico;
+
+                         XII - limite autorizado: pesos e capacidades máximas e dimensões estabelecidas na AET ou AE,
+               expedida pela autoridade com circunscrição sobre a via;
+
+                                 XIII - reboque: veículo destinado a ser engatado atrás de um veículo automotor;
+
+                                 XIV - semirreboque: veículo de um ou mais eixos que se apoia na sua unidade tratora ou é a ela
+               ligado por meio de articulação;
+
+                                 XV - tara: peso próprio do veículo, acrescido dos pesos da carroçaria e equipamento, do
+               combustível, das ferramentas e acessórios, da roda sobressalente, do extintor de incêndio e do fluido de
+               arrefecimento, expresso em quilogramas;
+
+                                 XVI - veículo articulado: combinação de veículos acoplados, sendo um deles automotor;
+
+                                 XVII - veículos articulados de transporte coletivo de passageiros: veículos da categoria M3
+               constituídos por 2 unidades rígidas, devidamente acopladas, que permitam comunicação entre elas. Pelo
+               menos 1 unidade deverá estar dotada de tração. Pode ser de piso único ou de duplo piso;
+
+                          XVIII - veículos biarticulados de transporte coletivo de passageiros: veículos da categoria M3
+               constituído por 3 unidades rígidas, devidamente acopladas, que permitam comunicação entre elas. Pelo
+               menos 1 unidade deverá estar dotada de tração. Somente será permitido veículo de piso simples;
+
+                       XIX - veículo acabado: veículo que sai de fábrica pronto para registro, sem precisar de
+               complementação;
+
+                          XX - veículo inacabado ou incompleto: todo o chassi plataforma para ônibus ou micro-ônibus e
+               os chassis de caminhões, caminhonete, utilitário com cabine completa, incompleta ou sem cabine;
+
+                         XXI - veículo novo: veículo de tração, de carga, especial ou de transporte coletivo de
+               passageiros, reboque e semirreboque, antes do seu registro e licenciamento;
+
+                         XXII - Combinação de Veículos para Transporte de Carga (CVC): combinação de veículos
+               destinados ao transporte de carga formado por veículo de tração, de carga ou especiais, mais seu(s)
+               semirreboque(s) e/ou reboque(s);
+
+                                 XXIII - Órgão ou Entidade Executivo Rodoviário da União, dos Estados, dos Municípios ou do
+               Distrito Federal (OEER): órgão com circunscrição sobre a via, cujas competências são estabelecidas no
+               Código de Trânsito Brasileiro (CTB); e
+
+                          XXIV - Obras de Arte Especiais (OAE): pontes, viadutos, túneis, ou outras estruturas que têm a
+               finalidade de transpor obstáculos, tais como avenidas, vales, rios, entre outros.
+
+                                 CAPÍTULO III
+
+                                 DOS LIMITES DE DIMENSÕES E PESOS
+
+                         Art. 4º As dimensões regulamentares para veículos, com ou sem carga, que não necessitam de
+               AET ou AE, são as seguintes:
+
+                                 I - largura máxima: 2,60 m; e
+
+                                 II - altura máxima: 4,40 m;
+
+                                 III - comprimento total:
+
+                                 a) veículos não-articulados: máximo de 14,00 m;
+
+
+https://www.in.gov.br/en/web/dou/-/resolucao-contran-n-882-de-13-de-dezembro-de-2021-370017699                                                                               2/27
+09/10/2026, 10:29                      RESOLUÇÃO CONTRAN Nº 882, DE 13 DE DEZEMBRO DE 2021 - RESOLUÇÃO CONTRAN Nº 882, DE 13 DE DEZEMBRO DE 2021 - DOU - Imprensa Nacional
+
+                         b) veículos não-articulados de transporte coletivo urbano de passageiros que possuam 3º eixo
+               de apoio direcional: máximo de 15 m;
+
+                         c) veículos não-articulados de característica rodoviária para o transporte coletivo de
+               passageiros, na configuração de chassi 8X2: máximo de 15 m;
+
+                                 d) veículos articulados de transporte coletivo de passageiros: máximo 19,80 m;
+
+                                 e) veículos articulados com duas unidades, do tipo caminhão-trator e semirreboque: máximo de
+               18,60m;
+
+                                 f) veículos articulados com duas unidades do tipo caminhão ou ônibus e reboque: máximo de
+               19,80 m; e
+
+                                 g) veículos articulados com mais de duas unidades: máximo de 19,80 m.
+
+                                 § 1º O comprimento total é aquele medido do ponto mais avançado de sua extremidade
+               dianteira ao ponto mais avançado de sua extremidade traseira, incluídos todos os acessórios para os quais
+               não esteja prevista exceção.
+
+                         § 2º Os limites para o comprimento do balanço traseiro de veículos de transporte de
+               passageiros e de cargas são os seguintes:
+
+                        I - nos veículos não-articulados de transporte de carga, até 60% da distância entre os 2 eixos,
+               não podendo exceder a 3,50 m;
+
+                                 II - nos reboques e semirreboques, até 3,50 m;
+
+                                 III - nos veículos não-articulados de transporte de passageiros:
+
+                                 a) com motor traseiro: até 62% da distância entre eixos;
+
+                                 b) com motor central: até 66% da distância entre eixos;
+
+                                 c) com motor dianteiro: até 71% da distância entre eixos.
+
+                         § 3º A distância entre eixos, prevista no § 2º, será medida de centro a centro das rodas dos eixos
+               dos extremos do veículo.
+
+                                 § 4º O balanço dianteiro dos semirreboques deve obedecer à NBR NM ISO 1726.
+
+                          § 5º A medição do comprimento dos veículos do tipo guindaste deverá tomar como base a
+               ponta da lança e o suporte dos contrapesos.
+
+                                 § 6º Os equipamentos e dispositivos definidos no Anexo I desta Resolução não devem ser
+               considerados na determinação da largura, do comprimento total e do balanço traseiro do veículo.
+
+                        § 7º A protusão total dos dispositivos e equipamentos referidos no Anexo I pode exceder em até
+               100 mm a largura do veículo.
+
+                                 § 8º Não é permitido o registro e licenciamento de veículos cujas dimensões excedam às
+               fixadas neste artigo, salvo nova configuração regulamentada pelo CONTRAN.
+
+                        Art. 5º Os instrumentos ou equipamentos utilizados para a medição de dimensões de veículos
+               devem atender à legislação metrológica em vigor.
+
+                                 Art. 6º Os limites máximos de PBT, PBTC e peso bruto transmitido por eixo de veículo, nas
+               superfícies das vias públicas, são:
+
+                                 I - PBT ou PBTC, respeitada a CMT da unidade tratora:
+
+                                 a) PBT para veículo não articulado: 29 t;
+
+                                 b) peso combinado de veículos com reboque ou semirreboque, exceto caminhões: 39,5 t;
+
+                         c) PBTC para combinações de veículos articulados com duas unidades, do tipo caminhão-trator
+               e semirreboque, e comprimento total inferior a 16 m: 45 t;
+
+                         d) PBTC para combinações de veículos articulados com duas unidades, do tipo caminhão-trator
+               e semirreboque com eixos em tandem triplo e comprimento total superior a 16 m: 54,5 t;
+
+                         e) PBTC para combinações de veículos articulados com duas unidades, do tipo caminhão-trator
+               e semirreboque com eixos distanciados, e comprimento total igual ou superior a 16 m: 54,5 t;
+https://www.in.gov.br/en/web/dou/-/resolucao-contran-n-882-de-13-de-dezembro-de-2021-370017699                                                                               3/27
+09/10/2026, 10:29                      RESOLUÇÃO CONTRAN Nº 882, DE 13 DE DEZEMBRO DE 2021 - RESOLUÇÃO CONTRAN Nº 882, DE 13 DE DEZEMBRO DE 2021 - DOU - Imprensa Nacional
+
+                                 f) PBTC para combinações de veículos articulados com duas unidades, do tipo caminhão-trator
+               e semirreboque com quatro eixos, sendo um conjunto de eixos traseiros em tandem triplo e um eixo dele
+               distanciado, com comprimento total igual ou superior a 17,5 m: 58,5 t;
+
+                       g) PBTC para combinações de veículos com duas unidades, do tipo caminhão e reboque, e
+               comprimento inferior a 17,5 m: 45 t;
+
+                         h) PBTC para combinações de veículos articulados com duas unidades, do tipo caminhão e
+               reboque, e comprimento igual ou superior a 17,5 m: 57 t;
+
+                           i) PBTC para combinações de veículos articulados com mais de duas unidades e comprimento
+               inferior a 17,5 m: 45 t; e
+
+                          j) para a CVC com mais de duas unidades, incluída a unidade tratora, o PBTC poderá ser de até
+               57 t, desde que cumpridos os seguintes requisitos:
+
+                                 1 - máximo de 7 eixos;
+
+                                 2 - comprimento máximo de 19,8 m e mínimo de 17,5 m;
+
+                                 3 - unidade tratora do tipo caminhão-trator;
+
+                         4 - estar equipada com sistema de freios conjugados entre si e com a unidade tratora, nos
+               termos estabelecidos pelo CONTRAN;
+
+                         5 - o acoplamento dos veículos rebocados deve ser do tipo automático conforme NBR 11410 e
+               deve estar reforçado com correntes ou cabos de aço de segurança; e
+
+                         6 - o acoplamento dos veículos articulados com pino-rei e quinta roda deve obedecer ao
+               disposto na NBR NM ISO 337, NBR NM ISO 4086 e NBR NM ISO 3842.
+
+                                 II - peso bruto por eixo isolado de dois pneumáticos: 6 t;
+
+                                 III - peso bruto por eixo isolado de quatro pneumáticos: 10 t;
+
+                         IV - peso bruto por conjunto de dois eixos direcionais ou autodirecionais, com distância entre
+               eixos de no mínimo 1,20 m, independentemente da distância do primeiro eixo traseiro, dotados de dois
+               pneumáticos cada: 12 t;
+
+                           V - peso bruto por conjunto de dois eixos em tandem, quando a distância entre os dois planos
+               verticais, que contenham os centros das rodas, for superior a 1,20 m e inferior ou igual a 2,40 m: 17 t;
+
+                         VI - peso bruto por conjunto de dois eixos não em tandem, quando a distância entre os dois
+               planos verticais, que contenham os centros das rodas, for superior a 1,20 m e inferior ou igual a 2,40 m: 15 t;
+
+                          VII - peso bruto por conjunto de três eixos em tandem, aplicável somente a semirreboque,
+               quando a distância entre os três planos verticais, que contenham os centros das rodas, for superior a 1,20
+               m e inferior ou igual a 2,40 m: 25,5 t;
+
+                        VIII - peso bruto por conjunto de dois eixos, sendo um dotado de quatro pneumáticos e outro de
+               dois pneumáticos interligados por suspensão especial, quando a distância entre os dois planos verticais
+               que contenham os centros das rodas for:
+
+                                 a) inferior ou igual a 1,20 m: 9 t;
+
+                                 b) superior a 1,20 m e inferior ou igual a 2,40 m: 13,5 t.
+
+                         § 1º O limite máximo de PBTC da combinação de veículos disciplinada na alínea f do inciso I do
+               caput é reduzido para 48,5 t, se os veículos:
+
+                          I - não forem originalmente fabricados para essa configuração, munidos do respectivo
+               Certificado de Adequação à Legislação de Trânsito (CAT), expedido pelo órgão máximo executivo de
+               trânsito da União; ou
+
+                         II - no caso de veículos modificados, não atenderem os requisitos técnicos específicos de
+               inspeção estabelecidos pelo CONTRAN.
+
+                                 § 2º O limite de que trata o § 1º será de 54,5 t, se a CVC for tracionada por veículo dotado de dois
+               eixos direcionais.
+
+
+https://www.in.gov.br/en/web/dou/-/resolucao-contran-n-882-de-13-de-dezembro-de-2021-370017699                                                                               4/27
+09/10/2026, 10:29                      RESOLUÇÃO CONTRAN Nº 882, DE 13 DE DEZEMBRO DE 2021 - RESOLUÇÃO CONTRAN Nº 882, DE 13 DE DEZEMBRO DE 2021 - DOU - Imprensa Nacional
+
+                          Art. 7º Os veículos de característica rodoviária para transporte coletivo de passageiros terão os
+               seguintes limites máximos de PBT e peso bruto transmitido por eixo nas superfícies das vias públicas:
+
+                                 I - peso bruto por eixo:
+
+                                 a) eixo simples dotado de 2 pneumáticos: 7 t;
+
+                                 b) eixo simples dotado de 4 pneumáticos: 11 t;
+
+                                 c) eixo duplo dotado de 6 pneumáticos:14,5 t;
+
+                                 d) eixo duplo dotado de 8 pneumáticos: 18 t;
+
+                        e) dois eixos direcionais, com distância entre eixos de no mínimo 1,20 m, dotados de 2 (dois)
+               pneumáticos cada: 13 t.
+
+                                 II - PBT: somatório dos limites individuais dos eixos descritos no inciso I.
+
+                         Parágrafo único. Não se aplicam as disposições deste artigo aos veículos de característica
+               urbana para transporte coletivo de passageiros.
+
+                          Art. 8º Os limites de peso bruto por eixo e por conjunto de eixos, estabelecidos nos artigos 6º e
+               7º, só prevalecem se todos os pneumáticos de um mesmo conjunto de eixos forem da mesma rodagem e
+               calçarem rodas no mesmo diâmetro.
+
+                         Parágrafo único. A soma da capacidade máxima de carga dos pneumáticos instalados no
+               respectivo eixo ou conjunto de eixos prevalece sobre os limites de peso bruto por eixo e por conjunto de
+               eixos de que trata o caput.
+
+                        Art. 9º Considera-se eixos em tandem 2 ou mais eixos que constituam um conjunto integral de
+               suspensão, com distribuição de peso entre eles, podendo qualquer deles ser ou não motriz.
+
+                          § 1º Quando em um conjunto de 2 ou mais eixos a distância entre os dois planos verticais
+               paralelos, que contenham os centros das rodas for superior a 2,40 m, cada eixo será considerado como se
+               fosse distanciado.
+
+                         § 2º Em qualquer par de eixos ou conjunto de 3 eixos em tandem, com 4 pneumáticos em cada,
+               com os respectivos limites legais de 17 t e 25,5 t, a diferença de PBT entre os eixos mais próximos não
+               deverá exceder a 1,7 t.
+
+                          Art. 10. Não será permitido registro e licenciamento de veículos com limites de peso excedentes
+               aos fixados nesta Resolução.
+
+                        Art. 11. Ao veículo ou à combinação de veículos utilizados no transporte de carga que não se
+               enquadre nos limites de peso e dimensões estabelecidos nesta Resolução, poderá ser concedida, pelo
+               OEER, AET com prazo certo, válida para cada viagem ou por período, atendidas as medidas de segurança
+               regulamentadas pelo CONTRAN.
+
+                        Parágrafo único. A AET também pode ser concedida quando a carga não atende aos limites de
+               dimensões de que trata esta Resolução.
+
+                                 CAPÍTULO IV
+
+                                 DAS EXCEPCIONALIDADES
+
+                                 Seção I
+
+                                 Dos veículos em circulação, com dimensões excedentes aos limites definidos nesta Resolução
+
+                          Art. 12. Os veículos de transporte coletivo com peso por eixo superior ao fixado nesta Resolução
+               e licenciados antes de 13 de novembro de 1996, poderão circular até o término de sua vida útil, desde que
+               respeitado o disposto no art. 100 do CTB e observadas as condições do pavimento e das OAE.
+
+                         Art. 13. Os veículos em circulação, com dimensões excedentes aos limites fixados no art. 4º,
+               registrados e licenciados até 13 de novembro de 1996, poderão circular até seu sucateamento, mediante
+               AE e segundo os seguintes critérios:
+
+                         I - para veículos que tenham como dimensões máximas até 20 m de comprimento; até 2,86 m
+               de largura; e até 4,40 m de altura, será concedida AE, de forma definitiva, fornecida pelo OEER,
+               devidamente visada pelo proprietário do veículo ou seu representante credenciado, podendo circular
+https://www.in.gov.br/en/web/dou/-/resolucao-contran-n-882-de-13-de-dezembro-de-2021-370017699                                                                               5/27
+09/10/2026, 10:29                      RESOLUÇÃO CONTRAN Nº 882, DE 13 DE DEZEMBRO DE 2021 - RESOLUÇÃO CONTRAN Nº 882, DE 13 DE DEZEMBRO DE 2021 - DOU - Imprensa Nacional
+
+               durante as 24 horas do dia, com validade até o seu sucateamento, e que conterá os seguintes dados:
+
+                                 a) nome e endereço do proprietário do veículo;
+
+                          b) cópia do Certificado de Registro e Licenciamento do Veículo (CRLV) ou apresentação do
+               Certificado de Registro e Licenciamento do Veículo em meio digital (CRLV-e); e
+
+                                 c) desenho do veículo, suas dimensões e excessos.
+
+                          II - para os veículos cujas dimensões excedam os limites previstos no inciso I e considerando os
+               limites dessa via, poderá ser concedida, pelo OEER, AE de forma definitiva, obedecendo aos seguintes
+               parâmetros:
+
+                                 a) volume de tráfego;
+
+                                 b) traçado da via; e
+
+                          c) projeto do conjunto veicular, indicando dimensão de largura, comprimento e altura, número
+               de eixos, distância entre eles e pesos.
+
+                          Art. 14. Para os veículos registrados e licenciados até 13 de novembro de 1996, com balanço
+               traseiro superior a 3,5 m e limitado a 4,2 m, respeitados os 60% da distância entre os eixos, será concedida
+               AE fornecida pela autoridade com circunscrição sobre a via, com validade máxima de 1 ano e renovada até
+               o sucateamento do veículo.
+
+                        Parágrafo único. A AE de que trata este artigo, destinada aos veículos combinados, poderá ser
+               concedida mesmo quando o caminhão-trator tiver sido registrado e licenciado após 13 de novembro de
+               1996.
+
+                          Art. 15. Os semirreboques das combinações com um ou mais eixos distanciados contemplados
+               na alínea "e" do inciso I do art. 6º somente poderão ser homologados e/ou registrados se equipados com
+               suspensão pneumática e eixo autodirecional em pelo menos um dos eixos.
+
+                          § 1º A existência da suspensão pneumática e do eixo autodirecional deverá constar no campo
+               de observações do Certificado de Registro de Veículo (CRV) ou do Certificado de Registro de Veículo em
+               meio digital (CRV-e) e do CRLV-e do semirreboque.
+
+                       § 2º Fica assegurado o direito de circulação até o sucateamento dos semirreboques, desde que
+               homologados ou registrados até 21 de maio de 2007, mesmo que não atendam às especificações do
+               caput.
+
+                         § 3º Ficam dispensados do requisito do eixo autodirecional os semirreboques com apenas 2
+               eixos, ambos distanciados, desde que o primeiro eixo seja equipado com suspensão pneumática.
+
+                                 Seção II
+
+                                 Da autorização específica para veículos ou combinações de veículos com percentual de
+               Tolerância de Peso nos Limites de PBT e PBTC.
+
+                          Art. 16. Ao veículo ou combinação de veículos utilizados no transporte de cargas líquidas ou
+               gasosas, licenciados de 1º de janeiro de 2000 até 31 de dezembro de 2007, cujos tanques fabricados
+               nesse período apresentem excesso de até 5% nos limites de PBT ou PBTC fixados nesta Resolução, será
+               concedida, pelo OEER, AE de porte obrigatório para circulação do implemento rodoviário do tipo tanque,
+               com validade até o seu sucateamento, atendidos os seguintes critérios:
+
+                          I - apresentação do certificado de verificação metrológica expedido no período estabelecido no
+               caput, conforme regulamento do Instituto Nacional de Metrologia, Qualidade e Tecnologia (INMETRO),
+               para atestar a capacidade volumétrica do tanque utilizado no transporte de carga líquida;
+
+                                 II - atendimento ao Capítulo V desta Resolução; e
+
+                         III - no caso de CVC, o que prevalece, para efeito do caput, é a data de licenciamento das
+               unidades rebocadas, podendo o caminhão-trator ter data de licenciamento posterior.
+
+                                 Parágrafo único. A AE poderá ser requerida a qualquer tempo, sendo permitida a sua solicitação
+               para unidade rebocada com ou sem unidade tratora, permanecendo válidas aquelas Autorizações já
+               emitidas.
+
+                                 Seção III
+https://www.in.gov.br/en/web/dou/-/resolucao-contran-n-882-de-13-de-dezembro-de-2021-370017699                                                                               6/27
+09/10/2026, 10:29                      RESOLUÇÃO CONTRAN Nº 882, DE 13 DE DEZEMBRO DE 2021 - RESOLUÇÃO CONTRAN Nº 882, DE 13 DE DEZEMBRO DE 2021 - DOU - Imprensa Nacional
+
+                                 Da concessão de AET para as CVC com PBTC de até 74 t e comprimento inferior a 25 m
+
+                          Art. 17. Excepcionalmente será concedida AET para as CVC com PBTC de até 74 t e
+               comprimento inferior a 25 m, desde que suas unidades tracionadas tenham sido registradas até 03 de
+               fevereiro de 2006, respeitadas as restrições impostas pelos OEER.
+
+                                 § 1º A concessão da AET de que trata o caput é condicionada à apresentação de laudo técnico
+               atestando as condições de estabilidade e de segurança da CVC, elaborado e assinado por profissional de
+               engenharia qualificado e legalmente habilitado a assumir a responsabilidade técnica, acompanhado da
+               respectiva Anotação de Responsabilidade Técnica (ART) emitida junto ao órgão de registro profissional
+               competente.
+
+                          § 2º Para os veículos de transporte de animais vivos (VTAV - boiadeiros) articulados (Romeu e
+               Julieta) com até 25 m:
+
+                                 I - fica permitida a concessão de AET; e
+
+                                 II - isenta-se o requisito da data de registro as unidades tracionadas de que trata o caput deste
+               parágrafo.
+
+                                 § 3º Para CVC cujo comprimento seja de no máximo 19,80 m, o trânsito será diuturno.
+
+                                 CAPÍTULO V
+
+                      DOS REQUISITOS NECESSÁRIOS À CIRCULAÇÃO DE COMBINAÇÕES DE VEÍCULOS DE
+               TRANSPORTE DE CARGA
+
+                        Art. 18. As CVC, com mais de duas unidades, incluída a unidade tratora, com PBTC acima de 57 t
+               ou com comprimento total acima de 19,80 m, só poderão circular portando AET.
+
+                                 §1º É obrigatório o porte da AET para os veículos referidos no caput.
+
+                         §2º Excetuam-se da exigência da AET os veículos ou conjuntos de veículos classificados como
+               veículos de uso bélico nos moldes da Resolução CONTRAN nº 570, de 16 de dezembro de 2015, ou suas
+               sucedâneas.
+
+                        § 3º Os OEER devem disponibilizar às Forças Armadas informações sobre as limitações de peso
+               e dimensões existentes nas vias e OAE sob sua jurisdição, cabendo às autoridades militares diretamente
+               responsáveis pelos veículos de que trata o § 2º a prévia conferência da viabilidade do deslocamento.
+
+                         Art. 19. A AET para as composições de que trata o art. 18 pode ser concedida pelo OEER
+               mediante atendimento aos seguintes requisitos:
+
+                                 I - para a CVC:
+
+                                 a) PBTC igual ou inferior a 74 t;
+
+                                 b) comprimento superior a 19,80 m e máximo de 30 m, quando o PBTC for inferior ou igual a 57
+               t;
+
+                                 c) comprimento mínimo de 25 m e máximo de 30 m, quando o PBTC for superior a 57 t;
+
+                                 d) limites legais de peso por eixo fixados pelo CONTRAN;
+
+                                 e) compatibilidade da CMT da unidade tratora com o PBTC;
+
+                        f) estar equipadas com sistemas de freios conjugados entre si e com a unidade tratora,
+               atendendo o disposto na Resolução nº 519, de 29 de janeiro de 2015, e suas sucedâneas;
+
+                          g) acoplamento dos veículos rebocados deverá ser do tipo automático conforme NBR 11410 e
+               estar reforçado com correntes ou cabos de aço de segurança;
+
+                         h) acoplamento dos veículos articulados deverá ser do tipo pino-rei e quinta roda e obedecer ao
+               disposto na NBR NM/ ISO 337 ou NBR NM ISO 4086 e NBR NM ISO 3842 e suas sucedâneas; e
+
+                          i) possuir sinalização especial na forma do Anexo II e estar provida de lanternas laterais
+               colocadas a intervalos regulares de no máximo 3 m entre si, que permitam a sinalização do comprimento
+               total do conjunto.
+
+                                 II - as condições de tráfego das vias públicas a serem utilizadas.
+
+https://www.in.gov.br/en/web/dou/-/resolucao-contran-n-882-de-13-de-dezembro-de-2021-370017699                                                                               7/27
+09/10/2026, 10:29                      RESOLUÇÃO CONTRAN Nº 882, DE 13 DE DEZEMBRO DE 2021 - RESOLUÇÃO CONTRAN Nº 882, DE 13 DE DEZEMBRO DE 2021 - DOU - Imprensa Nacional
+
+                          § 1º A unidade tratora das composições de que trata o caput deverá ser dotada de tração dupla
+               (6x4) e, quando carregada, ser capaz de vencer aclives de 6%, com coeficiente de atrito pneu/solo de 0,45,
+               resistência ao rolamento de 11 kgf/t e rendimento de transmissão de 90%, podendo suspender um dos
+               eixos tratores somente quando a CVC estiver descarregada, passando a operar na configuração 4X2.
+
+                                 § 2º Nas CVC com PBTC até 58,5 t, o caminhão-trator poderá ser de tração simples (4x2 ou 6x2).
+
+                         § 3º A critério do OEER responsável pela concessão da AET, nas vias de duplo sentido de
+               direção poderão ser exigidas medidas complementares que possibilitem o trânsito dessas composições,
+               respeitadas as condições de segurança, a existência de faixa adicional para veículos lentos nos segmentos
+               em rampa com aclive e comprimento superior a 5% e 600 m, respectivamente.
+
+                          § 4º A AET será concedida para cada caminhão-trator, devendo especificar os limites de
+               comprimento e de PBTC da CVC, não se vinculando na AET as unidades rebocadas, sendo permitida a
+               substituição dessas unidades, a qualquer tempo, observadas as mesmas configurações, características de
+               dimensões e peso e CMT.
+
+                         § 5º A critério da autoridade competente do OEER, a emissão da AET poderá ser dispensada
+               para a CVC com PBTC superior a 57 t e igual ou inferior a 74 t, ou comprimento igual ou superior a 25 m,
+               limitado a 30 m, desde que não exista restrição física relacionada a gabaritos da geometria viária ou OAE,
+               mediante publicação da relação dos trechos específicos contemplados.
+
+                                 § 6º O OEER deve disponibilizar prioritariamente o serviço de concessão da AET por meio
+               eletrônico.
+
+                                 § 7º O órgão máximo executivo de trânsito da União regulamentará a forma de integração das
+               bases de dados dos OEER, para concessão das AET.
+
+                        § 8º Para transportes específicos, o CONTRAN poderá regulamentar outros requisitos para
+               obtenção da AET, em Resolução própria.
+
+                                 Art. 20. O trânsito de CVC, que exija AET, deve ser do amanhecer ao pôr do sol e sua velocidade
+               máxima de 80 km/h, respeitado limite inferior definido pela sinalização da via.
+
+                        § 1º Nas vias com pista dupla e duplo sentido de circulação, dotadas de separadores físicos e
+               que possuam duas ou mais faixas de circulação no mesmo sentido, será autorizado o trânsito diuturno.
+
+                       § 2º Em casos especiais, devidamente justificados, poderá ser autorizado o trânsito noturno de
+               CVC de que trata o caput, nas vias de pista simples com duplo sentido de circulação, observados os
+               seguintes requisitos:
+
+                           I - volume horário de tráfego no período noturno correspondente, no máximo, ao nível de
+               serviço "C", conforme conceito da Engenharia de Tráfego;
+
+                                 II - traçado adequado de vias e suas condições de segurança, especialmente no que se refere à
+               ultrapassagem dos demais veículos; e
+
+                         III - colocação de placas de sinalização em todo o trecho da via, advertindo os usuários sobre a
+               presença de veículos longos.
+
+                                 § 3º Em caso de não atendimento dos requisitos estabelecidos no § 2º, o interessado poderá
+               implementar medida mitigadora que viabilize a tráfego noturno com segurança, devidamente precedidas
+               de estudos técnicos aprovados pelo OEER.
+
+                                 Art. 21. Ao requerer a concessão da AET, o interessado deverá apresentar:
+
+                         I - preliminarmente, projeto técnico da CVC, devidamente assinado por profissional de
+               engenharia qualificado e legalmente habilitado, que se responsabilizará pelas condições de estabilidade e
+               de segurança operacional, e que deverá conter:
+
+                         a) planta dimensional da combinação, contendo indicações de comprimento total, distância
+               entre eixos, balanços traseiro e laterais, detalhe do para-choques traseiro, dimensões e tipos dos
+               pneumáticos, lanternas de advertência, identificação da unidade tratora, altura e largura máxima, placa
+               traseira de sinalização especial, PBTC, Peso por Eixo, CMT e distribuição de carga no veículo;
+
+                                 b) cálculo demonstrativo da capacidade da unidade tratora de vencer rampa de 6%, observando
+               os parâmetros do art. 19 e a fórmula do Anexo III;
+https://www.in.gov.br/en/web/dou/-/resolucao-contran-n-882-de-13-de-dezembro-de-2021-370017699                                                                               8/27
+09/10/2026, 10:29                      RESOLUÇÃO CONTRAN Nº 882, DE 13 DE DEZEMBRO DE 2021 - RESOLUÇÃO CONTRAN Nº 882, DE 13 DE DEZEMBRO DE 2021 - DOU - Imprensa Nacional
+
+                                 c) gráfico demonstrativo das velocidades que a unidade tratora da composição é capaz de
+               desenvolver para aclives de 0 a 6%, obedecidos os parâmetros do art. 19 e seus parágrafos;
+
+                                 d) capacidade de frenagem;
+
+                        e) desenho de arraste e varredura, conforme norma SAE J695b, acompanhado do respectivo
+               memorial de cálculo;
+
+                          f) laudo técnico de inspeção veicular elaborado e assinado por profissional de engenharia
+               qualificado e legalmente habilitado responsável pelo projeto, acompanhado da respectiva ART, atestando
+               as condições de estabilidade e de segurança da CVC.
+
+                                 II - apresentação dos CRLV-e, da composição veículo e semirreboques.
+
+                         § 1º Nenhuma CVC poderá operar ou transitar na via pública sem que o OEER tenha analisado e
+               aprovado toda a documentação mencionada neste artigo e liberado sua circulação.
+
+                                 § 2º Somente será admitido o acoplamento de reboques e semirreboques especialmente
+               construídos para utilização conforme o tipo de CVC, devidamente homologados pelo órgão máximo
+               executivo de trânsito da União com códigos específicos na tabela de marca/modelo/versão do RENAVAM.
+
+                                 Art. 22. A AET terá validade específica para cada viagem ou por período, para os percursos e
+               horários previamente aprovados, e conterá, no mínimo:
+
+                                 I - a identificação do órgão emissor;
+
+                                 II - o número de identificação;
+
+                                 III - a identificação e características do(s) veículo(s);
+
+                                 IV - o peso e dimensões autorizadas;
+
+                                 V - o prazo de validade;
+
+                                 VI - o percurso; e
+
+                                 VII - a identificação em se tratando de carga indivisível.
+
+                                 Parágrafo único. O OEER pode realizar vistoria técnica da CVC para a emissão ou renovação da
+               AET, sempre que entender necessário.
+
+                         Art. 23. A AET não exime o condutor e o proprietário da responsabilidade por eventuais danos
+               que o veículo ou a combinação de veículos causar à via ou a terceiros, conforme prevê o § 2º do art. 101 do
+               CTB.
+
+                      Art. 24. O veículo ou a CVC cujas dimensões ou a carga excedam os limites fixados pelo
+               CONTRAN, deverá portar na parte traseira a sinalização especial de advertência prevista nos Anexos desta
+               Resolução.
+
+                         Parágrafo único. A sinalização deverá estar em condições de visibilidade e leitura, não sendo
+               permitida a inserção de quaisquer outras informações além das previstas nesta Resolução.
+
+                          Art. 25. A CVC de que trata a Resolução CONTRAN nº 872, de 13 de setembro de 2021, deve ter
+               na parte traseira do último veículo a informação do limite de velocidade conforme especificação prevista
+               no Anexo II desta Resolução.
+
+                          § 1º Faculta-se a utilização da mesma sinalização definida no caput às demais CVC para as quais
+               seja exigida a AET.
+
+                                 § 2º Fica permitida a utilização da sinalização do limite de velocidade, de forma independente
+               da sinalização especial de advertência traseira, desde que atendidas as especificações do Anexo II.
+
+                        Art. 26. Excepcionalmente, os caminhões, reboques e semirreboques equipados com rampa de
+               acesso poderão portar na parte traseira sinalização especial de advertência seccionada ao meio (bipartida),
+               constante do Anexo II desta Resolução.
+
+                                 Parágrafo único. Quando a sinalização estiver em posição normal, a secção não poderá
+               prejudicar a legibilidade das informações.
+
+
+
+https://www.in.gov.br/en/web/dou/-/resolucao-contran-n-882-de-13-de-dezembro-de-2021-370017699                                                                               9/27
+09/10/2026, 10:29                      RESOLUÇÃO CONTRAN Nº 882, DE 13 DE DEZEMBRO DE 2021 - RESOLUÇÃO CONTRAN Nº 882, DE 13 DE DEZEMBRO DE 2021 - DOU - Imprensa Nacional
+
+                                 Art. 27. A sinalização e demais requisitos relativos às CVC, Combinações de Transporte de
+               Veículos (CTV) e as Combinações de Transporte de Veículos e Cargas Paletizadas (CTVP) devem observar o
+               previsto nesta Resolução.
+
+                                 Parágrafo único. Para os veículos furgão carga geral, furgão frigorífico, sider, basculante ou
+               outros veículos com sistema de portas traseiras e comprimento excedente, pode ser aplicada a sinalização
+               de comprimento excedente bipartida, conforme Anexo II, podendo o espaçamento entre as placas ser
+               igual à largura da moldura das portas, mantidas as dimensões estabelecidas para a sinalização.
+
+                        Art. 28. Em atendimento às inovações tecnológicas, a utilização e circulação de novas
+               composições, respeitados os limites de peso por eixo, somente serão autorizadas após a comprovação de
+               seu desempenho, mediante testes de campo incluindo manobrabilidade, capacidade de frenagem,
+               distribuição de carga e estabilidade, além do cumprimento do disposto na presente Resolução.
+
+                                 § 1º Cabe ao órgão máximo executivo de trânsito da União publicar Portaria com as
+               composições homologadas, especificando seus limites de pesos e dimensões.
+
+                         § 2º O uso regular de novas composições somente poderá ser efetivado após sua homologação
+               e publicação em Portaria do órgão máximo executivo de trânsito da União.
+
+                                 CAPÍTULO VI
+
+                      DOS REQUISITOS PARA O TRÂNSITO DE COMPOSIÇÕES DE VEÍCULOS DE CARGA
+               REMONTADAS (CVR)
+
+                                 Art. 29. Entende-se por Composição de Veículo de Carga Remontada (CVR) aquela em que a
+               configuração pode ser formada por:
+
+                                 I - quatro unidades, incluindo o caminhão-trator, quando a composição estiver carregada,
+               conforme Figura 1 do Anexo IV; e
+
+                          II - quatro unidades, nas quais as duas unidades traseiras circulam transportadas pelas duas
+               primeiras, conforme Figura 2 do Anexo IV.
+
+                                 Art. 30. Para as configurações estabelecidas nos incisos I e II do art. 29:
+
+                                 I - o desempenho do sistema de freios deve atender ao disposto na Resolução CONTRAN nº
+               519, de 29 de janeiro de 2015, ou suas sucedâneas;
+
+                                 II - os adesivos, os para-choques, o sistema de iluminação e os limites de pesos e dimensões
+               devem estar em conformidade com as Resoluções CONTRAN sobre esses assuntos; ec
+
+                         III - o acoplamento dos veículos articulados com pino-rei e quinta-roda deve obedecer ao
+               disposto na NBR NM ISO 337 ou a NBR NM ISO 4086.
+
+                                 Art. 31. As unidades transportadas não podem ficar acima do painel dianteiro.
+
+                                 Art. 32. Na configuração especificada no inciso II do art. 29, deve ser utilizado, na região
+               posterior, o sistema de amarração já instalado nos equipamentos para amarrar as toras, ou seja, as catracas
+               pneumáticas existentes no produto.
+
+                                 § 1º Cada cinta deve possuir capacidade de carga à ruptura de 7 t e o modelo do gancho deve
+               ser do tipo delta.
+
+                                 § 2º Devem ser utilizadas duas cintas para amarração de cada composição, ou seja, a
+               composição intermediária fará a amarração da composição traseira e a composição dianteira fará a
+               amarração da composição intermediária, conforme Figura 3 do Anexo IV.
+
+                                 Art. 33. Na configuração especificada no inciso II do art. 29, na região frontal do equipamento o
+               processo de amarração deve utilizar o sistema articulado com pino-rei e quinta roda, conforme Figura 4 do
+               Anexo IV.
+
+                                 § 1º O travamento do deslocamento horizontal deve ser feito por meio de pino projetado
+               exclusivamente para tal finalidade.
+
+                        § 2º O deslocamento vertical deve ser nulo, devendo inexistir folga no mecanismo de
+               travamento entre a quinta roda e o pino-rei.
+
+                                 CAPÍTULO VII
+https://www.in.gov.br/en/web/dou/-/resolucao-contran-n-882-de-13-de-dezembro-de-2021-370017699                                                                               10/27
+09/10/2026, 10:29                      RESOLUÇÃO CONTRAN Nº 882, DE 13 DE DEZEMBRO DE 2021 - RESOLUÇÃO CONTRAN Nº 882, DE 13 DE DEZEMBRO DE 2021 - DOU - Imprensa Nacional
+
+                                 DAS DIMENSÕES E PESOS PARA VEÍCULOS EM CIRCULAÇÃO EM VIAGEM INTERNACIONAL
+               PELO TERRITÓRIO NACIONAL
+
+                          Art. 34. Os veículos registrados nos Estados Parte do Mercosul habilitados ao transporte
+               internacional de carga e coletivo de passageiros, quando em circulação internacional pelo território
+               nacional, devem obedecer aos limites de pesos e dimensões de que trata o acordo aprovado pela
+               Resolução MERCOSUL/GMC/RES. Nº 65/08.
+
+                                 § 1º Os limites de pesos são:
+
+                                 I - PBT 45 t;
+
+                                 II - peso bruto transmitido por eixo às superfícies das vias públicas:
+
+                                 a) eixo simples dotado de 2 rodas: 6 t;
+
+                                 b) eixo simples dotado de 4 rodas: 10,5 t;
+
+                                 c) eixo duplo dotado de 4 rodas: 10 t;
+
+                                 d) eixo duplo dotado de 6 rodas: 14 t;
+
+                                 e) eixo duplo dotado de 8 rodas: 18 t;
+
+                                 f) eixo triplo dotado de 6 rodas: 14 t;
+
+                                 g) eixo triplo dotado de 10 rodas: 21 t; e
+
+                                 h) eixo triplo dotado de 12 rodas: 25,5 t.
+
+                                 § 2º Entende-se por eixo duplo o conjunto de 2 eixos cuja distância entre o centro das rodas
+               seja igual ou superior a 1,20 m e igual ou inferior a 2,40 m.
+
+                          § 3º Entende-se por eixo triplo o conjunto de 3 eixos cuja distância entre o centro das rodas seja
+               igual ou superior a 1,20 m e igual ou inferior a 2,40 m.
+
+                                 § 4º Os limites de dimensões são:
+
+                                 I - comprimento máximo:
+
+                                 a) caminhão simples: 14 m;
+
+                                 b) caminhão com reboque: 20 m;
+
+                                 c) reboque: 8,60 m;
+
+                                 d) caminhão-trator com semirreboque: 18,60 m;
+
+                                 e) caminhão-trator com semirreboque e reboque: 20,50 m; e
+
+                                 f) ônibus de longa distância: 14 m.
+
+                                 II - largura máxima: 2,6 m; e
+
+                                 III - altura máxima:
+
+                                 a) ônibus de longa distância: 4,1 m; e
+
+                                 b) caminhão: 4,3 m.
+
+                                 Art. 35. A circulação de veículos especiais ou de combinação de veículos com pesos ou
+               dimensões superiores ao estabelecido no art. 6º desta Resolução somente será admitida mediante AET,
+               expedida de acordo com as normas estabelecidas pelas autoridades competentes do país transitado.
+
+                                 Art. 36. O disposto neste Capítulo não impede a aplicação das disposições vigentes em cada
+               Estado Parte quanto à instituição de limites de pesos e dimensões dos veículos em circulação por
+               determinadas rodovias, rotas ou OAE.
+
+                                 Art. 37. À infração decorrente do excesso de peso em relação aos limites estabelecidos neste
+               Capítulo aplica-se a penalidade e medida administrativa previstas no inciso V do artigo 231 do CTB,
+               conforme disposto na Resolução MERCOSUL/GMC/RES. Nº 14/14.
+
+
+
+
+https://www.in.gov.br/en/web/dou/-/resolucao-contran-n-882-de-13-de-dezembro-de-2021-370017699                                                                               11/27
+09/10/2026, 10:29                      RESOLUÇÃO CONTRAN Nº 882, DE 13 DE DEZEMBRO DE 2021 - RESOLUÇÃO CONTRAN Nº 882, DE 13 DE DEZEMBRO DE 2021 - DOU - Imprensa Nacional
+
+                                 Art. 38. Os veículos registrados nos demais países, com os quais o Brasil mantenha Acordo de
+               Transporte Terrestre, habilitados ao transporte internacional de carga e coletivo de passageiros, quando
+               em circulação internacional pelo território nacional, devem obedecer aos limites de pesos e dimensões
+               dispostos no Capítulo III desta Resolução.
+
+                                 CAPÍTULO VIII
+
+                                 DOS ÔNIBUS ARTICULADOS E BIARTICULADOS
+
+                                 Art. 39. Os veículos articulados e biarticulados, destinados ao transporte coletivo de
+               passageiros, cujas dimensões excedam aos limites de comprimento de 19,80 m, só poderão circular nas
+               vias portando AE em conformidade com esta Resolução.
+
+                                 Parágrafo único. Para a concessão da AE de que trata o caput, os ônibus articulados e
+               biarticulados deverão atender aos seguintes limites:
+
+                                 I - largura: 2,60 m;
+
+                                 II - comprimento medido do para-choque dianteiro à extremidade traseira do veículo:
+
+                                 a) veículos articulados de transporte coletivo de passageiros: acima de 19,80 m até 25m; e
+
+                                 b) veículos biarticulados de transporte coletivo de passageiros: acima de 25 m até 30 m.
+
+                                 III - os limites legais de PBT e peso por eixo ou conjunto de eixos previstos nesta Resolução.
+
+                                 Art. 40. Ficam dispensados da emissão de AE:
+
+                          I - os ônibus articulados com comprimento até 19,80 m e que atendam aos limites de largura
+               previstos nesta Resolução; e
+
+                                 II - os ônibus articulados e biarticulados que atendam aos limites de largura e comprimento
+               previstos nesta Resolução e que trafeguem em faixas próprias a eles destinadas e/ou em trajetos
+               definidos com a finalidade de operação para o transporte de passageiros.
+
+                                 Art. 41. Os ônibus articulados e biarticulados com dimensões previstas no parágrafo único do art.
+               39, quando em circulação fora dos trajetos específicos para finalidade da operação de transporte de
+               passageiros, só poderão circular portando AE.
+
+                         Parágrafo único. A AE fornecida pelos OEER deverá conter o percurso estabelecido e aprovado
+               pelo órgão com circunscrição sobre a via.
+
+                                 Art. 42. O trânsito dos ônibus articulados e biarticulados será do amanhecer ao pôr do sol, e terá
+               velocidade máxima de 60 km/h.
+
+                          § 1º Não se aplica a restrição quanto ao horário de trânsito contida no caput para os ônibus
+               articulados cujo comprimento seja de no máximo 19,80 m.
+
+                                 § 2º Será admitido o trânsito noturno dos ônibus articulados e biarticulados:
+
+                                 I - nas faixas próprias a eles destinados;
+
+                                 II - nas vias com pista dupla;
+
+                                 III - nas vias de múltiplas faixas de sentido único de circulação;
+
+                                 IV - nas vias com duplo sentido de circulação dotadas de separadores físicos, que possuam
+               duas ou mais faixas de circulação no mesmo sentido; e
+
+                                 V - nos trechos rodoviários de pista simples.
+
+                          § 3º Poderão ser adotados horários distintos dos estabelecidos neste artigo em trechos
+               específicos, mediante proposição da autoridade competente com circunscrição sobre a via.
+
+                                 Art. 43. Os modelos dos ônibus articulados e biarticulados, constantes no Anexo V desta
+               Resolução, são meramente ilustrativos e visam apenas demonstrar as dimensões permitidas aos veículos.
+
+                                 CAPÍTULO IX
+
+                                 DAS INSCRIÇÕES E FISCALIZAÇÃO DAS INSCRIÇÕES DOS DADOS TÉCNICOS
+
+
+
+https://www.in.gov.br/en/web/dou/-/resolucao-contran-n-882-de-13-de-dezembro-de-2021-370017699                                                                               12/27
+09/10/2026, 10:29                      RESOLUÇÃO CONTRAN Nº 882, DE 13 DE DEZEMBRO DE 2021 - RESOLUÇÃO CONTRAN Nº 882, DE 13 DE DEZEMBRO DE 2021 - DOU - Imprensa Nacional
+
+                                 Art. 44. Para efeito de registro, licenciamento e circulação, os veículos de tração, de carga,
+               especiais e os de transporte coletivo de passageiros deverão ter indicação, fixado em local visível, de suas
+               características registradas para obtenção do Certificado de Adequação à Legislação de Trânsito (CAT), de
+               acordo com os requisitos definidos no Anexo VI desta Resolução.
+
+                        Parágrafo único. A inscrição indicativa dos pesos e capacidades registrados nos veículos
+               automotores de tração, de carga e especiais será individualizada.
+
+                                 Art. 45. Para efeito de fiscalização de veículos ou combinações de veículos amparados por AET
+               ou AE, caso haja divergência entre as inscrições técnicas do veículo e as informações constantes na AET ou
+               AE, prevalecem as informações de pesos e capacidades constantes das inscrições técnicas.
+
+                         Art. 46. A responsabilidade pela inscrição e conteúdo dos pesos e capacidades, conforme
+               estabelecido no Anexo VI desta Resolução será:
+
+                                 I - do fabricante ou importador, quando se tratar de veículo novo acabado ou inacabado;
+
+                                 II - do fabricante da carroçaria ou de outros implementos, em caráter complementar ao
+               informado pelo fabricante ou importador do veículo;
+
+                          III - do responsável pelas modificações, quando se tratar de veículo novo ou já licenciado que
+               tiver sua estrutura ou número de eixos alterados, ou outras modificações previstas pelas Resoluções
+               CONTRAN nº 291, de 29 de agosto de 2008 e nº 292, de 29 de agosto de 2008, ou suas sucedâneas; e
+
+                                 IV - do proprietário do veículo, conforme estabelecido no art. 47 desta Resolução.
+
+                                 § 1º Caso as inscrições técnicas não estejam indicadas conforme este regulamento, serão
+               aplicadas as infrações correspondentes, sem prejuízo das infrações do art. 231, incisos V e X do CTB,
+               quando verificadas, podendo ser observadas as inscrições descritas pelas especificações técnicas
+               consultadas dos fabricantes, importadores e de seus implementadores de equipamentos ou de órgãos do
+               Sistema Nacional de Trânsito (SNT).
+
+                                 § 2º A instalação de implementos, como eixo, tanque suplementar, compressor, sistema
+               hidráulico, guindaste, entre outros, que modifiquem a tara do veículo deverá ser acompanhada da fixação
+               de inscrição com a nova tara, conforme os requisitos do Anexo VI desta Resolução.
+
+                                 Art. 47. Para os veículos em circulação, registrados até 31 de dezembro de 2008, que não
+               possuíam a inscrição dos dados de tara e lotação nos locais e especificações de materiais normatizados
+               nesta Resolução, fica autorizada a inscrição dos dados por pintura resistente ao tempo na cor amarela
+               sobre fundo preto e altura mínima dos caracteres de 30 mm, em local visível na parte externa do veículo.
+
+                        § 1º Para os veículos destinados ao transporte coletivo de passageiros, a indicação de que trata
+               o caput poderá ser realizada conforme o item 3.2.2 do Anexo VI, nesse caso de responsabilidade do
+               proprietário do veículo.
+
+                          § 2º Para os veículos registrados a partir de 1º de janeiro de 2009, eventual regularização das
+               inscrições técnicas deverá obedecer aos requisitos do Anexo VI desta Resolução.
+
+                         Art. 48. No caso de veículo inacabado, conforme definido no inciso XVIII do art. 3º desta
+               Resolução, fica o fabricante ou importador obrigado a declarar na nota fiscal o peso do veículo nessa
+               condição.
+
+                                 CAPÍTULO X
+
+                                 DAS FORMAS E TOLERÂNCIAS PARA A FISCALIZAÇÃO
+
+                          Art. 49. A fiscalização de peso dos veículos deve ser feita por equipamento de pesagem ou, na
+               impossibilidade, pela verificação de documento fiscal ou de transporte.
+
+                        § 1º Os equipamentos fixos ou portáteis utilizados na pesagem de veículos devem ter seu
+               modelo aprovado pelo INMETRO, de acordo com a legislação metrológica em vigor.
+
+                                 § 2º A fiscalização em equipamento de pesagem, devidamente aferida e certificada pelo
+               INMETRO, deverá prevalecer em relação à fiscalização por verificação do peso lançado em documento
+               fiscal ou de transporte.
+
+
+
+https://www.in.gov.br/en/web/dou/-/resolucao-contran-n-882-de-13-de-dezembro-de-2021-370017699                                                                               13/27
+09/10/2026, 10:29                      RESOLUÇÃO CONTRAN Nº 882, DE 13 DE DEZEMBRO DE 2021 - RESOLUÇÃO CONTRAN Nº 882, DE 13 DE DEZEMBRO DE 2021 - DOU - Imprensa Nacional
+
+                                 § 3º A fiscalização dos limites de peso dos veículos por meio do peso declarado na Nota Fiscal,
+               Conhecimento, Manifesto de carga ou outros documentos que contenham o peso da carga declarado,
+               poderá ser feita em qualquer tempo ou local, não sendo admitida qualquer tolerância sobre o peso
+               declarado.
+
+                                 § 4º O documento de fiscal deverá possuir declaração do peso em kg.
+
+                                 § 5º A ausência do peso da carga no documento fiscal pode ensejar o encaminhamento do
+               veículo para aferição em equipamento de pesagem ou a apresentação de documento fiscal substituto
+               com a respectiva informação.
+
+                                 Art. 50. Na fiscalização de peso dos veículos por equipamento de pesagem serão admitidas as
+               seguintes tolerâncias:
+
+                                 I - 5% sobre os limites de PBT ou PBTC; e
+
+                                 II - 12,5% sobre os limites de peso bruto transmitido por eixo de veículos à superfície das vias
+               públicas.
+
+                         § 1º Os veículos ou combinação de veículos com PBT ou PBTC regulamentar igual ou inferior a
+               50 t devem ser fiscalizados apenas quanto aos limites de PBT ou PBTC, observada a tolerância prevista no
+               inciso I do caput.
+
+                       § 2º O veículo de que trata o § 1º que ultrapassar a tolerância máxima sobre o limite do PBT ou
+               PBTC também será fiscalizado quanto ao excesso de peso por eixo, aplicando-se as penalidades
+               cumulativamente, respeitadas as tolerâncias máximas previstas nos incisos I e II do caput.
+
+                         § 3º No carregamento dos veículos, a tolerância máxima prevista neste artigo não pode ser
+               incorporada aos limites de peso previstos em regulamentação do CONTRAN.
+
+                                 Art. 51. Cabe ao transportador atender aos limites técnicos e legais de resistência dos eixos do
+               veículo.
+
+                          Art. 52. Quando o peso verificado for igual ou inferior ao PBT ou PBTC estabelecido para o
+               veículo, acrescido da tolerância de 5%, mas ocorrer excesso de peso em algum dos eixos ou conjunto de
+               eixos, aplicar-se-á multa somente sobre a parcela que exceder essa tolerância.
+
+                                 § 1º A carga deverá ser remanejada ou deverá ser efetuado transbordo, de modo que os
+               excessos por eixo sejam eliminados.
+
+                                 § 2º As disposições previstas no caput não se aplicam aos veículos de que trata o § 1º do art. 50.
+
+                         Art. 53. Quando o peso verificado estiver acima do PBT ou PBTC estabelecido para o veículo,
+               acrescido da tolerância de 5%, aplicar-se-á a multa somente sobre a parcela que exceder essa tolerância.
+
+                                 Parágrafo único. Deverá ser efetuado o transbordo do excesso que ultrapassar a tolerância.
+
+                         Art. 54. O veículo só poderá prosseguir viagem após sanadas as irregularidades, observadas as
+               condições de segurança.
+
+                                 § 1º A critério do agente, avaliados os riscos e as condições de segurança, poderá ser
+               dispensado o remanejamento ou transbordo de produtos perigosos, produtos perecíveis, cargas vivas e
+               passageiros.
+
+                                 § 2º Nos casos em que não for dispensado o remanejamento ou transbordo da carga, o veículo
+               deverá ser recolhido ao depósito, sendo liberado somente após sanada a irregularidade e pagas todas as
+               despesas de remoção e estada.
+
+                                 § 3º O saneamento da irregularidade não impede a aplicação da multa cabível.
+
+                          Art. 55. Na fiscalização de peso por eixo ou conjunto de eixos, independentemente da natureza
+               da carga, o veículo poderá prosseguir viagem sem remanejamento ou transbordo, desde que os excessos
+               aferidos em cada eixo ou conjunto de eixos sejam simultaneamente inferiores a 12,5% do menor valor entre
+               os pesos e capacidades máximos estabelecidos pelo Contran e os pesos e capacidades indicados pelo
+               fabricante ou importador, nos termos do art. 100 do CTB.
+
+                         Parágrafo único. A tolerância para fins de remanejamento ou transbordo de que trata o caput
+               não será cumulativa aos limites estabelecidos no art. 50 desta Resolução.
+
+https://www.in.gov.br/en/web/dou/-/resolucao-contran-n-882-de-13-de-dezembro-de-2021-370017699                                                                               14/27
+09/10/2026, 10:29                      RESOLUÇÃO CONTRAN Nº 882, DE 13 DE DEZEMBRO DE 2021 - RESOLUÇÃO CONTRAN Nº 882, DE 13 DE DEZEMBRO DE 2021 - DOU - Imprensa Nacional
+
+                                 Art. 56. Para fins dos §§ 4º e 6º do art. 257 do CTB, considera-se embarcador o remetente ou
+               expedidor da carga, mesmo se o frete for a pagar.
+
+                                 Art. 57. O cálculo do valor da multa de excesso de peso se dará nos termos do inciso V, e
+               respectivas alíneas, do art. 231 do CTB.
+
+                        § 1º Mesmo que haja excessos simultâneos nos pesos por eixo ou conjunto de eixos e no PBT ou
+               PBTC, a multa para infração de natureza média prevista no inciso V do art. 231 do CTB será aplicada uma
+               única vez.
+
+                        § 2º Quando houver excessos tanto no peso por eixo quanto no PBT ou PBTC, os valores dos
+               acréscimos à multa serão calculados isoladamente e somados entre si, sendo adicionado ao resultado o
+               valor inicial referente à infração de natureza média.
+
+                                 § 3º O valor do acréscimo à multa será calculado nos seguintes termos:
+
+                                 I - enquadrar o excesso total de acordo com o disposto nas alíneas do inciso V do art. 231 do
+               CTB;
+
+                         II - dividir o excesso total por 200 kg, arredondando-se o valor para o inteiro superior, resultando
+               na quantidade de frações; e
+
+                                 III - multiplicar o resultado de frações pelo valor previsto para a faixa do excesso indicada no
+               inciso I.
+
+                          Art. 58. As infrações por excesso da CMT de que trata o inciso X do art. 231 do CTB serão
+               aplicadas, a depender da relação entre o excesso de peso apurado e a CMT, da seguinte forma:
+
+                                 I - até 600 kg: infração média, com valor conforme definido no CTB;
+
+                                 II - entre 601 kg e 1.000 kg: infração grave, com valor conforme definido no CTB; e
+
+                                 III - acima de 1.000 kg: infração gravíssima, com valor conforme definido no CTB, aplicado a
+               cada 500 kg ou fração de excesso de peso apurado.
+
+                        Art. 59. Nas fiscalizações realizadas com o uso de instrumentos ou equipamentos de aferição de
+               peso de veículos, deve ser assegurado o acesso à documentação comprobatória de atendimento à
+               legislação metrológica.
+
+                                 CAPÍTULO XI
+
+                                 DAS INDICAÇÕES DE INFRAÇÕES AO CTB
+
+                                 Art. 60. O descumprimento do disposto nesta Resolução sujeita o infrator, conforme o caso,
+               independentemente de outras penalidades, às seguintes sanções previstas no CTB:
+
+                         I - art. 187, inciso I: quando o(s) veículo(s) e/ou cargas estiverem com pesos ou dimensões
+               superiores aos limites estabelecidos legalmente e existir restrição de tráfego referente ao local e/ou
+               horário, não constante na AET ou AE, imposta pelo órgão com circunscrição sobre a via;
+
+                                 II - art. 230, incisos IX e X: quando o veículo transitar em desacordo com as especificações do
+               Capítulo VI;
+
+                        III - art. 230, inciso XXI: quando o veículo de transporte de carga transitar sem as inscrições das
+               informações previstas no anexo VI;
+
+                                 IV - art. 231, inciso IV: quando o(s) veículo(s) tratados nesta Resolução e/ou cargas transitarem
+               sem a autorização especial expedida pelo órgão com circunscrição sobre a via para atender as condições
+               dos limites de pesos e dimensões;
+
+                                 V - art. 231, inciso V: quando o veículo ou CVC transitar com excesso de peso, respeitadas as
+               tolerâncias descritas nesta Resolução;
+
+                                 VI - art. 231, inciso VI: quando os veículos tratados nesta Resolução estiverem com suas
+               dimensões superiores aos limites estabelecidos legalmente e transitarem em desacordo com AET ou AE já
+               expedida;
+
+                                 VII - art. 231, inciso VI: quando os veículos tratados nesta Resolução estiverem com suas
+               dimensões superiores aos limites estabelecidos legalmente, e a AET ou AE estiver vencida;
+
+https://www.in.gov.br/en/web/dou/-/resolucao-contran-n-882-de-13-de-dezembro-de-2021-370017699                                                                               15/27
+09/10/2026, 10:29                      RESOLUÇÃO CONTRAN Nº 882, DE 13 DE DEZEMBRO DE 2021 - RESOLUÇÃO CONTRAN Nº 882, DE 13 DE DEZEMBRO DE 2021 - DOU - Imprensa Nacional
+
+                                 VIII - art. 231, inciso VII: quando o veículo ultrapassar a lotação quanto ao excesso de
+               passageiros;
+
+                                 IX - art. 231, inciso X: quando o veículo ou a combinação de veículo transitar excedendo a
+               capacidade máxima de tração;
+
+                                 X - art. 232: quando os veículos de que trata essa Resolução transitarem com suas dimensões
+               superiores aos limites estabelecidos sem portar AET ou AE regularmente expedida;
+
+                           XI - art. 235: quando a carga ultrapassar os limites laterais, posterior e/ou anterior do(s)
+               veículo(s), ainda que não ultrapasse os limites regulamentares estabelecidos nesta Resolução;
+
+                                 XII - art. 237: quando transitar em desacordo com as especificações de tração previstas no art.
+               19 desta Resolução;
+
+                                 XIII - art. 237: quando transitar sem as inscrições dos dados técnicos, os veículos de tração e
+               transporte coletivo de passageiro ou nos casos de incorreção dos dados técnicos ou em desacordo com
+               as especificações estabelecidas no Anexo VI;
+
+                                 XIV - art. 237: quando os veículos ou combinação de veículos estiverem com suas dimensões
+               superiores aos limites estabelecidos legalmente e a sinalização especial de advertência na traseira não
+               tiver sido instalada ou não atender aos requisitos previstos; ou
+
+                                 XV - art. 239: quando retirar do local veículo legalmente retido para regularização, sem
+               permissão da autoridade competente ou de seus agentes.
+
+                                 Parágrafo único. As situações infracionais descritas neste Capítulo não afastam a possibilidade
+               de aplicações de outras penalidades previstas no CTB.
+
+                                 CAPÍTULO XII
+
+                                 DAS DISPOSIÇÕES FINAIS
+
+                                 Art. 61. Os pesos e as dimensões máximas estabelecidos nesta Resolução não excluem a
+               competência dos OEER para fixar valores mais restritivos em relação às vias sob sua circunscrição, de
+               acordo com as restrições ou limitações estruturais da área, via, pista, faixa ou obra de arte, desde que
+               observado o estudo de engenharia respectivo.
+
+                                 § 1º O OEER deverá observar a regular colocação de sinalização vertical regulamentadora, nos
+               termos da Resolução CONTRAN nº 180, de 26 de agosto de 2005, que aprova o Manual Brasileiro de
+               Sinalização de Trânsito, Volume I - Sinalização Vertical de Regulamentação, ou suas sucedâneas,
+               especialmente quanto às placas R14 e R17, conforme o caso.
+
+                         § 2º O OEER deverá disponibilizar os estudos de engenharia no portal de solicitação de AET ou
+               por outro meio eletrônico.
+
+                                 Art. 62. Para fins de fiscalização de peso de veículo que transporte produtos classificados como
+               biodiesel (B-100), por meio de equipamento de pesagem ou de nota fiscal, é admitida a tolerância de 7,5%
+               no PBT ou PBTC para todos os veículos não adaptados para esse tipo de transporte, até seu sucateamento.
+
+                         Art. 63. É obrigatória, a partir de 1º de julho de 2022, a inscrição indicativa de peso por eixo
+               estabelecida no Anexo VI.
+
+                                 Art. 64. Ficam revogadas as Resoluções CONTRAN nº:
+
+                                 I - 210, de 13 de novembro de 2006;
+
+                                 II- 211, de 13 de novembro de 2006;
+
+                                 III - 256, de 30 de novembro de 2007;
+
+                                 IV - 284, de 01 de julho de 2008;
+
+                                 V - 290, de 29 de agosto de 2008;
+
+                                 VI - 318, de 05 de junho de 2009;
+
+                                 VII - 373, de 18 de março de 2011;
+
+                                 VIII - 381, de 28 de abril de 2011;
+
+https://www.in.gov.br/en/web/dou/-/resolucao-contran-n-882-de-13-de-dezembro-de-2021-370017699                                                                               16/27
+09/10/2026, 10:29                      RESOLUÇÃO CONTRAN Nº 882, DE 13 DE DEZEMBRO DE 2021 - RESOLUÇÃO CONTRAN Nº 882, DE 13 DE DEZEMBRO DE 2021 - DOU - Imprensa Nacional
+
+                                 IX - 502, de 23 de setembro de 2014;
+
+                                 X - 520, de 29 de janeiro de 2015;
+
+                                 XI - 566, de 25 de novembro de 2015;
+
+                                 XII - 577, de 24 de fevereiro de 2016;
+
+                                 XIII - 608, de 24 de maio de 2016;
+
+                                 XIV - 610, de 24 de maio de 2016;
+
+                                 XV - 625, de 19 de outubro de 2016;
+
+                                 XVI - 628, de 30 de novembro de 2016;
+
+                                 XVII - 630, de 30 de novembro de 2016;
+
+                                 XVIII - 635, de 30 de novembro de 2016;
+
+                                 XIX - 662, de 19 de abril de 2017;
+
+                                 XX - 665, de 18 de maio de 2017;
+
+                                 XXI - 700, de 10 de outubro de 2017;
+
+                                 XXII - 702, de 10 de outubro de 2017;.
+
+                                 XXIII - 734, de 05 de junho de 2018;
+
+                                 XXIV - 746, de 30 de novembro de 2018;
+
+                                 XXV - 787, de 18 de junho de 2020; e
+
+                                 XXVI - 803, de 22 de outubro de 2020.
+
+                                 Art. 65. Esta Resolução entra em vigor em 3 de janeiro de 2022.
+
+                                                                                                     MARCELO SAMPAIO CUNHA FILHO
+                                                                                                   Presidente do Conselho Em exercício
+
+                                                                                                     MARCELO LOPES DA PONTE
+                                                                                                         Ministério da Educação
+
+                                                                                                     ROBERTH ALEXANDRE EICKHOFF
+                                                                                                           Ministério da Defesa
+
+                                                                                                     FERNANDO WANDSCHEER DE MOURA ALVES
+                                                                                                       Ministério do Meio Ambiente
+
+                                                                                                     SILVINEI VASQUES
+                                                                                                 Ministério da Justiça e Segurança Pública
+
+                                                                                                     PAULINO FRANCO DE CARVALHO NETO
+                                                                                                    Ministério das Relações Exteriores
+                                 ANEXO I
+
+                                 I - Lista de dispositivos e equipamentos que podem exceder em até 100 mm a largura do
+               veículo:
+
+                                 1 - A parte curva da parede do pneu imediatamente acima do ponto de contato com o plano de
+               apoio.
+
+                                 2 - Dispositivos indicadores de falha nos pneus.
+
+                                 3 - Indicadores de pressão dos pneus.
+
+                          4 - Componentes do sistema de Iluminação conforme Resolução CONTRAN nº 667, 18 de maio
+               de 2017, e suas sucedâneas:
+
+                                 4.1 - Lanterna de posição lateral;
+
+                                 4.2 - Lanterna de posição traseira;
+
+                                 4.3 - Lanterna delimitadora;
+
+                                 4.4 - Retrorrefletor lateral;
+
+https://www.in.gov.br/en/web/dou/-/resolucao-contran-n-882-de-13-de-dezembro-de-2021-370017699                                                                               17/27
+09/10/2026, 10:29                      RESOLUÇÃO CONTRAN Nº 882, DE 13 DE DEZEMBRO DE 2021 - RESOLUÇÃO CONTRAN Nº 882, DE 13 DE DEZEMBRO DE 2021 - DOU - Imprensa Nacional
+
+                                 4.5 - Lanterna indicadora de direção; e
+
+                                 4.6 - Lanterna externa de cortesia.
+
+                                 5 - Rampas de acesso, plataformas elevatórias, saliências derivadas de dispositivos de
+               articulação, travamento de partes móveis, pontos de amarração de lona ou equipamentos similares
+               quando retraídas e desde que não excedam 10 mm do lado do veículo. Os cantos das rampas devem ser
+               arredondados para um raio não inferior a 5 mm. Demais extremidades devem ser arredondadas para um
+               raio não inferior a 2,5 mm.
+
+                                 6 - Dispositivos de orientação lateral retráteis utilizados em sistemas de ônibus guiados, quando
+               não estiverem retraídos.
+
+                                 7 - Dispositivos para monitoramento e detecção incluindo radares.
+
+                                 8 - Dispositivos e equipamentos especialmente concebidos para reduzir o atrito aerodinâmico,
+               desde que não sobressaiam mais de 50 mm de cada lado da largura máxima do veículo e não aumentem
+               a capacidade de carga. Deve ser possível retrair esses dispositivos com o veículo estacionado, de tal modo
+               que a largura máxima autorizada não seja excedida e não prejudiquem a capacidade de o veículo ser
+               utilizado para o transporte intermodal. Quando os dispositivos e equipamentos estiverem sendo utilizados,
+               a largura do veículo não pode exceder 2.650 mm.
+
+                                 9 - Dispositivos de vedação e sua proteção.
+
+                         10 - Partes sobressalentes flexíveis do sistema anti-spray conforme Resolução CONTRAN nº
+               762, de 20 de dezembro de 2018, e suas sucedâneas.
+
+                                 11 - Para-lamas flexíveis.
+
+                                 12 - Correntes para pneus.
+
+                         13 - Saliências em equipamentos concebidos para fechamento lateral, deste que sejam
+               removíveis para possibilitar acesso lateral ao semirreboque (aberturas de vãos laterais).
+
+                                 II - Lista de dispositivos e equipamentos que podem exceder o comprimento e o balanço
+               traseiro do veículo:
+
+                                 1 - limpadores de para-brisa e dispositivos de lavagem do para-brisa;
+
+                                 2 - placas dianteiras e traseiras;
+
+                                 3 - dispositivos e olhais de fixação e amarração da carga, lonas e encerados;
+
+                                 4 - luzes;
+
+                                 5 - espelhos retrovisores ou outros dispositivos similares;
+
+                                 6 - tubos de admissão de ar;
+
+                                 7 - batentes;
+
+                                 8 - degraus e estribos de acesso;
+
+                                 9 - borrachas;
+
+                                 10 - plataformas elevatórias, rampas de acesso e outros equipamentos semelhantes, em ordem
+               de marcha, desde que não constituam saliência superior a 200 mm;
+
+                                 11 - dispositivos de engate do veículo a motor; e
+
+                                 12 - dispositivos e equipamentos dobráveis, concebidos para reduzir a resistência aerodinâmica
+               ao avanço, desde que não aumentem o comprimento da zona de carga e sua saliência em relação ao
+               ponto mais à retaguarda do veículo não exceda 500 mm. Deve ser possível retrair esses dispositivos com o
+               veículo estacionado, a fim de que não seja ultrapassado o comprimento máximo autorizado, nem seja
+               limitada a capacidade do veículo ser utilizado para o transporte intermodal.
+
+                                 ANEXO II
+
+                                 I - Sinalização especial de advertência traseira para comprimento excedente
+
+
+
+
+https://www.in.gov.br/en/web/dou/-/resolucao-contran-n-882-de-13-de-dezembro-de-2021-370017699                                                                               18/27
+09/10/2026, 10:29                      RESOLUÇÃO CONTRAN Nº 882, DE 13 DE DEZEMBRO DE 2021 - RESOLUÇÃO CONTRAN Nº 882, DE 13 DE DEZEMBRO DE 2021 - DOU - Imprensa Nacional
+
+                                 Especificações: dispositivo de segurança autoadesivo aplicado diretamente no veículo ou sobre
+               placa metálica, de madeira ou material com propriedades equivalentes, possuindo faixas inclinadas de 45º
+               da direita para a esquerda e de cima para baixo, nas cores preta e laranja, alternadamente. As cores:
+               branca, laranja e vermelha devem ser em material retrorrefletivo com especificações técnicas constantes
+               no item V deste Anexo.
+
+
+
+
+                                 Figura 1: Sinalização especial de advertência traseira para comprimento excedente
+
+
+
+
+                         Figura 2: Sinalização especial de advertência traseira para comprimento excedente e limite de
+               velocidade
+
+                                 II - Sinalização especial de advertência traseira para largura excedente
+
+                                 Especificações: dispositivo de segurança autoadesivo aplicado diretamente no veículo ou sobre
+               placa metálica, de madeira ou material com propriedades equivalentes, possuindo faixas inclinadas de 45º
+               da direita para a esquerda e de cima para baixo, nas cores preta e laranja, alternadamente. As cores:
+               branca, laranja e vermelha devem ser em material retrorrefletivo com especificações técnicas constantes
+               no item V deste Anexo.
+
+
+
+
+https://www.in.gov.br/en/web/dou/-/resolucao-contran-n-882-de-13-de-dezembro-de-2021-370017699                                                                               19/27
+09/10/2026, 10:29                      RESOLUÇÃO CONTRAN Nº 882, DE 13 DE DEZEMBRO DE 2021 - RESOLUÇÃO CONTRAN Nº 882, DE 13 DE DEZEMBRO DE 2021 - DOU - Imprensa Nacional
+
+
+
+
+                                 Figura 3: Sinalização especial de advertência traseira para largura excedente
+
+
+
+
+                                 Figura 4: Sinalização especial para limite de velocidade
+
+
+
+
+https://www.in.gov.br/en/web/dou/-/resolucao-contran-n-882-de-13-de-dezembro-de-2021-370017699                                                                               20/27
+09/10/2026, 10:29                      RESOLUÇÃO CONTRAN Nº 882, DE 13 DE DEZEMBRO DE 2021 - RESOLUÇÃO CONTRAN Nº 882, DE 13 DE DEZEMBRO DE 2021 - DOU - Imprensa Nacional
+
+
+
+
+                                 Figura 5: Sinalização especial de advertência traseira para largura excedente e limite de
+               velocidade
+
+                                 III - Sinalização especial de advertência traseira para comprimento e largura excedente
+
+                                 Especificações: dispositivo de segurança autoadesivo aplicado diretamente no veículo ou sobre
+               placa metálica, de madeira ou material com propriedades equivalentes, possuindo faixas inclinadas de 45º
+               da direita para a esquerda e de cima para baixo, nas cores preta e laranja, alternadamente. As cores:
+               branca, laranja e vermelha devem ser em material retrorrefletivo com especificações técnicas constantes
+               no item V deste Anexo.
+
+
+
+
+                                 Figura 6: Sinalização especial de advertência traseira para comprimento e largura excedente
+
+
+
+
+https://www.in.gov.br/en/web/dou/-/resolucao-contran-n-882-de-13-de-dezembro-de-2021-370017699                                                                               21/27
+09/10/2026, 10:29                      RESOLUÇÃO CONTRAN Nº 882, DE 13 DE DEZEMBRO DE 2021 - RESOLUÇÃO CONTRAN Nº 882, DE 13 DE DEZEMBRO DE 2021 - DOU - Imprensa Nacional
+
+
+
+
+                                 Figura 7: Sinalização especial de advertência traseira para comprimento e largura excedente e
+               limite de velocidade
+
+                                 IV - Sinalização especial de advertência traseira do tipo bipartida
+
+                                 Especificações: dispositivo de segurança autoadesivo aplicado diretamente no veículo ou sobre
+               placa metálica, de madeira ou material com propriedades equivalentes, possuindo faixas inclinadas de 45º
+               da direita para a esquerda e de cima para baixo, com adesivo refletivo na cor preta e laranja
+               alternadamente, com espaçamento máximo de 5,0 cm entre as duas partes sem alterar ou comprometer
+               as letras e formato da sinalização, nas cores preta e laranja, alternadamente. As cores: branca e laranja
+               devem ser em material retrorrefletivo com especificações técnicas constantes no item V deste Anexo.
+
+
+
+
+                                 Figura 8: Sinalização especial de advertência traseira do tipo bipartida
+
+                                 V - Especificações técnicas da sinalização especial retrorrefletiva
+
+                                 1. A sinalização especial deve ser constituída por película autoadesiva aplicada diretamente na
+               traseira do veículo ou sobre placa fixada na traseira.
+
+                                 2. Para atender as necessidades especiais de fixação no veículo, a sinalização especial poderá
+               ser bipartida em seu sentido transversal, contudo, as partes não poderão ter separação maior que 5 cm.
+
+                                 3. Coeficiente de retrorreflexão: os materiais retrorrefletores deverão atender aos coeficientes
+               de retrorrefletividade mínimos definidos na Tabela 1. As medidas devem ser feitas em candelas por lux
+               metro quadrado, de acordo com o método ASTM E810.
+
+                                 Tabela 1 - Coeficientes de retrorrefletividade mínimos
+
+https://www.in.gov.br/en/web/dou/-/resolucao-contran-n-882-de-13-de-dezembro-de-2021-370017699                                                                               22/27
+09/10/2026, 10:29                         RESOLUÇÃO CONTRAN Nº 882, DE 13 DE DEZEMBRO DE 2021 - RESOLUÇÃO CONTRAN Nº 882, DE 13 DE DEZEMBRO DE 2021 - DOU - Imprensa Nacional
+
+
+                ÂNGULO DE OBSERVAÇÃO ÂNGULO DE ENTRADA BRANCA LARANJA VERMELHA
+                0,2                                            -4                                    70        25             14
+                                                               +30                                   30        7              6
+                0,5                                            -4                                    30        13             7,5
+                                                               +30                                   15        4              3
+
+                                 4. Cor e luminância: o material retrorrefletor deverá apresentar os valores de coordenadas de
+               cromaticidade e luminância definidos na Tabela 2, conforme a ASTM D 4956.
+
+                                 Tabela 2 - Coordenadas de cromaticidade e luminância
+
+                COR                   COORDENADAS DE CROMATICIDADE                                                       LUMINÂNCIA Y%
+                                      1                       2                      3                    4
+                                      x           y           x           y          x           y        x    y         MIN         MAX
+                BRANCA                0,303 0,287 0,368 0,353 0,340 0,380 0,274 0,316 27                                             -
+                LARANJA               0,550 0,360 0,630 0,370 0,581 0,418 0,516 0,394 14                                             30
+                VERMELHA 0,613 0,297 0,708 0,292 0,636 0,364 0,558 0,352 2,5                                                         12
+
+                                 5. Durabilidade: a película deverá apresentar desempenho satisfatório para um período de no
+               mínimo 7 anos para as películas especificadas, em exposição normal, vertical e estacionária. Ao final desse
+               período, as películas refletivas devem possuir retrorrefletância residual de no mínimo 50% do valor inicial.
+
+                                 6. O fabricante deve manter a disposição do órgão máximo executivo de trânsito da União
+               certificado de conformidade, emitido por entidade federal, estadual ou do Distrito Federal de pesquisa
+               e/ou ensino, que comprove o atendimento integral do disposto neste Anexo.
+
+                                 7. A sinalização especial deverá conter no canto inferior esquerdo do quadro branco, em área de
+               dimensão máxima de 3 cm X 10 cm com a marca do fabricante da película, nome da entidade que emitiu o
+               certificado de conformidade da película, o número e a data do respectivo certificado.
+
+                                 8. A sinalização especial não poderá conter quaisquer outras inscrições.
+
+                                 ANEXO III
+
+                                 Cálculo da Capacidade de Rampa
+
+
+
+
+                                 Sendo:
+
+                                 i = Rampa máxima em %
+
+                                 G = Peso bruto total combinado (t)
+
+                                 Rr = Resistência ao rolamento (kgf/t)
+
+                                 Ft = Força de tração em kgf, determinada pelo menor valor entre a Força na roda (Fr) e a Força
+               de aderência (Fad), calculados da seguinte forma:
+
+
+
+
+                                 Fr = Força na roda (kgf)
+
+https://www.in.gov.br/en/web/dou/-/resolucao-contran-n-882-de-13-de-dezembro-de-2021-370017699                                                                                  23/27
+09/10/2026, 10:29                      RESOLUÇÃO CONTRAN Nº 882, DE 13 DE DEZEMBRO DE 2021 - RESOLUÇÃO CONTRAN Nº 882, DE 13 DE DEZEMBRO DE 2021 - DOU - Imprensa Nacional
+
+                                 Tm = Torque máximo do motor (kgf x m)
+
+                                 ic = Maior relação de redução da caixa de câmbio
+
+                                 id = Relação de redução no eixo traseiro (total)
+
+                                 Rd = Raio dinâmico do pneu do eixo de tração (m)
+
+                                 Fad = Força de aderência (kgf)
+
+                                 P = Somatório dos pesos incidentes nos eixos de tração (kgf)
+
+                                 u = Coeficiente de atrito pneu x solo
+
+                                 ANEXO IV
+
+                                 Configurações de CVR
+
+
+
+
+                                 Figura 1: Configuração do CVR em viagem carregada
+
+
+
+
+                                 Figura 2: Configuração do CVR com as duas unidades traseiras transportadas pelas duas
+               primeiras unidades
+
+
+
+
+https://www.in.gov.br/en/web/dou/-/resolucao-contran-n-882-de-13-de-dezembro-de-2021-370017699                                                                               24/27
+09/10/2026, 10:29                      RESOLUÇÃO CONTRAN Nº 882, DE 13 DE DEZEMBRO DE 2021 - RESOLUÇÃO CONTRAN Nº 882, DE 13 DE DEZEMBRO DE 2021 - DOU - Imprensa Nacional
+
+
+
+
+                                 Figura 3: Amarração da carga na região posterior por meio de cintas e catracas
+
+
+
+
+                         Figura 4: Amarração das cargas na parte da frente, por meio de sistema de pino-rei e quinta
+               roda e de pino específico
+
+                                 ANEXO V
+
+                                 Desenhos meramente ilustrativos com as dimensões máximas dos veículos articulados e
+               biarticulados de transporte coletivo de passageiros
+
+https://www.in.gov.br/en/web/dou/-/resolucao-contran-n-882-de-13-de-dezembro-de-2021-370017699                                                                               25/27
+09/10/2026, 10:29                      RESOLUÇÃO CONTRAN Nº 882, DE 13 DE DEZEMBRO DE 2021 - RESOLUÇÃO CONTRAN Nº 882, DE 13 DE DEZEMBRO DE 2021 - DOU - Imprensa Nacional
+
+
+
+
+                                 Figura 1 - Veículo articulado
+
+
+
+
+                                 Figura 2 - Veículo biarticulado
+
+                                 ANEXO VI
+
+                                 1. OBJETIVO
+
+                                 Estabelecer requisitos para inscrição indicativa e obrigatória dos pesos e capacidades
+               registrados, conforme definidos a seguir.
+
+                                 2. APLICAÇÃO
+
+                                 2.1 Informações mínimas para veículos de tração, de carga, especiais e transporte coletivo de
+               passageiros, com PBT acima de 3.500 kg.
+
+                                 2.1.1 Veículo automotor novo acabado: tara, lotação, PBT, peso por eixo e CMT;
+
+                                 2.1.2 Veículo automotor novo inacabado: PBT, peso por eixo e CMT;
+
+                                 2.1.3 Veículo automotor novo que recebeu carroçaria ou implemento: tara e lotação, em
+               complemento às características informadas pelo fabricante ou importador do veículo;
+
+                                 2.1.4 Veículo automotor novo que teve alterado o número de eixos ou sua(s) capacidade(s): tara,
+               lotação, peso por eixo e PBT, em complemento às características informadas pelo fabricante ou
+               importador do veículo;
+
+                                 2.1.5 Veículo automotor já licenciado que teve alterada sua estrutura, número de eixos ou sua(s)
+               capacidade(s): tara, lotação, PBT e peso por eixo, respeitada a CMT, em complemento às características
+               informadas pelo fabricante ou importador do veículo;
+
+                                 2.1.6 Reboque e semirreboque, novo ou alterado: tara, lotação, peso por eixo e PBT.
+
+                                 2.2 Informações mínimas para veículos de tração, de carga, especiais e de transporte coletivo
+               de passageiros, com PBT de até 3.500 kg.
+
+                                 2.2.1 Todas as constantes nos itens de 2.1.1 a 2.1.6.
+
+                                 Observação: as informações complementares devem atender aos requisitos do item 3 deste
+               anexo, em campo distinto das informações originais do fabricante ou importador do veículo.
+
+                                 3 REQUISITOS
+
+                                 3.1 Específicos:
+
+                                 3.1.1 As indicações referentes ao item 2 serão inscritas em plaqueta ou em etiqueta adesiva
+               resistente à ação do tempo;
+
+                                 3.1.2 As indicações serão inscritas em fundo claro ou escuro, adotados caracteres alfanuméricos
+               contrastantes, com altura não inferior a 3 mm.
+
+                                 3.1.3 Poderão ser usados letras ou números inscritos em alto ou baixo relevo, sem necessidade
+               de contraste de cor.
+
+                                 3.2 Normas gerais.
+
+
+
+https://www.in.gov.br/en/web/dou/-/resolucao-contran-n-882-de-13-de-dezembro-de-2021-370017699                                                                               26/27
+09/10/2026, 10:29                      RESOLUÇÃO CONTRAN Nº 882, DE 13 DE DEZEMBRO DE 2021 - RESOLUÇÃO CONTRAN Nº 882, DE 13 DE DEZEMBRO DE 2021 - DOU - Imprensa Nacional
+
+                                 3.2.1 A indicação nos veículos automotores de tração, de carga e especiais será inscrita ou
+               afixada em um dos seguintes locais, assegurada a facilidade de visualização.
+
+                                 3.2.1.1 Na coluna de qualquer porta, junto às dobradiças, ou no lado da fechadura.
+
+                                 3.2.1.2 Na borda de qualquer porta.
+
+                                 3.2.1.3 Na parte inferior do assento, voltada para porta.
+
+                                 3.2.1.4 Na superfície interna de qualquer porta.
+
+                                 3.2.1.5 No painel de instrumentos.
+
+                                 3.2.2 Nos veículos destinados ao transporte coletivo de passageiros, a indicação deverá ser
+               afixada na parte frontal interna acima do para-brisa ou na parte superior da divisória da cabina de comando
+               do lado do condutor. Na impossibilidade técnica ou ausência de local para fixação, poderão ser utilizados
+               os mesmos locais previstos para os veículos de carga, tração e especiais.
+
+                                 3.2.3 Nos reboques e semirreboques, a indicação deverá ser afixada na parte externa da
+               carroçaria na lateral dianteira.
+
+                                 3.2.4 Nos implementos montados sobre chassi de veículo de carga e especiais, a indicação
+               deverá ser afixada na parte externa, em sua lateral dianteira.
+
+               Este conteúdo não substitui o publicado na versão certificada.
+
+
+
+
+https://www.in.gov.br/en/web/dou/-/resolucao-contran-n-882-de-13-de-dezembro-de-2021-370017699                                                                               27/27
+
