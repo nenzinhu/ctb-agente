@@ -6,7 +6,7 @@ import {
   MigrationPendingError,
   deleteDocument,
   isMissingSchemaError,
-  listDocuments,
+  listDocumentsWithQualityStatus,
   type Colecao,
   type DocumentoRegistro,
   type GrupoLegado,
@@ -64,6 +64,7 @@ export async function GET(request: NextRequest) {
         legado: [],
         pendentesVetor: 0,
         migracaoPendente: false,
+        migracaoQualidadePendente: false,
         bancoConfigurado: false,
         message: 'Banco não configurado: defina NEXT_PUBLIC_SUPABASE_URL e SUPABASE_SERVICE_ROLE_KEY.',
       },
@@ -75,8 +76,11 @@ export async function GET(request: NextRequest) {
   try {
     let documentos: DocumentoRegistro[] = [];
     let migracaoPendente = false;
+    let migracaoQualidadePendente = false;
     try {
-      documentos = await listDocuments(colecao);
+      const lista = await listDocumentsWithQualityStatus(colecao);
+      documentos = lista.documentos;
+      migracaoQualidadePendente = lista.migracaoQualidadePendente;
     } catch (error) {
       if (!(error instanceof MigrationPendingError)) throw error;
       migracaoPendente = true;
@@ -88,7 +92,14 @@ export async function GET(request: NextRequest) {
     ]);
 
     return NextResponse.json(
-      { documentos, legado, pendentesVetor, migracaoPendente, bancoConfigurado: true },
+      {
+        documentos,
+        legado,
+        pendentesVetor,
+        migracaoPendente,
+        migracaoQualidadePendente,
+        bancoConfigurado: true,
+      },
       { status: 200 }
     );
   } catch (error) {

@@ -23,7 +23,8 @@ jest.mock('next/headers', () => ({
   })),
 }));
 
-const respostas: Record<string, { data: unknown; error: unknown; count?: number }> = {};
+type RespostaBanco = { data: unknown; error: unknown; count?: number };
+const respostas: Record<string, RespostaBanco | RespostaBanco[]> = {};
 let dbConfigurado = true;
 
 // Relative path on purpose: jest.mock resolves module ids with the default
@@ -31,8 +32,13 @@ let dbConfigurado = true;
 jest.mock('../../lib/db/client', () => {
   const builder = (tabela: string) => {
     const chain: Record<string, unknown> = {};
-    const resultado = () =>
-      Promise.resolve(respostas[tabela] ?? { data: null, error: null, count: 0 });
+    const resultado = () => {
+      const configurada = respostas[tabela];
+      if (Array.isArray(configurada)) {
+        return Promise.resolve(configurada.shift() ?? { data: null, error: null, count: 0 });
+      }
+      return Promise.resolve(configurada ?? { data: null, error: null, count: 0 });
+    };
 
     chain.select = () => chain;
     chain.order = () => chain;
@@ -206,7 +212,47 @@ describe('Admin API', () => {
         ],
         pendentesVetor: 3,
         migracaoPendente: false,
+        migracaoQualidadePendente: false,
         bancoConfigurado: true,
+      });
+    });
+
+    it('mantém documentos legados visíveis quando a migration 011 está pendente', async () => {
+      await login(requisicao('/api/admin/login', { username: 'nenzinhu', password: 'x' }));
+      const legado = {
+        id: 'd-antigo',
+        colecao: 'ctb',
+        titulo: 'CTB anterior',
+        nome_arquivo: 'ctb.pdf',
+        formato: 'pdf',
+        norma_id: 'ctb',
+        tipo: 'lei',
+        paginas: 10,
+        caracteres: 500,
+        trechos: 20,
+        trechos_sem_vetor: 2,
+        criado_em: '2026-01-01T00:00:00.000Z',
+        atualizado_em: '2026-01-01T00:00:00.000Z',
+      };
+      respostas.documentos = [
+        { data: null, error: { code: 'PGRST204', message: "Could not find the 'fonte_oficial' column" } },
+        { data: [legado], error: null },
+      ];
+      respostas.dispositivos = { data: [], error: null, count: 0 };
+
+      const resposta = await listar('?colecao=ctb');
+      expect(resposta.status).toBe(200);
+      await expect(resposta.json()).resolves.toMatchObject({
+        documentos: [{
+          ...legado,
+          fonte_oficial: null,
+          versao: null,
+          vigente_desde: null,
+          conferido_em: null,
+          situacao: 'revisar',
+        }],
+        migracaoPendente: false,
+        migracaoQualidadePendente: true,
       });
     });
 

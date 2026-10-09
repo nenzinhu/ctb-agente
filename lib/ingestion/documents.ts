@@ -4,6 +4,7 @@
 // a document removes its excerpts (ON DELETE CASCADE).
 import crypto from 'crypto';
 import { databaseConfigured, supabaseAdmin } from '@/lib/db/client';
+import type { SituacaoFonte } from '@/lib/quality/types';
 import type { FormatoDocumento } from './formats';
 
 export type Colecao = 'ctb' | 'pop';
@@ -22,6 +23,11 @@ export interface DocumentoRegistro {
   caracteres: number;
   trechos: number;
   trechos_sem_vetor: number;
+  fonte_oficial: string | null;
+  versao: string | null;
+  vigente_desde: string | null;
+  conferido_em: string | null;
+  situacao: SituacaoFonte;
   criado_em: string;
   atualizado_em: string;
 }
@@ -39,6 +45,7 @@ export interface DocumentosResposta {
   legado: GrupoLegado[];
   pendentesVetor: number;
   migracaoPendente: boolean;
+  migracaoQualidadePendente: boolean;
   bancoConfigurado: boolean;
   message?: string;
 }
@@ -79,24 +86,46 @@ export function tituloDoArquivo(fileName: string): string {
   return (limpo || 'Documento').slice(0, 200);
 }
 
-const CAMPOS =
+const CAMPOS_LEGADOS =
   'id, colecao, titulo, nome_arquivo, formato, norma_id, tipo, paginas, caracteres, trechos, trechos_sem_vetor, criado_em, atualizado_em';
+const CAMPOS = `${CAMPOS_LEGADOS}, fonte_oficial, versao, vigente_desde, conferido_em, situacao`;
+
+function normalizarDocumento(registro: Record<string, unknown>): DocumentoRegistro {
+  return {
+    ...registro,
+    fonte_oficial: typeof registro.fonte_oficial === 'string' ? registro.fonte_oficial : null,
+    versao: typeof registro.versao === 'string' ? registro.versao : null,
+    vigente_desde: typeof registro.vigente_desde === 'string' ? registro.vigente_desde : null,
+    conferido_em: typeof registro.conferido_em === 'string' ? registro.conferido_em : null,
+    situacao: registro.situacao === 'vigente' || registro.situacao === 'substituido'
+      ? registro.situacao
+      : 'revisar',
+  } as DocumentoRegistro;
+}
 
 /**
  * @returns The document with this content in the collection, if any
  */
 export async function findDocumentByHash(colecao: Colecao, hash: string): Promise<DocumentoRegistro | null> {
-  const { data, error } = await supabaseAdmin
+  let { data, error } = await supabaseAdmin
     .from('documentos')
     .select(CAMPOS)
     .eq('colecao', colecao)
     .eq('hash_conteudo', hash)
     .maybeSingle();
+  if (error && isMissingSchemaError(error)) {
+    ({ data, error } = await supabaseAdmin
+      .from('documentos')
+      .select(CAMPOS_LEGADOS)
+      .eq('colecao', colecao)
+      .eq('hash_conteudo', hash)
+      .maybeSingle());
+  }
   if (error) {
     if (isMissingSchemaError(error)) throw new MigrationPendingError();
     throw new Error(error.message);
   }
-  return (data as DocumentoRegistro | null) ?? null;
+  return data ? normalizarDocumento(data as Record<string, unknown>) : null;
 }
 
 export interface NovoDocumento {
@@ -109,6 +138,11 @@ export interface NovoDocumento {
   caracteres: number;
   normaId?: string;
   tipo?: string;
+  fonteOficial?: string;
+  versao?: string;
+  vigenteDesde?: string;
+  conferidoEm?: string;
+  situacao?: SituacaoFonte;
 }
 
 /**
@@ -128,6 +162,11 @@ export async function createDocument(novo: NovoDocumento): Promise<DocumentoRegi
       caracteres: novo.caracteres,
       norma_id: novo.normaId ?? null,
       tipo: novo.tipo ?? null,
+      fonte_oficial: novo.fonteOficial ?? null,
+      versao: novo.versao ?? null,
+      vigente_desde: novo.vigenteDesde ?? null,
+      conferido_em: novo.conferidoEm ?? null,
+      situacao: novo.situacao ?? 'revisar',
     })
     .select(CAMPOS)
     .single();
@@ -135,7 +174,7 @@ export async function createDocument(novo: NovoDocumento): Promise<DocumentoRegi
     if (isMissingSchemaError(error)) throw new MigrationPendingError();
     throw new Error(`Não foi possível registrar o documento: ${error.message}`);
   }
-  return data as DocumentoRegistro;
+  return normalizarDocumento(data as Record<string, unknown>);
 }
 
 /**
@@ -188,15 +227,42 @@ export async function deleteDocument(id: string): Promise<boolean> {
  * @param colecao - Only this collection (all when omitted)
  * @returns Documents, newest first
  */
-export async function listDocuments(colecao?: Colecao): Promise<DocumentoRegistro[]> {
-  if (!databaseConfigured) return [];
+export interface ListaDocumentosResultado {
+  documentos: DocumentoRegistro[];
+  migracaoQualidadePendente: boolean;
+}
+
+export async function listDocumentsWithQualityStatus(colecao?: Colecao): Promise<ListaDocumentosResultado> {
+  if (!databaseConfigured) return { documentos: [], migracaoQualidadePendente: false };
   let query = supabaseAdmin.from('documentos').select(CAMPOS).order('criado_em', { ascending: false }).limit(500);
   if (colecao) query = query.eq('colecao', colecao);
 
-  const { data, error } = await query;
+  const respostaAtual = await query;
+  let data: Record<string, unknown>[] | null = respostaAtual.data as Record<string, unknown>[] | null;
+  let error = respostaAtual.error;
+  let migracaoQualidadePendente = false;
+  if (error && isMissingSchemaError(error)) {
+    migracaoQualidadePendente = true;
+    let queryLegada = supabaseAdmin
+      .from('documentos')
+      .select(CAMPOS_LEGADOS)
+      .order('criado_em', { ascending: false })
+      .limit(500);
+    if (colecao) queryLegada = queryLegada.eq('colecao', colecao);
+    const respostaLegada = await queryLegada;
+    data = respostaLegada.data as Record<string, unknown>[] | null;
+    error = respostaLegada.error;
+  }
   if (error) {
     if (isMissingSchemaError(error)) throw new MigrationPendingError();
     throw new Error(error.message);
   }
-  return (data ?? []) as DocumentoRegistro[];
+  return {
+    documentos: (data ?? []).map(normalizarDocumento),
+    migracaoQualidadePendente,
+  };
+}
+
+export async function listDocuments(colecao?: Colecao): Promise<DocumentoRegistro[]> {
+  return (await listDocumentsWithQualityStatus(colecao)).documentos;
 }
