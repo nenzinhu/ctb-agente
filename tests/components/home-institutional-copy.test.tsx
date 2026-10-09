@@ -7,6 +7,19 @@ jest.mock('next/navigation', () => ({
   },
 }));
 
+beforeAll(() => {
+  window.matchMedia = jest.fn().mockImplementation((query: string) => ({
+    matches: false,
+    media: query,
+    onchange: null,
+    addEventListener: jest.fn(),
+    removeEventListener: jest.fn(),
+    addListener: jest.fn(),
+    removeListener: jest.fn(),
+    dispatchEvent: jest.fn(),
+  }));
+});
+
 describe('apresentação institucional da página inicial', () => {
   it('explica o propósito de campo e orienta a conferência oficial', () => {
     render(<Home />);
