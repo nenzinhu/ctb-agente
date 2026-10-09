@@ -44,7 +44,7 @@ export function avaliarProntidao(input: AvaliacaoProntidao): ResultadoProntidao 
   if (fontePendente) motivosAtencao.push('Há metadados oficiais incompletos ou fonte pendente de revisão.');
   if (input.documentos > input.fontes.length) motivosAtencao.push('Existem documentos sem metadados oficiais associados.');
 
-  if (!input.buscaSemanticaDisponivel) {
+  if (input.vetoresAplicaveis && !input.buscaSemanticaDisponivel) {
     motivosAtencao.push('Busca textual pronta; busca semântica indisponível.');
   } else if (input.vetoresAplicaveis && input.trechosSemVetor > 0) {
     motivosAtencao.push(`${input.trechosSemVetor} trecho(s) ainda não possuem vetor semântico.`);

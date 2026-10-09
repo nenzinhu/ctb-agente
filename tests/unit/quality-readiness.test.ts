@@ -40,7 +40,7 @@ describe('prontidão da base', () => {
   it('não finge 100% quando a busca semântica está indisponível', () => {
     const resultado = avaliarProntidao({
       ...base,
-      vetoresAplicaveis: false,
+      vetoresAplicaveis: true,
       buscaSemanticaDisponivel: false,
       trechosSemVetor: 100,
     });
