@@ -52,8 +52,8 @@ describe('Página de pesos e dimensões', () => {
     await userEvent.click(screen.getByRole('radio', { name: /balança/i }));
     expect(screen.queryByLabelText(/peso da carga na nota/i)).not.toBeInTheDocument();
     expect(screen.getByLabelText(/peso total aferido/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/eixo dianteiro/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/tandem traseiro/i)).toBeInTheDocument();
+    expect(screen.getByRole('textbox', { name: /eixo dianteiro/i })).toBeInTheDocument();
+    expect(screen.getByRole('textbox', { name: /tandem traseiro/i })).toBeInTheDocument();
   });
 
   it('consulta o professor de pesos e mantém as fontes visíveis', async () => {

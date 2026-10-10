@@ -55,7 +55,7 @@ export default function SeletorConfiguracao({ valor, onChange }: Props) {
         aria-haspopup="listbox"
         aria-expanded={aberto}
         onClick={() => setAberto((estado) => !estado)}
-        className="flex min-h-20 w-full items-center gap-3 rounded-control border-2 border-ds-border bg-ds-surface px-3 py-2 text-left shadow-sm transition hover:border-ds-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ds-primary"
+        className="flex min-h-24 w-full items-center gap-3 rounded-control border-2 border-ds-border bg-ds-surface px-3 py-2 text-left shadow-sm transition hover:border-ds-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ds-primary"
       >
         <DesenhoVeiculo configuracao={selecionada} compacto />
         <span className="min-w-0 flex-1">
@@ -84,7 +84,7 @@ export default function SeletorConfiguracao({ valor, onChange }: Props) {
                 onChange(configuracao.id);
                 fechar();
               }}
-              className="mb-1 flex min-h-20 w-full items-center gap-3 rounded-control border border-transparent px-2 py-2 text-left last:mb-0 hover:border-ds-primary hover:bg-ds-soft focus-visible:border-ds-primary focus-visible:bg-ds-soft focus-visible:outline-none aria-selected:border-ds-accent aria-selected:bg-ds-accent/10"
+              className="mb-1 flex min-h-24 w-full items-center gap-3 rounded-control border border-transparent px-2 py-2 text-left last:mb-0 hover:border-ds-primary hover:bg-ds-soft focus-visible:border-ds-primary focus-visible:bg-ds-soft focus-visible:outline-none aria-selected:border-ds-accent aria-selected:bg-ds-accent/10"
             >
               <DesenhoVeiculo configuracao={configuracao} compacto />
               <span className="min-w-0 flex-1">
