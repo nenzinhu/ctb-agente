@@ -1,5 +1,5 @@
-import { buscarFichas } from '@/lib/mbft/fichas';
-import { buscarPops } from '@/lib/pop/pops';
+import { buscarFichas, buscarFichasComScore } from '@/lib/mbft/fichas';
+import { buscarPops, buscarPopsComScore } from '@/lib/pop/pops';
 import { buscarNoIndice, criarIndiceBusca, similaridadePalavra, trechoDaConsulta } from '@/lib/search/lexical';
 import { normalizarBusca } from '@/lib/search/sinonimos';
 
@@ -83,6 +83,19 @@ describe('recuperação no corpus oficial: variações da consulta', () => {
 });
 
 describe('limites da aproximação lexical', () => {
+  it('expõe método e confiança do matcher em POP e MBFT', () => {
+    expect(buscarPopsComScore('baculejo', 1)[0]).toMatchObject({
+      item: { numero: '002' },
+      metodoEncontrado: 'giria_exata',
+    });
+    expect(buscarFichasComScore('dar grau', 1)[0]).toMatchObject({
+      item: { codigo: '705-61' },
+      metodoEncontrado: 'giria_exata',
+    });
+    expect(buscarPops('baculejo', 1)[0]).toMatchObject({ scoreConfianca: 98, metodoEncontrado: 'giria_exata' });
+    expect(buscarFichas('dar grau', 1)[0]).toMatchObject({ scoreConfianca: 98, metodoEncontrado: 'giria_exata' });
+  });
+
   it('preserva a negação nas abreviações do manual', () => {
     expect(normalizarBusca('condutor s/ capacete e c/ passageiro')).toBe('condutor sem capacete e com passageiro');
   });

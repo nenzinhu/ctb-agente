@@ -77,6 +77,14 @@ interface OpcaoFicha {
   campos: MbftFields | null;
 }
 
+const ROTULO_METODO: Record<string, string> = {
+  giria_exata: 'gíria exata',
+  fuzzy_giria: 'gíria aproximada',
+  fuzzy_oficial: 'nome oficial aproximado',
+  identificador_exato: 'identificador exato',
+  contexto_lexical: 'contexto da descrição',
+};
+
 function resumo(texto: string | null, limite = 70): string {
   if (!texto) return '';
   return texto.length > limite ? `${texto.slice(0, limite)}…` : texto;
@@ -132,6 +140,11 @@ function FichaEscolhida({ card }: { card: CartaoEstruturado }) {
             }))}
           />
         </div>
+      )}
+      {typeof atual.oficial?.scoreConfianca === 'number' && (
+        <p className="badge-neutral w-fit print:hidden">
+          {atual.oficial.scoreConfianca}% · {ROTULO_METODO[atual.oficial.metodoEncontrado ?? ''] ?? 'correspondência'}
+        </p>
       )}
       <FichaFiscalizacao card={atual.card} campos={atual.campos} oficial={atual.oficial} />
     </div>

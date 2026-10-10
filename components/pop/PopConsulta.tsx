@@ -23,6 +23,14 @@ const EXEMPLOS = [
   'Revista pessoal',
 ];
 
+const ROTULO_METODO: Record<string, string> = {
+  giria_exata: 'gíria exata',
+  fuzzy_giria: 'gíria aproximada',
+  fuzzy_oficial: 'nome oficial aproximado',
+  identificador_exato: 'identificador exato',
+  contexto_lexical: 'contexto da descrição',
+};
+
 function Fonte({ fonte }: { fonte: FontePop }) {
   const [aberta, setAberta] = useState(false);
   const longo = fonte.texto.length > 320;
@@ -50,7 +58,7 @@ function Fonte({ fonte }: { fonte: FontePop }) {
 }
 
 /** The matching POPs in standard form, with a picker when there are several */
-function PopsEncontrados({ pops }: { pops: Pop[] }) {
+export function PopsEncontrados({ pops }: { pops: Pop[] }) {
   const [indice, setIndice] = useState(0);
   const atual = pops[Math.min(indice, pops.length - 1)];
   return (
@@ -63,6 +71,9 @@ function PopsEncontrados({ pops }: { pops: Pop[] }) {
             hint="Confira os procedimentos encontrados e selecione qual deseja ler."
             options={pops.map((pop, i) => ({ value: String(i), title: `POP ${pop.numero}`, description: pop.titulo }))}
           />
+      )}
+      {typeof atual.scoreConfianca === 'number' && (
+        <p className="badge-neutral w-fit">{atual.scoreConfianca}% · {ROTULO_METODO[atual.metodoEncontrado ?? ''] ?? 'correspondência'}</p>
       )}
       <FichaPop pop={atual} />
     </div>

@@ -18,6 +18,10 @@ describe('POST /api/fatos-pmsc', () => {
     expect(body.decisaoAutomatica).toBe(false);
     expect(body.alternativas.length).toBeLessThanOrEqual(3);
     expect(body.alternativas[0].natureza).toMatch(/sossego/i);
+    expect(body.alternativas[0]).toMatchObject({
+      scoreConfianca: expect.any(Number),
+      metodoEncontrado: 'giria_exata',
+    });
   });
 
   it('valida a consulta, filtra PII e desabilita cache', async () => {

@@ -3,6 +3,7 @@
 // input is the text of each page as positioned lines (x of every fragment),
 // produced by scripts/importar-mbft.ts with pdf.js. Every sheet has the same
 // fixed layout, so fields are found by label and columns by x position.
+import type { MetodoEncontrado } from '../search/domain-matcher';
 
 export interface FichaMbft {
   /** "751-01": code and desdobramento, as printed */
@@ -25,6 +26,8 @@ export interface FichaMbft {
   informacoesComplementares: string[];
   /** First PDF page of the sheet */
   pagina: number;
+  scoreConfianca?: number;
+  metodoEncontrado?: MetodoEncontrado;
 }
 
 export interface Fragmento {

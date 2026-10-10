@@ -1,5 +1,5 @@
 import { lerFatosPmsc, type FragmentoPdf } from '@/lib/fatos-pmsc/parser';
-import { buscarFatosPmsc } from '@/lib/fatos-pmsc/fatos';
+import { buscarFato, buscarFatosPmsc, buscarFatosPmscComScore } from '@/lib/fatos-pmsc/fatos';
 import type { FatoPmsc } from '@/lib/fatos-pmsc/parser';
 
 const pagina: FragmentoPdf[] = [
@@ -60,5 +60,28 @@ describe('catálogo Lista de Fatos PMSC Mobile', () => {
       'Acidente de trânsito (Com pessoa ferida ou morta)',
       'Lesão corporal culposa em acidente de trânsito',
     ]));
+  });
+
+  it('retorna confiança e método para gíria, erro e natureza oficial', () => {
+    const fatos = [
+      ...FATOS,
+      { grupo: 'Drogas', natureza: 'Tráfico de drogas', potencialOfensivo: 'Maior', pagina: 25, versao: '10/06/2019' as const },
+      { grupo: 'Arma de fogo', natureza: 'Porte ou posse de arma branca ou simulacro', potencialOfensivo: 'Menor', pagina: 2, versao: '10/06/2019' as const },
+    ];
+
+    expect(buscarFatosPmscComScore('boca de fumo', 3, fatos)[0]).toMatchObject({
+      fato: { natureza: 'Tráfico de drogas' },
+      metodoEncontrado: 'giria_exata',
+      scoreConfianca: expect.any(Number),
+    });
+    expect(buscarFatosPmscComScore('porte de arma brnaca', 3, fatos)[0]).toMatchObject({
+      fato: { natureza: 'Porte ou posse de arma branca ou simulacro' },
+      metodoEncontrado: 'fuzzy_giria',
+    });
+    expect(buscarFato('xyzqwerty', fatos)).toEqual({
+      natureza_oficial: 'Fato não identificado com segurança',
+      score_confianca: 0,
+      metodo_encontrado: 'nao_identificado',
+    });
   });
 });

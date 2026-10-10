@@ -6,6 +6,8 @@ import { normalizarBusca } from '@/lib/search/sinonimos';
 import { buscarNoIndice, criarIndiceBusca, type IndiceBusca } from '@/lib/search/lexical';
 import type { FichaMbft } from './parser';
 import { codigoMbft, extractArticleRef } from '@/lib/query/router';
+import { FatoMatcher, type ResultadoMatcher } from '@/lib/search/domain-matcher';
+import { ALIASES_MBFT } from '@/lib/search/domain-aliases';
 
 let cache: FichaMbft[] | null = null;
 
@@ -24,6 +26,7 @@ export function todasAsFichas(): FichaMbft[] {
 
 const normalizar = normalizarBusca;
 const indices = new WeakMap<FichaMbft[], IndiceBusca<FichaMbft>>();
+const matchers = new WeakMap<FichaMbft[], FatoMatcher<FichaMbft>>();
 
 function indiceDasFichas(fichas: FichaMbft[]): IndiceBusca<FichaMbft> {
   let indice = indices.get(fichas);
@@ -43,6 +46,21 @@ function indiceDasFichas(fichas: FichaMbft[]): IndiceBusca<FichaMbft> {
   return indice;
 }
 
+function matcherDasFichas(fichas: FichaMbft[]): FatoMatcher<FichaMbft> {
+  let matcher = matchers.get(fichas);
+  if (!matcher) {
+    matcher = new FatoMatcher({
+      itens: fichas,
+      obterId: (ficha) => ficha.codigo,
+      obterRotulo: (ficha) => ficha.tipificacaoResumida,
+      aliases: ALIASES_MBFT,
+      limiar: 76,
+    });
+    matchers.set(fichas, matcher);
+  }
+  return matcher;
+}
+
 /** "art. 181, XVII" → { artigo: "181", inciso: "xvii" } */
 function referencia(consulta: string): { artigo: string; resto: string[] } | null {
   const ref = extractArticleRef(consulta);
@@ -60,25 +78,52 @@ function referencia(consulta: string): { artigo: string; resto: string[] } | nul
  * @param limite - Maximum sheets
  */
 export function buscarFichas(consulta: string, limite = 8, fichas = todasAsFichas()): FichaMbft[] {
+  return buscarFichasComScore(consulta, limite, fichas).map(({ item, scoreConfianca, metodoEncontrado }) => ({
+    ...item,
+    scoreConfianca,
+    metodoEncontrado,
+  }));
+}
+
+export function buscarFichasComScore(consulta: string, limite = 8, fichas = todasAsFichas()): ResultadoMatcher<FichaMbft>[] {
   const texto = consulta.trim();
   if (!texto || limite <= 0) return [];
 
   const codigo = codigoMbft(texto);
   // A complete identifier is authoritative, even when absent from the corpus.
   // Never silently substitute a different legal desdobramento.
-  if (codigo) return fichas.filter((f) => f.codigo === codigo).slice(0, Math.max(0, limite));
+  if (codigo) return fichas.filter((f) => f.codigo === codigo).slice(0, Math.max(0, limite)).map((item) => ({
+    item,
+    scoreConfianca: 100,
+    metodoEncontrado: 'identificador_exato',
+    termosCorrespondentes: [codigo],
+  }));
 
   const ref = referencia(texto);
   if (ref) {
     const doArtigo = fichas.filter((f) => new RegExp(`\\bart\\.?\\s*${ref.artigo}\\b(?!-)`).test(normalizar(f.amparoLegal)));
     if (doArtigo.length) {
-      if (ref.resto.length === 0) return doArtigo.slice(0, limite);
+      if (ref.resto.length === 0) return doArtigo.slice(0, limite).map((item) => ({
+        item, scoreConfianca: 100, metodoEncontrado: 'identificador_exato' as const, termosCorrespondentes: [ref.artigo],
+      }));
       const partes = (f: FichaMbft) => normalizar(f.amparoLegal).split(/[^a-z0-9º]+/);
       const exatas = doArtigo.filter((f) => ref.resto.every((p) => partes(f).includes(p)));
-      return exatas.slice(0, Math.max(0, limite));
+      return exatas.slice(0, Math.max(0, limite)).map((item) => ({
+        item, scoreConfianca: 100, metodoEncontrado: 'identificador_exato' as const, termosCorrespondentes: [ref.artigo, ...ref.resto],
+      }));
     }
     return [];
   }
 
-  return buscarNoIndice(texto, indiceDasFichas(fichas), limite);
+  const porMatcher = matcherDasFichas(fichas).buscar(texto, limite);
+  const codigosMatcher = new Set(porMatcher.map((resultado) => resultado.item.codigo));
+  const porContexto = buscarNoIndice(texto, indiceDasFichas(fichas), limite)
+    .filter((ficha) => !codigosMatcher.has(ficha.codigo))
+    .map((item, indice) => ({
+      item,
+      scoreConfianca: Math.max(76, 88 - indice * 3),
+      metodoEncontrado: 'contexto_lexical' as const,
+      termosCorrespondentes: [],
+    }));
+  return [...porMatcher, ...porContexto].slice(0, limite);
 }

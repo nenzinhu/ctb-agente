@@ -3,6 +3,7 @@
 // produced by scripts/importar-pops.ts with pdf.js. Every POP has the same
 // form: a header (title, number, dates, execução) and fixed sections.
 import type { Linha, Pagina } from '../mbft/parser';
+import type { MetodoEncontrado } from '../search/domain-matcher';
 
 export interface ItemPop {
   texto: string;
@@ -31,6 +32,8 @@ export interface Pop {
   anexos: ItemPop[];
   /** First PDF page of the POP */
   pagina: number;
+  scoreConfianca?: number;
+  metodoEncontrado?: MetodoEncontrado;
 }
 
 type Secao = 'material' | 'fundamentacao' | 'sequencia' | 'atividadesCriticas' | 'errosEvitar' | 'anexos';

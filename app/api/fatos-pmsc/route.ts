@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { z, ZodError } from 'zod';
-import { buscarFatosPmsc, todosOsFatosPmsc } from '@/lib/fatos-pmsc/fatos';
+import { buscarFatosPmscComScore, todosOsFatosPmsc } from '@/lib/fatos-pmsc/fatos';
 import { combinarFatosComRag } from '@/lib/fatos-pmsc/rag';
 import { filterPII } from '@/lib/query/pii-filter';
 import { buscarTrechos } from '@/lib/search/trechos';
@@ -15,15 +15,21 @@ export async function POST(request: NextRequest) {
     const { consulta } = Schema.parse(await request.json());
     const filtrada = filterPII(consulta).trim();
     const catalogo = todosOsFatosPmsc();
-    const locais = buscarFatosPmsc(filtrada, 3, catalogo);
+    const locaisPontuados = buscarFatosPmscComScore(filtrada, 3, catalogo);
+    const locais = locaisPontuados.map((resultado) => resultado.fato);
     const trechos = await buscarTrechos(filtrada, 'natureza_potencial', 6).catch((error) => {
       console.warn('RAG de naturezas indisponível; usando catálogo local:', error);
       return [];
     });
-    const alternativas = combinarFatosComRag(locais, trechos, catalogo).map(({ fato, origem }, indice) => ({
-      ...fato,
-      compatibilidade: indice === 0 && origem === 'local' ? 'mais compatível' : 'alternativa próxima',
-    }));
+    const alternativas = combinarFatosComRag(locais, trechos, catalogo).map(({ fato, origem }, indice) => {
+      const pontuacao = locaisPontuados.find((resultado) => resultado.fato.natureza === fato.natureza);
+      return {
+        ...fato,
+        compatibilidade: indice === 0 && origem === 'local' ? 'mais compatível' : 'alternativa próxima',
+        scoreConfianca: pontuacao?.scoreConfianca ?? 72,
+        metodoEncontrado: pontuacao?.metodoEncontrado ?? 'contexto_lexical',
+      };
+    });
     return NextResponse.json({ alternativas, decisaoAutomatica: false }, { headers: semCache });
   } catch (error) {
     const validacao = error instanceof ZodError;

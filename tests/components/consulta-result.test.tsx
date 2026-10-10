@@ -244,4 +244,11 @@ describe('ConsultaResult', () => {
     expect(within(screen.getByRole('article', { name: 'Ficha de Fiscalização' })).getByText('Dirigir sob a influência de álcool.')).toBeInTheDocument();
     expect(screen.getByText(/Ficha do MBFT \(Volume I\), página \d+/)).toBeInTheDocument();
   });
+
+  it('mostra confiança e método do enquadramento encontrado por gíria', () => {
+    const oficiais = buscarFichas('dar grau', 1);
+    render(<ConsultaResult card={{ ...mockCard, enquadramento: null, fichas_mbft: oficiais }} />);
+
+    expect(screen.getByText(/98%.*gíria exata/i)).toBeInTheDocument();
+  });
 });

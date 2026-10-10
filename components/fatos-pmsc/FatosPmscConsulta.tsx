@@ -13,7 +13,17 @@ interface Alternativa {
   potencialOfensivo: string;
   versao: string;
   compatibilidade: string;
+  scoreConfianca?: number;
+  metodoEncontrado?: string;
 }
+
+const NOMES_METODO: Record<string, string> = {
+  giria_exata: 'gíria exata',
+  fuzzy_giria: 'gíria aproximada',
+  fuzzy_oficial: 'nome oficial aproximado',
+  identificador_exato: 'identificador exato',
+  contexto_lexical: 'contexto da descrição',
+};
 
 const EXEMPLOS = ['som alto', 'perdeu os documentos', 'acidente só com danos', 'vias de fato'];
 
@@ -96,7 +106,12 @@ export default function FatosPmscConsulta() {
             <div className="grid gap-4 lg:grid-cols-3">
               {alternativas.map((item) => (
                 <article key={`${item.grupo}:${item.natureza}`} className="mobile-result-card card card-pad min-w-0">
-                  <span className="badge-brand">{item.compatibilidade}</span>
+                  <div className="flex flex-wrap items-center gap-2">
+                    <span className="badge-brand">{item.compatibilidade}</span>
+                    {typeof item.scoreConfianca === 'number' && (
+                      <span className="badge-neutral">{item.scoreConfianca}% · {NOMES_METODO[item.metodoEncontrado ?? ''] ?? 'correspondência'}</span>
+                    )}
+                  </div>
                   <h3 className="mt-3 text-lg font-semibold leading-snug text-ds-text">{item.natureza}</h3>
                   <dl className="mt-4 space-y-3 text-sm">
                     <div><dt className="font-semibold text-ds-subtle">Grupo</dt><dd>{item.grupo}</dd></div>

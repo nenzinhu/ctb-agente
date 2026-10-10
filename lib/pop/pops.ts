@@ -5,6 +5,8 @@ import path from 'node:path';
 import { buscarNoIndice, criarIndiceBusca, palavrasBusca, type IndiceBusca } from '@/lib/search/lexical';
 import type { Pop } from './parser';
 import { numeroPop } from '@/lib/query/router';
+import { FatoMatcher, type ResultadoMatcher } from '@/lib/search/domain-matcher';
+import { ALIASES_POP } from '@/lib/search/domain-aliases';
 
 let cache: Pop[] | null = null;
 
@@ -22,6 +24,7 @@ export function todosOsPops(): Pop[] {
 }
 
 const indices = new WeakMap<Pop[], IndiceBusca<Pop>>();
+const matchers = new WeakMap<Pop[], FatoMatcher<Pop>>();
 
 function indiceDosPops(pops: Pop[]): IndiceBusca<Pop> {
   let indice = indices.get(pops);
@@ -50,6 +53,45 @@ function indiceDosPops(pops: Pop[]): IndiceBusca<Pop> {
   return indice;
 }
 
+function matcherDosPops(pops: Pop[]): FatoMatcher<Pop> {
+  let matcher = matchers.get(pops);
+  if (!matcher) {
+    matcher = new FatoMatcher({
+      itens: pops,
+      obterId: (pop) => pop.numero,
+      obterRotulo: (pop) => pop.titulo,
+      aliases: ALIASES_POP,
+      limiar: 76,
+    });
+    matchers.set(pops, matcher);
+  }
+  return matcher;
+}
+
+export function buscarPopsComScore(pergunta: string, limite = 6, pops = todosOsPops()): ResultadoMatcher<Pop>[] {
+  if (!pergunta.trim() || limite <= 0) return [];
+  const numero = numeroPop(pergunta);
+  if (numero) {
+    return pops.filter((pop) => pop.numero === numero).slice(0, limite).map((item) => ({
+      item,
+      scoreConfianca: 100,
+      metodoEncontrado: 'identificador_exato',
+      termosCorrespondentes: [numero],
+    }));
+  }
+  const porMatcher = matcherDosPops(pops).buscar(pergunta, limite);
+  const idsMatcher = new Set(porMatcher.map((resultado) => resultado.item.numero));
+  const porContexto = buscarNoIndice(pergunta, indiceDosPops(pops), limite)
+    .filter((pop) => !idsMatcher.has(pop.numero))
+    .map((item, indice) => ({
+      item,
+      scoreConfianca: Math.max(76, 88 - indice * 3),
+      metodoEncontrado: 'contexto_lexical' as const,
+      termosCorrespondentes: [],
+    }));
+  return [...porMatcher, ...porContexto].slice(0, limite);
+}
+
 /**
  * POPs matching a question, best first: by number ("POP 002", "201.4.29") or
  * by the words of the question, weighted towards the title.
@@ -57,12 +99,11 @@ function indiceDosPops(pops: Pop[]): IndiceBusca<Pop> {
  * @param limite - Maximum POPs
  */
 export function buscarPops(pergunta: string, limite = 6, pops = todosOsPops()): Pop[] {
-  if (!pergunta.trim() || limite <= 0) return [];
-  const numero = numeroPop(pergunta);
-  if (numero) {
-    return pops.filter((p) => p.numero === numero).slice(0, limite);
-  }
-  return buscarNoIndice(pergunta, indiceDosPops(pops), limite);
+  return buscarPopsComScore(pergunta, limite, pops).map(({ item, scoreConfianca, metodoEncontrado }) => ({
+    ...item,
+    scoreConfianca,
+    metodoEncontrado,
+  }));
 }
 
 /** Relaxed alternatives used only as visible suggestions after a safe search
