@@ -50,6 +50,26 @@ describe('AI provider registry', () => {
     expect(openrouter?.modelos.length).toBeGreaterThan(1);
   });
 
+  it('oferece os novos modelos gratuitos aprovados no OpenRouter e OrcaRouter', () => {
+    const openrouter = listProviders().find((p) => p.id === 'openrouter');
+    expect(openrouter?.modelos).toEqual(expect.arrayContaining([
+      'nvidia/nemotron-3-ultra-550b-a55b:free',
+      'poolside/laguna-s-2.1:free',
+      'nvidia/nemotron-3.5-lightning:free',
+      'liquid/lfm-2.5-2.6b:free',
+    ]));
+
+    const orcarouter = listProviders().find((p) => p.id === 'orcarouter');
+    expect(orcarouter?.modelos).toEqual(expect.arrayContaining([
+      'orcarouter/free',
+      'tencent/hy4-preview-free',
+      'tencent/hy3-free',
+      'z-ai/glm-5.3-flash-free',
+      'deepseek/deepseek-v4-flash-free',
+    ]));
+    expect(orcarouter?.modelos).not.toContain('orca/orcaverify-text1.0-free');
+  });
+
   it('mantém no Nous Portal somente os nove modelos gratuitos aprovados', () => {
     const nous = listProviders().find((p) => p.id === 'nous');
     expect(nous?.modelos).toEqual([

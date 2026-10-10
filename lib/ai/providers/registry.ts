@@ -170,7 +170,13 @@ export const PROVIDERS: ProviderDescriptor[] = [
     id: 'orcarouter',
     nome: 'OrcaRouter',
     envVar: 'ORCAROUTER_API_KEY',
-    modelos: ['deepseek/deepseek-v4-flash-free', 'z-ai/glm-5.3-flash-free', 'tencent/hy3-free'],
+    modelos: [
+      'deepseek/deepseek-v4-flash-free',
+      'orcarouter/free',
+      'tencent/hy4-preview-free',
+      'z-ai/glm-5.3-flash-free',
+      'tencent/hy3-free',
+    ],
     papel: 'resposta analitica',
     cadastro: '',
     criar: () =>
@@ -194,6 +200,10 @@ export const PROVIDERS: ProviderDescriptor[] = [
     envVar: 'OPENROUTER_API_KEY',
     modelos: [
       'nvidia/nemotron-3-super-120b-a12b:free',
+      'nvidia/nemotron-3-ultra-550b-a55b:free',
+      'nvidia/nemotron-3.5-lightning:free',
+      'poolside/laguna-s-2.1:free',
+      'liquid/lfm-2.5-2.6b:free',
       'openrouter/free',
       'google/gemma-4-31b-it:free',
       'qwen/qwen3.8-27b:free',
