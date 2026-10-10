@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from 'react';
 
 import { listarConfiguracoes, obterConfiguracao } from '@/lib/pesos-dimensoes/catalogo';
+import type { GrupoEixo, TipoGrupoEixo } from '@/lib/pesos-dimensoes/types';
 import DesenhoVeiculo from './DesenhoVeiculo';
 
 interface Props {
@@ -11,6 +12,27 @@ interface Props {
 }
 
 const configuracoes = listarConfiguracoes();
+
+const NOMES_TIPO_EIXO: Record<TipoGrupoEixo, string> = {
+  'isolado-2-pneus': 'isolado, 2 pneus',
+  'isolado-4-pneus': 'isolado, 4 pneus',
+  'direcional-duplo': 'direcionais, 2 pneus por eixo',
+  'tandem-duplo': 'tandem duplo',
+  'tandem-triplo': 'tandem triplo',
+  distanciado: 'eixo distanciado',
+  'conforme-aet': 'conforme AET',
+};
+
+function descricaoGrupoEixo(grupo: GrupoEixo, primeiroEixo: number): string {
+  const ultimoEixo = primeiroEixo + grupo.quantidadeEixos - 1;
+  const eixos = primeiroEixo === ultimoEixo ? `E${primeiroEixo}` : `E${primeiroEixo}–E${ultimoEixo}`;
+  const limite = grupo.limiteKg === null ? 'limite conforme AET' : `${grupo.limiteKg.toLocaleString('pt-BR')} kg`;
+  return `${eixos} · ${grupo.nome} · ${NOMES_TIPO_EIXO[grupo.tipo]} · ${limite}`;
+}
+
+function pbtMaximo(limiteKg: number | null): string {
+  return limiteKg === null ? 'PBT/PBTC máximo: conforme AET' : `PBT/PBTC máximo: ${limiteKg.toLocaleString('pt-BR')} kg`;
+}
 
 export default function SeletorConfiguracao({ valor, onChange }: Props) {
   const [aberto, setAberto] = useState(false);
@@ -59,10 +81,13 @@ export default function SeletorConfiguracao({ valor, onChange }: Props) {
       >
         <DesenhoVeiculo configuracao={selecionada} compacto />
         <span className="min-w-0 flex-1">
+          <span className="mb-1 inline-flex rounded bg-ds-primary px-2 py-0.5 font-mono text-xs font-bold text-white">{selecionada.codigo}</span>
           <strong className="block text-sm text-ds-text">{selecionada.nome}</strong>
           <small className="mt-1 block text-xs text-ds-subtle">
             {selecionada.quantidadeEixos} eixos · {selecionada.requerAet ? 'AET obrigatória' : 'configuração comum'}
           </small>
+          <small className="mt-1 block text-xs text-ds-subtle">Conhecido como: {selecionada.apelidos.join(', ')}</small>
+          <small className="mt-1 block text-xs font-semibold text-ds-primary">{pbtMaximo(selecionada.limiteTotalKg)}</small>
         </span>
         <span aria-hidden="true" className={`text-ds-primary transition ${aberto ? 'rotate-180' : ''}`}>⌄</span>
       </button>
@@ -90,13 +115,29 @@ export default function SeletorConfiguracao({ valor, onChange }: Props) {
               <span className="min-w-0 flex-1">
                 <strong className="block text-sm text-ds-text">{configuracao.nome}</strong>
                 <small className="block text-xs text-ds-subtle">
-                  {configuracao.quantidadeEixos} eixos · {configuracao.unidades} {configuracao.unidades === 1 ? 'unidade' : 'unidades'}
+                  <span className="mr-1 font-mono font-bold text-ds-primary">{configuracao.codigo}</span>
+                  · {configuracao.quantidadeEixos} eixos · {configuracao.unidades} {configuracao.unidades === 1 ? 'unidade' : 'unidades'}
                 </small>
+                <small className="block text-xs text-ds-subtle">{configuracao.apelidos.join(', ')}</small>
+                <small className="block text-xs font-semibold text-ds-primary">{pbtMaximo(configuracao.limiteTotalKg)}</small>
               </span>
             </button>
           ))}
         </div>
       )}
+
+      <div className="mt-3 rounded-control border border-ds-line bg-ds-soft/50 p-3">
+        <p className="text-xs font-semibold uppercase tracking-wide text-ds-primary">Identificação dos eixos</p>
+        <ul className="mt-2 grid gap-1.5 text-xs text-ds-text sm:grid-cols-2">
+          {selecionada.gruposEixo.map((grupo, indice) => {
+            const primeiroEixo = 1 + selecionada.gruposEixo
+              .slice(0, indice)
+              .reduce((total, anterior) => total + anterior.quantidadeEixos, 0);
+            const descricao = descricaoGrupoEixo(grupo, primeiroEixo);
+            return <li key={grupo.id} className="rounded-md bg-ds-surface px-2.5 py-2">{descricao}</li>;
+          })}
+        </ul>
+      </div>
     </div>
   );
 }

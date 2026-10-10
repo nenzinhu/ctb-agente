@@ -2,6 +2,7 @@ import type { ResultadoLimite } from './calculadora';
 import type { FontePeso } from './types';
 
 export type ModoFiscalizacao = 'documento' | 'balanca';
+export type TipoPesoDocumento = 'carga' | 'peso-bruto-total';
 export type StatusFiscalizacao = 'regular' | 'dentro-tolerancia' | 'autuavel' | 'inconclusivo';
 
 export interface AfericaoGrupoEixo {
@@ -16,7 +17,9 @@ export interface EntradaFiscalizacao {
   limite: ResultadoLimite;
   modo: ModoFiscalizacao;
   taraKg?: number;
+  tipoPesoDocumento?: TipoPesoDocumento;
   pesoCargaDocumentoKg?: number;
+  pesoBrutoTotalDocumentoKg?: number;
   pesoTotalAferidoKg?: number;
   gruposEixo?: AfericaoGrupoEixo[];
   cmtKg?: number;
@@ -38,6 +41,8 @@ export interface ResultadoFiscalizacao {
   providencias: string[];
   faltantes: string[];
   fontes: FontePeso[];
+  memoriaPeso: string | null;
+  alertaDocumento: string | null;
 }
 
 const MULTA_MEDIA_CENTAVOS = 13016;
@@ -56,6 +61,12 @@ function positivo(valor: number | undefined): valor is number {
 function naoNegativo(valor: number | undefined): valor is number {
   return typeof valor === 'number' && Number.isFinite(valor) && valor >= 0;
 }
+
+function formatarKg(valor: number): string {
+  return `${valor.toLocaleString('pt-BR', { maximumFractionDigits: 2 })} kg`;
+}
+
+const ALERTA_PBT_DOCUMENTO = 'Confirme se o documento declara o peso da carga em quilogramas antes da autuação, conforme o art. 49, §§ 3º a 5º, da Resolução CONTRAN nº 882/2021.';
 
 function aliquotaPorFracaoCentavos(excessoKg: number): number {
   if (excessoKg <= 600) return 532;
@@ -101,6 +112,10 @@ function resultadoInconclusivo(
     providencias,
     faltantes,
     fontes: [...entrada.limite.fontes, ...FONTES_FISCALIZACAO],
+    memoriaPeso: null,
+    alertaDocumento: entrada.modo === 'documento' && entrada.tipoPesoDocumento === 'peso-bruto-total'
+      ? ALERTA_PBT_DOCUMENTO
+      : null,
   };
 }
 
@@ -134,18 +149,32 @@ export function avaliarFiscalizacao(entrada: EntradaFiscalizacao): ResultadoFisc
   const limiteKg = limiteInformadoKg;
   let pesoApuradoKg: number;
   let limiteFiscalizacaoKg: number;
+  let memoriaPeso: string;
+  let alertaDocumento: string | null = null;
 
   if (entrada.modo === 'documento') {
     const faltantes: string[] = [];
-    if (!positivo(entrada.taraKg)) faltantes.push('tara do veículo');
-    if (!naoNegativo(entrada.pesoCargaDocumentoKg)) faltantes.push('peso da carga em kg no documento');
+    const tipoPesoDocumento = entrada.tipoPesoDocumento ?? 'carga';
+    if (tipoPesoDocumento === 'carga') {
+      if (!positivo(entrada.taraKg)) faltantes.push('tara do veículo');
+      if (!naoNegativo(entrada.pesoCargaDocumentoKg)) faltantes.push('peso da carga em kg no documento');
+    } else if (!positivo(entrada.pesoBrutoTotalDocumentoKg)) {
+      faltantes.push('peso bruto total em kg no documento');
+    }
     if (faltantes.length > 0) {
       return resultadoInconclusivo(entrada, faltantes, [
         'Encaminhar o veículo para pesagem quando houver equipamento disponível.',
         'Solicitar documento fiscal substituto com o peso da carga expresso em quilogramas.',
       ]);
     }
-    pesoApuradoKg = entrada.taraKg! + entrada.pesoCargaDocumentoKg!;
+    if (tipoPesoDocumento === 'peso-bruto-total') {
+      pesoApuradoKg = entrada.pesoBrutoTotalDocumentoKg!;
+      memoriaPeso = `${formatarKg(pesoApuradoKg)} de peso bruto total declarado = ${formatarKg(pesoApuradoKg)} de PBT apurado`;
+      alertaDocumento = ALERTA_PBT_DOCUMENTO;
+    } else {
+      pesoApuradoKg = entrada.taraKg! + entrada.pesoCargaDocumentoKg!;
+      memoriaPeso = `${formatarKg(entrada.taraKg!)} de tara + ${formatarKg(entrada.pesoCargaDocumentoKg!)} de carga declarada = ${formatarKg(pesoApuradoKg)} de PBT apurado`;
+    }
     limiteFiscalizacaoKg = limiteKg;
   } else {
     if (!positivo(entrada.pesoTotalAferidoKg)) {
@@ -155,6 +184,7 @@ export function avaliarFiscalizacao(entrada: EntradaFiscalizacao): ResultadoFisc
     }
     pesoApuradoKg = entrada.pesoTotalAferidoKg;
     limiteFiscalizacaoKg = limiteKg * 1.05;
+    memoriaPeso = `${formatarKg(pesoApuradoKg)} aferidos em balança; limite com tolerância: ${formatarKg(limiteFiscalizacaoKg)}`;
   }
 
   const excessoTotalKg = Math.max(0, pesoApuradoKg - limiteFiscalizacaoKg);
@@ -210,5 +240,7 @@ export function avaliarFiscalizacao(entrada: EntradaFiscalizacao): ResultadoFisc
     providencias,
     faltantes: [],
     fontes: [...entrada.limite.fontes, ...FONTES_FISCALIZACAO],
+    memoriaPeso,
+    alertaDocumento,
   };
 }

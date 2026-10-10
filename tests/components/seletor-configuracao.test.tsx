@@ -18,10 +18,23 @@ describe('Seletor visual de configuração', () => {
     const lista = screen.getByRole('listbox', { name: /configurações de veículo/i });
     expect(within(lista).getAllByRole('option')).toHaveLength(listarConfiguracoes().length);
     expect(within(lista).getAllByText(/9 eixos/i).length).toBeGreaterThan(0);
+    expect(within(lista).getByText('3S3D3')).toBeInTheDocument();
+    expect(within(lista).getByText(/rodotrem, nove eixos/i)).toBeInTheDocument();
+    expect(within(lista).getByText(/PBT\/PBTC máximo: 74\.000 kg/i)).toBeInTheDocument();
 
     await userEvent.click(within(lista).getByRole('option', { name: /rodotrem/i }));
     expect(onChange).toHaveBeenCalledWith('rodotrem-9-eixos-aet');
     expect(gatilho).toHaveAttribute('aria-expanded', 'false');
+  });
+
+  it('mostra o código, os apelidos e o nome de todos os grupos de eixos selecionados', () => {
+    render(<SeletorConfiguracao valor="truck-3-eixos" onChange={jest.fn()} />);
+
+    expect(screen.getByText('3C')).toBeInTheDocument();
+    expect(screen.getByText(/truck, trucado/i)).toBeInTheDocument();
+    expect(screen.getByText(/PBT\/PBTC máximo: 23\.000 kg/i)).toBeInTheDocument();
+    expect(screen.getByText(/E1.*Eixo dianteiro.*6\.000 kg/i)).toBeInTheDocument();
+    expect(screen.getByText(/E2–E3.*Tandem traseiro.*17\.000 kg/i)).toBeInTheDocument();
   });
 
   it('fecha pelo teclado e identifica a opção selecionada', async () => {

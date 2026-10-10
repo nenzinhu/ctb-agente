@@ -10,6 +10,7 @@ import SeletorConfiguracao from './SeletorConfiguracao';
 import ResultadoPesos, { type RespostaCalculoPesos } from './ResultadoPesos';
 
 type Modo = 'documento' | 'balanca';
+type TipoPesoDocumento = 'carga' | 'peso-bruto-total';
 type Campos = Record<string, string>;
 
 export function converterNumeroBrasileiro(valor: string): number | null {
@@ -25,6 +26,7 @@ export function converterNumeroBrasileiro(valor: string): number | null {
 export default function CalculadoraPesos() {
   const [configuracaoId, setConfiguracaoId] = useState('truck-3-eixos');
   const [modo, setModo] = useState<Modo>('documento');
+  const [tipoPesoDocumento, setTipoPesoDocumento] = useState<TipoPesoDocumento>('carga');
   const [campos, setCampos] = useState<Campos>({});
   const [resultado, setResultado] = useState<RespostaCalculoPesos | null>(null);
   const [erro, setErro] = useState<string | null>(null);
@@ -58,7 +60,11 @@ export default function CalculadoraPesos() {
       ['comprimento', 'comprimento total'],
       ...(configuracao.unidades > 1 ? [['cmt', 'CMT da unidade tratora']] : []),
       ...(configuracao.requerAet ? [['aet', 'limite autorizado na AET']] : []),
-      ...(modo === 'documento' ? [['cargaNota', 'peso da carga na nota']] : [['pesoBalanca', 'peso total aferido']]),
+      ...(modo === 'documento'
+        ? tipoPesoDocumento === 'carga'
+          ? [['cargaNota', 'peso da carga na nota']]
+          : [['pbtDocumento', 'peso bruto total no documento']]
+        : [['pesoBalanca', 'peso total aferido']]),
       ...(modo === 'balanca' ? configuracao.gruposEixo.filter((grupo) => grupo.limiteKg !== null).map((grupo) => [`eixo-${grupo.id}`, grupo.nome]) : []),
     ];
     const ausentes = obrigatorios.filter(([nome]) => valor(nome) === null).map(([, label]) => label);
@@ -85,7 +91,9 @@ export default function CalculadoraPesos() {
       },
       fiscalizacao: {
         modo,
-        pesoCargaDocumentoKg: modo === 'documento' ? valor('cargaNota')! : undefined,
+        tipoPesoDocumento: modo === 'documento' ? tipoPesoDocumento : undefined,
+        pesoCargaDocumentoKg: modo === 'documento' && tipoPesoDocumento === 'carga' ? valor('cargaNota')! : undefined,
+        pesoBrutoTotalDocumentoKg: modo === 'documento' && tipoPesoDocumento === 'peso-bruto-total' ? valor('pbtDocumento')! : undefined,
         pesoTotalAferidoKg: modo === 'balanca' ? valor('pesoBalanca')! : undefined,
         gruposEixo,
         quantidadeEmbarcadores: valor('embarcadores') ?? undefined,
@@ -120,7 +128,7 @@ export default function CalculadoraPesos() {
         <SectionCard numero={2} titulo="Dados técnicos e limite">
           <div className="grid gap-4 sm:grid-cols-2">
             {campo('tara', 'Tara do conjunto (kg)', 'Use a tara inscrita/confirmada, sem a carga.')}
-            {campo('pbtTecnico', 'PBT/PBTC técnico (kg)', 'Confira CRLV, plaqueta ou ficha técnica.')}
+            {campo('pbtTecnico', 'PBT/PBTC técnico (kg)', 'É o limite técnico do CRLV, plaqueta ou ficha técnica; não é o peso apurado.')}
             {campo('comprimento', 'Comprimento total (m)', 'Informe em metros; exemplo: 18,6.')}
             {configuracao.unidades > 1 && campo('cmt', 'CMT da unidade tratora (kg)')}
             {campo('sinalizacao', 'Limite sinalizado na via (kg)', 'Opcional. Placa R-14 prevalece quando menor.')}
@@ -144,8 +152,26 @@ export default function CalculadoraPesos() {
           <div className="mt-4 grid gap-4 sm:grid-cols-2">
             {modo === 'documento' ? (
               <>
-                {campo('cargaNota', 'Peso da carga na nota (kg)', 'Não há tolerância na fiscalização por documento.')}
+                <fieldset className="sm:col-span-2">
+                  <legend className="label">Qual peso consta no documento?</legend>
+                  <div className="grid gap-2 sm:grid-cols-2">
+                    {([['carga', 'Carga declarada (tara + carga)'], ['peso-bruto-total', 'Peso bruto total declarado']] as const).map(([id, label]) => (
+                      <label key={id} className={`flex min-h-11 cursor-pointer items-center justify-center rounded-control border px-3 text-center text-sm font-semibold ${tipoPesoDocumento === id ? 'border-ds-primary bg-ds-primary-soft text-ds-primary-strong' : 'border-ds-border bg-ds-surface'}`}>
+                        <input type="radio" name="tipoPesoDocumento" value={id} checked={tipoPesoDocumento === id} onChange={() => { setTipoPesoDocumento(id); setResultado(null); }} className="sr-only" />
+                        {label}
+                      </label>
+                    ))}
+                  </div>
+                </fieldset>
+                {tipoPesoDocumento === 'carga'
+                  ? campo('cargaNota', 'Peso da carga na nota (kg)', 'O sistema somará este valor à tara. Não há tolerância por documento.')
+                  : campo('pbtDocumento', 'Peso bruto total no documento (kg)', 'Informe o total exatamente como declarado; a tara não será somada novamente.')}
                 {campo('embarcadores', 'Quantidade de embarcadores', 'Opcional; ajuda a indicar o responsável provável.')}
+                {tipoPesoDocumento === 'peso-bruto-total' && (
+                  <p className="rounded-control border border-ds-warn bg-ds-accent/10 p-3 text-xs sm:col-span-2">
+                    Para autuação, confirme se o documento também declara o peso da carga em quilogramas, conforme o art. 49, §§ 3º a 5º, da Resolução CONTRAN nº 882/2021.
+                  </p>
+                )}
               </>
             ) : (
               <>

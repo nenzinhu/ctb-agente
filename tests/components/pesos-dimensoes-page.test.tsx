@@ -19,6 +19,8 @@ const respostaCalculo = {
     responsavelProvavel: 'Embarcador e transportador, solidariamente',
     providencias: ['Reter para transbordo da carga excedente antes de prosseguir a viagem.'],
     faltantes: [], fontes: [{ documento: 'Resolução CONTRAN nº 882/2021', artigo: 'Art. 49', pagina: 14 }],
+    memoriaPeso: '9.000 kg de tara + 14.001 kg de carga declarada = 23.001 kg de PBT apurado',
+    alertaDocumento: null,
   },
 };
 
@@ -42,9 +44,43 @@ describe('Página de pesos e dimensões', () => {
     expect(screen.getAllByText('R$ 135,48').length).toBeGreaterThan(0);
     expect(screen.getByText(/embarcador e transportador/i)).toBeInTheDocument();
     expect(screen.getByText(/Art\. 49/)).toBeInTheDocument();
+    expect(screen.getByText(/9\.000 kg de tara.*14\.001 kg de carga declarada.*23\.001 kg de PBT apurado/i)).toBeInTheDocument();
     const payload = JSON.parse(fetchMock.mock.calls[0][1].body);
     expect(payload.limite).toMatchObject({ taraKg: 9000, pbtTecnicoKg: 23000, comprimentoM: 10 });
     expect(payload.fiscalizacao.pesoCargaDocumentoKg).toBe(14001);
+    expect(payload.fiscalizacao.tipoPesoDocumento).toBe('carga');
+  });
+
+  it('calcula sem balança usando diretamente o PBT declarado no documento', async () => {
+    fetchMock.mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({
+        ...respostaCalculo,
+        fiscalizacao: {
+          ...respostaCalculo.fiscalizacao,
+          memoriaPeso: '23.001 kg de peso bruto total declarado = 23.001 kg de PBT apurado',
+          alertaDocumento: 'Confirme se o documento declara o peso da carga em quilogramas antes da autuação.',
+        },
+      }),
+    });
+    render(<CalculadoraPesos />);
+
+    await userEvent.click(screen.getByRole('radio', { name: /peso bruto total declarado/i }));
+    expect(screen.queryByLabelText(/peso da carga na nota/i)).not.toBeInTheDocument();
+    await userEvent.type(screen.getByLabelText(/tara do conjunto/i), '9.000');
+    await userEvent.type(screen.getByLabelText(/pbt\/pbtc técnico/i), '23.000');
+    await userEvent.type(screen.getByLabelText(/comprimento total/i), '10');
+    await userEvent.type(screen.getByLabelText(/peso bruto total no documento/i), '23.001');
+    await userEvent.click(screen.getByRole('button', { name: /calcular fiscalização/i }));
+
+    expect(await screen.findByText(/confirme se o documento declara o peso da carga/i)).toBeInTheDocument();
+    const payload = JSON.parse(fetchMock.mock.calls[0][1].body);
+    expect(payload.fiscalizacao).toMatchObject({
+      modo: 'documento',
+      tipoPesoDocumento: 'peso-bruto-total',
+      pesoBrutoTotalDocumentoKg: 23001,
+    });
+    expect(payload.fiscalizacao.pesoCargaDocumentoKg).toBeUndefined();
   });
 
   it('troca para balança e exibe campos por grupo de eixo', async () => {

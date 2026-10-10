@@ -29,7 +29,40 @@ describe('fiscalização de pesos', () => {
       codigos: ['683-11'],
       valorPesoCentavos: 13548,
       responsavelProvavel: 'Embarcador e transportador, solidariamente',
+      memoriaPeso: '10.000 kg de tara + 13.001 kg de carga declarada = 23.001 kg de PBT apurado',
+      alertaDocumento: null,
     });
+  });
+
+  it('usa diretamente o PBT declarado no documento sem somar a tara novamente', () => {
+    const resultado = avaliarFiscalizacao({
+      limite: limite(),
+      modo: 'documento',
+      tipoPesoDocumento: 'peso-bruto-total',
+      taraKg: 10000,
+      pesoBrutoTotalDocumentoKg: 23001,
+    });
+
+    expect(resultado).toMatchObject({
+      status: 'autuavel',
+      pesoApuradoKg: 23001,
+      excessoTotalKg: 1,
+      codigos: ['683-11'],
+      memoriaPeso: '23.001 kg de peso bruto total declarado = 23.001 kg de PBT apurado',
+    });
+    expect(resultado.alertaDocumento).toMatch(/peso da carga.*quilogramas.*autuação/i);
+  });
+
+  it('não conclui a forma PBT declarado quando o peso bruto total estiver ausente', () => {
+    const resultado = avaliarFiscalizacao({
+      limite: limite(),
+      modo: 'documento',
+      tipoPesoDocumento: 'peso-bruto-total',
+      taraKg: 10000,
+    });
+
+    expect(resultado.status).toBe('inconclusivo');
+    expect(resultado.faltantes).toContain('peso bruto total em kg no documento');
   });
 
   it('mantém o peso exatamente no limite sem autuação', () => {

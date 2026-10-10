@@ -29,7 +29,9 @@ const schema = z.object({
   }),
   fiscalizacao: z.object({
     modo: z.enum(['documento', 'balanca']),
+    tipoPesoDocumento: z.enum(['carga', 'peso-bruto-total']).optional(),
     pesoCargaDocumentoKg: numeroKg.optional(),
+    pesoBrutoTotalDocumentoKg: numeroKg.optional(),
     pesoTotalAferidoKg: numeroKg.optional(),
     gruposEixo: z.array(grupoEixoSchema).max(12).optional(),
     quantidadeEmbarcadores: z.number().int().nonnegative().max(1000).optional(),

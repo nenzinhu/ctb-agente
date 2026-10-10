@@ -68,6 +68,11 @@ export default function ResultadoPesos({ resultado }: { resultado: RespostaCalcu
 
           <details className="mt-5 rounded-control border border-ds-line p-4" open>
             <summary className="cursor-pointer font-semibold">Memória de cálculo</summary>
+            {fiscalizacao.memoriaPeso && (
+              <p className="mt-3 rounded-md bg-ds-primary-soft px-3 py-2 font-mono text-sm font-semibold text-ds-primary-strong">
+                {fiscalizacao.memoriaPeso}
+              </p>
+            )}
             <dl className="mt-3 grid gap-2 text-sm sm:grid-cols-2">
               <div><dt className="text-ds-subtle">Excesso total</dt><dd className="font-mono font-semibold">{kg(fiscalizacao.excessoTotalKg)}</dd></div>
               <div><dt className="text-ds-subtle">Excesso por eixos</dt><dd className="font-mono font-semibold">{kg(fiscalizacao.excessoEixosKg)}</dd></div>
@@ -77,6 +82,11 @@ export default function ResultadoPesos({ resultado }: { resultado: RespostaCalcu
               <div><dt className="text-ds-subtle">Valor por CMT</dt><dd>{reais(fiscalizacao.valorCmtCentavos)}</dd></div>
             </dl>
           </details>
+          {fiscalizacao.alertaDocumento && (
+            <p role="note" className="mt-4 rounded-control border border-ds-warn bg-ds-accent/10 p-3 text-sm text-ds-text">
+              {fiscalizacao.alertaDocumento}
+            </p>
+          )}
         </>
       )}
 
