@@ -25,12 +25,24 @@ describe('AI provider registry', () => {
     }
   });
 
-  it('pings a provider missing its base URL with a clear error instead of a fetch crash', async () => {
+  it('usa o endpoint oficial do OrcaRouter quando somente a chave está configurada', async () => {
     delete process.env.ORCAROUTER_BASE_URL;
     process.env.ORCAROUTER_API_KEY = 'test-key';
-    const result = await pingProvider('orcarouter');
-    expect(result.ok).toBe(false);
-    expect(result.erro).toMatch(/ORCAROUTER_BASE_URL/);
+    const originalFetch = global.fetch;
+    const fetchMock = jest.fn(async (_url: string) => ({
+      ok: true,
+      json: async () => ({ choices: [{ message: { content: 'ok' } }] }),
+    }));
+    (global as { fetch: unknown }).fetch = fetchMock;
+    try {
+      await expect(pingProvider('orcarouter', 'orcarouter/auto')).resolves.toMatchObject({
+        ok: true,
+        modeloUsado: 'orcarouter/auto',
+      });
+      expect(fetchMock.mock.calls[0][0]).toBe('https://api.orcarouter.ai/v1/chat/completions');
+    } finally {
+      (global as { fetch: unknown }).fetch = originalFetch;
+    }
   });
 
   it('reports configured=false when the env var is absent', () => {
@@ -61,6 +73,7 @@ describe('AI provider registry', () => {
 
     const orcarouter = listProviders().find((p) => p.id === 'orcarouter');
     expect(orcarouter?.modelos).toEqual(expect.arrayContaining([
+      'orcarouter/auto',
       'orcarouter/free',
       'tencent/hy4-preview-free',
       'tencent/hy3-free',

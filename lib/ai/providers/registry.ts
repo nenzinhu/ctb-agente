@@ -172,6 +172,7 @@ export const PROVIDERS: ProviderDescriptor[] = [
     envVar: 'ORCAROUTER_API_KEY',
     modelos: [
       'deepseek/deepseek-v4-flash-free',
+      'orcarouter/auto',
       'orcarouter/free',
       'tencent/hy4-preview-free',
       'z-ai/glm-5.3-flash-free',
