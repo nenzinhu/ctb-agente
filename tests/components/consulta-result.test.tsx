@@ -107,6 +107,7 @@ describe('ConsultaResult', () => {
 
   it('has tabs for switching views', () => {
     render(<ConsultaResult card={mockCard} />);
+    expect(screen.getByRole('tablist', { name: /forma de apresentação/i })).toHaveClass('tabs-responsive');
     expect(screen.getByText('Técnico')).toBeInTheDocument();
     expect(screen.getByText('Em Palavras Simples')).toBeInTheDocument();
   });

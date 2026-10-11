@@ -11,5 +11,9 @@ describe('Header no mobile', () => {
     render(<Header />);
     expect(screen.getByRole('link', { name: /ctb agente — início/i })).toHaveClass('mobile-header-brand');
     expect(screen.getByTestId('desktop-navigation')).toHaveClass('hidden', 'md:block');
+    expect(screen.getByRole('navigation', { name: /navegação principal/i }).querySelector('ul')).toHaveClass(
+      'nav-tabs-compact',
+    );
+    expect(screen.getByRole('link', { name: 'Lista de Fatos (PMSC Mobile)' })).toHaveTextContent(/^Fatos$/);
   });
 });

@@ -42,18 +42,18 @@ export default function MobileNavigation() {
 
   return (
     <>
-      <nav className="mobile-nav print:hidden md:hidden" aria-label="Navegação mobile">
+      <nav className="mobile-nav mobile-nav-compact print:hidden md:hidden" aria-label="Navegação mobile">
         <Link href="/" className="mobile-nav-action" aria-current={buscaAtiva ? 'page' : undefined}>
-          <Icone nome="busca" tamanho={22} /><span>Buscar</span>
+          <Icone nome="busca" tamanho={20} /><span>Buscar</span>
         </Link>
         <button ref={ferramentasRef} type="button" className="mobile-nav-action" aria-expanded={sheet === 'ferramentas'} aria-current={ferramentasAtiva ? 'page' : undefined} onClick={() => setSheet('ferramentas')}>
-          <Icone nome="lista" tamanho={22} /><span>Ferramentas</span>
+          <Icone nome="lista" tamanho={20} /><span>Ferramentas</span>
         </button>
         <Link href="/favoritos" className="mobile-nav-action" aria-current={favoritosAtivo ? 'page' : undefined}>
-          <Icone nome="estrela" tamanho={22} /><span>Favoritos</span>
+          <Icone nome="estrela" tamanho={20} /><span>Favoritos</span>
         </Link>
         <button ref={maisRef} type="button" className="mobile-nav-action" aria-expanded={sheet === 'mais'} onClick={() => setSheet('mais')}>
-          <Icone nome="engrenagem" tamanho={22} /><span>Mais</span>
+          <Icone nome="engrenagem" tamanho={20} /><span>Mais</span>
         </button>
       </nav>
 

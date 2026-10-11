@@ -194,7 +194,7 @@ export default function ConsultaResult({ card }: ConsultaResultProps) {
   return (
     <div className="mobile-results-enter mt-6 space-y-5">
       <div className="mobile-result-toolbar flex flex-wrap items-center justify-between gap-3 print:hidden">
-        <div role="tablist" aria-label="Forma de apresentação" className="tabs">
+        <div role="tablist" aria-label="Forma de apresentação" className="tabs tabs-responsive">
           {abas.map((aba) => (
             <button
               key={aba.id}

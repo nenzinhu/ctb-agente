@@ -202,7 +202,7 @@ body {
 
 @media (max-width: 767px) {
   body {
-    padding-bottom: calc(4.5rem + env(safe-area-inset-bottom));
+    padding-bottom: calc(4rem + env(safe-area-inset-bottom));
   }
 }
 
@@ -448,13 +448,13 @@ body::before {
 
   /* ---- Segmented tabs (result views, admin sections) ---- */
   .tabs {
-    @apply inline-flex max-w-full gap-1 rounded-control border-2 border-ds-border bg-ds-surface p-1;
+    @apply inline-flex max-w-full gap-0.5 rounded-lg border border-ds-border bg-ds-surface/95 p-0.5 shadow-sm backdrop-blur-sm;
   }
   .tab {
-    @apply inline-flex min-h-[40px] items-center gap-1.5 whitespace-nowrap rounded-lg px-3 font-mono text-xs font-semibold uppercase tracking-[0.06em] text-ds-subtle transition-colors hover:bg-ds-muted hover:text-ds-text;
+    @apply inline-flex min-h-[34px] items-center justify-center gap-1 whitespace-nowrap rounded-md px-2.5 font-mono text-[11px] font-semibold uppercase tracking-[0.045em] text-ds-subtle transition-all duration-200 hover:bg-ds-muted hover:text-ds-text;
   }
   .tab-active {
-    @apply bg-ds-primary text-ds-on-solid hover:bg-ds-primary hover:text-ds-on-solid;
+    @apply -translate-y-px bg-ds-primary text-ds-on-solid shadow-sm hover:bg-ds-primary hover:text-ds-on-solid;
   }
 
   /* ---- Stepper: squares joined by a 2px line ---- */
@@ -538,37 +538,41 @@ body::before {
   }
   /* Phones: a horizontally scrolling strip, faded at the right edge */
   .nav-tabs {
-    @apply relative -mx-1 flex gap-1 overflow-x-auto px-1 py-1.5 pr-8 md:pr-1;
+    @apply relative -mx-1 flex snap-x snap-mandatory gap-0.5 overflow-x-auto px-1 py-1 pr-8 md:pr-1;
     scrollbar-width: none;
     mask-image: linear-gradient(to right, black calc(100% - 2rem), transparent);
+    scroll-behavior: smooth;
+    overscroll-behavior-inline: contain;
   }
   .nav-tabs::-webkit-scrollbar {
     display: none;
   }
   .nav-tab {
-    @apply flex min-h-[36px] items-center gap-1.5 whitespace-nowrap rounded-lg border border-transparent px-3 text-xs font-medium transition-colors;
+    @apply flex min-h-[32px] snap-start items-center gap-1 whitespace-nowrap rounded-md border border-transparent px-2.5 text-[11px] font-medium transition-all duration-200;
     color: var(--ds-on-header-soft);
   }
   .nav-tab:hover {
     color: var(--ds-on-header);
     background-color: var(--ds-header-pill);
+    transform: translateY(-1px);
   }
   .nav-tab[aria-current='page'] {
     color: var(--ds-on-header);
     background-color: var(--ds-header-pill);
     border-color: var(--ds-header-pill-border);
+    box-shadow: 0 2px 8px rgb(0 0 0 / 14%);
   }
 
   .mobile-nav {
     @apply fixed inset-x-0 bottom-0 z-40 grid grid-cols-4 border-t border-ds-line bg-ds-surface shadow-overlay;
-    min-height: calc(4.5rem + env(safe-area-inset-bottom));
-    padding: 0.35rem 0.25rem max(0.35rem, env(safe-area-inset-bottom));
+    min-height: calc(4rem + env(safe-area-inset-bottom));
+    padding: 0.2rem 0.25rem max(0.2rem, env(safe-area-inset-bottom));
   }
   .mobile-nav-action {
-    @apply flex min-h-[52px] min-w-0 flex-col items-center justify-center gap-0.5 rounded-control px-1 text-[10px] font-semibold text-ds-subtle transition-colors duration-200;
+    @apply relative flex min-h-[46px] min-w-0 flex-col items-center justify-center gap-0.5 rounded-lg px-1 text-[10px] font-semibold text-ds-subtle transition-all duration-200;
   }
   .mobile-nav-action[aria-current='page'] {
-    @apply bg-ds-primary-soft text-ds-primary-strong;
+    @apply -translate-y-0.5 bg-ds-primary-soft text-ds-primary-strong shadow-sm;
   }
   .mobile-sheet-layer {
     @apply fixed inset-0 z-50;
@@ -641,11 +645,45 @@ body::before {
   .mobile-result-toolbar > * {
     width: 100%;
   }
+
+  .tabs-responsive {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .tabs-responsive .tab {
+    min-width: 0;
+    width: 100%;
+    padding-inline: 0.4rem;
+  }
 }
 
-@media (min-width: 768px) {
+@media (pointer: coarse) {
+  .tab {
+    min-height: 40px;
+  }
+
+  .nav-tab {
+    min-height: 36px;
+  }
+}
+
+@media (min-width: 1024px) {
   .nav-tabs {
     mask-image: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nav-tabs {
+    scroll-behavior: auto;
+  }
+
+  .tab,
+  .nav-tab,
+  .mobile-nav-action {
+    transition: none;
+    transform: none !important;
   }
 }
 

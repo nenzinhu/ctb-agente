@@ -37,13 +37,18 @@ export default function NavTabs({ itens }: { itens: ItemNav[] }) {
 
   return (
     <nav aria-label="Navegação principal">
-      <ul ref={listaRef} className="nav-tabs">
+      <ul ref={listaRef} className="nav-tabs nav-tabs-compact">
         {itens.map((item) => (
           <li key={item.href} className="shrink-0">
-            <Link href={item.href} aria-current={ativo(item, pathname) ? 'page' : undefined} className="nav-tab">
+            <Link
+              href={item.href}
+              aria-label={item.label}
+              title={item.label}
+              aria-current={ativo(item, pathname) ? 'page' : undefined}
+              className="nav-tab"
+            >
               <Icone nome={item.icone} tamanho={16} className="shrink-0" />
-              <span className="md:hidden">{item.curto}</span>
-              <span className="hidden md:inline">{item.label}</span>
+              <span>{item.curto}</span>
             </Link>
           </li>
         ))}

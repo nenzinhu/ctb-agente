@@ -12,6 +12,7 @@ describe('MobileNavigation', () => {
   it('oferece os quatro destinos com alvos de toque e marca Buscar na consulta', () => {
     pathname = '/consulta';
     render(<MobileNavigation />);
+    expect(screen.getByRole('navigation', { name: /navegação mobile/i })).toHaveClass('mobile-nav-compact');
     const buscar = screen.getByRole('link', { name: /buscar/i });
     expect(buscar).toHaveAttribute('aria-current', 'page');
     expect(screen.getByRole('button', { name: /ferramentas/i })).toHaveClass('mobile-nav-action');
