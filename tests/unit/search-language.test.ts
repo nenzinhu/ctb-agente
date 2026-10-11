@@ -60,6 +60,24 @@ describe('Portuguese retrieval over the official bundled manuals', () => {
   });
 });
 
+describe('Pesos e dimensões (art. 231, IV–VI)', () => {
+  // Resolução Contran 882/2021 groups these limits as "pesos e dimensões", but
+  // the sheets write "excesso de peso", "PBT/PBTC" and "dimensões". The plural
+  // "pesos" alone used to reach only 574-61 (art. 187) and hide the group.
+  const grupo = ['682-31', '682-32', '683-11', '683-12', '683-13', '684-01', '684-02'];
+
+  it.each(['pesos e dimensões', 'PESOS E DIMENSÕES', 'limites de pesos e dimensões'])(
+    'offers every sheet of the group for %s',
+    (consulta) => {
+      expect(buscarFichas(consulta, 40).map((f) => f.codigo)).toEqual(expect.arrayContaining(grupo));
+    }
+  );
+
+  it.each(['pesos', 'peso', 'peso bruto', 'PBT', 'excesso de peso'])('reaches 683-11 from %s', (consulta) => {
+    expect(buscarFichas(consulta, 4).map((f) => f.codigo)).toContain('683-11');
+  });
+});
+
 describe('lexical matching boundaries', () => {
   it('requires a real prefix or a bounded typo, not arbitrary shared letters', () => {
     expect(similaridadePalavra('estacion', 'estacionar')).toBeGreaterThan(0);

@@ -28,6 +28,15 @@ const normalizar = normalizarBusca;
 const indices = new WeakMap<FichaMbft[], IndiceBusca<FichaMbft>>();
 const matchers = new WeakMap<FichaMbft[], FatoMatcher<FichaMbft>>();
 
+/**
+ * A bare article is a listing request: the agent must see every desdobramento,
+ * because the one that fits is not always the first. Capping art. 231 at the
+ * default 8 hid the whole "pesos e dimensões" group — 683-11 (art. 231, V),
+ * 682-31 (art. 231, IV) and 684-01 (art. 231, VI) never showed up, and the
+ * widest article in the manual (art. 181) has 35 sheets.
+ */
+const LIMITE_DESDOBRAMENTOS = 40;
+
 function indiceDasFichas(fichas: FichaMbft[]): IndiceBusca<FichaMbft> {
   let indice = indices.get(fichas);
   if (!indice) {
@@ -75,7 +84,7 @@ function referencia(consulta: string): { artigo: string; resto: string[] } | nul
  * Sheets matching a consultation, best first: by MBFT code, by article
  * (and inciso/paragraph when given), or by the words of a described situation.
  * @param consulta - Query, already PII-filtered
- * @param limite - Maximum sheets
+ * @param limite - Maximum sheets; a bare article still lists every desdobramento
  */
 export function buscarFichas(consulta: string, limite = 8, fichas = todasAsFichas()): FichaMbft[] {
   return buscarFichasComScore(consulta, limite, fichas).map(({ item, scoreConfianca, metodoEncontrado }) => ({
@@ -103,7 +112,7 @@ export function buscarFichasComScore(consulta: string, limite = 8, fichas = toda
   if (ref) {
     const doArtigo = fichas.filter((f) => new RegExp(`\\bart\\.?\\s*${ref.artigo}\\b(?!-)`).test(normalizar(f.amparoLegal)));
     if (doArtigo.length) {
-      if (ref.resto.length === 0) return doArtigo.slice(0, limite).map((item) => ({
+      if (ref.resto.length === 0) return doArtigo.slice(0, Math.max(limite, LIMITE_DESDOBRAMENTOS)).map((item) => ({
         item, scoreConfianca: 100, metodoEncontrado: 'identificador_exato' as const, termosCorrespondentes: [ref.artigo],
       }));
       const partes = (f: FichaMbft) => normalizar(f.amparoLegal).split(/[^a-z0-9º]+/);
