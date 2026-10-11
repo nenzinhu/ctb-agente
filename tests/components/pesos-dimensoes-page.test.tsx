@@ -150,6 +150,17 @@ describe('Página de pesos e dimensões', () => {
     expect(fetchMock).not.toHaveBeenCalled();
   });
 
+  it('bloqueia balança especial enquanto a AET não individualiza os limites de eixo', async () => {
+    render(<CalculadoraPesos />);
+    await userEvent.click(screen.getByRole('button', { name: /selecionar configuração do veículo/i }));
+    await userEvent.click(screen.getByRole('option', { name: /configuração especial conforme AET/i }));
+    await userEvent.click(screen.getByRole('radio', { name: /balança/i }));
+    await userEvent.click(screen.getByRole('button', { name: /calcular fiscalização/i }));
+
+    expect(screen.getByRole('alert')).toHaveTextContent(/limites por grupo de eixo.*AET/i);
+    expect(fetchMock).not.toHaveBeenCalled();
+  });
+
   it('consulta o professor de pesos e mantém as fontes visíveis', async () => {
     fetchMock.mockResolvedValueOnce({ ok: true, json: async () => ({
       origem: 'fontes-oficiais', resposta: 'A tolerância de balança é de 5% sobre o PBT.',

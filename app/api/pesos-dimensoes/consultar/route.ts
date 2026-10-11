@@ -12,7 +12,7 @@ const numeroPositivo = z.number().finite().positive();
 const grupoEixoSchema = z.object({
   id: z.string().trim().min(1).max(80),
   nome: z.string().trim().min(1).max(120),
-  pesoKg: numeroKg,
+  pesoKg: numeroPositivo,
   limiteLegalKg: numeroPositivo,
   limiteTecnicoKg: numeroPositivo.optional(),
 });
@@ -69,6 +69,12 @@ export async function POST(request: NextRequest) {
 
   let gruposEixo = validacao.data.fiscalizacao.gruposEixo;
   if (validacao.data.fiscalizacao.modo === 'balanca') {
+    if (configuracao.gruposEixo.some((grupo) => grupo.limiteKg === null)) {
+      return NextResponse.json({
+        error: 'limites_eixo_aet_necessarios',
+        message: 'A fiscalização por balança exige os limites de cada grupo de eixo individualizados na AET.',
+      }, { status: 400, headers: semCache });
+    }
     const gruposEsperados = configuracao.gruposEixo.filter((grupo) => grupo.limiteKg !== null);
     const pesosPorGrupo = new Map((gruposEixo ?? []).map((grupo) => [grupo.id, grupo.pesoKg]));
     const gruposCompletos =

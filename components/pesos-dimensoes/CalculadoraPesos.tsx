@@ -80,6 +80,10 @@ export default function CalculadoraPesos() {
   const calcular = async (evento: React.FormEvent) => {
     evento.preventDefault();
     if (carregando) return;
+    if (modo === 'balanca' && configuracao.gruposEixo.some((grupo) => grupo.limiteKg === null)) {
+      setErro('A fiscalização por balança exige os limites por grupo de eixo individualizados na AET. Use uma configuração catalogada ou confira a autorização antes de calcular.');
+      return;
+    }
     const pbt = converterNumeroBrasileiro(pbtTexto);
     const taraNecessaria = modo === 'documento' && tipoPesoDocumento === 'carga';
     const obrigatorios: Array<[string, string]> = [

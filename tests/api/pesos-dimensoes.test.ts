@@ -65,6 +65,33 @@ describe('APIs de pesos e dimensões', () => {
     expect((await response.json()).message).toMatch(/todos os grupos de eixo/i);
   });
 
+  it('rejeita peso zero em qualquer grupo de eixo', async () => {
+    const response = await consultar(requisicao('/api/pesos-dimensoes/consultar', {
+      ...entradaValida,
+      fiscalizacao: {
+        modo: 'balanca',
+        pesoTotalAferidoKg: 23000,
+        gruposEixo: [
+          { id: 'dianteiro', nome: 'Eixo dianteiro', pesoKg: 0, limiteLegalKg: 6000 },
+          { id: 'tandem-traseiro', nome: 'Tandem traseiro', pesoKg: 17000, limiteLegalKg: 17000 },
+        ],
+      },
+    }));
+
+    expect(response.status).toBe(400);
+  });
+
+  it('não conclui balança especial sem limites de eixo individualizados na AET', async () => {
+    const response = await consultar(requisicao('/api/pesos-dimensoes/consultar', {
+      configuracaoId: 'especial-aet',
+      limite: { pbtTecnicoKg: 60000, limiteAetKg: 60000 },
+      fiscalizacao: { modo: 'balanca', pesoTotalAferidoKg: 60000, gruposEixo: [] },
+    }));
+
+    expect(response.status).toBe(400);
+    expect((await response.json()).message).toMatch(/limites.*eixo.*AET/i);
+  });
+
   it('rejeita configuração inexistente, negativos e número localizado', async () => {
     const inexistente = await consultar(requisicao('/api/pesos-dimensoes/consultar', {
       ...entradaValida,
