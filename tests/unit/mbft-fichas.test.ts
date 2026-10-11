@@ -95,6 +95,14 @@ describe('buscarFichas (MBFT incluído no app)', () => {
     expect(codigos('recusa do bafômetro')).toContain('757-90');
   });
 
+  it('lists every desdobramento of a bare article', () => {
+    // The consulta picker fed the agent only the first 8 sheets of art. 231, so
+    // the "pesos e dimensões" incisos (682-31, 683-11, 684-01) were never offered.
+    const codigosArt231 = buscarFichas('art. 231').map((f) => f.codigo);
+    expect(codigosArt231).toHaveLength(22);
+    expect(codigosArt231).toEqual(expect.arrayContaining(['682-31', '682-32', '683-11', '683-12', '683-13', '684-01', '684-02']));
+  });
+
   it('returns nothing for an empty query', () => {
     expect(buscarFichas('   ')).toEqual([]);
   });

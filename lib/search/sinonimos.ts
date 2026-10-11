@@ -4,6 +4,14 @@
 export const SINONIMOS: ReadonlyArray<readonly [RegExp, readonly string[]]> = [
   [/\bmotos?\b/, ['motocicleta', 'motoneta', 'ciclomotor']],
   [/\bcarros?\b/, ['automóvel', 'veículo']],
+  // Resolução Contran 882/2021 groups the art. 231, IV–VI limits as "pesos e
+  // dimensões", but the sheets spell it as "excesso de peso", "PBT/PBTC" and
+  // "dimensões". Without the plural, a query for "pesos" matched only the one
+  // sheet that writes it out (574-61, art. 187) and the weight group stayed
+  // out of reach.
+  [/\bpesos? e dimensoes\b/, ['peso', 'dimensões', 'PBT', 'PBTC']],
+  [/\bpeso bruto(?: total)?\b|\bpbtc?\b/, ['PBT', 'peso']],
+  [/\bpesos?\b/, ['peso', 'PBT', 'PBTC']],
   [/\bbaf(?:ometro|omet|om|o)?\b/, ['etilômetro', 'alcoolemia', 'álcool']],
   [/\b(?:bebad[oa]s?|embriag(?:ad[oa]s?)?|alcoolizad[oa]s?|bebida)\b/, ['influência de álcool']],
   [/\b(?:chapad[oa]s?|drogad[oa]s?)\b/, ['substância psicoativa']],
