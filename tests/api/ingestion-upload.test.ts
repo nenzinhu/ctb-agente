@@ -60,9 +60,10 @@ jest.mock('../../lib/ingestion/processor', () => ({
 const documento = { id: 'doc-1', colecao: 'ctb', titulo: 'ctb', nome_arquivo: 'ctb.txt', norma_id: 'ctb' };
 const findDocumentByHash = jest.fn(async (): Promise<unknown> => null);
 const createDocument = jest.fn(async (novo: { colecao: string }): Promise<unknown> => ({ ...documento, colecao: novo.colecao }));
-const deleteDocument = jest.fn(async () => true);
+const deleteDocument = jest.fn(async (_id: string) => true);
 const finalizeDocument = jest.fn(async () => undefined);
 const replacePreviousVersions = jest.fn(async () => 1);
+const updateDocumentMetadata = jest.fn(async (_id: string, _metadata: unknown) => ({ ...documento, trechos: 12 }));
 
 jest.mock('../../lib/ingestion/documents', () => {
   const real = jest.requireActual('../../lib/ingestion/documents');
@@ -70,9 +71,10 @@ jest.mock('../../lib/ingestion/documents', () => {
     ...real,
     findDocumentByHash: () => findDocumentByHash(),
     createDocument: (novo: { colecao: string }) => createDocument(novo),
-    deleteDocument: () => deleteDocument(),
+    deleteDocument: (id: string) => deleteDocument(id),
     finalizeDocument: () => finalizeDocument(),
     replacePreviousVersions: () => replacePreviousVersions(),
+    updateDocumentMetadata: (id: string, metadata: unknown) => updateDocumentMetadata(id, metadata),
   };
 });
 
@@ -181,6 +183,24 @@ describe('POST /api/ingestion/upload', () => {
     expect(resposta.status).toBe(200);
     expect((await resposta.json()).duplicado).toBe(true);
     expect(processChunks).not.toHaveBeenCalled();
+    expect(updateDocumentMetadata).toHaveBeenCalledWith('doc-1', {
+      fonteOficial: validBody.fonteOficial,
+      versao: validBody.versao,
+      vigenteDesde: validBody.vigenteDesde,
+      conferidoEm: validBody.conferidoEm,
+      situacao: 'vigente',
+    });
+  });
+
+  it('reindexes an incomplete duplicate with zero excerpts', async () => {
+    findDocumentByHash.mockResolvedValueOnce({ ...documento, trechos: 0 });
+
+    const resposta = await POST(requisicao(validBody));
+
+    expect(resposta.status).toBe(200);
+    expect(deleteDocument).toHaveBeenCalledWith('doc-1');
+    expect(createDocument).toHaveBeenCalled();
+    expect(processChunks).toHaveBeenCalled();
   });
 
   it('still indexes a CTB document when migration 008 is missing', async () => {
@@ -249,6 +269,7 @@ describe('POST /api/ingestion/upload', () => {
     processChunks.mockRejectedValueOnce(new Error('boom'));
     const resposta = await POST(requisicao(validBody));
     expect(resposta.status).toBe(500);
+    expect(deleteDocument).toHaveBeenCalledWith('doc-1');
     expect(remove).toHaveBeenCalledWith([validBody.storagePath]);
   });
 });

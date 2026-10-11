@@ -13,6 +13,7 @@ import {
   hashConteudo,
   replacePreviousVersions,
   tituloDoArquivo,
+  updateDocumentMetadata,
   type Colecao,
   type DocumentoRegistro,
 } from './documents';
@@ -70,13 +71,31 @@ export async function indexarDocumento(entrada: IndexarEntrada): Promise<Indexar
   const textoPuro = stripPageMarkers(entrada.texto);
   const hash = hashConteudo(textoPuro);
   const titulo = entrada.titulo?.trim() || tituloDoArquivo(fileName);
+  const metadataCompleta =
+    entrada.fonteOficial && entrada.versao && entrada.vigenteDesde && entrada.conferidoEm
+      ? {
+          fonteOficial: entrada.fonteOficial,
+          versao: entrada.versao,
+          vigenteDesde: entrada.vigenteDesde,
+          conferidoEm: entrada.conferidoEm,
+          situacao: entrada.situacao ?? ('vigente' as const),
+        }
+      : null;
 
   // Document registry (migration 008). A CTB document is still indexed
   // without it, the way it always was; the POP base needs it.
   let documento: DocumentoRegistro | null = null;
   try {
     const existente = await findDocumentByHash(colecao, hash);
-    if (existente) return { status: 'duplicado', documento: existente };
+    if (existente?.trechos) {
+      const atualizado = metadataCompleta
+        ? await updateDocumentMetadata(existente.id, metadataCompleta)
+        : existente;
+      return { status: 'duplicado', documento: atualizado };
+    }
+    // A previous attempt may have registered the document and failed before
+    // inserting excerpts. Remove that incomplete row so retrying can heal it.
+    if (existente) await deleteDocument(existente.id);
     documento = await createDocument({
       colecao,
       titulo,
@@ -91,29 +110,31 @@ export async function indexarDocumento(entrada: IndexarEntrada): Promise<Indexar
       versao: entrada.versao,
       vigenteDesde: entrada.vigenteDesde,
       conferidoEm: entrada.conferidoEm,
-      situacao: entrada.situacao ?? (
-        entrada.fonteOficial && entrada.versao && entrada.vigenteDesde && entrada.conferidoEm
-          ? 'vigente'
-          : 'revisar'
-      ),
+      situacao: entrada.situacao ?? (metadataCompleta ? 'vigente' : 'revisar'),
     });
   } catch (error) {
     if (!(error instanceof MigrationPendingError) || colecao !== 'ctb') throw error;
     console.warn('Migration 008 not applied: indexing the CTB document without the registry.');
   }
 
-  const resultado =
-    colecao !== 'ctb'
-      ? await processTrechos({ chunks, documentoId: documento!.id, titulo })
-      : await processChunks({
-          chunks,
-          normaId: entrada.normaId ?? 'ctb',
-          documentType: entrada.documentType ?? 'lei',
-          dataPublicacao: entrada.dataPublicacao,
-          dataVigenciaInicio: entrada.dataVigenciaInicio,
-          dataVigenciaFim: entrada.dataVigenciaFim,
-          documentoId: documento?.id,
-        });
+  let resultado: ProcessingResult;
+  try {
+    resultado =
+      colecao !== 'ctb'
+        ? await processTrechos({ chunks, documentoId: documento!.id, titulo })
+        : await processChunks({
+            chunks,
+            normaId: entrada.normaId ?? 'ctb',
+            documentType: entrada.documentType ?? 'lei',
+            dataPublicacao: entrada.dataPublicacao,
+            dataVigenciaInicio: entrada.dataVigenciaInicio,
+            dataVigenciaFim: entrada.dataVigenciaFim,
+            documentoId: documento?.id,
+          });
+  } catch (error) {
+    if (documento) await deleteDocument(documento.id).catch(() => undefined);
+    throw error;
+  }
 
   if (resultado.insertedCount === 0) {
     if (documento) await deleteDocument(documento.id).catch(() => undefined);

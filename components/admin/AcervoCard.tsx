@@ -10,6 +10,7 @@ interface ItemAcervoStatus {
   paginas: number;
   fonte?: string;
   indexado: boolean;
+  precisaAtualizar?: boolean;
   documento?: { trechos: number; trechos_sem_vetor: number } | null;
 }
 
@@ -101,7 +102,7 @@ export default function AcervoCard({ onIndexado }: AcervoCardProps) {
               disabled={indexando !== null}
             >
               <Icone nome="base" tamanho={18} />
-              {indexando === item.id ? 'Indexando…' : 'Indexar agora'}
+              {indexando === item.id ? 'Indexando…' : item.precisaAtualizar ? 'Atualizar acervo' : 'Indexar agora'}
             </button>
           )}
         </div>

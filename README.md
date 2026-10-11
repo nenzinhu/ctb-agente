@@ -97,8 +97,9 @@ Aplicar as migrations no Supabase (SQL Editor), na ordem:
 8. `scripts/migrations-008-rag-indexacao.sql` (busca sem acento/OR, índice HNSW, base de POPs e novos formatos no bucket)
 9. `scripts/migrations-009-config-extended.sql` (configurações avançadas de busca, chunking, provedores e cache)
 10. `scripts/migrations-010-rag-precision-performance.sql` (prefixos, cobertura mínima, corte de baixa similaridade e limites seguros)
-11. `supabase/migrations/20261008032635_security_hardening.sql` (protege cache, IPs bloqueados e RPCs privilegiadas)
-12. `scripts/migrations-012-fatos-pmsc.sql` (habilita a coleção RAG da Lista de Fatos PMSC Mobile)
+11. `scripts/migrations-011-document-quality.sql` (metadados oficiais, situação das fontes e diagnóstico documental)
+12. `supabase/migrations/20261008032635_security_hardening.sql` (protege cache, IPs bloqueados e RPCs privilegiadas)
+13. `scripts/migrations-012-fatos-pmsc.sql` (habilita a coleção RAG da Lista de Fatos PMSC Mobile)
 
 A migration 007 é opcional: sem ela o app continua funcionando (rate limit
 legado e invalidação via fallback), mas perde a atomicidade anti-rajada e a

@@ -81,6 +81,21 @@ describe('processChunks', () => {
     expect(insertedRows[0].embedding).toEqual([0.4, 0.5, 0.6, 0.7]);
   });
 
+  it('accepts and stores the official publication and effective timestamps', async () => {
+    await processChunks({
+      chunks: [{ text: 'Art. 65. Vigência da resolução.', order: 0 }],
+      normaId: 'contran-res-882-2021',
+      documentType: 'resolucao',
+      dataPublicacao: '2021-12-24T00:00:00.000Z',
+      dataVigenciaInicio: '2022-01-03T00:00:00.000Z',
+    });
+
+    expect(insertedRows[0]).toMatchObject({
+      data_publicacao: '2021-12-24T00:00:00.000Z',
+      data_vigencia_inicio: '2022-01-03T00:00:00.000Z',
+    });
+  });
+
   it('embeds and inserts in batches instead of one request per chunk', async () => {
     const chunks = Array.from({ length: 70 }, (_v, i) => ({ text: `Art. ${i + 1} texto`, order: i }));
 

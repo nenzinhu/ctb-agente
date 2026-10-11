@@ -16,6 +16,20 @@ import { stripPageMarkers } from '@/lib/ingestion/pdf-text';
 
 export const maxDuration = 60;
 
+function acervoPrecisaAtualizar(
+  item: (typeof ACERVO)[number],
+  documento: Awaited<ReturnType<typeof findDocumentByHash>>,
+): boolean {
+  if (!documento) return false;
+  if (documento.trechos <= 0) return true;
+  if (item.fonteOficial && documento.fonte_oficial !== item.fonteOficial) return true;
+  if (item.versao && documento.versao !== item.versao) return true;
+  if (item.vigenteDesde && documento.vigente_desde !== item.vigenteDesde) return true;
+  if (item.conferidoEm && documento.conferido_em !== item.conferidoEm) return true;
+  if (item.situacao && documento.situacao !== item.situacao) return true;
+  return false;
+}
+
 /**
  * GET /api/admin/acervo → { itens: [{ id, titulo, descricao, paginas, fonte, indexado, documento? }] }
  */
@@ -34,11 +48,17 @@ export async function GET() {
         paginas: item.paginas,
         fonte: item.fonte,
         colecao: item.colecao,
+        fonteOficial: item.fonteOficial,
+        versao: item.versao,
+        vigenteDesde: item.vigenteDesde,
+        conferidoEm: item.conferidoEm,
+        situacao: item.situacao,
       };
       if (!databaseConfigured) return { ...base, indexado: false };
       try {
         const documento = await findDocumentByHash(item.colecao, hashConteudo(stripPageMarkers(lerAcervo(item))));
-        return { ...base, indexado: Boolean(documento), documento };
+        const precisaAtualizar = acervoPrecisaAtualizar(item, documento);
+        return { ...base, indexado: Boolean(documento) && !precisaAtualizar, precisaAtualizar, documento };
       } catch (error) {
         if (error instanceof MigrationPendingError) migracaoPendente = true;
         else console.error('Acervo status failed:', error);
@@ -79,6 +99,13 @@ export async function POST(request: NextRequest) {
       titulo: item.titulo,
       normaId: item.normaId,
       documentType: item.documentType,
+      dataPublicacao: item.dataPublicacao,
+      dataVigenciaInicio: item.dataVigenciaInicio,
+      fonteOficial: item.fonteOficial,
+      versao: item.versao,
+      vigenteDesde: item.vigenteDesde,
+      conferidoEm: item.conferidoEm,
+      situacao: item.situacao,
     });
 
     if (resultado.status === 'duplicado') {
