@@ -5,13 +5,16 @@ import { useMemo, useState } from 'react';
 import Field from '@/components/ui/Field';
 import PrimaryButton from '@/components/ui/PrimaryButton';
 import SectionCard from '@/components/ui/SectionCard';
-import { obterConfiguracao } from '@/lib/pesos-dimensoes/catalogo';
+import { listarConfiguracoes, obterConfiguracao } from '@/lib/pesos-dimensoes/catalogo';
 import SeletorConfiguracao from './SeletorConfiguracao';
 import ResultadoPesos, { type RespostaCalculoPesos } from './ResultadoPesos';
 
 type Modo = 'documento' | 'balanca';
 type TipoPesoDocumento = 'carga' | 'peso-bruto-total';
 type Campos = Record<string, string>;
+
+const configuracoes = listarConfiguracoes();
+const CONFIGURACAO_INICIAL = 'truck-3-eixos';
 
 export function converterNumeroBrasileiro(valor: string): number | null {
   const texto = valor.trim();
@@ -23,8 +26,15 @@ export function converterNumeroBrasileiro(valor: string): number | null {
   return Number.isFinite(numero) && numero >= 0 ? numero : null;
 }
 
+/** Text the PBT/PBTC field shows for a configuration, empty when only the AET defines it. */
+function pbtDoDesenho(id: string): string {
+  const limite = obterConfiguracao(id)?.limiteTotalKg;
+  return limite === null || limite === undefined ? '' : String(limite);
+}
+
 export default function CalculadoraPesos() {
-  const [configuracaoId, setConfiguracaoId] = useState('truck-3-eixos');
+  const [configuracaoId, setConfiguracaoId] = useState(CONFIGURACAO_INICIAL);
+  const [pbtTexto, setPbtTexto] = useState(() => pbtDoDesenho(CONFIGURACAO_INICIAL));
   const [modo, setModo] = useState<Modo>('documento');
   const [tipoPesoDocumento, setTipoPesoDocumento] = useState<TipoPesoDocumento>('carga');
   const [campos, setCampos] = useState<Campos>({});
@@ -36,6 +46,26 @@ export default function CalculadoraPesos() {
   const alterar = (nome: string, valor: string) => {
     setCampos((atual) => ({ ...atual, [nome]: valor }));
     setErro(null);
+  };
+
+  /** Drawing → PBT/PBTC: the catalog limit of the chosen configuration. */
+  const escolherDesenho = (id: string) => {
+    setConfiguracaoId(id);
+    setPbtTexto(pbtDoDesenho(id));
+    setCampos({});
+    setResultado(null);
+    setErro(null);
+  };
+
+  /** PBT/PBTC → drawing: the configuration whose limit matches the informed value. */
+  const alterarPbt = (valor: string) => {
+    setPbtTexto(valor);
+    setResultado(null);
+    setErro(null);
+    const numero = converterNumeroBrasileiro(valor);
+    if (numero === null) return;
+    const alvo = configuracoes.find((item) => item.limiteTotalKg === numero);
+    if (alvo && alvo.id !== configuracaoId) setConfiguracaoId(alvo.id);
   };
 
   const valor = (nome: string) => converterNumeroBrasileiro(campos[nome] ?? '');
@@ -54,18 +84,22 @@ export default function CalculadoraPesos() {
   const calcular = async (evento: React.FormEvent) => {
     evento.preventDefault();
     if (carregando) return;
-    const obrigatorios = [
-      ['tara', 'tara do conjunto'],
-      ['pbtTecnico', 'PBT/PBTC técnico'],
-      ['comprimento', 'comprimento total'],
-      ...(configuracao.unidades > 1 ? [['cmt', 'CMT da unidade tratora']] : []),
-      ...(configuracao.requerAet ? [['aet', 'limite autorizado na AET']] : []),
+    const pbt = converterNumeroBrasileiro(pbtTexto);
+    const taraNecessaria = modo === 'documento' && tipoPesoDocumento === 'carga';
+    const obrigatorios: Array<[string, string]> = [
+      ...(pbt === null ? [['pbt', 'PBT/PBTC do conjunto'] as [string, string]] : []),
+      ...(configuracao.requerAet ? [['aet', 'limite autorizado na AET'] as [string, string]] : []),
+      ...(taraNecessaria ? [['tara', 'tara do veículo'] as [string, string]] : []),
       ...(modo === 'documento'
         ? tipoPesoDocumento === 'carga'
-          ? [['cargaNota', 'peso da carga na nota']]
-          : [['pbtDocumento', 'peso bruto total no documento']]
-        : [['pesoBalanca', 'peso total aferido']]),
-      ...(modo === 'balanca' ? configuracao.gruposEixo.filter((grupo) => grupo.limiteKg !== null).map((grupo) => [`eixo-${grupo.id}`, grupo.nome]) : []),
+          ? [['cargaNota', 'peso da carga na nota'] as [string, string]]
+          : [['pbtDocumento', 'peso bruto total no documento'] as [string, string]]
+        : [['pesoBalanca', 'peso total aferido'] as [string, string]]),
+      ...(modo === 'balanca'
+        ? configuracao.gruposEixo
+            .filter((grupo) => grupo.limiteKg !== null)
+            .map((grupo) => [`eixo-${grupo.id}`, grupo.nome] as [string, string])
+        : []),
     ];
     const ausentes = obrigatorios.filter(([nome]) => valor(nome) === null).map(([, label]) => label);
     if (ausentes.length > 0) {
@@ -82,12 +116,9 @@ export default function CalculadoraPesos() {
     const payload = {
       configuracaoId,
       limite: {
-        taraKg: valor('tara')!,
-        comprimentoM: valor('comprimento')!,
-        pbtTecnicoKg: valor('pbtTecnico')!,
-        cmtKg: configuracao.unidades > 1 ? valor('cmt')! : undefined,
-        limiteSinalizadoKg: valor('sinalizacao') ?? undefined,
-        limiteAetKg: configuracao.requerAet ? valor('aet')! : undefined,
+        pbtTecnicoKg: pbt ?? undefined,
+        taraKg: taraNecessaria ? valor('tara') ?? undefined : undefined,
+        limiteAetKg: configuracao.requerAet ? valor('aet') ?? undefined : undefined,
       },
       fiscalizacao: {
         modo,
@@ -121,22 +152,32 @@ export default function CalculadoraPesos() {
     <div className="space-y-5">
       <form onSubmit={calcular} className="space-y-5">
         <SectionCard numero={1} titulo="Configuração do veículo">
-          <SeletorConfiguracao valor={configuracaoId} onChange={(id) => { setConfiguracaoId(id); setCampos({}); setResultado(null); }} />
-          <p className="mt-3 text-xs text-ds-subtle">Limite legal de catálogo: {configuracao.limiteTotalKg?.toLocaleString('pt-BR') ?? 'conforme AET'} kg. O cálculo adotará sempre o menor limite informado.</p>
-        </SectionCard>
-
-        <SectionCard numero={2} titulo="Dados técnicos e limite">
-          <div className="grid gap-4 sm:grid-cols-2">
-            {campo('tara', 'Tara do conjunto (kg)', 'Use a tara inscrita/confirmada, sem a carga.')}
-            {campo('pbtTecnico', 'PBT/PBTC técnico (kg)', 'É o limite técnico do CRLV, plaqueta ou ficha técnica; não é o peso apurado.')}
-            {campo('comprimento', 'Comprimento total (m)', 'Informe em metros; exemplo: 18,6.')}
-            {configuracao.unidades > 1 && campo('cmt', 'CMT da unidade tratora (kg)')}
-            {campo('sinalizacao', 'Limite sinalizado na via (kg)', 'Opcional. Placa R-14 prevalece quando menor.')}
-            {configuracao.requerAet && campo('aet', 'Limite autorizado na AET (kg)')}
+          <SeletorConfiguracao valor={configuracaoId} onChange={escolherDesenho} />
+          <div className="mt-4 grid gap-4 sm:grid-cols-2">
+            <Field
+              label="PBT/PBTC do conjunto (kg)"
+              value={pbtTexto}
+              onChange={(evento) => alterarPbt(evento.target.value)}
+              inputMode="decimal"
+              autoComplete="off"
+              placeholder="Ex: 23.000"
+              hint={
+                configuracao.limiteTotalKg === null
+                  ? 'Esta configuração só tem limite na AET: informe aqui o PBT/PBTC autorizado.'
+                  : 'O desenho preenche este valor. Ao digitar outro PBT/PBTC, o desenho correspondente do catálogo é selecionado.'
+              }
+            />
+            {configuracao.requerAet && campo('aet', 'Limite autorizado na AET (kg)', 'Transcreva o PBTC exatamente como consta na autorização.')}
           </div>
+          <p className="mt-3 text-xs text-ds-subtle">
+            {configuracao.limiteTotalKg === null
+              ? 'Limite legal de catálogo: conforme AET. '
+              : `Limite legal de catálogo: ${configuracao.limiteTotalKg.toLocaleString('pt-BR')} kg. `}
+            O cálculo adota sempre o menor limite entre o legal, o informado e o autorizado.
+          </p>
         </SectionCard>
 
-        <SectionCard numero={3} titulo="Forma de fiscalização">
+        <SectionCard numero={2} titulo="Forma de fiscalização">
           <fieldset>
             <legend className="label">Como o peso foi verificado?</legend>
             <div className="grid grid-cols-2 gap-2">
@@ -163,9 +204,14 @@ export default function CalculadoraPesos() {
                     ))}
                   </div>
                 </fieldset>
-                {tipoPesoDocumento === 'carga'
-                  ? campo('cargaNota', 'Peso da carga na nota (kg)', 'O sistema somará este valor à tara. Não há tolerância por documento.')
-                  : campo('pbtDocumento', 'Peso bruto total no documento (kg)', 'Informe o total exatamente como declarado; a tara não será somada novamente.')}
+                {tipoPesoDocumento === 'carga' ? (
+                  <>
+                    {campo('tara', 'Tara do veículo (kg)', 'Só para somar à carga: use a tara da plaqueta ou do CRLV.')}
+                    {campo('cargaNota', 'Peso da carga na nota (kg)', 'O sistema somará este valor à tara. Não há tolerância por documento.')}
+                  </>
+                ) : (
+                  campo('pbtDocumento', 'Peso bruto total no documento (kg)', 'Informe o total exatamente como declarado; a tara não será somada novamente.')
+                )}
                 {campo('embarcadores', 'Quantidade de embarcadores', 'Opcional; ajuda a indicar o responsável provável.')}
                 {tipoPesoDocumento === 'peso-bruto-total' && (
                   <p className="rounded-control border border-ds-warn bg-ds-accent/10 p-3 text-xs sm:col-span-2">
