@@ -121,10 +121,16 @@ function resultadoInconclusivo(
 
 function determinarResponsavel(
   entrada: EntradaFiscalizacao,
+  excessoTotalKg: number,
   excessoEixosKg: number,
   excessoCmtKg: number,
 ): string {
-  if ((entrada.quantidadeEmbarcadores ?? 0) > 1 || excessoEixosKg > 0 || excessoCmtKg > 0) {
+  const temExcessoPeso = excessoTotalKg > 0 || excessoEixosKg > 0;
+  if (excessoCmtKg > 0 && !temExcessoPeso) return 'Proprietário';
+  if (excessoCmtKg > 0 && temExcessoPeso) {
+    return 'Proprietário pela CMT; responsabilidade pelo excesso de peso conforme o art. 257 do CTB';
+  }
+  if ((entrada.quantidadeEmbarcadores ?? 0) > 1 || excessoEixosKg > 0) {
     return 'Transportador';
   }
   if (entrada.modo === 'documento') return 'Embarcador e transportador, solidariamente';
@@ -236,7 +242,7 @@ export function avaliarFiscalizacao(entrada: EntradaFiscalizacao): ResultadoFisc
     valorPesoCentavos,
     valorCmtCentavos,
     valorTotalCentavos: valorPesoCentavos + valorCmtCentavos,
-    responsavelProvavel: autuavel ? determinarResponsavel(entrada, excessoEixosKg, excessoCmtKg) : null,
+    responsavelProvavel: autuavel ? determinarResponsavel(entrada, excessoTotalKg, excessoEixosKg, excessoCmtKg) : null,
     providencias,
     faltantes: [],
     fontes: [...entrada.limite.fontes, ...FONTES_FISCALIZACAO],

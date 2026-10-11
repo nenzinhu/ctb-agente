@@ -38,12 +38,31 @@ describe('APIs de pesos e dimensões', () => {
       fiscalizacao: {
         modo: 'balanca',
         pesoTotalAferidoKg: 24350,
-        gruposEixo: [{ id: 'traseiro', nome: 'Traseiro', pesoKg: 11600, limiteLegalKg: 10000 }],
+        gruposEixo: [
+          { id: 'dianteiro', nome: 'Eixo dianteiro', pesoKg: 6000, limiteLegalKg: 999999 },
+          { id: 'tandem-traseiro', nome: 'Tandem traseiro', pesoKg: 19500, limiteLegalKg: 999999 },
+        ],
       },
     }));
     const body = await response.json();
     expect(response.status).toBe(200);
     expect(body.fiscalizacao.codigos).toEqual(['683-13']);
+  });
+
+  it('rejeita balança sem todos os grupos de eixo do desenho', async () => {
+    const response = await consultar(requisicao('/api/pesos-dimensoes/consultar', {
+      ...entradaValida,
+      fiscalizacao: {
+        modo: 'balanca',
+        pesoTotalAferidoKg: 24350,
+        gruposEixo: [
+          { id: 'dianteiro', nome: 'Eixo dianteiro', pesoKg: 6000, limiteLegalKg: 6000 },
+        ],
+      },
+    }));
+
+    expect(response.status).toBe(400);
+    expect((await response.json()).message).toMatch(/todos os grupos de eixo/i);
   });
 
   it('rejeita configuração inexistente, negativos e número localizado', async () => {

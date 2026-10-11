@@ -35,10 +35,11 @@ export function calcularLimite(entrada: EntradaLimite): ResultadoLimite {
   const faltantes: string[] = [];
 
   // The catalog supplies the legal limit of the drawn configuration, so the
-  // technical data the agent cannot always read on the road (tare, length,
-  // CMT, signage) is optional: it only narrows the limit when informed. The
-  // AET limit is the exception — a configuration that circulates under an
-  // authorization must never have its limit presumed (Res. 882/2021).
+  // technical data the agent cannot always read on the road only narrows the
+  // limit when informed. CMT is mandatory for combinations, because omitting
+  // it can hide the specific art. 231, X infringement. AET is likewise
+  // mandatory for configurations that depend on an authorization.
+  if (configuracao.unidades > 1 && !positivo(entrada.cmtKg)) faltantes.push('CMT da unidade tratora');
   if (configuracao.requerAet && !positivo(entrada.limiteAetKg)) faltantes.push('limite autorizado na AET');
 
   const exigeComprimento = configuracao.comprimentoMinimoM !== null || configuracao.comprimentoMaximoM !== null;

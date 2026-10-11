@@ -67,10 +67,35 @@ export async function POST(request: NextRequest) {
     );
   }
 
+  let gruposEixo = validacao.data.fiscalizacao.gruposEixo;
+  if (validacao.data.fiscalizacao.modo === 'balanca') {
+    const gruposEsperados = configuracao.gruposEixo.filter((grupo) => grupo.limiteKg !== null);
+    const pesosPorGrupo = new Map((gruposEixo ?? []).map((grupo) => [grupo.id, grupo.pesoKg]));
+    const gruposCompletos =
+      pesosPorGrupo.size === gruposEsperados.length &&
+      (gruposEixo?.length ?? 0) === gruposEsperados.length &&
+      gruposEsperados.every((grupo) => pesosPorGrupo.has(grupo.id));
+
+    if (!gruposCompletos) {
+      return NextResponse.json({
+        error: 'grupos_eixo_incompletos',
+        message: 'Informe o peso aferido de todos os grupos de eixo indicados no desenho do veículo.',
+      }, { status: 400, headers: semCache });
+    }
+
+    gruposEixo = gruposEsperados.map((grupo) => ({
+      id: grupo.id,
+      nome: grupo.nome,
+      pesoKg: pesosPorGrupo.get(grupo.id)!,
+      limiteLegalKg: grupo.limiteKg!,
+    }));
+  }
+
   const limite = calcularLimite({ configuracao, ...validacao.data.limite });
   const fiscalizacao = avaliarFiscalizacao({
     limite,
     ...validacao.data.fiscalizacao,
+    gruposEixo,
     taraKg: validacao.data.limite.taraKg,
     cmtKg: validacao.data.limite.cmtKg,
   });

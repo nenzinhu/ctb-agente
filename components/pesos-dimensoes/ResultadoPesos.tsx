@@ -12,6 +12,15 @@ export interface RespostaCalculoPesos {
 const kg = (valor: number | null) => valor === null ? '—' : `${valor.toLocaleString('pt-BR', { maximumFractionDigits: 2 })} kg`;
 const reais = (centavos: number) => `R$ ${(centavos / 100).toFixed(2).replace('.', ',')}`;
 
+const ENQUADRAMENTOS: Record<string, { descricao: string; amparo: string }> = {
+  '683-11': { descricao: 'Transitar com o veículo com excesso de peso PBT/PBTC.', amparo: 'Art. 231, V, do CTB' },
+  '683-12': { descricao: 'Transitar com o veículo com excesso de peso por eixo.', amparo: 'Art. 231, V, do CTB' },
+  '683-13': { descricao: 'Transitar com o veículo com excesso de peso PBT/PBTC e por eixo.', amparo: 'Art. 231, V, do CTB' },
+  '688-20': { descricao: 'Transitar com o veículo excedendo a CMT em até 600 kg.', amparo: 'Art. 231, X, do CTB' },
+  '689-00': { descricao: 'Transitar com o veículo excedendo a CMT entre 601 kg e 1.000 kg.', amparo: 'Art. 231, X, do CTB' },
+  '690-40': { descricao: 'Transitar com o veículo excedendo a CMT acima de 1.000 kg.', amparo: 'Art. 231, X, do CTB' },
+};
+
 function fontesUnicas(fontes: FontePeso[]): FontePeso[] {
   return fontes.filter((fonte, indice, todas) => todas.findIndex((outra) =>
     outra.documento === fonte.documento && outra.artigo === fonte.artigo && outra.pagina === fonte.pagina
@@ -58,10 +67,24 @@ export default function ResultadoPesos({ resultado }: { resultado: RespostaCalcu
 
           {(fiscalizacao.codigos.length > 0 || fiscalizacao.valorTotalCentavos > 0) && (
             <div className="mt-5 rounded-control border-2 border-ds-danger/60 bg-ds-danger/5 p-4">
-              <div className="flex flex-wrap items-center gap-2">
-                {fiscalizacao.codigos.map((codigo) => <span key={codigo} className="rounded-md bg-ds-danger px-2.5 py-1 font-mono font-bold text-white">{codigo}</span>)}
-                <strong className="ml-auto text-lg text-ds-danger">{reais(fiscalizacao.valorTotalCentavos)}</strong>
+              <div className="flex items-center justify-between gap-3">
+                <h3 className="font-semibold text-ds-danger">Infrações configuradas</h3>
+                <strong className="text-lg text-ds-danger">{reais(fiscalizacao.valorTotalCentavos)}</strong>
               </div>
+              <ul className="mt-3 space-y-2">
+                {fiscalizacao.codigos.map((codigo) => {
+                  const enquadramento = ENQUADRAMENTOS[codigo];
+                  return (
+                    <li key={codigo} className="flex items-start gap-3 rounded-md bg-ds-surface p-3">
+                      <span className="shrink-0 rounded-md bg-ds-danger px-2.5 py-1 font-mono font-bold text-white">{codigo}</span>
+                      <span className="text-sm">
+                        <strong className="block text-ds-text">{enquadramento?.descricao ?? 'Enquadramento de trânsito identificado.'}</strong>
+                        {enquadramento && <small className="mt-0.5 block text-ds-subtle">{enquadramento.amparo}</small>}
+                      </span>
+                    </li>
+                  );
+                })}
+              </ul>
               {fiscalizacao.responsavelProvavel && <p className="mt-3 text-sm"><strong>Responsável provável:</strong> {fiscalizacao.responsavelProvavel}</p>}
             </div>
           )}

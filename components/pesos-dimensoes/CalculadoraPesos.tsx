@@ -3,9 +3,10 @@
 import { useMemo, useState } from 'react';
 
 import Field from '@/components/ui/Field';
+import Icone, { type NomeIcone } from '@/components/ui/Icone';
 import PrimaryButton from '@/components/ui/PrimaryButton';
 import SectionCard from '@/components/ui/SectionCard';
-import { listarConfiguracoes, obterConfiguracao } from '@/lib/pesos-dimensoes/catalogo';
+import { obterConfiguracao } from '@/lib/pesos-dimensoes/catalogo';
 import SeletorConfiguracao from './SeletorConfiguracao';
 import ResultadoPesos, { type RespostaCalculoPesos } from './ResultadoPesos';
 
@@ -13,7 +14,6 @@ type Modo = 'documento' | 'balanca';
 type TipoPesoDocumento = 'carga' | 'peso-bruto-total';
 type Campos = Record<string, string>;
 
-const configuracoes = listarConfiguracoes();
 const CONFIGURACAO_INICIAL = 'truck-3-eixos';
 
 export function converterNumeroBrasileiro(valor: string): number | null {
@@ -57,15 +57,11 @@ export default function CalculadoraPesos() {
     setErro(null);
   };
 
-  /** PBT/PBTC → drawing: the configuration whose limit matches the informed value. */
+  /** The plate value narrows the limit, but never guesses the axle drawing. */
   const alterarPbt = (valor: string) => {
     setPbtTexto(valor);
     setResultado(null);
     setErro(null);
-    const numero = converterNumeroBrasileiro(valor);
-    if (numero === null) return;
-    const alvo = configuracoes.find((item) => item.limiteTotalKg === numero);
-    if (alvo && alvo.id !== configuracaoId) setConfiguracaoId(alvo.id);
   };
 
   const valor = (nome: string) => converterNumeroBrasileiro(campos[nome] ?? '');
@@ -88,6 +84,7 @@ export default function CalculadoraPesos() {
     const taraNecessaria = modo === 'documento' && tipoPesoDocumento === 'carga';
     const obrigatorios: Array<[string, string]> = [
       ...(pbt === null ? [['pbt', 'PBT/PBTC do conjunto'] as [string, string]] : []),
+      ...(configuracao.unidades > 1 ? [['cmt', 'CMT da unidade tratora'] as [string, string]] : []),
       ...(configuracao.requerAet ? [['aet', 'limite autorizado na AET'] as [string, string]] : []),
       ...(taraNecessaria ? [['tara', 'tara do veículo'] as [string, string]] : []),
       ...(modo === 'documento'
@@ -118,6 +115,7 @@ export default function CalculadoraPesos() {
       limite: {
         pbtTecnicoKg: pbt ?? undefined,
         taraKg: taraNecessaria ? valor('tara') ?? undefined : undefined,
+        cmtKg: configuracao.unidades > 1 ? valor('cmt') ?? undefined : undefined,
         limiteAetKg: configuracao.requerAet ? valor('aet') ?? undefined : undefined,
       },
       fiscalizacao: {
@@ -127,7 +125,6 @@ export default function CalculadoraPesos() {
         pesoBrutoTotalDocumentoKg: modo === 'documento' && tipoPesoDocumento === 'peso-bruto-total' ? valor('pbtDocumento')! : undefined,
         pesoTotalAferidoKg: modo === 'balanca' ? valor('pesoBalanca')! : undefined,
         gruposEixo,
-        quantidadeEmbarcadores: valor('embarcadores') ?? undefined,
       },
     };
 
@@ -164,9 +161,10 @@ export default function CalculadoraPesos() {
               hint={
                 configuracao.limiteTotalKg === null
                   ? 'Esta configuração só tem limite na AET: informe aqui o PBT/PBTC autorizado.'
-                  : 'O desenho preenche este valor. Ao digitar outro PBT/PBTC, o desenho correspondente do catálogo é selecionado.'
+                  : 'O desenho sugere o limite de catálogo. Confira e transcreva o PBT/PBTC da plaqueta ou do CRLV; o desenho não muda sozinho.'
               }
             />
+            {configuracao.unidades > 1 && campo('cmt', 'CMT da unidade tratora (kg)', 'Transcreva a capacidade máxima de tração indicada na plaqueta ou no CRLV.')}
             {configuracao.requerAet && campo('aet', 'Limite autorizado na AET (kg)', 'Transcreva o PBTC exatamente como consta na autorização.')}
           </div>
           <p className="mt-3 text-xs text-ds-subtle">
@@ -181,9 +179,10 @@ export default function CalculadoraPesos() {
           <fieldset>
             <legend className="label">Como o peso foi verificado?</legend>
             <div className="grid grid-cols-2 gap-2">
-              {([['documento', 'Nota fiscal'], ['balanca', 'Balança']] as const).map(([id, label]) => (
-                <label key={id} className={`flex min-h-12 cursor-pointer items-center justify-center rounded-control border-2 px-3 font-semibold ${modo === id ? 'border-ds-primary bg-ds-primary-soft text-ds-primary-strong' : 'border-ds-border bg-ds-surface'}`}>
+              {([['documento', 'Nota fiscal', 'arquivo'], ['balanca', 'Balança', 'balanca']] as const).map(([id, label, icone]) => (
+                <label key={id} className={`flex min-h-16 cursor-pointer items-center justify-center gap-2 rounded-control border-2 px-3 font-semibold ${modo === id ? 'border-ds-primary bg-ds-primary-soft text-ds-primary-strong' : 'border-ds-border bg-ds-surface'}`}>
                   <input type="radio" name="modo" value={id} checked={modo === id} onChange={() => { setModo(id); setResultado(null); }} className="sr-only" />
+                  <Icone nome={icone as NomeIcone} tamanho={24} aria-label={`Fiscalização por ${label.toLocaleLowerCase('pt-BR')}`} />
                   {label}
                 </label>
               ))}
@@ -212,7 +211,6 @@ export default function CalculadoraPesos() {
                 ) : (
                   campo('pbtDocumento', 'Peso bruto total no documento (kg)', 'Informe o total exatamente como declarado; a tara não será somada novamente.')
                 )}
-                {campo('embarcadores', 'Quantidade de embarcadores', 'Opcional; ajuda a indicar o responsável provável.')}
                 {tipoPesoDocumento === 'peso-bruto-total' && (
                   <p className="rounded-control border border-ds-warn bg-ds-accent/10 p-3 text-xs sm:col-span-2">
                     Para autuação, confirme se o documento também declara o peso da carga em quilogramas, conforme o art. 49, §§ 3º a 5º, da Resolução CONTRAN nº 882/2021.

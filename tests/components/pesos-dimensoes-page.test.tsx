@@ -43,6 +43,8 @@ describe('Página de pesos e dimensões', () => {
     await userEvent.click(screen.getByRole('button', { name: /calcular fiscalização/i }));
 
     expect(await screen.findByText('683-11')).toBeInTheDocument();
+    expect(screen.getByText(/transitar com o veículo com excesso de peso pbt\/pbtc/i)).toBeInTheDocument();
+    expect(screen.getByText(/art\. 231, v/i)).toBeInTheDocument();
     expect(screen.getAllByText('R$ 135,48').length).toBeGreaterThan(0);
     expect(screen.getByText(/embarcador e transportador/i)).toBeInTheDocument();
     expect(screen.getByText(/Art\. 49/)).toBeInTheDocument();
@@ -54,7 +56,7 @@ describe('Página de pesos e dimensões', () => {
     expect(payload.fiscalizacao.tipoPesoDocumento).toBe('carga');
   });
 
-  it('liga o desenho ao PBT/PBTC nos dois sentidos', async () => {
+  it('mantém o desenho manual ao informar a plaqueta e atualiza o PBT ao trocar o SVG', async () => {
     render(<CalculadoraPesos />);
     const seletor = () => screen.getByRole('button', { name: /selecionar configuração do veículo/i });
     const pbt = () => screen.getByLabelText(/pbt\/pbtc do conjunto/i);
@@ -63,16 +65,35 @@ describe('Página de pesos e dimensões', () => {
     expect(pbt()).toHaveValue('23000');
     expect(seletor()).toHaveTextContent(/caminhão truck/i);
 
-    // PBT/PBTC → desenho: digitar o limite troca a configuração sozinho.
+    // A plaqueta não identifica a quantidade de eixos: o desenho permanece manual.
     await userEvent.clear(pbt());
     await userEvent.type(pbt(), '41.500');
-    expect(seletor()).toHaveTextContent(/cavalo 4x2 \+ semirreboque de 3 eixos/i);
+    expect(seletor()).toHaveTextContent(/caminhão truck/i);
 
     // Trocar o desenho devolve o PBT/PBTC do catálogo; rodotrem pede a AET.
     await userEvent.click(seletor());
     await userEvent.click(screen.getByRole('option', { name: /rodotrem/i }));
     expect(pbt()).toHaveValue('74000');
     expect(screen.getByLabelText(/limite autorizado na aet/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/cmt da unidade tratora/i)).toBeInTheDocument();
+  });
+
+  it('remove campos opcionais e exige a CMT nos conjuntos articulados', async () => {
+    render(<CalculadoraPesos />);
+
+    expect(screen.queryByLabelText(/quantidade de embarcadores/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/opcional/i)).not.toBeInTheDocument();
+
+    await userEvent.click(screen.getByRole('button', { name: /selecionar configuração do veículo/i }));
+    await userEvent.click(screen.getByRole('option', { name: /cavalo 6x2\/6x4 \+ semirreboque de 3 eixos/i }));
+
+    expect(screen.getByLabelText(/cmt da unidade tratora/i)).toBeInTheDocument();
+    await userEvent.type(screen.getByLabelText(/tara do veículo/i), '15.000');
+    await userEvent.type(screen.getByLabelText(/peso da carga na nota/i), '20.000');
+    await userEvent.click(screen.getByRole('button', { name: /calcular fiscalização/i }));
+
+    expect(screen.getByRole('alert')).toHaveTextContent(/cmt da unidade tratora/i);
+    expect(fetchMock).not.toHaveBeenCalled();
   });
 
   it('calcula sem balança usando diretamente o PBT declarado no documento', async () => {
@@ -109,11 +130,24 @@ describe('Página de pesos e dimensões', () => {
 
   it('troca para balança e exibe campos por grupo de eixo', async () => {
     render(<CalculadoraPesos />);
+    expect(screen.getByRole('img', { name: /fiscalização por nota fiscal/i })).toBeInTheDocument();
+    expect(screen.getByRole('img', { name: /fiscalização por balança/i })).toBeInTheDocument();
     await userEvent.click(screen.getByRole('radio', { name: /balança/i }));
     expect(screen.queryByLabelText(/peso da carga na nota/i)).not.toBeInTheDocument();
     expect(screen.getByLabelText(/peso total aferido/i)).toBeInTheDocument();
     expect(screen.getByRole('textbox', { name: /eixo dianteiro/i })).toBeInTheDocument();
     expect(screen.getByRole('textbox', { name: /tandem traseiro/i })).toBeInTheDocument();
+  });
+
+  it('não calcula na balança sem o peso de todos os grupos de eixo', async () => {
+    render(<CalculadoraPesos />);
+    await userEvent.click(screen.getByRole('radio', { name: /balança/i }));
+    await userEvent.type(screen.getByLabelText(/peso total aferido/i), '24.500');
+    await userEvent.type(screen.getByRole('textbox', { name: /eixo dianteiro/i }), '6.000');
+    await userEvent.click(screen.getByRole('button', { name: /calcular fiscalização/i }));
+
+    expect(screen.getByRole('alert')).toHaveTextContent(/tandem traseiro/i);
+    expect(fetchMock).not.toHaveBeenCalled();
   });
 
   it('consulta o professor de pesos e mantém as fontes visíveis', async () => {

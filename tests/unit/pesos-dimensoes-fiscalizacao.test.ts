@@ -136,6 +136,7 @@ describe('fiscalização de pesos', () => {
     });
     expect(resultado.codigos).toContain(codigo);
     expect(resultado.valorCmtCentavos).toBe(valorCmtCentavos);
+    expect(resultado.responsavelProvavel).toBe('Proprietário');
   });
 
   it('indica transportador quando há vários embarcadores', () => {

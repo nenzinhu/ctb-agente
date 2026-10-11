@@ -60,20 +60,21 @@ describe('motor de limite regulamentar', () => {
     expect(negativo.faltantes).toContain('tara válida');
   });
 
-  it('usa o PBT/PBTC informado e a CMT quando eles estreitam o limite legal', () => {
+  it('exige a CMT em combinações e usa o valor quando ele estreita o limite legal', () => {
     const semCmt = calcularLimite({ configuracao: carreta, pbtTecnicoKg: 45000 });
-    expect(semCmt).toMatchObject({ status: 'conclusivo', limiteKg: 45000, fatorDeterminante: 'tecnico' });
+    expect(semCmt).toMatchObject({ status: 'inconclusivo', limiteKg: null });
+    expect(semCmt.faltantes).toContain('CMT da unidade tratora');
 
     const comCmt = calcularLimite({ configuracao: carreta, pbtTecnicoKg: 48500, cmtKg: 40000 });
     expect(comCmt).toMatchObject({ status: 'conclusivo', limiteKg: 40000, fatorDeterminante: 'cmt' });
   });
 
   it('só questiona o comprimento quando ele é informado fora da faixa', () => {
-    const fora = calcularLimite({ configuracao: carreta, comprimentoM: 15 });
+    const fora = calcularLimite({ configuracao: carreta, comprimentoM: 15, cmtKg: 60000 });
     expect(fora.status).toBe('inconclusivo');
     expect(fora.faltantes).toContain('comprimento compatível com a configuração');
 
-    const dentro = calcularLimite({ configuracao: carreta, comprimentoM: 17 });
+    const dentro = calcularLimite({ configuracao: carreta, comprimentoM: 17, cmtKg: 60000 });
     expect(dentro).toMatchObject({ status: 'conclusivo', limiteKg: 48500 });
   });
 
