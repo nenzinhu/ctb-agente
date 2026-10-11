@@ -15,7 +15,7 @@ export default function PesosDimensoesPage() {
       <div className="consultation-intro">
         <p className="eyebrow">Ferramenta para o agente de campo</p>
         <h1 className="consultation-title">PESOS E DIMENSÕES</h1>
-        <p className="consultation-lead">Confira o limite do conjunto, a capacidade máxima de carga, tolerâncias, excesso autuável, código e valor estimado.</p>
+        <p className="consultation-lead">Escolha o veículo pelo desenho, informe o peso e confira o limite do conjunto, o excesso autuável, o código e o valor estimado.</p>
       </div>
 
       <div className="mt-7 grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_320px]">
@@ -25,8 +25,8 @@ export default function PesosDimensoesPage() {
             <span className="search-guide-icon"><Icone nome="balanca" tamanho={18} /></span>
             <h2 id="guia-pesos" className="mt-3 text-lg font-semibold">Conferência guiada</h2>
             <ol className="mt-3 list-decimal space-y-2 pl-5 text-sm text-ds-subtle">
-              <li>Escolha a configuração pelo desenho.</li>
-              <li>Confira tara, PBT/PBTC técnico, CMT e AET.</li>
+              <li>Escolha a configuração pelo desenho: o PBT/PBTC entra sozinho.</li>
+              <li>Se souber o PBT/PBTC, digite: o desenho correspondente é selecionado.</li>
               <li>Informe peso da nota ou da balança.</li>
               <li>Revise memória, código, responsável e providência.</li>
             </ol>

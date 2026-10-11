@@ -41,40 +41,40 @@ describe('motor de limite regulamentar', () => {
     expect(calcularCapacidadeCarga(23000, 24000)).toBe(0);
   });
 
-  it('exige dados técnicos e rejeita valores negativos', () => {
-    const resultado = calcularLimite({
-      configuracao: truck,
-      taraKg: -1,
-      comprimentoM: 12,
+  it('calcula só com o desenho escolhido e rejeita valores negativos', () => {
+    // O catálogo já traz o limite legal da configuração: tara, comprimento,
+    // CMT e sinalização são opcionais e só estreitam o limite quando informados.
+    const doDesenho = calcularLimite({ configuracao: truck });
+
+    expect(doDesenho).toMatchObject({
+      status: 'conclusivo',
+      limiteKg: 23000,
+      fatorDeterminante: 'legal',
+      capacidadeCargaKg: null,
+      faltantes: [],
     });
 
-    expect(resultado.status).toBe('inconclusivo');
-    expect(resultado.faltantes).toEqual(expect.arrayContaining(['tara válida', 'PBT/PBTC técnico']));
+    const negativo = calcularLimite({ configuracao: truck, taraKg: -1 });
+
+    expect(negativo.status).toBe('inconclusivo');
+    expect(negativo.faltantes).toContain('tara válida');
   });
 
-  it('exige CMT para combinação articulada', () => {
-    const resultado = calcularLimite({
-      configuracao: carreta,
-      taraKg: 15000,
-      comprimentoM: 17,
-      pbtTecnicoKg: 48500,
-    });
+  it('usa o PBT/PBTC informado e a CMT quando eles estreitam o limite legal', () => {
+    const semCmt = calcularLimite({ configuracao: carreta, pbtTecnicoKg: 45000 });
+    expect(semCmt).toMatchObject({ status: 'conclusivo', limiteKg: 45000, fatorDeterminante: 'tecnico' });
 
-    expect(resultado.status).toBe('inconclusivo');
-    expect(resultado.faltantes).toContain('CMT da unidade tratora');
+    const comCmt = calcularLimite({ configuracao: carreta, pbtTecnicoKg: 48500, cmtKg: 40000 });
+    expect(comCmt).toMatchObject({ status: 'conclusivo', limiteKg: 40000, fatorDeterminante: 'cmt' });
   });
 
-  it('exige comprimento dentro da faixa da configuração', () => {
-    const resultado = calcularLimite({
-      configuracao: carreta,
-      taraKg: 15000,
-      comprimentoM: 15,
-      pbtTecnicoKg: 48500,
-      cmtKg: 50000,
-    });
+  it('só questiona o comprimento quando ele é informado fora da faixa', () => {
+    const fora = calcularLimite({ configuracao: carreta, comprimentoM: 15 });
+    expect(fora.status).toBe('inconclusivo');
+    expect(fora.faltantes).toContain('comprimento compatível com a configuração');
 
-    expect(resultado.status).toBe('inconclusivo');
-    expect(resultado.faltantes).toContain('comprimento compatível com a configuração');
+    const dentro = calcularLimite({ configuracao: carreta, comprimentoM: 17 });
+    expect(dentro).toMatchObject({ status: 'conclusivo', limiteKg: 48500 });
   });
 
   it('usa o limite autorizado e exige AET quando obrigatória', () => {

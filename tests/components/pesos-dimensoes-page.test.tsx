@@ -34,9 +34,11 @@ describe('Página de pesos e dimensões', () => {
     fetchMock.mockResolvedValueOnce({ ok: true, json: async () => respostaCalculo });
     render(<CalculadoraPesos />);
 
-    await userEvent.type(screen.getByLabelText(/tara do conjunto/i), '9.000');
-    await userEvent.type(screen.getByLabelText(/pbt\/pbtc técnico/i), '23.000');
-    await userEvent.type(screen.getByLabelText(/comprimento total/i), '10');
+    // O PBT/PBTC entra sozinho pelo desenho: nenhum dado técnico é digitado.
+    expect(screen.getByLabelText(/pbt\/pbtc do conjunto/i)).toHaveValue('23000');
+    expect(screen.queryByLabelText(/comprimento total/i)).not.toBeInTheDocument();
+
+    await userEvent.type(screen.getByLabelText(/tara do veículo/i), '9.000');
     await userEvent.type(screen.getByLabelText(/peso da carga na nota/i), '14.001');
     await userEvent.click(screen.getByRole('button', { name: /calcular fiscalização/i }));
 
@@ -46,9 +48,31 @@ describe('Página de pesos e dimensões', () => {
     expect(screen.getByText(/Art\. 49/)).toBeInTheDocument();
     expect(screen.getByText(/9\.000 kg de tara.*14\.001 kg de carga declarada.*23\.001 kg de PBT apurado/i)).toBeInTheDocument();
     const payload = JSON.parse(fetchMock.mock.calls[0][1].body);
-    expect(payload.limite).toMatchObject({ taraKg: 9000, pbtTecnicoKg: 23000, comprimentoM: 10 });
+    expect(payload.limite).toMatchObject({ taraKg: 9000, pbtTecnicoKg: 23000 });
+    expect(payload.limite.comprimentoM).toBeUndefined();
     expect(payload.fiscalizacao.pesoCargaDocumentoKg).toBe(14001);
     expect(payload.fiscalizacao.tipoPesoDocumento).toBe('carga');
+  });
+
+  it('liga o desenho ao PBT/PBTC nos dois sentidos', async () => {
+    render(<CalculadoraPesos />);
+    const seletor = () => screen.getByRole('button', { name: /selecionar configuração do veículo/i });
+    const pbt = () => screen.getByLabelText(/pbt\/pbtc do conjunto/i);
+
+    // Desenho → PBT/PBTC: o caminhão truck traz o limite legal de catálogo.
+    expect(pbt()).toHaveValue('23000');
+    expect(seletor()).toHaveTextContent(/caminhão truck/i);
+
+    // PBT/PBTC → desenho: digitar o limite troca a configuração sozinho.
+    await userEvent.clear(pbt());
+    await userEvent.type(pbt(), '41.500');
+    expect(seletor()).toHaveTextContent(/cavalo 4x2 \+ semirreboque de 3 eixos/i);
+
+    // Trocar o desenho devolve o PBT/PBTC do catálogo; rodotrem pede a AET.
+    await userEvent.click(seletor());
+    await userEvent.click(screen.getByRole('option', { name: /rodotrem/i }));
+    expect(pbt()).toHaveValue('74000');
+    expect(screen.getByLabelText(/limite autorizado na aet/i)).toBeInTheDocument();
   });
 
   it('calcula sem balança usando diretamente o PBT declarado no documento', async () => {
@@ -67,14 +91,14 @@ describe('Página de pesos e dimensões', () => {
 
     await userEvent.click(screen.getByRole('radio', { name: /peso bruto total declarado/i }));
     expect(screen.queryByLabelText(/peso da carga na nota/i)).not.toBeInTheDocument();
-    await userEvent.type(screen.getByLabelText(/tara do conjunto/i), '9.000');
-    await userEvent.type(screen.getByLabelText(/pbt\/pbtc técnico/i), '23.000');
-    await userEvent.type(screen.getByLabelText(/comprimento total/i), '10');
+    expect(screen.queryByLabelText(/tara do veículo/i)).not.toBeInTheDocument();
     await userEvent.type(screen.getByLabelText(/peso bruto total no documento/i), '23.001');
     await userEvent.click(screen.getByRole('button', { name: /calcular fiscalização/i }));
 
     expect(await screen.findByText(/confirme se o documento declara o peso da carga/i)).toBeInTheDocument();
     const payload = JSON.parse(fetchMock.mock.calls[0][1].body);
+    expect(payload.limite).toMatchObject({ pbtTecnicoKg: 23000 });
+    expect(payload.limite.taraKg).toBeUndefined();
     expect(payload.fiscalizacao).toMatchObject({
       modo: 'documento',
       tipoPesoDocumento: 'peso-bruto-total',
