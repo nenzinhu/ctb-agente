@@ -29,7 +29,7 @@ describe('POST /api/estrangeiros/consultar', () => {
     const resposta = await POST(requisicao({ pergunta: 'condutor argentino com habilitação válida' }));
     const corpo = await resposta.json();
     expect(corpo.estado).toBe('requer_conferencia');
-    expect(corpo.baseInternacional).toMatch(/Argentina.*RBUT.*Convenção de Viena/i);
+    expect(corpo.baseInternacional).toMatch(/Argentina.*outros tratados/i);
     expect(corpo.baseInternacional).toMatch(/conferência/i);
   });
 });

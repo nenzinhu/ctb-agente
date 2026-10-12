@@ -11,7 +11,7 @@ describe('EstrangeirosConsulta', () => {
     expect(screen.queryByLabelText(/nome|cpf|passaporte|placa/i)).not.toBeInTheDocument();
     expect(screen.getByRole('link', { name: /resolução contran nº 933\/2022/i })).toHaveAttribute('href', '/documentos/estrangeiros/resolucao-contran-933-2022.pdf');
     expect(screen.getByRole('link', { name: /decreto nº 86.714\/1981/i })).toHaveAttribute('href', '/documentos/estrangeiros/decreto-86714-1981.pdf');
-    expect(screen.getByRole('link', { name: /lista de países.*tratados/i })).toHaveAttribute('href', '/documentos/estrangeiros/paises-tratados.txt');
+    expect(screen.getByRole('link', { name: /países signatários.*convenção de viena/i })).toHaveAttribute('href', '/documentos/estrangeiros/paises-convencao-viena-reciprocidade.pdf');
   });
 
   it('mostra perguntas pendentes e alternativas em linhas visíveis', () => {
