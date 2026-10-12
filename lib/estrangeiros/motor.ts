@@ -56,7 +56,7 @@ export function avaliarEstrangeiro(fatos: FatosEstrangeiros): ResultadoEstrangei
     fatos,
     perguntasPendentes,
     documentos,
-    baseInternacional: 'A participação do país em convenção ou reciprocidade ainda não foi confirmada por uma fonte oficial revisada neste catálogo. Confira o instrumento vigente antes de concluir.',
+    baseInternacional: 'A lista oficial íntegra de países participantes ainda não foi incorporada; por isso, a participação do país em convenção ou reciprocidade não foi confirmada neste catálogo. Confira o instrumento vigente antes de concluir.',
     infracoes: perguntasPendentes.length > 0 ? [] : infracoes,
     providencias: infracoes.length > 0
       ? ['Confirmar todos os fatos e a vigência da fonte antes de autuar.', INFRACAO_501.medida]

@@ -8,9 +8,9 @@ import type { SituacaoFonte } from '@/lib/quality/types';
 import type { DocumentoMetadata } from '@/lib/quality/metadata';
 import type { FormatoDocumento } from './formats';
 
-export type Colecao = 'ctb' | 'pop' | 'natureza_potencial';
+export type Colecao = 'ctb' | 'pop' | 'natureza_potencial' | 'estrangeiros';
 
-export const COLECOES: Colecao[] = ['ctb', 'pop', 'natureza_potencial'];
+export const COLECOES: Colecao[] = ['ctb', 'pop', 'natureza_potencial', 'estrangeiros'];
 
 export interface DocumentoRegistro {
   id: string;

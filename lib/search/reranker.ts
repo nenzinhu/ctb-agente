@@ -2,7 +2,7 @@ import { classificarIntencaoBusca, type ClassificacaoIntencao, type IntencaoBusc
 import { palavrasBusca } from './lexical';
 import { normalizarBusca } from './sinonimos';
 
-export type ColecaoRanking = 'ctb' | 'mbft' | 'pop' | 'natureza_pmsc';
+export type ColecaoRanking = 'ctb' | 'mbft' | 'pop' | 'natureza_pmsc' | 'estrangeiros';
 
 export interface CandidatoRanking {
   id: string;
@@ -27,7 +27,7 @@ const PESO_INTENCAO: Record<IntencaoBusca, Partial<Record<ColecaoRanking, number
   pop: { pop: 1 },
   infracao: { mbft: 1, ctb: 0.7 },
   natureza_pmsc: { natureza_pmsc: 1 },
-  consulta_geral: { ctb: 0.25, mbft: 0.25, pop: 0.25, natureza_pmsc: 0.25 },
+  consulta_geral: { ctb: 0.25, mbft: 0.25, pop: 0.25, natureza_pmsc: 0.25, estrangeiros: 0.25 },
 };
 
 function referenciaNormalizada(valor: string): string {

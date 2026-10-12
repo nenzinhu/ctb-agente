@@ -38,5 +38,18 @@ export interface ResultadoEstrangeiros {
     referencia: string;
     situacao: 'confirmada' | 'revisar';
   }>;
+  trechos?: TrechoFonteEstrangeiros[];
   aviso: string;
+}
+
+export interface TrechoFonteEstrangeiros {
+  id: string;
+  fonteId: string;
+  titulo: string;
+  referencia: string;
+  texto: string;
+  pagina?: number;
+  arquivo: string;
+  urlOficial: string;
+  score: number;
 }

@@ -27,11 +27,12 @@ interface DashboardStats {
   lastUpdated: string | null;
 }
 
-type Aba = 'documentos' | 'pop' | 'enquadramentos' | 'revisao' | 'rag' | 'provedores' | 'uso' | 'limites';
+type Aba = 'documentos' | 'pop' | 'estrangeiros' | 'enquadramentos' | 'revisao' | 'rag' | 'provedores' | 'uso' | 'limites';
 
 const ABAS: { id: Aba; label: string; icone: NomeIcone }[] = [
   { id: 'documentos', label: 'Base CTB', icone: 'livro' },
   { id: 'pop', label: 'POP-PMSC', icone: 'escudo' },
+  { id: 'estrangeiros', label: 'Estrangeiros', icone: 'livro' },
   { id: 'enquadramentos', label: 'Enquadramentos', icone: 'lista' },
   { id: 'revisao', label: 'Revisão da base', icone: 'check' },
   { id: 'rag', label: 'RAG e ajuste fino', icone: 'busca' },
@@ -204,6 +205,24 @@ export default function AdminDashboard() {
               <DocumentList colecao="pop" refreshTrigger={refreshTrigger} onChange={atualizar} />
               <Link href="/pop" className="btn-ghost btn-sm mt-4">
                 Testar a consulta aos POPs
+                <Icone nome="seta" tamanho={16} />
+              </Link>
+            </Secao>
+          </>
+        )}
+
+        {aba === 'estrangeiros' && (
+          <>
+            <Secao
+              titulo="Enviar normas de fiscalização de estrangeiros"
+              descricao="Convenções, decretos, resoluções e listas oficiais. Cada fonte exige identificação, vigência e data de conferência."
+            >
+              <AdminUploadForm colecao="estrangeiros" onUploadSuccess={atualizar} />
+            </Secao>
+            <Secao titulo="Documentos de estrangeiros indexados">
+              <DocumentList colecao="estrangeiros" refreshTrigger={refreshTrigger} onChange={atualizar} />
+              <Link href="/estrangeiros" className="btn-ghost btn-sm mt-4">
+                Testar a consulta de estrangeiros
                 <Icone nome="seta" tamanho={16} />
               </Link>
             </Secao>

@@ -49,6 +49,29 @@ export default function ResultadoEstrangeiros({ resultado }: { resultado: Result
         <p className="mt-2 text-sm text-ds-subtle">{resultado.baseInternacional}</p>
       </article>
 
+      {resultado.trechos && resultado.trechos.length > 0 && (
+        <article className="card p-5">
+          <h2 className="text-lg font-semibold">Trechos oficiais recuperados</h2>
+          <p className="mt-1 text-sm text-ds-subtle">RAG documental para conferência: leia o contexto e abra o PDF antes de concluir.</p>
+          <div className="mt-4 grid gap-3">
+            {resultado.trechos.map((trecho) => (
+              <div key={trecho.id} className="rounded-card border border-ds-line p-4">
+                <div className="flex flex-wrap items-center gap-2">
+                  <strong>{trecho.referencia}</strong>
+                  {trecho.pagina && <span className="badge">Página {trecho.pagina}</span>}
+                  <span className="text-xs text-ds-subtle">{trecho.titulo}</span>
+                </div>
+                <blockquote className="mt-2 border-l-2 border-ds-accent pl-3 text-sm text-ds-subtle">{trecho.texto}</blockquote>
+                <div className="mt-3 flex flex-wrap gap-4 text-xs">
+                  {trecho.arquivo && <a className="text-ds-accent underline" href={trecho.arquivo} target="_blank" rel="noreferrer">Abrir PDF anexado</a>}
+                  {trecho.urlOficial && <a className="text-ds-accent underline" href={trecho.urlOficial} target="_blank" rel="noreferrer">Ver fonte oficial</a>}
+                </div>
+              </div>
+            ))}
+          </div>
+        </article>
+      )}
+
       <article className="card p-5">
         <h2 className="text-lg font-semibold">Possíveis enquadramentos</h2>
         {resultado.infracoes.length === 0 ? <p className="mt-2 text-sm text-ds-subtle">Nenhum enquadramento deve ser sugerido antes de completar e conferir os fatos.</p> : (

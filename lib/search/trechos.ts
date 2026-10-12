@@ -24,6 +24,7 @@ const COLECAO_RANKING: Record<Colecao, ColecaoRanking> = {
   ctb: 'ctb',
   pop: 'pop',
   natureza_potencial: 'natureza_pmsc',
+  estrangeiros: 'estrangeiros',
 };
 
 const CANDIDATOS = 20;

@@ -234,6 +234,19 @@ describe('POST /api/ingestion/upload', () => {
     expect(processTrechos).toHaveBeenCalledWith(expect.objectContaining({ documentoId: 'doc-1' }));
   });
 
+  it('indexa fonte oficial de estrangeiros na coleção própria', async () => {
+    const resposta = await POST(requisicao({
+      ...validBody,
+      storagePath: 'resolucao-933.txt',
+      fileName: 'resolucao-933.txt',
+      colecao: 'estrangeiros',
+      titulo: 'Resolução CONTRAN nº 933/2022',
+    }));
+    expect(resposta.status).toBe(200);
+    expect(createDocument).toHaveBeenCalledWith(expect.objectContaining({ colecao: 'estrangeiros', situacao: 'vigente' }));
+    expect(processTrechos).toHaveBeenCalledWith(expect.objectContaining({ documentoId: 'doc-1' }));
+  });
+
   it('asks for migration 008 before accepting a POP', async () => {
     const { MigrationPendingError } = jest.requireActual('../../lib/ingestion/documents');
     findDocumentByHash.mockRejectedValueOnce(new MigrationPendingError());
