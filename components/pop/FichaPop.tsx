@@ -1,17 +1,45 @@
 import type { ItemPop, Pop } from '@/lib/pop/parser';
 import ExplicacaoSimples from '../ExplicacaoSimples';
 import Icone, { type NomeIcone } from '../ui/Icone';
+import { segmentarReferenciasPop, type ResumoPop } from '@/lib/pop/referencias';
 
 const RECUO = ['pl-0', 'pl-4', 'pl-8', 'pl-12'];
 
 /** Items keep the manual's numbering ("1.", "a.", "I.") and its indentation */
-function Itens({ itens }: { itens: ItemPop[] }) {
+interface ReferenciasProps {
+  catalogo?: ResumoPop[];
+  onAbrirReferencia?: (numero: string) => void;
+}
+
+function TextoComReferencias({
+  texto,
+  catalogo = [],
+  onAbrirReferencia,
+}: { texto: string } & ReferenciasProps) {
+  if (!onAbrirReferencia || catalogo.length === 0) return texto;
+  return segmentarReferenciasPop(texto, catalogo).map((segmento, indice) =>
+    segmento.tipo === 'texto' ? segmento.texto : (
+      <button
+        key={`${segmento.numero}-${indice}`}
+        type="button"
+        className="font-semibold text-ds-primary underline decoration-2 underline-offset-2 hover:text-ds-ink"
+        aria-label={`Abrir POP ${segmento.numero} — ${segmento.titulo}`}
+        title={`Abrir POP ${segmento.numero} — ${segmento.titulo}`}
+        onClick={() => onAbrirReferencia(segmento.numero)}
+      >
+        {segmento.texto}
+      </button>
+    )
+  );
+}
+
+function Itens({ itens, catalogo, onAbrirReferencia }: { itens: ItemPop[] } & ReferenciasProps) {
   if (itens.length === 0) return <p className="text-sm text-ds-subtle">—</p>;
   return (
     <ul className="space-y-1.5 text-sm leading-relaxed text-ds-text">
       {itens.map((item, i) => (
         <li key={i} className={RECUO[Math.min(item.nivel, 3)]}>
-          {item.texto}
+          <TextoComReferencias texto={item.texto} catalogo={catalogo} onAbrirReferencia={onAbrirReferencia} />
         </li>
       ))}
     </ul>
@@ -35,7 +63,7 @@ function Secao({ titulo, icone, children }: { titulo: string; icone?: NomeIcone;
  * material, legal basis, sequence of actions, critical activities, errors to
  * avoid and annexes.
  */
-export default function FichaPop({ pop }: { pop: Pop }) {
+export default function FichaPop({ pop, catalogo, onAbrirReferencia }: { pop: Pop } & ReferenciasProps) {
   return (
     <article className="card overflow-hidden" aria-labelledby={`pop-${pop.numero}`}>
       <header className="border-b-2 border-ds-border bg-ds-primary-soft px-4 py-5 sm:px-6">
@@ -56,7 +84,9 @@ export default function FichaPop({ pop }: { pop: Pop }) {
           ].map(([rotulo, valor]) => (
             <div key={rotulo} className="rounded-control border border-ds-line bg-ds-surface px-3 py-2">
               <dt className="stat-label">{rotulo}</dt>
-              <dd className="font-mono text-sm font-semibold text-ds-text">{valor || '—'}</dd>
+              <dd className="font-mono text-sm font-semibold text-ds-text">
+                <TextoComReferencias texto={valor || '—'} catalogo={catalogo} onAbrirReferencia={onAbrirReferencia} />
+              </dd>
             </div>
           ))}
         </dl>
@@ -66,7 +96,7 @@ export default function FichaPop({ pop }: { pop: Pop }) {
         <ExplicacaoSimples key={pop.numero} tipo="pop" id={pop.numero} />
 
         <Secao titulo="Material Necessário" icone="lista">
-          <Itens itens={pop.material} />
+          <Itens itens={pop.material} catalogo={catalogo} onAbrirReferencia={onAbrirReferencia} />
         </Secao>
 
         <Secao titulo="Fundamentação Legal e Doutrinária" icone="balanca">
@@ -84,8 +114,12 @@ export default function FichaPop({ pop }: { pop: Pop }) {
               <tbody>
                 {pop.fundamentacao.map((f, i) => (
                   <tr key={i} className="border-b border-ds-line last:border-b-0 align-top">
-                    <td className="py-2 pr-3 text-ds-text">{f.norma || '—'}</td>
-                    <td className="py-2 text-ds-text">{f.especificacao || '—'}</td>
+                    <td className="py-2 pr-3 text-ds-text">
+                      <TextoComReferencias texto={f.norma || '—'} catalogo={catalogo} onAbrirReferencia={onAbrirReferencia} />
+                    </td>
+                    <td className="py-2 text-ds-text">
+                      <TextoComReferencias texto={f.especificacao || '—'} catalogo={catalogo} onAbrirReferencia={onAbrirReferencia} />
+                    </td>
                   </tr>
                 ))}
               </tbody>
@@ -95,18 +129,18 @@ export default function FichaPop({ pop }: { pop: Pop }) {
         </Secao>
 
         <Secao titulo="Sequência das Ações" icone="check">
-          <Itens itens={pop.sequencia} />
+          <Itens itens={pop.sequencia} catalogo={catalogo} onAbrirReferencia={onAbrirReferencia} />
         </Secao>
 
         <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
           <div className="panel p-4">
             <Secao titulo="Atividades Críticas" icone="alerta">
-              <Itens itens={pop.atividadesCriticas} />
+              <Itens itens={pop.atividadesCriticas} catalogo={catalogo} onAbrirReferencia={onAbrirReferencia} />
             </Secao>
           </div>
           <div className="panel p-4">
             <Secao titulo="Erros a Serem Evitados" icone="x">
-              <Itens itens={pop.errosEvitar} />
+              <Itens itens={pop.errosEvitar} catalogo={catalogo} onAbrirReferencia={onAbrirReferencia} />
             </Secao>
           </div>
         </div>
@@ -117,7 +151,7 @@ export default function FichaPop({ pop }: { pop: Pop }) {
               Anexos ({pop.anexos.length} itens)
             </summary>
             <div className="mt-3">
-              <Itens itens={pop.anexos} />
+              <Itens itens={pop.anexos} catalogo={catalogo} onAbrirReferencia={onAbrirReferencia} />
             </div>
           </details>
         )}

@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import type { FontePop, RespostaPop } from '@/lib/rag/pop';
 import { referenciaDaFonte } from '@/lib/rag/pop';
 import TurnstileWidget, { turnstileConfigurado } from '../TurnstileWidget';
@@ -15,6 +15,7 @@ import FichaPop from './FichaPop';
 import type { Pop } from '@/lib/pop/parser';
 import ConsultaModes from '../ConsultaModes';
 import SearchSuggestions from '../SearchSuggestions';
+import type { ResumoPop } from '@/lib/pop/referencias';
 
 const EXEMPLOS = [
   'Como proceder na abordagem a pessoas?',
@@ -58,24 +59,78 @@ function Fonte({ fonte }: { fonte: FontePop }) {
 }
 
 /** The matching POPs in standard form, with a picker when there are several */
-export function PopsEncontrados({ pops }: { pops: Pop[] }) {
+export function PopsEncontrados({ pops, catalogo = [] }: { pops: Pop[]; catalogo?: ResumoPop[] }) {
   const [indice, setIndice] = useState(0);
-  const atual = pops[Math.min(indice, pops.length - 1)];
+  const [historico, setHistorico] = useState<Pop[]>(() => [pops[0]]);
+  const [posicao, setPosicao] = useState(0);
+  const [carregandoReferencia, setCarregandoReferencia] = useState<string | null>(null);
+  const [erroReferencia, setErroReferencia] = useState<string | null>(null);
+  const cache = useRef(new Map(pops.map((pop) => [pop.numero, pop])));
+  const atual = historico[posicao] ?? pops[Math.min(indice, pops.length - 1)];
+
+  const selecionarResultado = (novoIndice: number) => {
+    const selecionado = pops[novoIndice];
+    setIndice(novoIndice);
+    setHistorico([selecionado]);
+    setPosicao(0);
+    setErroReferencia(null);
+  };
+
+  const abrirReferencia = async (numero: string) => {
+    if (carregandoReferencia || numero === atual.numero) return;
+    setCarregandoReferencia(numero);
+    setErroReferencia(null);
+    try {
+      let destino = cache.current.get(numero);
+      if (!destino) {
+        const resposta = await fetch(`/api/pop/${encodeURIComponent(numero)}`);
+        if (!resposta.ok) throw new Error('O POP relacionado não pôde ser carregado.');
+        destino = await resposta.json() as Pop;
+        cache.current.set(numero, destino);
+      }
+      const novoHistorico = [...historico.slice(0, posicao + 1), destino];
+      setHistorico(novoHistorico);
+      setPosicao(novoHistorico.length - 1);
+    } catch (error) {
+      setErroReferencia(error instanceof Error ? error.message : 'Não foi possível abrir o POP relacionado.');
+    } finally {
+      setCarregandoReferencia(null);
+    }
+  };
+
   return (
     <div className="space-y-4">
       {pops.length > 1 && (
           <ResultChoices
             label={`POPs encontrados (${pops.length})`}
             value={String(indice)}
-            onChange={(value) => setIndice(Number(value))}
+            onChange={(value) => selecionarResultado(Number(value))}
             hint="Confira os procedimentos encontrados e selecione qual deseja ler."
             options={pops.map((pop, i) => ({ value: String(i), title: `POP ${pop.numero}`, description: pop.titulo }))}
           />
       )}
+      {historico.length > 1 && (
+        <nav className="rounded-control border border-ds-line bg-ds-surface p-3" aria-label="Histórico de POPs consultados">
+          <p className="text-xs font-semibold text-ds-subtle">{historico.map((pop) => `POP ${pop.numero}`).join(' → ')}</p>
+          <div className="mt-3 flex flex-wrap gap-2">
+            <button type="button" className="btn-secondary btn-sm" disabled={posicao === 0} onClick={() => setPosicao((valor) => valor - 1)}>
+              <Icone nome="voltar" tamanho={16} /> POP anterior
+            </button>
+            <button type="button" className="btn-secondary btn-sm" disabled={posicao >= historico.length - 1} onClick={() => setPosicao((valor) => valor + 1)}>
+              Próximo POP <Icone nome="seta" tamanho={16} />
+            </button>
+            <button type="button" className="btn-secondary btn-sm" disabled={posicao === 0} onClick={() => setPosicao(0)}>
+              Voltar ao POP inicial
+            </button>
+          </div>
+        </nav>
+      )}
+      {carregandoReferencia && <p className="text-sm text-ds-subtle" role="status">Abrindo POP {carregandoReferencia}…</p>}
+      {erroReferencia && <p className="alert-error" role="alert">{erroReferencia}</p>}
       {typeof atual.scoreConfianca === 'number' && (
         <p className="badge-neutral w-fit">{atual.scoreConfianca}% · {ROTULO_METODO[atual.metodoEncontrado ?? ''] ?? 'correspondência'}</p>
       )}
-      <FichaPop pop={atual} />
+      <FichaPop pop={atual} catalogo={catalogo} onAbrirReferencia={(numero) => void abrirReferencia(numero)} />
     </div>
   );
 }
@@ -119,7 +174,7 @@ function useSegundos(ativo: boolean): number {
  * Ask the POP-PMSC base: the answer (when AI is available) cites the
  * excerpts it came from, and the excerpts are always shown.
  */
-export default function PopConsulta() {
+export default function PopConsulta({ catalogo = [] }: { catalogo?: ResumoPop[] }) {
   const [pergunta, setPergunta] = useState('');
   const [token, setToken] = useState<string | null>(null);
   const [carregando, setCarregando] = useState(false);
@@ -259,7 +314,9 @@ export default function PopConsulta() {
 
       {resultado && (
         <div className="space-y-5">
-          {resultado.pops && resultado.pops.length > 0 && <PopsEncontrados key={resultado.pergunta} pops={resultado.pops} />}
+          {resultado.pops && resultado.pops.length > 0 && (
+            <PopsEncontrados key={resultado.pergunta} pops={resultado.pops} catalogo={catalogo} />
+          )}
           {resultado.resposta && !resultado.semResposta && (
             <SectionCard
               numero={2}

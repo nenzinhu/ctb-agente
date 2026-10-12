@@ -7,6 +7,7 @@ import type { Pop } from './parser';
 import { numeroPop } from '@/lib/query/router';
 import { FatoMatcher, type ResultadoMatcher } from '@/lib/search/domain-matcher';
 import { ALIASES_POP } from '@/lib/search/domain-aliases';
+import type { ResumoPop } from './referencias';
 
 let cache: Pop[] | null = null;
 
@@ -21,6 +22,14 @@ export function todosOsPops(): Pop[] {
     }
   }
   return cache;
+}
+
+export function catalogoDosPops(pops = todosOsPops()): ResumoPop[] {
+  return pops.map(({ numero, titulo }) => ({ numero, titulo }));
+}
+
+export function buscarPopPorNumero(numero: string, pops = todosOsPops()): Pop | null {
+  return pops.find((pop) => pop.numero === numero) ?? null;
 }
 
 const indices = new WeakMap<Pop[], IndiceBusca<Pop>>();
