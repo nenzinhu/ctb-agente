@@ -15,5 +15,6 @@ describe('Header no mobile', () => {
       'nav-tabs-compact',
     );
     expect(screen.getByRole('link', { name: 'Lista de Fatos (PMSC Mobile)' })).toHaveTextContent(/^Fatos$/);
+    expect(screen.getByRole('link', { name: 'Condutores e Veículos Estrangeiros' })).toHaveAttribute('href', '/estrangeiros');
   });
 });

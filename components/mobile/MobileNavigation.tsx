@@ -11,6 +11,7 @@ const FERRAMENTAS: Array<{ href: string; label: string; descricao: string; icone
   { href: '/pop', label: 'Consultar POPs', descricao: 'Procedimentos operacionais', icone: 'escudo' },
   { href: '/fatos-pmsc', label: 'Lista de Fatos PMSC', descricao: 'Naturezas e potencial ofensivo', icone: 'arquivo' },
   { href: '/pesos-dimensoes', label: 'Pesos e Dimensões', descricao: 'PBT, PBTC, CMT e excesso de peso', icone: 'balanca' },
+  { href: '/estrangeiros', label: 'Condutores e Veículos Estrangeiros', descricao: 'Documentos, acordos e possíveis enquadramentos', icone: 'globo' },
   { href: '/professor', label: 'Professor Emérito', descricao: 'Explique e compare situações', icone: 'professor' },
   { href: '/apostila', label: 'Apostila IA', descricao: 'Material para estudo', icone: 'livro' },
   { href: '/gerador-pdf', label: 'Ferramentas de PDF', descricao: 'Gerar ou comprimir documentos', icone: 'comprimir' },

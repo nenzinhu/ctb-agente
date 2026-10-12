@@ -36,6 +36,7 @@ describe('classifyPwaRequest', () => {
     expect(classify('https://app.test/consulta', { mode: 'navigate' })).toBe('public-navigation');
     expect(classify('https://app.test/enquadramento', { mode: 'navigate' })).toBe('public-navigation');
     expect(classify('https://app.test/fatos-pmsc', { mode: 'navigate' })).toBe('public-navigation');
+    expect(classify('https://app.test/estrangeiros', { mode: 'navigate' })).toBe('public-navigation');
     expect(classify('https://app.test/consulta?q=placa-ABC1D23', { mode: 'navigate' })).toBe('network-only');
     expect(classify('https://app.test/rota-futura', { mode: 'navigate' })).toBe('network-only');
     expect(classify('https://app.test/data.json')).toBe('network-only');

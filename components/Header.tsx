@@ -11,6 +11,7 @@ const SECOES: ItemNav[] = [
   { href: '/enquadramento', label: 'Enquadramento guiado', curto: 'Guiado', icone: 'lista' },
   { href: '/fatos-pmsc', label: 'Lista de Fatos (PMSC Mobile)', curto: 'Fatos', icone: 'arquivo' },
   { href: '/pesos-dimensoes', label: 'Pesos e Dimensões', curto: 'Pesos', icone: 'balanca' },
+  { href: '/estrangeiros', label: 'Condutores e Veículos Estrangeiros', curto: 'Estrangeiros', icone: 'globo' },
   { href: '/professor', label: 'Professor Emérito', curto: 'Emérito', icone: 'professor' },
   { href: '/favoritos', label: 'Favoritos', curto: 'Favoritos', icone: 'estrela' },
   { href: '/apostila', label: 'Apostila IA', curto: 'Apostila', icone: 'livro' },

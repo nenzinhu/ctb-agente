@@ -15,6 +15,7 @@ const PUBLIC_SHELL_ROUTES = new Set([
   '/comprimir-pdf',
   '/consulta',
   '/enquadramento',
+  '/estrangeiros',
   '/fatos-pmsc',
   '/favoritos',
   '/gerador-pdf',

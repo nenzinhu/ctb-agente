@@ -40,4 +40,11 @@ describe('MobileNavigation', () => {
     await user.click(screen.getByTestId('bottom-sheet-backdrop'));
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
   });
+
+  it('oferece a fiscalização de estrangeiros nas ferramentas', async () => {
+    const user = userEvent.setup();
+    render(<MobileNavigation />);
+    await user.click(screen.getByRole('button', { name: /ferramentas/i }));
+    expect(screen.getByRole('link', { name: /condutores e veículos estrangeiros/i })).toHaveAttribute('href', '/estrangeiros');
+  });
 });
