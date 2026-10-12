@@ -40,6 +40,8 @@ describe('catálogo Lista de Fatos PMSC Mobile', () => {
     ['som alto', 'Perturbação do trabalho ou sossego alheios'],
     ['vias fat', 'Vias de fato'],
     ['acid só dano mater', 'Acidente de trânsito (Apenas danos materiais)'],
+    ['pertub soss', 'Perturbação do trabalho ou sossego alheios'],
+    ['doc extrav', 'Perda de documentos ou objetos'],
   ])('entende linguagem operacional em %s', (consulta, natureza) => {
     expect(buscarFatosPmsc(consulta, 3, FATOS).map((fato) => fato.natureza)).toContain(natureza);
   });

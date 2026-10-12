@@ -23,6 +23,8 @@ export const ALIASES_FATOS_PMSC: readonly RegraAlias[] = [
   },
   { termos: ['vias de fato', 'briga', 'sair no soco'], destinos: ['Vias de fato'] },
   { termos: ['perdeu os documentos', 'documento perdido', 'extraviou documento'], destinos: ['Perda de documentos ou objetos'] },
+  { termos: ['doc extrav', 'docs extrav', 'doc perd'], destinos: ['Perda de documentos ou objetos'] },
+  { termos: ['pertub soss', 'pert sos', 'barulho vizinho'], destinos: ['Perturbação do trabalho ou sossego alheios'] },
 ];
 
 export const ALIASES_POP: readonly RegraAlias[] = [
@@ -33,6 +35,10 @@ export const ALIASES_POP: readonly RegraAlias[] = [
   { termos: ['batida de carro', 'colisao', 'acidente de transito'], destinos: ['201.6.1'] },
   { termos: ['perseguicao de veiculo', 'acompanhamento de veiculo', 'deu fuga'], destinos: ['006'] },
   { termos: ['cadaver', 'corpo sem vida', 'encontrado morto'], destinos: ['201.4.22'] },
+  { termos: ['pres loc crim', 'preserv loc crime'], destinos: ['201.18.1'] },
+  { termos: ['pert sos', 'pertub soss'], destinos: ['201.4.14'] },
+  { termos: ['viol dom'], destinos: ['201.4.6'] },
+  { termos: ['agressao casal'], destinos: ['201.4.6', '201.4.10', '201.4.11'] },
 ];
 
 export const ALIASES_MBFT: readonly RegraAlias[] = [
@@ -52,4 +58,10 @@ export const ALIASES_MBFT: readonly RegraAlias[] = [
   { termos: ['ultrapassar pelo acostamento'], destinos: ['590-80'] },
   { termos: ['parou no cruzamento'], destinos: ['563-00'] },
   { termos: ['moto sem placa'], destinos: ['658-00'] },
+  { termos: ['mot s cap', 'mot sem cap'], destinos: ['703-01'] },
+  { termos: ['mex cel', 'manus cel'], destinos: ['763-32'] },
+  { termos: ['doc atras'], destinos: ['504-50', '659-92'] },
+  { termos: ['lic atras'], destinos: ['659-92'] },
+  { termos: ['pneu carec', 'pneu liso'], destinos: ['672-61'] },
+  { termos: ['escap abert', 'cano direto'], destinos: ['665-31'] },
 ];

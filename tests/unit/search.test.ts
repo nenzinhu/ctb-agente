@@ -49,6 +49,15 @@ describe('expandirSinonimos', () => {
     // "motorista" is not "moto"
     expect(expandirSinonimos('motorista parado')).toBe('motorista parado');
   });
+
+  it('expande abreviações operacionais sem alterar identificadores', () => {
+    expect(expandirSinonimos('mot s cap')).toContain('motocicleta');
+    expect(expandirSinonimos('mot s cap')).toContain('sem capacete');
+    expect(expandirSinonimos('mex cel')).toContain('manuseando telefone celular');
+    expect(expandirSinonimos('doc atras')).toContain('veículo não licenciado');
+    expect(expandirSinonimos('doc atras')).toContain('CNH vencida');
+    expect(expandirSinonimos('516-91')).toBe('516-91');
+  });
 });
 
 import { priorizarInfracoes } from '@/lib/search/hybrid';

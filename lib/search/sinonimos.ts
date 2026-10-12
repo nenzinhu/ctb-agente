@@ -2,6 +2,19 @@
 // are search alternatives, never legal conclusions or invented infractions.
 // Patterns use lowercase Portuguese without accents.
 export const SINONIMOS: ReadonlyArray<readonly [RegExp, readonly string[]]> = [
+  // Abreviações de campo são expandidas como expressões completas. Evitamos
+  // corrigir "mot", "doc" ou "cap" isoladamente, pois fora de contexto são
+  // ambíguas e poderiam promover uma ficha juridicamente diferente.
+  [/\bmot\s+s\s+cap\b|\bmot\s+sem\s+cap\b/, ['motocicleta', 'sem capacete de segurança']],
+  [/\bmex\s+cel\b|\bmanus\s+cel\b/, ['manuseando telefone celular']],
+  [/\bdoc\s+atras\b/, ['CNH vencida', 'veículo não licenciado']],
+  [/\blic\s+atras\b/, ['veículo não licenciado']],
+  [/\bpneu\s+(?:carec|liso)\b/, ['pneu desgaste', 'mau estado de conservação']],
+  [/\bescap\s+abert\b|\bcano\s+direto\b/, ['descarga livre', 'sem silenciador']],
+  [/\bpres\s+loc\s+crim\b/, ['preservação de local de crime']],
+  [/\bpert(?:ub)?\s+sos?s\b/, ['perturbação do trabalho ou sossego alheios']],
+  [/\bviol\s+dom\b/, ['violência doméstica']],
+  [/\bdocs?\s+extrav\b/, ['perda de documentos ou objetos']],
   [/\bmotos?\b/, ['motocicleta', 'motoneta', 'ciclomotor']],
   [/\bcarros?\b/, ['automóvel', 'veículo']],
   // Resolução Contran 882/2021 groups the art. 231, IV–VI limits as "pesos e

@@ -36,6 +36,10 @@ describe('recuperação no corpus oficial: variações da consulta', () => {
     ['ultrapassou pelo acostamento', '590-80'],
     ['parou no cruzamento', '563-00'],
     ['moto sem placa', '658-00'],
+    ['mot s cap', '703-01'],
+    ['mex cel', '763-32'],
+    ['pneu carec', '672-61'],
+    ['escap abert', '665-31'],
   ])('MBFT: %s encontra %s entre as três primeiras fichas', (consulta, codigo) => {
     expect(buscarFichas(consulta, 3).map((f) => f.codigo)).toContain(codigo);
   });
@@ -59,6 +63,9 @@ describe('recuperação no corpus oficial: variações da consulta', () => {
     ['batida de carro', '201.6.1'],
     ['perseguicao de veiculo', '006'],
     ['encontrado morto', '201.4.22'],
+    ['pres loc crim', '201.18.1'],
+    ['pert sos', '201.4.14'],
+    ['viol dom', '201.4.6'],
   ])('POP: %s encontra %s entre os três primeiros procedimentos', (consulta, numero) => {
     expect(buscarPops(consulta, 3).map((p) => p.numero)).toContain(numero);
   });
@@ -73,6 +80,22 @@ describe('recuperação no corpus oficial: variações da consulta', () => {
 
   it('preserva alternativas reais de um mesmo artigo/inciso', () => {
     expect(buscarFichas('art. 181, XX').map((f) => f.codigo)).toEqual(['762-51', '762-52']);
+  });
+
+  it('não escolhe entre CNH vencida e licenciamento quando o agente escreve apenas doc atras', () => {
+    const resultados = buscarFichasComScore('doc atras', 3);
+    expect(resultados.slice(0, 2).map(({ item }) => item.codigo)).toEqual(
+      expect.arrayContaining(['504-50', '659-92']),
+    );
+    expect(resultados.slice(0, 2).every(({ scoreConfianca }) => scoreConfianca === 98)).toBe(true);
+  });
+
+  it('mantém agressão de casal ambígua entre violência doméstica e vias de fato', () => {
+    const resultados = buscarPopsComScore('agressao casal', 3);
+    expect(resultados.slice(0, 3).map(({ item }) => item.numero)).toEqual(
+      expect.arrayContaining(['201.4.6', '201.4.10', '201.4.11']),
+    );
+    expect(resultados.slice(0, 3).every(({ scoreConfianca }) => scoreConfianca === 98)).toBe(true);
   });
 
   it('não mistura infrações sem relação com o celular nas alternativas', () => {
