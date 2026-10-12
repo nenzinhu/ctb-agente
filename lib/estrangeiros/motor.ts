@@ -1,4 +1,5 @@
 import type { FatosEstrangeiros, InfracaoEstrangeiros, ResultadoEstrangeiros } from './types';
+import { descreverAcordosPais } from './paises';
 
 const PERGUNTAS_ESSENCIAIS: Array<keyof FatosEstrangeiros> = [
   'paisHabilitacao',
@@ -50,13 +51,16 @@ export function avaliarEstrangeiro(fatos: FatosEstrangeiros): ResultadoEstrangei
   if (fatos.registroVeiculo === 'estrangeiro') {
     documentos.push('Registro do veículo, seguro aplicável e documento de admissão temporária, quando exigíveis.');
   }
+  const acordos = fatos.paisHabilitacao ? descreverAcordosPais(fatos.paisHabilitacao) : null;
 
   return {
     estado: 'requer_conferencia',
     fatos,
     perguntasPendentes,
     documentos,
-    baseInternacional: 'A lista oficial íntegra de países participantes ainda não foi incorporada; por isso, a participação do país em convenção ou reciprocidade não foi confirmada neste catálogo. Confira o instrumento vigente antes de concluir.',
+    baseInternacional: acordos
+      ? `${acordos} Informação localizada na lista anexada; requer conferência da fonte oficial e da vigência antes da decisão.`
+      : 'O país não foi identificado na lista anexada e sua participação não foi confirmada. Confira convenção, acordo ou reciprocidade vigente antes de concluir.',
     infracoes: perguntasPendentes.length > 0 ? [] : infracoes,
     providencias: infracoes.length > 0
       ? ['Confirmar todos os fatos e a vigência da fonte antes de autuar.', INFRACAO_501.medida]

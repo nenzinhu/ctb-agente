@@ -25,10 +25,11 @@ describe('POST /api/estrangeiros/consultar', () => {
     expect((await POST(requisicao({ pergunta: 'x'.repeat(501) }))).status).toBe(400);
   });
 
-  it('não confirma país sem a lista oficial íntegra de participantes', async () => {
+  it('informa os instrumentos do país sem dispensar a conferência humana', async () => {
     const resposta = await POST(requisicao({ pergunta: 'condutor argentino com habilitação válida' }));
     const corpo = await resposta.json();
     expect(corpo.estado).toBe('requer_conferencia');
-    expect(corpo.baseInternacional).toMatch(/lista oficial.*não foi incorporada/i);
+    expect(corpo.baseInternacional).toMatch(/Argentina.*RBUT.*Convenção de Viena/i);
+    expect(corpo.baseInternacional).toMatch(/conferência/i);
   });
 });

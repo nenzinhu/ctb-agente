@@ -58,7 +58,11 @@ export default function EstrangeirosConsulta() {
             <article key={fonte.id} className="rounded-card border border-ds-line p-4">
               <a className="font-semibold text-ds-accent underline-offset-4 hover:underline" href={fonte.arquivo} target="_blank" rel="noreferrer">{fonte.titulo}</a>
               <p className="mt-1 text-xs text-ds-subtle">{fonte.orgao} · conferido em {new Date(`${fonte.conferidoEm}T00:00:00`).toLocaleDateString('pt-BR')}</p>
-              <a className="mt-2 inline-block text-xs text-ds-accent underline" href={fonte.urlOficial} target="_blank" rel="noreferrer">Consultar publicação oficial</a>
+              {fonte.urlOficial ? (
+                <a className="mt-2 inline-block text-xs text-ds-accent underline" href={fonte.urlOficial} target="_blank" rel="noreferrer">Consultar publicação oficial</a>
+              ) : (
+                <p className="mt-2 text-xs font-medium text-amber-700 dark:text-amber-300">Pendente de confirmação em fonte oficial</p>
+              )}
             </article>
           ))}
         </div>

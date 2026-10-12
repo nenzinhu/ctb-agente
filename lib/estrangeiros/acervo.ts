@@ -1,5 +1,6 @@
 import { normalizarBusca } from '@/lib/search/sinonimos';
 import type { TrechoFonteEstrangeiros } from './types';
+import { buscarAcordosPais, nomeInstrumento } from './paises';
 
 export interface FonteEstrangeiros {
   id: string;
@@ -33,6 +34,17 @@ export const FONTES_ESTRANGEIROS: FonteEstrangeiros[] = [
     urlOficial: 'https://www.planalto.gov.br/ccivil_03/decreto/1980-1989/d86714.htm',
     versao: 'Promulgação da Convenção de Viena sobre Trânsito Viário',
     vigenteDesde: '1981-10-29',
+    conferidoEm: '2026-10-12',
+    situacao: 'revisar',
+  },
+  {
+    id: 'paises-tratados',
+    titulo: 'Lista de países com tratados e reciprocidade',
+    orgao: 'Documento enviado pelo usuário — pendente de confirmação oficial',
+    arquivo: '/documentos/estrangeiros/paises-tratados.txt',
+    urlOficial: '',
+    versao: 'Lista recebida em 12 de outubro de 2026',
+    vigenteDesde: '',
     conferidoEm: '2026-10-12',
     situacao: 'revisar',
   },
@@ -91,14 +103,29 @@ export function buscarTrechosEstrangeiros(consulta: string, limite = 4): TrechoF
   const termosConsulta = termos(consulta);
   const artigo = /\bart(?:igo)?\s*\.?\s*(\d+)/i.exec(consultaNormalizada)?.[1];
 
-  return TRECHOS.map((trecho) => {
+  const pais = buscarAcordosPais(consulta);
+  const fontePaises = FONTES_ESTRANGEIROS.find((item) => item.id === 'paises-tratados')!;
+  const trechoPais: TrechoFonteEstrangeiros[] = pais ? [{
+    id: `pais-${normalizarBusca(pais.pais).replace(/\s+/g, '-')}`,
+    fonteId: fontePaises.id,
+    titulo: fontePaises.titulo,
+    referencia: `${pais.pais} · ${pais.instrumentos.join(' + ')}`,
+    texto: `${pais.pais} consta na lista anexada com ${pais.instrumentos.map((sigla) => `(${sigla}) ${nomeInstrumento(sigla)}`).join(' e ')}. A informação permanece sujeita à conferência da fonte oficial e da vigência.`,
+    arquivo: fontePaises.arquivo,
+    urlOficial: '',
+    score: 200,
+  }] : [];
+
+  const legais = TRECHOS.map((trecho) => {
     const fonte = FONTES_ESTRANGEIROS.find((item) => item.id === trecho.fonteId)!;
     const conteudo = normalizarBusca(`${trecho.referencia} ${trecho.texto}`);
     const cobertura = termosConsulta.filter((termo) => conteudo.includes(termo)).length;
     const referenciaExata = artigo && new RegExp(`\\bart\\.?\\s*${artigo}\\b`, 'i').test(normalizarBusca(trecho.referencia));
     const score = (referenciaExata ? 100 : 0) + cobertura * 10 + (conteudo.includes(consultaNormalizada) ? 20 : 0);
     return { ...trecho, titulo: fonte.titulo, arquivo: fonte.arquivo, urlOficial: fonte.urlOficial, score };
-  })
+  });
+
+  return [...trechoPais, ...legais]
     .filter((trecho) => trecho.score > 0)
     .sort((a, b) => b.score - a.score || a.id.localeCompare(b.id))
     .slice(0, limite);
