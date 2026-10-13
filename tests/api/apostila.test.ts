@@ -27,7 +27,7 @@ jest.mock('../../lib/apostila/repositorio', () => ({
   carregarTrechosApostila: (...args: unknown[]) => carregarTrechos(...args),
 }));
 
-import { gerarApostilaDocumento } from '@/app/api/apostila/handler';
+import { gerarApostilaDocumento, TEMPO_IA_MS } from '@/app/api/apostila/handler';
 import { blocosDaApostila, capituloDocumentoSemIA, promptCapituloDocumento } from '@/lib/rag/apostila';
 import { pdfDeBlocos } from '@/lib/pdf-tools/pdf-writer';
 import type { DocumentoApostila, ParteApostila, TrechoApostila } from '@/lib/apostila/tipos';
@@ -81,7 +81,7 @@ describe('apostila documental por IA', () => {
     }, '127.0.0.1');
     expect(resultado).toEqual(expect.objectContaining({ titulo: 'Pesos e dimensões', selecaoRotulo: 'páginas 10–11' }));
     expect(setCachedValue).toHaveBeenCalledWith(
-      'apostila:v3:hash-882:10–11:agente:0', expect.objectContaining({ paginas: [10, 11] }), expect.any(Object)
+      `apostila:v4:${documento.id}:hash-882:revisar:10–11:agente:0`, expect.objectContaining({ paginas: [10, 11] }), expect.any(Object)
     );
     expect(recordQuery).toHaveBeenCalled();
   });
@@ -121,6 +121,10 @@ describe('apostila documental por IA', () => {
     expect('erro' in resultado).toBe(false);
     expect(maximo).toBeLessThanOrEqual(3);
     expect(generateRapido).toHaveBeenCalledTimes(6);
+  });
+
+  it('reserva tempo para duas rodadas de três partes dentro do limite da rota', () => {
+    expect(TEMPO_IA_MS).toBeLessThanOrEqual(25_000);
   });
 });
 

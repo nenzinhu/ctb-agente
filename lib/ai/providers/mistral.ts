@@ -19,7 +19,7 @@ export class MistralProvider implements AIProvider {
     ];
   }
 
-  async generate(prompt: string, model: string, maxTokens: number, temperature = 0.7): Promise<string> {
+  async generate(prompt: string, model: string, maxTokens: number, temperature = 0.7, signal?: AbortSignal): Promise<string> {
     const response = await fetchWithTimeout(`${this.baseUrl}/chat/completions`, {
       method: 'POST',
       headers: {
@@ -35,6 +35,7 @@ export class MistralProvider implements AIProvider {
         max_tokens: maxTokens,
         temperature,
       }),
+      signal,
     });
 
     if (!response.ok) {

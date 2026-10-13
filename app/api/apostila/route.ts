@@ -73,7 +73,20 @@ export async function POST(request: NextRequest) {
   const ip = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim()
     || request.headers.get('x-real-ip')
     || 'unknown';
-  const resultado = await gerarApostilaDocumento(parsed.data, ip);
+  let resultado: Awaited<ReturnType<typeof gerarApostilaDocumento>>;
+  try {
+    resultado = await gerarApostilaDocumento(parsed.data, ip);
+  } catch (error) {
+    const mensagem = error instanceof Error ? error.message : String(error);
+    if (/paginas_documentos_apostila|dispositivos\.pagina|migra[cç][aã]o 014|column pagina/i.test(mensagem)) {
+      return NextResponse.json({
+        error: 'migration_pending',
+        message: 'A seleção de páginas ainda não está configurada: aplique a migração 014 no Supabase.',
+      }, { status: 503 });
+    }
+    console.error('Falha ao gerar apostila:', error);
+    return NextResponse.json({ error: 'generation_error', message: 'Não foi possível gerar a apostila.' }, { status: 500 });
+  }
   if ('erro' in resultado) {
     const [padrao, status] = ERROS[resultado.erro];
     return NextResponse.json({ error: resultado.erro, message: resultado.mensagem || padrao }, { status });

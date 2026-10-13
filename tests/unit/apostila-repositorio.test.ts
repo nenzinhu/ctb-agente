@@ -1,10 +1,12 @@
 /** @jest-environment node */
 const listarDocumentos = jest.fn();
 const obterComHash = jest.fn();
+const obterPorIds = jest.fn();
 
 jest.mock('../../lib/ingestion/documents', () => ({
   listDocumentsWithQualityStatus: (...args: unknown[]) => listarDocumentos(...args),
   getDocumentWithHash: (...args: unknown[]) => obterComHash(...args),
+  getDocumentsByIds: (...args: unknown[]) => obterPorIds(...args),
 }));
 
 const rpc = jest.fn();
@@ -46,7 +48,7 @@ const documentos = [
 
 function queryCom(resultado: unknown[]) {
   const query: Record<string, jest.Mock | ((resolve: (value: unknown) => void) => void)> = {};
-  for (const metodo of ['select', 'eq', 'in', 'not', 'order']) query[metodo] = jest.fn(() => query);
+  for (const metodo of ['select', 'eq', 'in', 'not', 'order', 'range']) query[metodo] = jest.fn(() => query);
   query.then = (resolve: (value: unknown) => void) => resolve({ data: resultado, error: null });
   return query;
 }
@@ -55,6 +57,7 @@ describe('repositório de apostilas', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     listarDocumentos.mockResolvedValue({ documentos, migracaoQualidadePendente: false });
+    obterPorIds.mockResolvedValue(documentos);
     rpc.mockImplementation((nome: string) => {
       if (nome === 'paginas_documentos_apostila') {
         return Promise.resolve({ data: [{ documento_id: 'd2', pagina_maxima: 198 }], error: null });
@@ -76,6 +79,8 @@ describe('repositório de apostilas', () => {
   });
 
   it('usa a pesquisa textual unificada e preserva sua relevância', async () => {
+    listarDocumentos.mockResolvedValue({ documentos: [documentos[0]], migracaoQualidadePendente: false });
+    obterPorIds.mockResolvedValue([documentos[0], documentos[1]]);
     rpc.mockImplementation((nome: string) => Promise.resolve({
       data: nome === 'search_documentos_apostila'
         ? [{ documento_id: 'd2', rank: 100 }, { documento_id: 'd1', rank: 1 }]
@@ -86,6 +91,7 @@ describe('repositório de apostilas', () => {
     const resultado = await listarDocumentosApostila('manual', 12);
 
     expect(resultado.map((item) => item.id)).toEqual(['d2', 'd1']);
+    expect(obterPorIds).toHaveBeenCalledWith(['d2', 'd1']);
     expect(rpc).toHaveBeenCalledWith('search_documentos_apostila', { query_text: 'manual', limit_count: 12 });
   });
 
@@ -125,5 +131,28 @@ describe('repositório de apostilas', () => {
     expect(ctb[0].secao).toBe('Art. 1');
     expect(from).toHaveBeenNthCalledWith(2, 'documento_trechos');
     expect(pop[0]).toEqual(expect.objectContaining({ secao: 'Sequência', pagina: 8 }));
+  });
+
+  it('pagina a recuperação para não truncar documentos com mais de mil trechos', async () => {
+    const primeira = Array.from({ length: 1_000 }, (_, indice) => ({
+      id: `t${indice}`, documento_id: 'd1', numero_dispositivo: null,
+      pagina: 1, ordem: indice, texto: `Trecho ${indice}`,
+    }));
+    const ultima = [{ id: 't1000', documento_id: 'd1', numero_dispositivo: null, pagina: 2, ordem: 1000, texto: 'Último' }];
+    from.mockImplementation(() => {
+      const query = queryCom([]) as Record<string, jest.Mock | ((resolve: (value: unknown) => void) => void)>;
+      query.range = jest.fn((inicio: number) => {
+        query.then = (resolve: (value: unknown) => void) => resolve({ data: inicio === 0 ? primeira : ultima, error: null });
+        return query;
+      });
+      return query;
+    });
+
+    const resultado = await carregarTrechosApostila({
+      id: 'd1', titulo: 'CTB', colecao: 'ctb', paginas: 2, paginaMaximaDisponivel: 2,
+      trechos: 1_001, situacao: 'vigente', hashConteudo: 'h1',
+    });
+    expect(resultado).toHaveLength(1_001);
+    expect(resultado.at(-1)?.texto).toBe('Último');
   });
 });

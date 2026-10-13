@@ -22,20 +22,31 @@ STABLE
 SET search_path = public, extensions
 AS $$
   WITH q AS (
-    SELECT public.to_or_tsquery_pt(query_text) AS valor
+    SELECT public.to_or_tsquery_pt(query_text) AS valor,
+           public.to_prefix_tsquery_pt(query_text) AS prefixo,
+           lower(unaccent(trim(query_text))) AS normalizado
+  ),
+  busca AS (
+    SELECT q.*,
+           (coalesce(q.valor, ''::tsquery) || coalesce(q.prefixo, ''::tsquery)) AS texto
+    FROM q
   ),
   candidatos AS (
     SELECT doc.id AS documento_id,
-           (100 + ts_rank_cd(
+           (CASE
+              WHEN lower(unaccent(doc.titulo)) = q.normalizado THEN 300
+              WHEN lower(unaccent(doc.titulo)) LIKE q.normalizado || '%' THEN 200
+              ELSE 100
+            END + ts_rank_cd(
              to_tsvector('public.pt_unaccent', coalesce(doc.titulo, '')),
-             q.valor,
+             q.texto,
              1 | 32
            ))::REAL AS rank
     FROM public.documentos doc
-    CROSS JOIN q
+    CROSS JOIN busca q
     WHERE doc.situacao IN ('vigente', 'revisar')
-      AND q.valor IS NOT NULL
-      AND to_tsvector('public.pt_unaccent', coalesce(doc.titulo, '')) @@ q.valor
+      AND q.texto <> ''::tsquery
+      AND to_tsvector('public.pt_unaccent', coalesce(doc.titulo, '')) @@ q.texto
 
     UNION ALL
 
@@ -43,10 +54,10 @@ AS $$
            ts_rank_cd(d.tsvector_pt, q.valor, 1 | 32)::REAL AS rank
     FROM public.dispositivos d
     JOIN public.documentos doc ON doc.id = d.documento_id
-    CROSS JOIN q
+    CROSS JOIN busca q
     WHERE doc.situacao IN ('vigente', 'revisar')
-      AND q.valor IS NOT NULL
-      AND d.tsvector_pt @@ q.valor
+      AND q.texto <> ''::tsquery
+      AND d.tsvector_pt @@ q.texto
 
     UNION ALL
 
@@ -54,10 +65,10 @@ AS $$
            ts_rank_cd(t.tsv, q.valor, 1 | 32)::REAL AS rank
     FROM public.documento_trechos t
     JOIN public.documentos doc ON doc.id = t.documento_id
-    CROSS JOIN q
+    CROSS JOIN busca q
     WHERE doc.situacao IN ('vigente', 'revisar')
-      AND q.valor IS NOT NULL
-      AND t.tsv @@ q.valor
+      AND q.texto <> ''::tsquery
+      AND t.tsv @@ q.texto
   )
   SELECT candidatos.documento_id, max(candidatos.rank)::REAL AS rank
   FROM candidatos

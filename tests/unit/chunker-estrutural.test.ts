@@ -147,6 +147,19 @@ describe('chunkText — long articles', () => {
 });
 
 describe('chunkText — text extracted from a PDF', () => {
+  it.each(['legal', 'secoes'] as const)('nunca mistura texto de páginas diferentes no modo %s', (modo) => {
+    const chunks = chunkText([
+      pageMarker(1),
+      'Art. 1º Texto exclusivo da primeira página.',
+      pageMarker(2),
+      'Continuação exclusiva da segunda página.',
+    ].join('\n'), 1200, modo);
+
+    expect(chunks.map((chunk) => chunk.page)).toEqual([1, 2]);
+    expect(chunks[0].text).not.toContain('segunda página');
+    expect(chunks[1].text).not.toContain('primeira página');
+  });
+
   it('reflows wrapped lines and does not take a wrapped citation for an article', () => {
     const pdf = [
       pageMarker(1),

@@ -18,7 +18,7 @@ import { parseSelecaoPaginas, rotuloSelecaoPaginas, SelecaoPaginasInvalida } fro
 import type { CapituloApostila, PublicoApostila, SelecaoApostila } from '@/lib/apostila/tipos';
 import { capituloDocumentoSemIA, promptCapituloDocumento } from '@/lib/rag/apostila';
 
-const TEMPO_IA_MS = 40_000;
+export const TEMPO_IA_MS = 25_000;
 const CONCORRENCIA_APOSTILA = 3;
 
 export interface PedidoApostilaDocumento {
@@ -103,18 +103,20 @@ export async function gerarApostilaDocumento(
   const inicio = Date.now();
   const chain = new ProviderChain();
   const capitulos = await mapearComConcorrencia(partes, CONCORRENCIA_APOSTILA, async (parte, indice) => {
-    const chave = `apostila:v3:${documento.hashConteudo}:${chaveSelecao}:${pedido.publico}:${indice}`;
+    const chave = `apostila:v4:${documento.id}:${documento.hashConteudo}:${documento.situacao}:${chaveSelecao}:${pedido.publico}:${indice}`;
     const emCache = await getCachedValue<CapituloApostila>(chave);
     if (emCache) return emCache;
-    let timer: ReturnType<typeof setTimeout> | undefined;
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), TEMPO_IA_MS);
     let capitulo: CapituloApostila;
     try {
-      const resultado = await Promise.race([
-        chain.generateRapido(promptCapituloDocumento(documento, parte, pedido.publico), 2200, 0.4, 1),
-        new Promise<never>((_, reject) => {
-          timer = setTimeout(() => reject(new Error('tempo esgotado')), TEMPO_IA_MS);
-        }),
-      ]);
+      const resultado = await chain.generateRapido(
+        promptCapituloDocumento(documento, parte, pedido.publico),
+        2200,
+        0.4,
+        1,
+        controller.signal,
+      );
       capitulo = {
         id: `${documento.id}:${indice}`,
         titulo: `Parte ${indice + 1} — ${documento.titulo}`,
@@ -127,7 +129,7 @@ export async function gerarApostilaDocumento(
       console.warn(`Capítulo ${indice + 1} da apostila usou o texto oficial:`, error);
       capitulo = capituloDocumentoSemIA(documento, parte);
     } finally {
-      if (timer) clearTimeout(timer);
+      clearTimeout(timer);
     }
     await setCachedValue(chave, capitulo, { pergunta: chave, modelo: capitulo.modelo ?? 'oficial', tempoMs: 0 });
     return capitulo;

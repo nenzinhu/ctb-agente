@@ -19,6 +19,9 @@ describe('migration 014 — páginas e catálogo de apostilas', () => {
     expect(sql).toMatch(/FROM public\.dispositivos/i);
     expect(sql).toMatch(/FROM public\.documento_trechos/i);
     expect(sql).toMatch(/to_tsvector\('public\.pt_unaccent', coalesce\(doc\.titulo, ''\)\)/i);
+    expect(sql).toMatch(/to_prefix_tsquery_pt\(query_text\)/i);
+    expect(sql).toMatch(/WHEN lower\(unaccent\(doc\.titulo\)\) = q\.normalizado THEN 300/i);
+    expect(sql).toMatch(/LIKE q\.normalizado \|\| '%' THEN 200/i);
   });
 
   it('keeps the catalog server-only', () => {

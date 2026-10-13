@@ -207,7 +207,7 @@ export function blocosDaApostila(capitulos: (Capitulo | CapituloApostila)[]): Bl
     blocos.push({
       texto: capitulo.modelo
         ? `Texto didático gerado por IA (${capitulo.modelo}) a partir do texto oficial. Não substitui a norma.`
-        : 'Texto oficial, sem adaptação (nenhum modelo de IA respondeu).',
+        : 'Texto oficial, sem adaptação (nenhum modelo de IA respondeu). Não substitui a norma.',
       estilo: 'nota',
     });
   });

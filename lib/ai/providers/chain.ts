@@ -35,12 +35,14 @@ function isRetryable(error: unknown): boolean {
   return false;
 }
 
-async function withRetry<T>(fn: () => Promise<T>, attempts = MAX_ATTEMPTS): Promise<T> {
+async function withRetry<T>(fn: () => Promise<T>, attempts = MAX_ATTEMPTS, signal?: AbortSignal): Promise<T> {
   let lastError: unknown;
   for (let attempt = 1; attempt <= attempts; attempt++) {
+    signal?.throwIfAborted();
     try {
       return await fn();
     } catch (error) {
+      signal?.throwIfAborted();
       lastError = error;
       if (attempt < attempts && isRetryable(error)) {
         const delay = Math.min(BASE_DELAY_MS * Math.pow(2, attempt - 1), 10_000);
@@ -58,12 +60,13 @@ async function gerarEmPortugues(
   prompt: string,
   modelo: string,
   maxTokens: number,
-  temperature: number
+  temperature: number,
+  signal?: AbortSignal
 ): Promise<string> {
-  const texto = await provider.generate(prompt, modelo, maxTokens, temperature);
+  const texto = await provider.generate(prompt, modelo, maxTokens, temperature, signal);
   if (!pareceRespostaEmIngles(texto)) return texto;
 
-  const corrigido = await provider.generate(promptReescreverEmPortugues(texto), modelo, maxTokens, 0);
+  const corrigido = await provider.generate(promptReescreverEmPortugues(texto), modelo, maxTokens, 0, signal);
   if (pareceRespostaEmIngles(corrigido)) {
     throw new Error(`${provider.name} insistiu em responder em inglês`);
   }
@@ -164,7 +167,8 @@ export class ProviderChain implements AIProvider {
     prompt: string,
     maxTokens: number,
     temperature = 0.7,
-    paralelos = 3
+    paralelos = 3,
+    signal?: AbortSignal
   ): Promise<{ texto: string; provedor: string; modelo: string }> {
     if (this.elos.length === 0) {
       throw new Error('Nenhum provedor de IA configurado — defina ao menos uma chave de API (consulte .env.local.example).');
@@ -174,7 +178,11 @@ export class ProviderChain implements AIProvider {
     const tentar = async ({ elo, modelo }: { elo: Elo; modelo: string }) => {
       const inicio = Date.now();
       try {
-        const texto = await withRetry(() => gerarEmPortugues(elo.provider, prompt, modelo, maxTokens, temperature));
+        const texto = await withRetry(
+          () => gerarEmPortugues(elo.provider, prompt, modelo, maxTokens, temperature, signal),
+          MAX_ATTEMPTS,
+          signal,
+        );
         if (!texto.trim()) throw new Error(`${elo.provider.name} (${modelo}) respondeu vazio`);
         recordProviderSuccess(elo.id, modelo, Date.now() - inicio);
         return { texto, provedor: elo.provider.name, modelo };

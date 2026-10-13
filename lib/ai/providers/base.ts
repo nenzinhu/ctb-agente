@@ -13,7 +13,8 @@ export interface AIProvider {
     prompt: string,
     model: string,
     maxTokens: number,
-    temperature?: number
+    temperature?: number,
+    signal?: AbortSignal
   ): Promise<string>;
 }
 

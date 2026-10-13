@@ -109,7 +109,12 @@ describe('GerarApostila', () => {
 
     await usuario.click(screen.getByRole('button', { name: 'Baixar PDF' }));
     await waitFor(() => expect(pdfDeBlocos).toHaveBeenCalledWith(
-      'Pesos e dimensões', expect.any(Array), undefined,
+      'Pesos e dimensões', expect.arrayContaining([
+        expect.objectContaining({ texto: 'Documento de origem: Manual de POP PMSC' }),
+        expect.objectContaining({ texto: 'Seleção: páginas 10–11' }),
+        expect.objectContaining({ texto: 'Situação documental: Em revisão' }),
+        expect.objectContaining({ texto: expect.stringMatching(/revisão humana/i) }),
+      ]), undefined,
       expect.objectContaining({ instituicao: 'Polícia Militar Rodoviária de Santa Catarina' })
     ));
     expect(baixarArquivo).toHaveBeenCalled();

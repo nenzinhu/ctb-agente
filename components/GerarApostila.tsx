@@ -150,7 +150,15 @@ export default function GerarApostila() {
     try {
       const logo = await fetch('/brasao-cpmrv.jpg');
       if (!logo.ok) throw new Error('Não foi possível carregar o brasão da apostila.');
-      const bytes = await pdfDeBlocos(resultado.titulo, blocosDaApostila(resultado.capitulos), undefined, {
+      const situacao = resultado.documento.situacao === 'revisar' ? 'Em revisão' : 'Vigente';
+      const blocos = [
+        { texto: `Documento de origem: ${resultado.documento.titulo}`, estilo: 'nota' as const },
+        { texto: `Seleção: ${resultado.selecaoRotulo}`, estilo: 'nota' as const },
+        { texto: `Situação documental: ${situacao}`, estilo: 'nota' as const },
+        { texto: 'Material de apoio à consulta. Confirme a fonte e a revisão humana antes do uso operacional; esta apostila não substitui a norma.', estilo: 'nota' as const },
+        ...blocosDaApostila(resultado.capitulos),
+      ];
+      const bytes = await pdfDeBlocos(resultado.titulo, blocos, undefined, {
         instituicao: 'Polícia Militar Rodoviária de Santa Catarina',
         logoJpeg: new Uint8Array(await logo.arrayBuffer()),
         logoLarguraPx: 115,
@@ -272,6 +280,7 @@ export default function GerarApostila() {
               <p className="font-semibold">Resumo da geração</p>
               <p>{documento.titulo}</p>
               <p>{modo === 'inteiro' ? 'Documento inteiro' : intervalos.trim() || 'Informe as páginas'}</p>
+              <p>{documento.situacao === 'revisar' ? 'Em revisão — confirme a fonte' : 'Vigente'}</p>
             </div>
           </div>
         )}

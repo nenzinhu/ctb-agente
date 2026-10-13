@@ -398,6 +398,13 @@ export function chunkText(
       continue;
     }
 
+    // A chunk is the unit of page-filtered retrieval. Never let it contain
+    // text from another page while keeping only the first page as metadata.
+    if (buffer.length > 0 && unit.page !== undefined && unit.page !== bufferPage) {
+      flush();
+      label = continuationLabel();
+    }
+
     if (unit.kind === 'artigo') {
       flush();
       artigo = articleLabel(unit.text);

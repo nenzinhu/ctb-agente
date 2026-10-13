@@ -287,6 +287,24 @@ export async function listDocuments(colecao?: Colecao): Promise<DocumentoRegistr
   return (await listDocumentsWithQualityStatus(colecao)).documentos;
 }
 
+/** Server-side lookup for a bounded set returned by a search RPC. */
+export async function getDocumentsByIds(ids: string[]): Promise<DocumentoRegistro[]> {
+  if (!databaseConfigured || ids.length === 0) return [];
+  const respostaAtual = await supabaseAdmin.from('documentos').select(CAMPOS).in('id', ids);
+  let data: Record<string, unknown>[] | null = respostaAtual.data as Record<string, unknown>[] | null;
+  let error = respostaAtual.error;
+  if (error && isMissingQualityColumnError(error)) {
+    const respostaLegada = await supabaseAdmin.from('documentos').select(CAMPOS_LEGADOS).in('id', ids);
+    data = respostaLegada.data as Record<string, unknown>[] | null;
+    error = respostaLegada.error;
+  }
+  if (error) {
+    if (isMissingSchemaError(error)) throw new MigrationPendingError();
+    throw new Error(error.message);
+  }
+  return (data ?? []).map(normalizarDocumento);
+}
+
 /** Server-only lookup used to bind generated material to one exact upload. */
 export async function getDocumentWithHash(id: string): Promise<DocumentoRegistroComHash | null> {
   if (!databaseConfigured) return null;

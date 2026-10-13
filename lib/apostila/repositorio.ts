@@ -1,5 +1,6 @@
 import { databaseAdminConfigured, supabaseAdmin } from '@/lib/db/client';
 import {
+  getDocumentsByIds,
   getDocumentWithHash,
   listDocumentsWithQualityStatus,
   type DocumentoRegistro,
@@ -48,9 +49,7 @@ export async function listarDocumentosApostila(
 ): Promise<DocumentoApostila[]> {
   if (!databaseAdminConfigured) return [];
   const quantidade = Math.max(1, Math.min(limite, LIMITE_MAXIMO));
-  const { documentos } = await listDocumentsWithQualityStatus();
-  const disponiveis = documentos.filter(elegivel);
-  let ordenados = disponiveis;
+  let ordenados: DocumentoRegistro[];
   const termo = consulta.trim().slice(0, 200);
 
   if (termo && consultaPesquisavel(termo)) {
@@ -59,12 +58,13 @@ export async function listarDocumentosApostila(
       limit_count: quantidade,
     });
     if (error) throw new Error(`Não foi possível pesquisar o acervo: ${error.message}`);
-    const posicao = new Map(
-      ((data ?? []) as { documento_id: string }[]).map((item, indice) => [item.documento_id, indice])
-    );
-    ordenados = disponiveis
-      .filter((documento) => posicao.has(documento.id))
-      .sort((a, b) => posicao.get(a.id)! - posicao.get(b.id)!);
+    const ids = ((data ?? []) as { documento_id: string }[]).map((item) => item.documento_id);
+    const encontrados = await getDocumentsByIds(ids);
+    const porId = new Map(encontrados.filter(elegivel).map((documento) => [documento.id, documento]));
+    ordenados = ids.map((id) => porId.get(id)).filter((documento): documento is DocumentoRegistro => Boolean(documento));
+  } else {
+    const { documentos } = await listDocumentsWithQualityStatus();
+    ordenados = documentos.filter(elegivel);
   }
 
   ordenados = ordenados.slice(0, quantidade);
@@ -101,15 +101,25 @@ export async function carregarTrechosApostila(
   const campos = tabela === 'dispositivos'
     ? 'id, documento_id, numero_dispositivo, pagina, ordem, texto'
     : 'id, documento_id, secao, pagina, ordem, texto';
-  let query = supabaseAdmin
-    .from(tabela)
-    .select(campos)
-    .eq('documento_id', documento.id);
-  if (paginas) query = query.in('pagina', paginas);
-  const { data, error } = await query.order('pagina', { ascending: true, nullsFirst: false }).order('ordem');
-  if (error) throw new Error(`Não foi possível carregar o conteúdo do documento: ${error.message}`);
+  const lote = 1_000;
+  const linhas: LinhaTrecho[] = [];
+  for (let inicio = 0; ; inicio += lote) {
+    let query = supabaseAdmin
+      .from(tabela)
+      .select(campos)
+      .eq('documento_id', documento.id);
+    if (paginas) query = query.in('pagina', paginas);
+    const { data, error } = await query
+      .order('pagina', { ascending: true, nullsFirst: false })
+      .order('ordem')
+      .range(inicio, inicio + lote - 1);
+    if (error) throw new Error(`Não foi possível carregar o conteúdo do documento: ${error.message}`);
+    const recebidas = (data ?? []) as unknown as LinhaTrecho[];
+    linhas.push(...recebidas);
+    if (recebidas.length < lote) break;
+  }
 
-  return ((data ?? []) as unknown as LinhaTrecho[])
+  return linhas
     .map((linha) => ({
       id: linha.id,
       documentoId: linha.documento_id,

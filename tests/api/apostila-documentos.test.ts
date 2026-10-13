@@ -109,4 +109,11 @@ describe('POST /api/apostila', () => {
     expect(response.status).toBe(status);
     expect((await response.json()).message).toBeTruthy();
   });
+
+  it('explica em português quando a migração 014 falha durante a geração', async () => {
+    gerarDocumento.mockRejectedValue(new Error('column dispositivos.pagina does not exist'));
+    const response = await post({ documentoId: id, selecao: { modo: 'inteiro' }, publico: 'agente' });
+    expect(response.status).toBe(503);
+    expect((await response.json()).message).toMatch(/migração 014/i);
+  });
 });
