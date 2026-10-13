@@ -4,6 +4,8 @@
 import type { FichaMbft } from '@/lib/mbft/parser';
 import type { Pop } from '@/lib/pop/parser';
 import type { BlocoEstilizado } from '@/lib/pdf-tools/pdf-writer';
+import { parseSelecaoPaginas, rotuloSelecaoPaginas } from '@/lib/apostila/paginas';
+import type { CapituloApostila, DocumentoApostila, ParteApostila } from '@/lib/apostila/tipos';
 
 export type Publico = 'agente' | 'leigo';
 export type FonteApostila = 'mbft' | 'pop';
@@ -20,9 +22,63 @@ export interface Capitulo extends ItemApostila {
 }
 
 const PUBLICO: Record<Publico, string> = {
-  agente: 'agentes de trânsito e policiais em formação: linguagem técnica correta, mas clara e direta',
+  agente: 'agentes de trânsito e policiais: linguagem técnica correta, mas clara e direta',
   leigo: 'pessoas leigas: linguagem do dia a dia, sem juridiquês, explicando todo termo técnico',
 };
+
+function rotuloPaginas(paginas: number[]): string {
+  return paginas.length > 0
+    ? rotuloSelecaoPaginas(parseSelecaoPaginas(paginas.join(',')))
+    : 'páginas não informadas';
+}
+
+export function promptCapituloDocumento(
+  documento: DocumentoApostila,
+  parte: ParteApostila,
+  publico: Publico
+): string {
+  const revisao = documento.situacao === 'revisar'
+    ? 'ATENÇÃO: DOCUMENTO EM REVISÃO. Não o descreva como vigente ou confirmado.'
+    : 'Documento marcado como vigente após revisão humana.';
+  return [
+    `Você é instrutor e escreve um capítulo de apostila para ${PUBLICO[publico]}.`,
+    'Responda integralmente em Português do Brasil.',
+    `Documento-fonte: ${documento.titulo}.`,
+    `Trecho de origem: ${rotuloPaginas(parte.paginas)}.`,
+    revisao,
+    'Use exclusivamente o TEXTO-FONTE abaixo; não misture conhecimento geral do modelo.',
+    'Regra: não invente códigos, artigos, prazos, valores ou procedimentos ausentes na fonte.',
+    'Exemplos devem ser identificados como didáticos e não podem criar regras.',
+    'Estrutura obrigatória:',
+    '## Objetivos de aprendizagem',
+    '## Explicação do conteúdo',
+    '## Pontos importantes para a atuação do agente',
+    '## Exemplos didáticos',
+    '## Questões de fixação',
+    '## Gabarito comentado',
+    '',
+    FORMATO,
+    '',
+    'TEXTO-FONTE:',
+    parte.texto,
+    '',
+    'CAPÍTULO:',
+  ].join('\n');
+}
+
+export function capituloDocumentoSemIA(
+  documento: DocumentoApostila,
+  parte: ParteApostila
+): CapituloApostila {
+  return {
+    id: `${documento.id}:${parte.indice}`,
+    titulo: `Parte ${parte.indice + 1} — ${documento.titulo}`,
+    texto: `## Texto da fonte\n${parte.texto}`,
+    paginas: parte.paginas,
+    situacao: documento.situacao,
+    modelo: null,
+  };
+}
 
 const FORMATO = [
   'Formato obrigatório:',
@@ -125,10 +181,16 @@ const limparMarcacao = (t: string) => t.replace(/\*\*(.+?)\*\*/g, '$1').replace(
  * The handout as PDF blocks: chapter titles, part headings, paragraphs, items
  * @param capitulos - Chapters in order
  */
-export function blocosDaApostila(capitulos: Capitulo[]): BlocoEstilizado[] {
+export function blocosDaApostila(capitulos: (Capitulo | CapituloApostila)[]): BlocoEstilizado[] {
   const blocos: BlocoEstilizado[] = [];
   capitulos.forEach((capitulo, i) => {
     blocos.push({ texto: `Capítulo ${i + 1} — ${capitulo.titulo}`, estilo: 'titulo' });
+    if ('paginas' in capitulo) {
+      blocos.push({ texto: `Origem: ${rotuloPaginas(capitulo.paginas)}`, estilo: 'nota' });
+      if (capitulo.situacao === 'revisar') {
+        blocos.push({ texto: 'Em revisão — confirme a fonte antes do uso operacional.', estilo: 'nota' });
+      }
+    }
     for (const bruta of capitulo.texto.split('\n')) {
       const linha = bruta.trim();
       if (!linha) continue;
