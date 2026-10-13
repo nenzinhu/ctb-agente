@@ -42,7 +42,7 @@ describe('GET /api/apostila', () => {
   });
 
   it('limita a consulta a 200 caracteres e não expõe campos internos', async () => {
-    listarDocumentos.mockResolvedValue([{ ...documentoPublico, hashConteudo: undefined, nome_arquivo: undefined }]);
+    listarDocumentos.mockResolvedValue([{ ...documentoPublico, hashConteudo: 'segredo', nome_arquivo: 'interno.pdf' }]);
     const response = await GET(new NextRequest(`http://localhost/api/apostila?q=${'a'.repeat(250)}`));
     const corpo = await response.json();
     expect(listarDocumentos).toHaveBeenCalledWith('a'.repeat(200), 30);

@@ -48,7 +48,9 @@ export function parseSelecaoPaginas(valor: string, paginaMaxima?: number): Selec
     if (paginaMaxima !== undefined && fim > paginaMaxima) {
       throw new SelecaoPaginasInvalida(`A página ${fim} ultrapassa o limite disponível (${paginaMaxima}).`);
     }
-    if (paginas.size + (fim - inicio + 1) > MAXIMO_PAGINAS) {
+    const quantidadeIntervalo = fim - inicio + 1;
+    const sobrepostas = [...paginas].filter((pagina) => pagina >= inicio && pagina <= fim).length;
+    if (paginas.size + quantidadeIntervalo - sobrepostas > MAXIMO_PAGINAS) {
       throw new SelecaoPaginasInvalida('Selecione no máximo 2.000 páginas por vez.');
     }
     for (let pagina = inicio; pagina <= fim; pagina++) paginas.add(pagina);

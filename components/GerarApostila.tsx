@@ -84,7 +84,7 @@ export default function GerarApostila() {
     () => documentos.find((item) => item.id === documentoId) ?? null,
     [documentoId, documentos]
   );
-  const etapaAtual = documento ? (resultado ? 3 : 2) : 1;
+  const etapaAtual = documento ? (resultado ? 2 : 1) : 0;
 
   const carregar = async (termo = '') => {
     setCarregando(true);

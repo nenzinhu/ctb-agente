@@ -50,6 +50,18 @@ describe('GerarApostila', () => {
     expect(fetchMock).toHaveBeenCalledWith('/api/apostila');
   });
 
+  it('inicia na etapa Documento e avança para Conteúdo após a escolha', async () => {
+    const usuario = userEvent.setup();
+    render(<GerarApostila />);
+
+    await screen.findByText('Resolução CONTRAN nº 882/2021');
+    const etapas = screen.getByRole('list', { name: 'Etapas da apostila' });
+    expect(etapas.querySelectorAll('li')[0]).toHaveAttribute('aria-current', 'step');
+
+    await usuario.click(screen.getByLabelText('Resolução CONTRAN nº 882/2021'));
+    expect(etapas.querySelectorAll('li')[1]).toHaveAttribute('aria-current', 'step');
+  });
+
   it('pesquisa documentos por título ou conteúdo', async () => {
     const usuario = userEvent.setup();
     render(<GerarApostila />);

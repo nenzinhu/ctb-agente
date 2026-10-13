@@ -12,7 +12,16 @@ export async function GET(request: NextRequest) {
   }
   const consulta = (request.nextUrl.searchParams.get('q') ?? '').trim().slice(0, 200);
   try {
-    const documentos = await listarDocumentosApostila(consulta, 30);
+    const resultados = await listarDocumentosApostila(consulta, 30);
+    const documentos = resultados.map((documento) => ({
+      id: documento.id,
+      titulo: documento.titulo,
+      colecao: documento.colecao,
+      paginas: documento.paginas,
+      paginaMaximaDisponivel: documento.paginaMaximaDisponivel,
+      trechos: documento.trechos,
+      situacao: documento.situacao,
+    }));
     return NextResponse.json({ documentos, bancoConfigurado: true });
   } catch (error) {
     const mensagem = error instanceof Error ? error.message : String(error);

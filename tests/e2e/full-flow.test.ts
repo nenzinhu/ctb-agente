@@ -42,6 +42,54 @@ test.describe('CTB Agente — fluxo completo', () => {
     await expect(page.locator('[data-home-reveal]')).toHaveCount(0);
   });
 
+  test('gera apostila por páginas em tela pequena', async ({ page }) => {
+    const documento = {
+      id: '11111111-1111-4111-8111-111111111111',
+      titulo: 'Manual operacional de teste',
+      colecao: 'pop',
+      paginas: 12,
+      paginaMaximaDisponivel: 12,
+      trechos: 4,
+      situacao: 'revisar',
+    };
+    await page.route('**/api/apostila*', async (route) => {
+      if (route.request().method() === 'POST') {
+        await route.fulfill({
+          json: {
+            titulo: 'Apostila — Manual operacional de teste',
+            selecaoRotulo: 'páginas 2–3',
+            documento,
+            capitulos: [{
+              id: 'cap-1',
+              titulo: 'Parte 1 — Manual operacional de teste',
+              texto: '## Objetivos\n- Consultar a fonte.',
+              paginas: [2, 3],
+              situacao: 'revisar',
+              modelo: null,
+            }],
+          },
+        });
+        return;
+      }
+      await route.fulfill({ json: { documentos: [documento], bancoConfigurado: true } });
+    });
+
+    await page.setViewportSize({ width: 360, height: 800 });
+    await page.goto('/apostila');
+    await page.getByLabel('Manual operacional de teste').click();
+    await expect(page.getByLabel('Agentes')).toBeChecked();
+    await page.getByLabel('Páginas selecionadas').click();
+    await page.getByLabel('Intervalos de páginas').fill('2-3');
+    await page.getByRole('button', { name: 'Gerar apostila' }).click();
+
+    await expect(page.getByRole('heading', { name: 'Prévia' })).toBeVisible();
+    await expect(page.getByText(/páginas 2–3/i).first()).toBeVisible();
+    const semRolagemHorizontal = await page.evaluate(
+      () => document.documentElement.scrollWidth <= document.documentElement.clientWidth,
+    );
+    expect(semRolagemHorizontal).toBe(true);
+  });
+
   test('o modo sol pode ser alternado e persiste', async ({ page }) => {
     await page.goto('/');
 

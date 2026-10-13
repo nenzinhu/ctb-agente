@@ -53,6 +53,10 @@ describe('seleção de páginas da apostila', () => {
     expect(() => parseSelecaoPaginas('1-2001')).toThrow('Selecione no máximo 2.000 páginas por vez.');
   });
 
+  it('aceita intervalos sobrepostos quando o total único respeita o limite', () => {
+    expect(parseSelecaoPaginas('1-2000, 1-2000').paginas).toHaveLength(2_000);
+  });
+
   it('expõe um erro de domínio identificável', () => {
     try {
       parseSelecaoPaginas('x');

@@ -13,6 +13,7 @@ Aplicativo PWA que permite consulta interativa da legislação de trânsito (Có
 - CTB compilado (Lei 9.503/97, 93 páginas) incluído no app: um clique em Painel → Base CTB → "Indexar agora"
 - Aba **POP-PMSC** (`/pop`): perguntas sobre os Procedimentos Operacionais Padrão respondidas só com os trechos indexados, citando POP, seção e página
 - Aba **Pesos e Dimensões** (`/pesos-dimensoes`): catálogo visual de caminhões/CVC, cálculo de PBT/PBTC e capacidade de carga, fiscalização por nota ou balança, excesso por eixo/CMT, código, valor estimado, responsável, providência e fontes
+- Aba **Apostila por IA** (`/apostila`): pesquisa todo o acervo indexado e gera material para agentes usando o documento inteiro ou páginas selecionadas, com fonte, situação documental e identidade institucional no PDF
 - Anexo de documentos em PDF, DOC, DOCX, MD e TXT (vários de uma vez), com indexação por artigo/seção e página
 - **Comprimir PDF** (`/comprimir-pdf`) no próprio aparelho: Leve, Forte ou Máxima (somente texto, sem design, + `.txt`)
 - Respostas estruturadas com enquadramento legal, gravidade, pontos, multa
@@ -52,6 +53,7 @@ Camadas, de fora para dentro: `app/` → `components/` → `lib/`.
   - `lib/search/` — busca híbrida (palavras + vetores) unida por Reciprocal Rank Fusion (`fusion.ts`).
   - `lib/rag/pop.ts` — recuperação e resposta fundamentada da aba POP-PMSC.
   - `lib/pesos-dimensoes/` — catálogo, cálculo determinístico, fiscalização e RAG local citado da Resolução CONTRAN nº 882/2021 e fichas de peso do MBFT.
+  - `lib/apostila/` — catálogo documental, seleção segura de páginas e preparação rastreável do conteúdo enviado à IA.
   - `lib/pdf-tools/` — compressor de PDF que roda no navegador (pdf.js + gravador de PDF mínimo).
 
 `lib/` nunca importa de `components/` nem de `app/`.
@@ -100,6 +102,8 @@ Aplicar as migrations no Supabase (SQL Editor), na ordem:
 11. `scripts/migrations-011-document-quality.sql` (metadados oficiais, situação das fontes e diagnóstico documental)
 12. `supabase/migrations/20261008032635_security_hardening.sql` (protege cache, IPs bloqueados e RPCs privilegiadas)
 13. `scripts/migrations-012-fatos-pmsc.sql` (habilita a coleção RAG da Lista de Fatos PMSC Mobile)
+14. `scripts/migrations-013-estrangeiros.sql` (habilita o acervo e a consulta de fiscalização de estrangeiros)
+15. `scripts/migrations-014-apostila-paginas.sql` (preserva páginas e habilita o catálogo completo de apostilas)
 
 A migration 007 é opcional: sem ela o app continua funcionando (rate limit
 legado e invalidação via fallback), mas perde a atomicidade anti-rajada e a
@@ -117,6 +121,19 @@ compilado, e use "Gerar vetores pendentes" quando houver `MISTRAL_API_KEY`
 A migration 010 refina o RAG do CTB e dos POPs. Ela faz consultas como
 `estacion` alcançarem `estacionar`, reduz falsos positivos em frases longas e
 impede que o índice vetorial devolva um trecho distante só para completar a lista.
+
+### Apostilas do acervo documental
+
+A aba `/apostila` consulta todos os documentos indexados e permite gerar uma
+apostila do documento inteiro ou de páginas como `3, 10-18, 35-40`. O material
+mostra a fonte, as páginas e a situação (`vigente`, `revisar` ou `substituído`),
+e o PDF usa o brasão e o nome da Polícia Militar Rodoviária de Santa Catarina.
+
+Para a seleção por páginas funcionar, aplique a migration 014 e reindexe os
+documentos antigos: os trechos precisam ter a página de origem registrada.
+Documentos ainda não reindexados continuam disponíveis no modo inteiro. Por
+segurança e tempo de resposta, cada geração aceita até 36.000 caracteres, 6.000
+por parte e 6 partes; para fontes maiores, escolha intervalos menores.
 
 Depois, popular a base com dados de exemplo:
 
