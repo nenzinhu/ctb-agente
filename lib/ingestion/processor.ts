@@ -225,6 +225,7 @@ export async function processChunks(input: ProcessorInput): Promise<ProcessingRe
       citacoes_dentro: extractCitations(chunk.text),
       criado_em: now,
       atualizado_em: now,
+      pagina: chunk.page ?? null,
       // Columns added by migration 008; sent only when it is applied.
       ...(validated.documentoId ? { documento_id: validated.documentoId, ordem: chunk.order } : {}),
     }),

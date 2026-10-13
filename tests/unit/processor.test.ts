@@ -185,6 +185,21 @@ describe('processChunks', () => {
     expect(insertedRows[1]).toMatchObject({ documento_id: 'doc-1', ordem: 3 });
   });
 
+  it('stores the source page for CTB and MBFT excerpts', async () => {
+    await processChunks({
+      chunks: [{ text: 'Trecho da ficha.', page: 27, order: 3 }],
+      normaId: 'mbft',
+      documentType: 'manual',
+      documentoId: 'doc-mbft',
+    });
+
+    expect(insertedRows[0]).toMatchObject({
+      documento_id: 'doc-mbft',
+      ordem: 3,
+      pagina: 27,
+    });
+  });
+
   it('indexes POP excerpts into documento_trechos with section and page', async () => {
     const result = await processTrechos({
       chunks: [{ text: 'Posicionar a viatura a 5 metros.', section: '3. SEQUÊNCIA DAS AÇÕES', page: 2, order: 0 }],
