@@ -56,4 +56,3 @@ export interface CapituloApostila {
   situacao: Extract<SituacaoFonte, 'vigente' | 'revisar'>;
   modelo: string | null;
 }
-

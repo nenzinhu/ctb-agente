@@ -97,4 +97,3 @@ $$;
 
 REVOKE ALL ON FUNCTION public.paginas_documentos_apostila(UUID[]) FROM PUBLIC, anon, authenticated;
 GRANT EXECUTE ON FUNCTION public.paginas_documentos_apostila(UUID[]) TO service_role;
-
