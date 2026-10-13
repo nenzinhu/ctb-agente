@@ -69,3 +69,32 @@ $$;
 REVOKE ALL ON FUNCTION public.search_documentos_apostila(TEXT, INT) FROM PUBLIC, anon, authenticated;
 GRANT EXECUTE ON FUNCTION public.search_documentos_apostila(TEXT, INT) TO service_role;
 
+CREATE OR REPLACE FUNCTION public.paginas_documentos_apostila(documento_ids UUID[])
+RETURNS TABLE (documento_id UUID, pagina_maxima INTEGER)
+LANGUAGE sql
+STABLE
+SET search_path = public
+AS $$
+  WITH paginas AS (
+    SELECT d.documento_id, max(d.pagina)::INTEGER AS pagina_maxima
+    FROM public.dispositivos d
+    WHERE d.documento_id = ANY(coalesce(documento_ids, '{}'::UUID[]))
+      AND d.pagina IS NOT NULL
+    GROUP BY d.documento_id
+
+    UNION ALL
+
+    SELECT t.documento_id, max(t.pagina)::INTEGER AS pagina_maxima
+    FROM public.documento_trechos t
+    WHERE t.documento_id = ANY(coalesce(documento_ids, '{}'::UUID[]))
+      AND t.pagina IS NOT NULL
+    GROUP BY t.documento_id
+  )
+  SELECT paginas.documento_id, max(paginas.pagina_maxima)::INTEGER AS pagina_maxima
+  FROM paginas
+  GROUP BY paginas.documento_id
+$$;
+
+REVOKE ALL ON FUNCTION public.paginas_documentos_apostila(UUID[]) FROM PUBLIC, anon, authenticated;
+GRANT EXECUTE ON FUNCTION public.paginas_documentos_apostila(UUID[]) TO service_role;
+

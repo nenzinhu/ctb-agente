@@ -25,4 +25,12 @@ describe('migration 014 — páginas e catálogo de apostilas', () => {
     expect(sql).toMatch(/REVOKE ALL ON FUNCTION public\.search_documentos_apostila\(TEXT, INT\) FROM PUBLIC, anon, authenticated/i);
     expect(sql).toMatch(/GRANT EXECUTE ON FUNCTION public\.search_documentos_apostila\(TEXT, INT\) TO service_role/i);
   });
+
+  it('reports the highest page actually indexed in one server-side query', () => {
+    expect(sql).toMatch(/CREATE OR REPLACE FUNCTION public\.paginas_documentos_apostila\(documento_ids UUID\[\]\)/i);
+    expect(sql).toMatch(/RETURNS TABLE \(documento_id UUID, pagina_maxima INTEGER\)/i);
+    expect(sql).toMatch(/max\(d\.pagina\)/i);
+    expect(sql).toMatch(/max\(t\.pagina\)/i);
+    expect(sql).toMatch(/GRANT EXECUTE ON FUNCTION public\.paginas_documentos_apostila\(UUID\[\]\) TO service_role/i);
+  });
 });

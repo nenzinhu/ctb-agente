@@ -33,6 +33,10 @@ export interface DocumentoRegistro {
   atualizado_em: string;
 }
 
+export interface DocumentoRegistroComHash extends DocumentoRegistro {
+  hash_conteudo: string;
+}
+
 /** CTB excerpts with no document row: seed data or uploads made before migration 008. */
 export interface GrupoLegado {
   norma_id: string;
@@ -281,6 +285,26 @@ export async function listDocumentsWithQualityStatus(colecao?: Colecao): Promise
 
 export async function listDocuments(colecao?: Colecao): Promise<DocumentoRegistro[]> {
   return (await listDocumentsWithQualityStatus(colecao)).documentos;
+}
+
+/** Server-only lookup used to bind generated material to one exact upload. */
+export async function getDocumentWithHash(id: string): Promise<DocumentoRegistroComHash | null> {
+  if (!databaseConfigured) return null;
+  const { data, error } = await supabaseAdmin
+    .from('documentos')
+    .select(`${CAMPOS}, hash_conteudo`)
+    .eq('id', id)
+    .maybeSingle();
+  if (error) {
+    if (isMissingQualityColumnError(error)) throw new QualityMigrationPendingError();
+    if (isMissingSchemaError(error)) throw new MigrationPendingError();
+    throw new Error(error.message);
+  }
+  if (!data) return null;
+  return {
+    ...normalizarDocumento(data as Record<string, unknown>),
+    hash_conteudo: String((data as Record<string, unknown>).hash_conteudo ?? ''),
+  };
 }
 
 export async function updateDocumentMetadata(
