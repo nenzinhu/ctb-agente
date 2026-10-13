@@ -3,7 +3,7 @@ import GerarApostila from '@/components/GerarApostila';
 
 export const metadata: Metadata = {
   title: 'Apostila por IA',
-  description: 'Apostilas de estudo geradas por IA a partir das fichas do MBFT e dos POPs da PMSC.',
+  description: 'Apostilas de estudo geradas por IA a partir dos documentos indexados do acervo.',
 };
 
 export default function ApostilaPage() {

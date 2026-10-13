@@ -16,7 +16,7 @@ const TIPOS = [
 
 const ATALHOS: { href: string; titulo: string; texto: string; icone: NomeIcone }[] = [
   { href: '/favoritos', titulo: 'Seus favoritos', texto: 'Retome os enquadramentos salvos neste aparelho.', icone: 'estrela' },
-  { href: '/apostila', titulo: 'Gerar apostila', texto: 'Crie material de estudo com conteúdo do MBFT ou dos POPs.', icone: 'livro' },
+  { href: '/apostila', titulo: 'Gerar apostila', texto: 'Crie material de estudo com qualquer documento indexado do acervo.', icone: 'livro' },
   { href: '/comprimir-pdf', titulo: 'Comprimir PDF', texto: 'Reduza arquivos no aparelho, inclusive para somente texto.', icone: 'comprimir' },
 ];
 

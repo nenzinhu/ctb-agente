@@ -1,9 +1,10 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { baixarArquivo } from '@/lib/download';
 import { pdfDeBlocos } from '@/lib/pdf-tools/pdf-writer';
-import { blocosDaApostila, type Capitulo, type FonteApostila, type ItemApostila, type Publico } from '@/lib/rag/apostila';
+import { blocosDaApostila } from '@/lib/rag/apostila';
+import type { CapituloApostila, DocumentoApostila, PublicoApostila, SelecaoApostila } from '@/lib/apostila/tipos';
 import RespostaFormatada from './pop/RespostaFormatada';
 import Field from './ui/Field';
 import Icone from './ui/Icone';
@@ -14,33 +15,50 @@ import TitleCard from './ui/TitleCard';
 import { cx } from './ui/cx';
 
 const ETAPAS: Etapa[] = [
-  { id: 'fonte', rotulo: 'Fonte' },
+  { id: 'documento', rotulo: 'Documento' },
   { id: 'conteudo', rotulo: 'Conteúdo' },
   { id: 'gerar', rotulo: 'Gerar' },
 ];
 
-const MAXIMO = 6;
+const COLECOES: Record<DocumentoApostila['colecao'], string> = {
+  ctb: 'CTB / MBFT',
+  pop: 'POP',
+  natureza_potencial: 'Fatos PMSC',
+  estrangeiros: 'Estrangeiros',
+};
 
-const FONTES: { valor: FonteApostila; titulo: string; texto: string; exemplo: string }[] = [
-  { valor: 'mbft', titulo: 'Fichas do MBFT', texto: 'Infrações de trânsito, uma ficha por capítulo.', exemplo: 'Ex.: estacionamento, art. 181, celular' },
-  { valor: 'pop', titulo: 'POPs da PMSC', texto: 'Procedimentos operacionais padrão, um POP por capítulo.', exemplo: 'Ex.: abordagem, algemas, acidente' },
-];
+type Resultado = {
+  titulo: string;
+  selecaoRotulo: string;
+  documento: DocumentoApostila;
+  capitulos: CapituloApostila[];
+};
 
-const PUBLICOS: { valor: Publico; titulo: string }[] = [
-  { valor: 'agente', titulo: 'Agentes em formação' },
-  { valor: 'leigo', titulo: 'Público leigo' },
-];
-
-/** Radio card used for the source and audience choices */
-function Opcao({ nome, marcada, onChange, titulo, texto }: { nome: string; marcada: boolean; onChange: () => void; titulo: string; texto?: string }) {
+function Opcao({ nome, valor, marcada, onChange, titulo, texto, disabled = false }: {
+  nome: string;
+  valor: string;
+  marcada: boolean;
+  onChange: () => void;
+  titulo: string;
+  texto?: string;
+  disabled?: boolean;
+}) {
   return (
-    <label
-      className={cx(
-        'flex min-h-[44px] cursor-pointer items-start gap-3 rounded-control border-2 p-3 text-sm transition-colors',
-        marcada ? 'border-ds-primary bg-ds-primary-soft' : 'border-ds-line hover:bg-ds-muted'
-      )}
-    >
-      <input type="radio" name={nome} checked={marcada} onChange={onChange} className="mt-0.5 h-4 w-4 shrink-0 accent-ds-primary" />
+    <label className={cx(
+      'flex min-h-[44px] items-start gap-3 rounded-control border-2 p-3 text-sm transition-colors',
+      disabled ? 'cursor-not-allowed border-ds-line opacity-60' : 'cursor-pointer',
+      marcada ? 'border-ds-primary bg-ds-primary-soft' : 'border-ds-line hover:bg-ds-muted'
+    )}>
+      <input
+        type="radio"
+        name={nome}
+        value={valor}
+        aria-label={titulo}
+        checked={marcada}
+        disabled={disabled}
+        onChange={onChange}
+        className="mt-0.5 h-4 w-4 shrink-0 accent-ds-primary"
+      />
       <span>
         <span className="block font-semibold text-ds-text">{titulo}</span>
         {texto && <span className="block text-ds-subtle">{texto}</span>}
@@ -49,93 +67,96 @@ function Opcao({ nome, marcada, onChange, titulo, texto }: { nome: string; marca
   );
 }
 
-/**
- * Study handout generator: pick the official items (MBFT sheets or POPs),
- * the AI writes one chapter per item, preview on screen and download as PDF.
- */
 export default function GerarApostila() {
-  const [fonte, setFonte] = useState<FonteApostila>('mbft');
-  const [publico, setPublico] = useState<Publico>('agente');
-  const [tema, setTema] = useState('');
-  const [sugestoes, setSugestoes] = useState<ItemApostila[] | null>(null);
-  const [escolhidos, setEscolhidos] = useState<ItemApostila[]>([]);
-  const [buscando, setBuscando] = useState(false);
+  const [documentos, setDocumentos] = useState<DocumentoApostila[]>([]);
+  const [documentoId, setDocumentoId] = useState<string | null>(null);
+  const [consulta, setConsulta] = useState('');
+  const [modo, setModo] = useState<SelecaoApostila['modo']>('inteiro');
+  const [intervalos, setIntervalos] = useState('');
+  const [publico, setPublico] = useState<PublicoApostila>('agente');
+  const [titulo, setTitulo] = useState('');
+  const [carregando, setCarregando] = useState(true);
   const [gerando, setGerando] = useState(false);
   const [erro, setErro] = useState<string | null>(null);
-  const [capitulos, setCapitulos] = useState<Capitulo[] | null>(null);
+  const [resultado, setResultado] = useState<Resultado | null>(null);
 
-  const etapaAtual = escolhidos.length === 0 ? 1 : capitulos ? ETAPAS.length : 2;
-  const fonteAtual = FONTES.find((f) => f.valor === fonte)!;
+  const documento = useMemo(
+    () => documentos.find((item) => item.id === documentoId) ?? null,
+    [documentoId, documentos]
+  );
+  const etapaAtual = documento ? (resultado ? 3 : 2) : 1;
 
-  const trocarFonte = (nova: FonteApostila) => {
-    setFonte(nova);
-    setSugestoes(null);
-    setEscolhidos([]);
-    setCapitulos(null);
-  };
-
-  const buscar = async () => {
-    if (tema.trim().length < 2) return;
-    setBuscando(true);
+  const carregar = async (termo = '') => {
+    setCarregando(true);
     setErro(null);
     try {
-      const resposta = await fetch(`/api/apostila?fonte=${fonte}&tema=${encodeURIComponent(tema.trim())}`);
+      const url = termo ? `/api/apostila?q=${encodeURIComponent(termo)}` : '/api/apostila';
+      const resposta = await fetch(url);
       const corpo = await resposta.json();
-      if (!resposta.ok) throw new Error(corpo?.message || 'Não foi possível buscar.');
-      setSugestoes(corpo.itens as ItemApostila[]);
+      if (!resposta.ok) throw new Error(corpo?.message || 'Não foi possível carregar os documentos.');
+      setDocumentos(corpo.documentos as DocumentoApostila[]);
+      if (!corpo.bancoConfigurado) setErro('O banco documental ainda não está configurado.');
     } catch (error) {
-      setErro(error instanceof Error ? error.message : 'Erro desconhecido.');
+      setErro(error instanceof Error ? error.message : 'Não foi possível carregar os documentos.');
     } finally {
-      setBuscando(false);
+      setCarregando(false);
     }
   };
 
-  const alternar = (item: ItemApostila) => {
-    setCapitulos(null);
-    setEscolhidos((atual) =>
-      atual.some((i) => i.id === item.id)
-        ? atual.filter((i) => i.id !== item.id)
-        : atual.length < MAXIMO
-          ? [...atual, item]
-          : atual
-    );
+  useEffect(() => {
+    void carregar();
+  }, []);
+
+  const escolherDocumento = (item: DocumentoApostila) => {
+    setDocumentoId(item.id);
+    setModo('inteiro');
+    setIntervalos('');
+    setTitulo(`Apostila — ${item.titulo}`.slice(0, 120));
+    setResultado(null);
+    setErro(null);
   };
 
   const gerar = async () => {
+    if (!documento) return;
+    if (modo === 'paginas' && !intervalos.trim()) {
+      setErro('Informe as páginas, por exemplo: 3, 10–18.');
+      return;
+    }
     setGerando(true);
     setErro(null);
-    setCapitulos(null);
+    setResultado(null);
+    const selecao: SelecaoApostila = modo === 'inteiro'
+      ? { modo: 'inteiro' }
+      : { modo: 'paginas', intervalos: intervalos.trim() };
     try {
       const resposta = await fetch('/api/apostila', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ fonte, publico, ids: escolhidos.map((i) => i.id) }),
+        body: JSON.stringify({ documentoId: documento.id, selecao, publico, titulo: titulo.trim() }),
       });
       const corpo = await resposta.json();
       if (!resposta.ok) throw new Error(corpo?.message || 'Não foi possível gerar a apostila.');
-      setCapitulos(corpo.capitulos as Capitulo[]);
+      setResultado(corpo as Resultado);
     } catch (error) {
-      setErro(error instanceof Error ? error.message : 'Erro desconhecido.');
+      setErro(error instanceof Error ? error.message : 'Não foi possível gerar a apostila.');
     } finally {
       setGerando(false);
     }
   };
 
-  const tituloApostila = `Apostila — ${tema.trim() || fonteAtual.titulo}`;
-
   const baixar = async () => {
-    if (!capitulos) return;
+    if (!resultado) return;
     setErro(null);
     try {
       const logo = await fetch('/brasao-cpmrv.jpg');
       if (!logo.ok) throw new Error('Não foi possível carregar o brasão da apostila.');
-      const bytes = await pdfDeBlocos(tituloApostila, blocosDaApostila(capitulos), undefined, {
+      const bytes = await pdfDeBlocos(resultado.titulo, blocosDaApostila(resultado.capitulos), undefined, {
         instituicao: 'Polícia Militar Rodoviária de Santa Catarina',
         logoJpeg: new Uint8Array(await logo.arrayBuffer()),
         logoLarguraPx: 115,
         logoAlturaPx: 144,
       });
-      const nome = tituloApostila.normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9]+/gi, '-').toLowerCase();
+      const nome = resultado.titulo.normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9]+/gi, '-').toLowerCase();
       baixarArquivo(new Blob([bytes as BlobPart], { type: 'application/pdf' }), `${nome}.pdf`);
     } catch (error) {
       setErro(error instanceof Error ? error.message : 'Não foi possível baixar a apostila.');
@@ -147,140 +168,138 @@ export default function GerarApostila() {
       <TitleCard
         titulo="Apostila por IA"
         icone="livro"
-        subtitulo="Escolha fichas do MBFT ou POPs: a IA escreve um capítulo didático para cada um, com exemplos, questões e gabarito."
+        subtitulo="Pesquise qualquer documento indexado e crie uma apostila didática do conteúdo inteiro ou de páginas selecionadas."
       />
-
       <Stepper etapas={ETAPAS} atual={etapaAtual} rotulo="Etapas da apostila" />
 
-      <SectionCard numero={1} titulo="Fonte">
-        <fieldset>
-          <legend className="sr-only">Fonte da apostila</legend>
-          <div className="grid gap-2 sm:grid-cols-2">
-            {FONTES.map((f) => (
-              <Opcao key={f.valor} nome="fonte" marcada={fonte === f.valor} onChange={() => trocarFonte(f.valor)} titulo={f.titulo} texto={f.texto} />
-            ))}
-          </div>
-        </fieldset>
-        <fieldset className="mt-4">
-          <legend className="label">Público</legend>
-          <div className="grid gap-2 sm:grid-cols-2">
-            {PUBLICOS.map((p) => (
-              <Opcao key={p.valor} nome="publico" marcada={publico === p.valor} onChange={() => { setPublico(p.valor); setCapitulos(null); }} titulo={p.titulo} />
-            ))}
-          </div>
-        </fieldset>
-      </SectionCard>
-
-      <SectionCard numero={2} titulo="Conteúdo" acao={<span className="badge-neutral">{escolhidos.length}/{MAXIMO}</span>}>
-        <form
-          className="flex items-end gap-2"
-          onSubmit={(e) => {
-            e.preventDefault();
-            void buscar();
-          }}
-        >
-          <Field label="Tema" className="min-w-0 flex-1" value={tema} onChange={(e) => setTema(e.target.value)} placeholder={fonteAtual.exemplo} maxLength={200} />
-          <button type="submit" className="btn-secondary" disabled={buscando || tema.trim().length < 2}>
+      <SectionCard numero={1} titulo="Documento">
+        <form className="flex flex-col gap-2 sm:flex-row sm:items-end" onSubmit={(event) => {
+          event.preventDefault();
+          void carregar(consulta.trim());
+        }}>
+          <Field
+            label="Pesquisar documentos"
+            className="min-w-0 flex-1"
+            value={consulta}
+            onChange={(event) => setConsulta(event.target.value)}
+            placeholder="Título, assunto, artigo ou palavra do conteúdo"
+            maxLength={200}
+          />
+          <button type="submit" className="btn-secondary min-h-[44px]" disabled={carregando}>
             <Icone nome="busca" tamanho={16} />
-            {buscando ? 'Buscando…' : 'Buscar'}
+            {carregando ? 'Pesquisando…' : 'Pesquisar'}
           </button>
         </form>
 
-        {escolhidos.length > 0 && (
-          <div className="mt-4">
-            <p className="label">Capítulos, na ordem</p>
-            <ol className="space-y-1.5">
-              {escolhidos.map((item, i) => (
-                <li key={item.id} className="flex items-start gap-2 text-sm text-ds-text">
-                  <span className="font-mono font-bold text-ds-gold-strong">{i + 1}.</span>
-                  <span className="min-w-0 flex-1">{item.titulo}</span>
-                  <button type="button" className="text-xs font-semibold text-ds-danger underline" onClick={() => alternar(item)} aria-label={`Remover ${item.titulo}`}>
-                    remover
-                  </button>
-                </li>
+        <fieldset className="mt-4">
+          <legend className="label">Documentos encontrados</legend>
+          {carregando ? (
+            <p className="text-sm text-ds-subtle" role="status">Carregando documentos…</p>
+          ) : documentos.length === 0 ? (
+            <p className="text-sm text-ds-subtle">Nenhum documento encontrado.</p>
+          ) : (
+            <div className="grid gap-2">
+              {documentos.map((item) => (
+                <label key={item.id} className={cx(
+                  'flex min-h-[56px] cursor-pointer items-start gap-3 rounded-control border-2 px-3 py-3 text-sm transition-colors',
+                  item.id === documentoId ? 'border-ds-primary bg-ds-primary-soft' : 'border-ds-line hover:bg-ds-muted'
+                )}>
+                  <input
+                    type="radio"
+                    name="documento"
+                    aria-label={item.titulo}
+                    checked={item.id === documentoId}
+                    onChange={() => escolherDocumento(item)}
+                    className="mt-1 h-4 w-4 shrink-0 accent-ds-primary"
+                  />
+                  <span className="min-w-0 flex-1">
+                    <span className="block font-semibold text-ds-text">{item.titulo}</span>
+                    <span className="mt-1 flex flex-wrap gap-1.5 text-xs text-ds-subtle">
+                      <span className="badge-neutral">{COLECOES[item.colecao]}</span>
+                      <span>{item.paginas ? `${item.paginas} páginas` : 'Total de páginas não informado'}</span>
+                      <span className={item.situacao === 'revisar' ? 'badge-media' : 'badge-brand'}>
+                        {item.situacao === 'revisar' ? 'Em revisão' : 'Vigente'}
+                      </span>
+                    </span>
+                  </span>
+                </label>
               ))}
-            </ol>
-          </div>
-        )}
+            </div>
+          )}
+        </fieldset>
+      </SectionCard>
 
-        {sugestoes && (
-          <fieldset className="mt-4">
-            <legend className="label">Encontrados ({sugestoes.length})</legend>
-            {sugestoes.length === 0 ? (
-              <p className="text-sm text-ds-subtle">Nada encontrado. Tente outras palavras, um código ou um artigo.</p>
-            ) : (
-              <div className="grid gap-2">
-                {sugestoes.map((item) => {
-                  const marcado = escolhidos.some((i) => i.id === item.id);
-                  return (
-                    <label
-                      key={item.id}
-                      className={cx(
-                        'flex min-h-[44px] cursor-pointer items-start gap-3 rounded-control border-2 px-3 py-2.5 text-sm transition-colors',
-                        marcado ? 'border-ds-primary bg-ds-primary-soft text-ds-text' : 'border-ds-line text-ds-text hover:bg-ds-muted'
-                      )}
-                    >
-                      <input
-                        type="checkbox"
-                        checked={marcado}
-                        disabled={!marcado && escolhidos.length >= MAXIMO}
-                        onChange={() => alternar(item)}
-                        className="mt-0.5 h-4 w-4 shrink-0 accent-ds-primary"
-                      />
-                      <span>{item.titulo}</span>
-                    </label>
-                  );
-                })}
+      <SectionCard numero={2} titulo="Conteúdo">
+        {!documento ? (
+          <p className="text-sm text-ds-subtle">Escolha um documento para definir o conteúdo.</p>
+        ) : (
+          <div className="space-y-4">
+            {documento.situacao === 'revisar' && (
+              <div className="alert-warn" role="alert">
+                <Icone nome="alerta" className="mt-0.5 shrink-0" />
+                <p><strong>Documento em revisão.</strong> Confirme a fonte antes do uso operacional; o aviso também constará no PDF.</p>
               </div>
             )}
-          </fieldset>
+            <fieldset>
+              <legend className="label">Extensão</legend>
+              <div className="grid gap-2 sm:grid-cols-2">
+                <Opcao nome="modo" valor="inteiro" marcada={modo === 'inteiro'} onChange={() => { setModo('inteiro'); setResultado(null); }} titulo="Documento inteiro" texto="Usa todo o conteúdo quando estiver dentro do limite." />
+                <Opcao nome="modo" valor="paginas" marcada={modo === 'paginas'} onChange={() => { setModo('paginas'); setResultado(null); }} titulo="Páginas selecionadas" texto={documento.paginaMaximaDisponivel ? `Disponível até a página ${documento.paginaMaximaDisponivel}.` : 'Páginas ainda não disponíveis.'} disabled={documento.paginaMaximaDisponivel === null} />
+              </div>
+            </fieldset>
+            {documento.paginaMaximaDisponivel === null && (
+              <p className="hint">Este documento antigo precisa ser reindexado para selecionar páginas. O modo inteiro continua disponível.</p>
+            )}
+            {modo === 'paginas' && documento.paginaMaximaDisponivel !== null && (
+              <Field
+                label="Intervalos de páginas"
+                value={intervalos}
+                onChange={(event) => { setIntervalos(event.target.value); setResultado(null); }}
+                placeholder="Ex.: 3, 10–18, 35–40"
+                hint="Separe páginas ou intervalos com vírgulas."
+                maxLength={200}
+              />
+            )}
+            <Field label="Título da apostila" value={titulo} onChange={(event) => setTitulo(event.target.value)} maxLength={120} />
+            <fieldset>
+              <legend className="label">Público</legend>
+              <div className="grid gap-2 sm:grid-cols-2">
+                <Opcao nome="publico" valor="agente" marcada={publico === 'agente'} onChange={() => setPublico('agente')} titulo="Agentes" />
+                <Opcao nome="publico" valor="leigo" marcada={publico === 'leigo'} onChange={() => setPublico('leigo')} titulo="Público leigo" />
+              </div>
+            </fieldset>
+            <div className="rounded-control border border-ds-line bg-ds-muted p-3 text-sm text-ds-text">
+              <p className="font-semibold">Resumo da geração</p>
+              <p>{documento.titulo}</p>
+              <p>{modo === 'inteiro' ? 'Documento inteiro' : intervalos.trim() || 'Informe as páginas'}</p>
+            </div>
+          </div>
         )}
       </SectionCard>
 
       <SectionCard numero={3} titulo="Gerar">
         <div className="space-y-4">
-          <p className="text-sm text-ds-subtle">
-            Cada capítulo traz objetivos, explicação, passo a passo, exemplos práticos, questões de fixação e gabarito, sempre a partir do
-            texto oficial. Pode levar até um minuto.
-          </p>
-
-          {erro && (
-            <div className="alert-error" role="alert">
-              <Icone nome="alerta" className="mt-0.5 shrink-0 text-ds-danger" />
-              <p>{erro}</p>
-            </div>
-          )}
-
-          <PrimaryButton icone="faisca" carregando={gerando} textoCarregando="Escrevendo a apostila…" disabled={escolhidos.length === 0} onClick={gerar} className="w-full text-base">
+          <p className="text-sm text-ds-subtle">A IA organiza somente o texto selecionado em explicações, exemplos didáticos, questões e gabarito. A fonte e as páginas permanecem identificadas.</p>
+          {erro && <div className="alert-error" role="alert"><Icone nome="alerta" className="mt-0.5 shrink-0" /><p>{erro}</p></div>}
+          <PrimaryButton icone="faisca" carregando={gerando} textoCarregando="Escrevendo a apostila…" disabled={!documento || !titulo.trim()} onClick={() => void gerar()} className="w-full text-base">
             Gerar apostila
           </PrimaryButton>
-
-          {capitulos && (
-            <PrimaryButton icone="download" onClick={() => void baixar()} className="w-full text-base">
-              Baixar PDF
-            </PrimaryButton>
-          )}
+          {resultado && <PrimaryButton icone="download" onClick={() => void baixar()} className="w-full text-base">Baixar PDF</PrimaryButton>}
         </div>
       </SectionCard>
 
-      {capitulos && (
+      {resultado && (
         <section aria-labelledby="previa-apostila" className="space-y-4">
-          <h2 id="previa-apostila" className="page-title">
-            Prévia
-          </h2>
-          {capitulos.map((capitulo, i) => (
+          <h2 id="previa-apostila" className="page-title">Prévia</h2>
+          <p className="text-sm text-ds-subtle">{resultado.documento.titulo} · {resultado.selecaoRotulo}</p>
+          {resultado.capitulos.map((capitulo, indice) => (
             <article key={capitulo.id} className="card card-pad">
-              <div className="card-head">
-                <h3 className="section-title">
-                  <span className="section-number">{i + 1}.</span>
-                  <span className="min-w-0">{capitulo.titulo}</span>
-                </h3>
-              </div>
+              <h3 className="section-title"><span className="section-number">{indice + 1}.</span><span>{capitulo.titulo}</span></h3>
+              <p className="mt-2 text-xs text-ds-subtle">Páginas: {capitulo.paginas.join(', ') || 'não informadas'}</p>
+              {capitulo.situacao === 'revisar' && <p className="mt-2 text-xs font-semibold text-ds-warn">Em revisão — confirme a fonte.</p>}
               <RespostaFormatada texto={capitulo.texto.replace(/^#{1,6}\s*(.+)$/gm, '**$1**').replace(/^([a-d]\))\s/gm, '- $1 ')} />
               <p className="mt-4 border-t border-ds-line pt-2 text-xs text-ds-subtle">
-                {capitulo.modelo
-                  ? `Gerado por IA (${capitulo.modelo}) a partir do texto oficial. Não substitui a norma.`
-                  : 'Nenhum modelo de IA respondeu: este capítulo traz o texto oficial, sem adaptação.'}
+                {capitulo.modelo ? `Gerado por IA (${capitulo.modelo}) a partir do texto indexado.` : 'Texto da fonte, sem adaptação da IA.'} Não substitui a norma.
               </p>
             </article>
           ))}
