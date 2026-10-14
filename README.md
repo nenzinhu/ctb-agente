@@ -131,9 +131,10 @@ e o PDF usa o brasão e o nome da Polícia Militar Rodoviária de Santa Catarina
 
 Para a seleção por páginas funcionar, aplique a migration 014 e reindexe os
 documentos antigos: os trechos precisam ter a página de origem registrada.
-Documentos ainda não reindexados continuam disponíveis no modo inteiro. Por
-segurança e tempo de resposta, cada geração aceita até 36.000 caracteres, 6.000
-por parte e 6 partes; para fontes maiores, escolha intervalos menores.
+Documentos ainda não reindexados só podem ser gerados inteiros quando possuem
+até 10 páginas. Por segurança e tempo de resposta, cada apostila aceita uma
+escolha manual de no máximo 10 páginas e mantém o limite interno de 36.000
+caracteres, 6.000 por parte e 6 partes.
 
 Depois, popular a base com dados de exemplo:
 

@@ -100,6 +100,7 @@ describe('POST /api/apostila', () => {
     ['pagina_indisponivel', 409],
     ['paginas_sem_texto', 400],
     ['conteudo_excessivo', 413],
+    ['limite_paginas', 400],
     ['selecao_invalida', 400],
     ['rate_limit_exceeded', 429],
     ['ip_blocked', 403],

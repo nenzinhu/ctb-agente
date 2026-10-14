@@ -1,6 +1,6 @@
 import type { IntervaloPagina, SelecaoPaginasNormalizada } from './tipos';
 
-const MAXIMO_PAGINAS = 2_000;
+export const MAXIMO_PAGINAS_APOSTILA = 10;
 
 export class SelecaoPaginasInvalida extends Error {
   constructor(message: string) {
@@ -50,12 +50,12 @@ export function parseSelecaoPaginas(valor: string, paginaMaxima?: number): Selec
     }
     const quantidadeIntervalo = fim - inicio + 1;
     const sobrepostas = [...paginas].filter((pagina) => pagina >= inicio && pagina <= fim).length;
-    if (paginas.size + quantidadeIntervalo - sobrepostas > MAXIMO_PAGINAS) {
-      throw new SelecaoPaginasInvalida('Selecione no máximo 2.000 páginas por vez.');
+    if (paginas.size + quantidadeIntervalo - sobrepostas > MAXIMO_PAGINAS_APOSTILA) {
+      throw new SelecaoPaginasInvalida('Selecione no máximo 10 páginas por apostila.');
     }
     for (let pagina = inicio; pagina <= fim; pagina++) paginas.add(pagina);
-    if (paginas.size > MAXIMO_PAGINAS) {
-      throw new SelecaoPaginasInvalida('Selecione no máximo 2.000 páginas por vez.');
+    if (paginas.size > MAXIMO_PAGINAS_APOSTILA) {
+      throw new SelecaoPaginasInvalida('Selecione no máximo 10 páginas por apostila.');
     }
   }
 

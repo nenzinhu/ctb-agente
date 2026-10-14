@@ -58,6 +58,7 @@ const ERROS = {
   pagina_indisponivel: ['Este documento precisa ser reindexado para permitir seleção por páginas.', 409],
   paginas_sem_texto: ['Uma ou mais páginas escolhidas não possuem texto indexado.', 400],
   conteudo_excessivo: ['O conteúdo é muito extenso. Escolha uma faixa menor de páginas.', 413],
+  limite_paginas: ['Selecione manualmente no máximo 10 páginas por apostila.', 400],
   selecao_invalida: ['Informe páginas válidas, como 3, 10–18.', 400],
 } as const;
 

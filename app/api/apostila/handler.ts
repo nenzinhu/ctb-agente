@@ -14,7 +14,12 @@ import { checkRateLimit, recordQuery } from '@/lib/ratelimit/limiter';
 import { getCachedValue, setCachedValue } from '@/lib/response/cache';
 import { carregarTrechosApostila, obterDocumentoApostila } from '@/lib/apostila/repositorio';
 import { ConteudoApostilaExcessivo, prepararPartesApostila } from '@/lib/apostila/conteudo';
-import { parseSelecaoPaginas, rotuloSelecaoPaginas, SelecaoPaginasInvalida } from '@/lib/apostila/paginas';
+import {
+  MAXIMO_PAGINAS_APOSTILA,
+  parseSelecaoPaginas,
+  rotuloSelecaoPaginas,
+  SelecaoPaginasInvalida,
+} from '@/lib/apostila/paginas';
 import type { CapituloApostila, PublicoApostila, SelecaoApostila } from '@/lib/apostila/tipos';
 import { capituloDocumentoSemIA, promptCapituloDocumento } from '@/lib/rag/apostila';
 
@@ -35,6 +40,7 @@ type ErroApostilaDocumento =
   | 'pagina_indisponivel'
   | 'paginas_sem_texto'
   | 'conteudo_excessivo'
+  | 'limite_paginas'
   | 'selecao_invalida';
 
 async function mapearComConcorrencia<T, R>(
@@ -66,6 +72,14 @@ export async function gerarApostilaDocumento(
 
   const documento = await obterDocumentoApostila(pedido.documentoId);
   if (!documento) return { erro: 'not_found' };
+
+  if (pedido.selecao.modo === 'inteiro'
+    && (documento.paginas === null || documento.paginas > MAXIMO_PAGINAS_APOSTILA)) {
+    return {
+      erro: 'limite_paginas',
+      mensagem: 'Selecione manualmente no máximo 10 páginas por apostila.',
+    };
+  }
 
   let paginas: number[] | undefined;
   let chaveSelecao = 'inteiro';

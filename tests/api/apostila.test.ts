@@ -86,7 +86,34 @@ describe('apostila documental por IA', () => {
     expect(recordQuery).toHaveBeenCalled();
   });
 
+  it('recusa o documento inteiro quando ele possui mais de dez páginas', async () => {
+    const resultado = await gerarApostilaDocumento({
+      documentoId: documento.id, selecao: { modo: 'inteiro' }, publico: 'agente',
+    }, '127.0.0.1');
+
+    expect(resultado).toEqual({
+      erro: 'limite_paginas',
+      mensagem: 'Selecione manualmente no máximo 10 páginas por apostila.',
+    });
+    expect(carregarTrechos).not.toHaveBeenCalled();
+  });
+
+  it('recusa o documento inteiro quando o total de páginas não foi informado', async () => {
+    obterDocumento.mockResolvedValue({ ...documento, paginas: null, paginaMaximaDisponivel: 8 });
+
+    const resultado = await gerarApostilaDocumento({
+      documentoId: documento.id, selecao: { modo: 'inteiro' }, publico: 'agente',
+    }, '127.0.0.1');
+
+    expect(resultado).toEqual({
+      erro: 'limite_paginas',
+      mensagem: 'Selecione manualmente no máximo 10 páginas por apostila.',
+    });
+    expect(carregarTrechos).not.toHaveBeenCalled();
+  });
+
   it('preserva capítulos gerados e usa fallback somente na parte que falhou', async () => {
+    obterDocumento.mockResolvedValue({ ...documento, paginas: 2, paginaMaximaDisponivel: 2 });
     carregarTrechos.mockResolvedValue([
       { ...trecho(0, 5_900), pagina: 1 }, { ...trecho(1, 5_900), pagina: 2 },
     ]);
@@ -103,6 +130,7 @@ describe('apostila documental por IA', () => {
   });
 
   it('limita a três chamadas de IA simultâneas', async () => {
+    obterDocumento.mockResolvedValue({ ...documento, paginas: 6, paginaMaximaDisponivel: 6 });
     carregarTrechos.mockResolvedValue(Array.from({ length: 6 }, (_, indice) => ({
       ...trecho(indice, 5_700), pagina: indice + 1,
     })));

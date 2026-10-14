@@ -4,6 +4,11 @@ import { useEffect, useMemo, useState } from 'react';
 import { baixarArquivo } from '@/lib/download';
 import { pdfDeBlocos } from '@/lib/pdf-tools/pdf-writer';
 import { blocosDaApostila } from '@/lib/rag/apostila';
+import {
+  MAXIMO_PAGINAS_APOSTILA,
+  parseSelecaoPaginas,
+  SelecaoPaginasInvalida,
+} from '@/lib/apostila/paginas';
 import type { CapituloApostila, DocumentoApostila, PublicoApostila, SelecaoApostila } from '@/lib/apostila/tipos';
 import RespostaFormatada from './pop/RespostaFormatada';
 import Field from './ui/Field';
@@ -84,6 +89,12 @@ export default function GerarApostila() {
     () => documentos.find((item) => item.id === documentoId) ?? null,
     [documentoId, documentos]
   );
+  const permiteDocumentoInteiro = documento?.paginas !== null
+    && documento?.paginas !== undefined
+    && documento.paginas <= MAXIMO_PAGINAS_APOSTILA;
+  const selecaoDisponivel = modo === 'inteiro'
+    ? permiteDocumentoInteiro
+    : documento?.paginaMaximaDisponivel !== null && documento?.paginaMaximaDisponivel !== undefined;
   const etapaAtual = documento ? (resultado ? 2 : 1) : 0;
 
   const carregar = async (termo = '') => {
@@ -108,8 +119,10 @@ export default function GerarApostila() {
   }, []);
 
   const escolherDocumento = (item: DocumentoApostila) => {
+    const inteiroDisponivel = item.paginas !== null
+      && item.paginas <= MAXIMO_PAGINAS_APOSTILA;
     setDocumentoId(item.id);
-    setModo('inteiro');
+    setModo(inteiroDisponivel ? 'inteiro' : 'paginas');
     setIntervalos('');
     setTitulo(`Apostila — ${item.titulo}`.slice(0, 120));
     setResultado(null);
@@ -121,6 +134,16 @@ export default function GerarApostila() {
     if (modo === 'paginas' && !intervalos.trim()) {
       setErro('Informe as páginas, por exemplo: 3, 10–18.');
       return;
+    }
+    if (modo === 'paginas') {
+      try {
+        parseSelecaoPaginas(intervalos, documento.paginaMaximaDisponivel ?? undefined);
+      } catch (error) {
+        setErro(error instanceof SelecaoPaginasInvalida
+          ? error.message
+          : 'Informe páginas válidas, como 3, 10–18.');
+        return;
+      }
     }
     setGerando(true);
     setErro(null);
@@ -251,12 +274,15 @@ export default function GerarApostila() {
             <fieldset>
               <legend className="label">Extensão</legend>
               <div className="grid gap-2 sm:grid-cols-2">
-                <Opcao nome="modo" valor="inteiro" marcada={modo === 'inteiro'} onChange={() => { setModo('inteiro'); setResultado(null); }} titulo="Documento inteiro" texto="Usa todo o conteúdo quando estiver dentro do limite." />
-                <Opcao nome="modo" valor="paginas" marcada={modo === 'paginas'} onChange={() => { setModo('paginas'); setResultado(null); }} titulo="Páginas selecionadas" texto={documento.paginaMaximaDisponivel ? `Disponível até a página ${documento.paginaMaximaDisponivel}.` : 'Páginas ainda não disponíveis.'} disabled={documento.paginaMaximaDisponivel === null} />
+                <Opcao nome="modo" valor="inteiro" marcada={modo === 'inteiro'} onChange={() => { setModo('inteiro'); setResultado(null); }} titulo="Documento inteiro" texto={permiteDocumentoInteiro ? 'Disponível porque o documento possui até 10 páginas.' : 'Disponível somente para documentos com até 10 páginas.'} disabled={!permiteDocumentoInteiro} />
+                <Opcao nome="modo" valor="paginas" marcada={modo === 'paginas'} onChange={() => { setModo('paginas'); setResultado(null); }} titulo="Páginas selecionadas" texto={documento.paginaMaximaDisponivel ? `Escolha manualmente até 10 páginas, entre 1 e ${documento.paginaMaximaDisponivel}.` : 'Páginas ainda não disponíveis.'} disabled={documento.paginaMaximaDisponivel === null} />
               </div>
             </fieldset>
+            {!permiteDocumentoInteiro && documento.paginaMaximaDisponivel !== null && (
+              <p className="hint">Selecione manualmente até 10 páginas por apostila.</p>
+            )}
             {documento.paginaMaximaDisponivel === null && (
-              <p className="hint">Este documento antigo precisa ser reindexado para selecionar páginas. O modo inteiro continua disponível.</p>
+              <p className="hint">Este documento precisa ser reindexado para permitir a escolha manual de até 10 páginas.</p>
             )}
             {modo === 'paginas' && documento.paginaMaximaDisponivel !== null && (
               <Field
@@ -264,7 +290,7 @@ export default function GerarApostila() {
                 value={intervalos}
                 onChange={(event) => { setIntervalos(event.target.value); setResultado(null); }}
                 placeholder="Ex.: 3, 10–18, 35–40"
-                hint="Separe páginas ou intervalos com vírgulas."
+                hint="Separe páginas ou intervalos com vírgulas. Máximo de 10 páginas por apostila."
                 maxLength={200}
               />
             )}
@@ -290,7 +316,7 @@ export default function GerarApostila() {
         <div className="space-y-4">
           <p className="text-sm text-ds-subtle">A IA organiza somente o texto selecionado em explicações, exemplos didáticos, questões e gabarito. A fonte e as páginas permanecem identificadas.</p>
           {erro && <div className="alert-error" role="alert"><Icone nome="alerta" className="mt-0.5 shrink-0" /><p>{erro}</p></div>}
-          <PrimaryButton icone="faisca" carregando={gerando} textoCarregando="Escrevendo a apostila…" disabled={!documento || !titulo.trim()} onClick={() => void gerar()} className="w-full text-base">
+          <PrimaryButton icone="faisca" carregando={gerando} textoCarregando="Escrevendo a apostila…" disabled={!documento || !titulo.trim() || !selecaoDisponivel} onClick={() => void gerar()} className="w-full text-base">
             Gerar apostila
           </PrimaryButton>
           {resultado && <PrimaryButton icone="download" onClick={() => void baixar()} className="w-full text-base">Baixar PDF</PrimaryButton>}

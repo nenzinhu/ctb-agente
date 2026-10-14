@@ -126,7 +126,35 @@ describe('GerarApostila', () => {
     await screen.findByText('CTB antigo');
 
     await usuario.click(screen.getByLabelText('CTB antigo'));
+    expect(screen.getByLabelText('Documento inteiro')).toBeDisabled();
     expect(screen.getByLabelText('Páginas selecionadas')).toBeDisabled();
-    expect(screen.getByText(/reindexado para selecionar páginas/i)).toBeInTheDocument();
+    expect(screen.getByText(/reindexado.*escolha manual/i)).toBeInTheDocument();
+    expect(screen.queryByText(/modo inteiro continua disponível/i)).not.toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Gerar apostila' })).toBeDisabled();
+  });
+
+  it('exige escolha manual de até dez páginas em documentos maiores', async () => {
+    const usuario = userEvent.setup();
+    render(<GerarApostila />);
+    await screen.findByText('Manual de POP PMSC');
+
+    await usuario.click(screen.getByLabelText('Manual de POP PMSC'));
+
+    expect(screen.getByLabelText('Documento inteiro')).toBeDisabled();
+    expect(screen.getByLabelText('Páginas selecionadas')).toBeChecked();
+    expect(screen.getByText(/selecione manualmente até 10 páginas/i)).toBeInTheDocument();
+  });
+
+  it('não envia uma seleção manual com mais de dez páginas', async () => {
+    const usuario = userEvent.setup();
+    render(<GerarApostila />);
+    await screen.findByText('Manual de POP PMSC');
+
+    await usuario.click(screen.getByLabelText('Manual de POP PMSC'));
+    await usuario.type(screen.getByLabelText('Intervalos de páginas'), '1-11');
+    await usuario.click(screen.getByRole('button', { name: 'Gerar apostila' }));
+
+    expect(await screen.findByText('Selecione no máximo 10 páginas por apostila.')).toBeInTheDocument();
+    expect(fetchMock.mock.calls.some(([, opcoes]) => opcoes?.method === 'POST')).toBe(false);
   });
 });

@@ -6,20 +6,20 @@ import {
 
 describe('seleção de páginas da apostila', () => {
   it('normaliza páginas e intervalos com hífen ou travessão', () => {
-    const selecao = parseSelecaoPaginas('3, 10-18, 35–40', 40);
+    const selecao = parseSelecaoPaginas('3, 10-14, 35–38', 40);
 
     expect(selecao.paginas).toEqual([
       3,
-      10, 11, 12, 13, 14, 15, 16, 17, 18,
-      35, 36, 37, 38, 39, 40,
+      10, 11, 12, 13, 14,
+      35, 36, 37, 38,
     ]);
     expect(selecao.intervalos).toEqual([
       { inicio: 3, fim: 3 },
-      { inicio: 10, fim: 18 },
-      { inicio: 35, fim: 40 },
+      { inicio: 10, fim: 14 },
+      { inicio: 35, fim: 38 },
     ]);
-    expect(selecao.canonico).toBe('3, 10–18, 35–40');
-    expect(rotuloSelecaoPaginas(selecao)).toBe('páginas 3, 10–18 e 35–40');
+    expect(selecao.canonico).toBe('3, 10–14, 35–38');
+    expect(rotuloSelecaoPaginas(selecao)).toBe('páginas 3, 10–14 e 35–38');
   });
 
   it('deduplica, ordena e compacta intervalos sobrepostos', () => {
@@ -49,12 +49,16 @@ describe('seleção de páginas da apostila', () => {
     expect(() => parseSelecaoPaginas('9-12', 10)).toThrow('A página 12 ultrapassa o limite disponível (10).');
   });
 
-  it('limita a expansão antes de consultar o banco', () => {
-    expect(() => parseSelecaoPaginas('1-2001')).toThrow('Selecione no máximo 2.000 páginas por vez.');
+  it('aceita no máximo dez páginas por apostila', () => {
+    expect(parseSelecaoPaginas('1-10').paginas).toHaveLength(10);
+  });
+
+  it('rejeita mais de dez páginas antes de consultar o banco', () => {
+    expect(() => parseSelecaoPaginas('1-11')).toThrow('Selecione no máximo 10 páginas por apostila.');
   });
 
   it('aceita intervalos sobrepostos quando o total único respeita o limite', () => {
-    expect(parseSelecaoPaginas('1-2000, 1-2000').paginas).toHaveLength(2_000);
+    expect(parseSelecaoPaginas('1-10, 1-10').paginas).toHaveLength(10);
   });
 
   it('expõe um erro de domínio identificável', () => {
