@@ -2,6 +2,7 @@ import { codigoMbft } from '@/lib/query/router';
 import { palavrasBusca, similaridadePalavra } from '@/lib/search/lexical';
 import { buscarFichas, todasAsFichas } from './fichas';
 import type { FichaMbft } from './parser';
+import type { EvidenciaFundamento } from './fundamento-atuacao';
 
 export type RespostaGuiada = 'sim' | 'nao' | 'nao_informado';
 export type RespostasGuiadas = Record<string, RespostaGuiada>;
@@ -19,6 +20,7 @@ export interface CandidatoGuiado {
   pontuacao: number;
   evidenciasFavoraveis: string[];
   evidenciasContrarias: string[];
+  evidencias: EvidenciaFundamento[];
 }
 
 export interface ResultadoGuiado {
@@ -118,6 +120,7 @@ export function avaliarEnquadramento({
     let pontuacao = 100 - ordem;
     const evidenciasFavoraveis: string[] = [];
     const evidenciasContrarias: string[] = [];
+    const evidencias: EvidenciaFundamento[] = [];
     for (const pergunta of perguntas.filter((item) => item.codigos.includes(ficha.codigo))) {
       const resposta = respostas[pergunta.id];
       if (!resposta || resposta === 'nao_informado') continue;
@@ -130,9 +133,23 @@ export function avaliarEnquadramento({
         pontuacao -= 30;
         evidenciasContrarias.push(pergunta.criterio);
       }
+      const descricao = pergunta.fonte === 'quando_autuar'
+        ? resposta === 'sim'
+          ? `Confirmado: ${pergunta.criterio}`
+          : `Não observado: ${pergunta.criterio}`
+        : resposta === 'sim'
+          ? `Hipótese de não autuar observada: ${pergunta.criterio}`
+          : `Hipótese de não autuar não observada: ${pergunta.criterio}`;
+      evidencias.push({
+        criterio: pergunta.criterio,
+        fonte: pergunta.fonte,
+        resposta,
+        efeito: favoravel ? 'favoravel' : 'contraria',
+        descricao,
+      });
     }
     if (evidenciasFavoraveis.length && evidenciasContrarias.length) contradicao = true;
-    return { ficha, pontuacao, evidenciasFavoraveis, evidenciasContrarias };
+    return { ficha, pontuacao, evidenciasFavoraveis, evidenciasContrarias, evidencias };
   }).sort((a, b) => b.pontuacao - a.pontuacao || a.ficha.codigo.localeCompare(b.ficha.codigo));
 
   return {
