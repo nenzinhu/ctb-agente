@@ -1,14 +1,7 @@
-// Registry of the pluggable AI providers, used by the admin panel and the
-// fallback chain. Every one of them has a free tier; `modelos` are the
-// suggested free models (most recommended first). These catalogs change
-// every few weeks, so the admin panel can also pull each provider's current
-// free catalog live (listLiveModels) and test any model in it.
+// Fixed allowlist of text-generation providers and models. Mistral is kept
+// outside this registry because it is used exclusively for embeddings.
 import { GroqProvider } from './groq';
-import { NVIDIAProvider } from './nvidia';
 import { OpenRouterProvider } from './openrouter';
-import { NOUS_FREE_MODELS, NousProvider } from './nous';
-import { OrcaRouterProvider } from './orcarouter';
-import { AnyApiProvider } from './anyapi';
 import { OpenAICompatibleProvider } from './openai-compatible';
 import type { AIProvider } from './base';
 import { getProviderHealth, recordProviderFailure, recordProviderSuccess, type ProviderHealth } from './health';
@@ -67,21 +60,19 @@ export const PROVIDERS: ProviderDescriptor[] = [
     nome: 'Groq',
     envVar: 'GROQ_API_KEY',
     modelos: [
-      'llama-3.3-70b-versatile',
+      'qwen/qwen3.8-27b',
       'openai/gpt-oss-120b',
       'openai/gpt-oss-20b',
-      'llama-3.1-8b-instant',
-      'qwen/qwen3.6-27b',
     ],
     papel: 'resposta rapida',
     cadastro: 'https://console.groq.com/keys',
-    criar: () => new GroqProvider(process.env.GROQ_API_KEY || ''),
+    criar: (apiKey) => new GroqProvider(apiKey),
   },
   {
     id: 'cerebras',
     nome: 'Cerebras',
     envVar: 'CEREBRAS_API_KEY',
-    modelos: ['gpt-oss-120b', 'llama-3.3-70b', 'llama3.1-8b', 'qwen-3-32b'],
+    modelos: ['qwen-3.8-27b', 'gpt-oss-120b'],
     papel: 'resposta rapida',
     cadastro: 'https://cloud.cerebras.ai',
     criar: (apiKey, _baseUrl) =>
@@ -92,143 +83,38 @@ export const PROVIDERS: ProviderDescriptor[] = [
       }),
   },
   {
-    id: 'nvidia',
-    nome: 'NVIDIA NIM',
-    envVar: 'NVIDIA_API_KEY',
-    modelos: [
-      'nvidia/nemotron-3-super-120b-a12b',
-      'deepseek-ai/deepseek-v4.1-flash',
-      'moonshotai/kimi-k2.6',
-      'z-ai/glm-5.3-flash',
-      'openai/gpt-oss-20b',
-      'nvidia/llama-3.1-nemotron-70b-instruct',
-    ],
-    papel: 'resposta rapida',
-    cadastro: 'https://build.nvidia.com',
-    criar: () => new NVIDIAProvider(process.env.NVIDIA_API_KEY || ''),
-  },
-  {
-    id: 'gemini',
-    nome: 'Google Gemini (AI Studio)',
-    envVar: 'GEMINI_API_KEY',
-    modelos: ['gemini-2.5-flash', 'gemini-2.5-flash-lite', 'gemini-2.0-flash'],
+    id: 'cohere',
+    nome: 'Cohere',
+    envVar: 'COHERE_API_KEY',
+    modelos: ['c4ai-aya-vision-32b', 'command-a-03-2025', 'command-a-plus-05-2026'],
     papel: 'resposta analitica',
-    cadastro: 'https://aistudio.google.com/apikey',
-    criar: () =>
+    cadastro: 'https://dashboard.cohere.com/api-keys',
+    criar: (apiKey) =>
       new OpenAICompatibleProvider({
-        name: 'Gemini',
-        apiKey: process.env.GEMINI_API_KEY || '',
-        baseUrl: 'https://generativelanguage.googleapis.com/v1beta/openai',
-        filtroGratis: (id) => /^gemini-.*flash/i.test(id) && !/image|tts|audio|live/i.test(id),
+        name: 'Cohere',
+        apiKey,
+        baseUrl: 'https://api.cohere.ai/compatibility/v1',
       }),
-  },
-  {
-    id: 'sambanova',
-    nome: 'SambaNova Cloud',
-    envVar: 'SAMBANOVA_API_KEY',
-    modelos: ['Meta-Llama-3.3-70B-Instruct', 'DeepSeek-V3.2', 'gpt-oss-120b', 'gemma-4-31B-it'],
-    papel: 'resposta analitica',
-    cadastro: 'https://cloud.sambanova.ai/apis',
-    criar: () =>
-      new OpenAICompatibleProvider({
-        name: 'SambaNova',
-        apiKey: process.env.SAMBANOVA_API_KEY || '',
-        baseUrl: 'https://api.sambanova.ai/v1',
-      }),
-  },
-  {
-    id: 'huggingface',
-    nome: 'Hugging Face (créditos grátis mensais)',
-    envVar: 'HF_TOKEN',
-    modelos: [
-      'openai/gpt-oss-120b',
-      'meta-llama/Llama-3.3-70B-Instruct',
-      'deepseek-ai/DeepSeek-V4.1-Flash',
-      'Qwen/Qwen3.8-27B',
-      'google/gemma-4-31B-it',
-    ],
-    papel: 'resposta analitica',
-    cadastro: 'https://huggingface.co/settings/tokens',
-    criar: () =>
-      new OpenAICompatibleProvider({
-        name: 'Hugging Face',
-        apiKey: process.env.HF_TOKEN || '',
-        baseUrl: 'https://router.huggingface.co/v1',
-      }),
-  },
-  {
-    id: 'nous',
-    nome: 'Nous Portal',
-    envVar: 'NOUS_API_KEY',
-    modelos: [...NOUS_FREE_MODELS],
-    papel: 'resposta analitica',
-    cadastro: 'https://portal.nousresearch.com',
-    criar: () =>
-      new NousProvider(process.env.NOUS_API_KEY || '', process.env.NOUS_BASE_URL || undefined),
-  },
-  {
-    id: 'orcarouter',
-    nome: 'OrcaRouter',
-    envVar: 'ORCAROUTER_API_KEY',
-    modelos: [
-      'deepseek/deepseek-v4-flash-free',
-      'orcarouter/auto',
-      'orcarouter/free',
-      'tencent/hy4-preview-free',
-      'z-ai/glm-5.3-flash-free',
-      'tencent/hy3-free',
-    ],
-    papel: 'resposta analitica',
-    cadastro: '',
-    criar: () =>
-      new OrcaRouterProvider(process.env.ORCAROUTER_API_KEY || '', process.env.ORCAROUTER_BASE_URL || ''),
-  },
-  {
-    id: 'anyapi',
-    nome: 'AnyAPI',
-    envVar: 'ANYAPI_API_KEY',
-    modelos: [
-      'dots-studio/dots-3-note-preview:free',
-      'nvidia/nemotron-3-nano-omni-30b-a3b-reasoning:free',
-    ],
-    papel: 'resposta analitica',
-    cadastro: '',
-    criar: () => new AnyApiProvider(process.env.ANYAPI_API_KEY || '', process.env.ANYAPI_BASE_URL || ''),
   },
   {
     id: 'openrouter',
     nome: 'OpenRouter (modelos :free)',
     envVar: 'OPENROUTER_API_KEY',
     modelos: [
-      'nvidia/nemotron-3-super-120b-a12b:free',
-      'nvidia/nemotron-3-ultra-550b-a55b:free',
-      'nvidia/nemotron-3.5-lightning:free',
       'poolside/laguna-s-2.1:free',
+      'thinking-machines/inkling:free',
+      'cohere/north-mini-code:free',
+      'thinking-machines/inkling-small:free',
+      'poolside/laguna-xs-2.1:free',
+      'nvidia/nemotron-3-super-120b-a12b:free',
+      'nvidia/nemotron-3-nano-omni-30b-a3b:free',
       'liquid/lfm-2.5-2.6b:free',
-      'openrouter/free',
-      'google/gemma-4-31b-it:free',
-      'qwen/qwen3.8-27b:free',
-      'z-ai/glm-5.2:free',
-      'nex-agi/nex-n2.5-pro:free',
+      'google/gemma-4-26b-a4b:free',
+      'google/gemma-4-31b:free',
     ],
     papel: 'resposta analitica',
     cadastro: 'https://openrouter.ai/keys',
-    criar: () => new OpenRouterProvider(process.env.OPENROUTER_API_KEY || ''),
-  },
-  {
-    id: 'mistral',
-    nome: 'Mistral',
-    envVar: 'MISTRAL_API_KEY',
-    modelos: ['mistral-small-latest', 'ministral-14b-latest', 'ministral-8b-latest'],
-    papel: 'resposta analitica',
-    cadastro: 'https://console.mistral.ai/api-keys',
-    criar: () =>
-      new OpenAICompatibleProvider({
-        name: 'Mistral',
-        apiKey: process.env.MISTRAL_API_KEY || '',
-        baseUrl: 'https://api.mistral.ai/v1',
-        filtroGratis: (id) => !/embed|moderation|ocr|voxtral/i.test(id),
-      }),
+    criar: (apiKey) => new OpenRouterProvider(apiKey),
   },
 ];
 
@@ -264,28 +150,9 @@ export function listProviders(): ProviderStatus[] {
   }));
 }
 
-/**
- * The provider's current free catalog, straight from its /models endpoint
- * @param providerId - Provider identifier
- * @returns Model ids, or the error that prevented listing them
- */
-export async function listLiveModels(
-  providerId: string
-): Promise<{ modelos: string[]; erro?: string }> {
-  const descriptor = PROVIDERS.find((p) => p.id === providerId);
-  if (!descriptor) return { modelos: [], erro: 'Provedor desconhecido' };
-  if (!process.env[descriptor.envVar]) {
-    return { modelos: [], erro: `${descriptor.envVar} não configurada` };
-  }
-  try {
-    const modelos = await descriptor.criar(
-      process.env[descriptor.envVar] || '',
-      descriptor.baseUrlEnvVar ? process.env[descriptor.baseUrlEnvVar] : undefined
-    ).getModels();
-    return { modelos: Array.from(new Set(modelos.map((m) => m.id))).sort() };
-  } catch (error) {
-    return { modelos: [], erro: error instanceof Error ? error.message : 'Falha desconhecida' };
-  }
+/** Confirms that a model belongs to the provider's fixed allowlist. */
+export function modeloPermitido(providerId: string, modelo: string): boolean {
+  return PROVIDERS.some((provider) => provider.id === providerId && provider.modelos.includes(modelo));
 }
 
 export interface PingResult {
@@ -333,6 +200,16 @@ export async function pingProvider(providerId: string, modelo?: string): Promise
   }
 
   const modeloUsado = modelo || descriptor.modelos[0];
+
+  if (!descriptor.modelos.includes(modeloUsado)) {
+    return {
+      provider: descriptor.nome,
+      ok: false,
+      modeloUsado,
+      latenciaMs: 0,
+      erro: 'Modelo não autorizado para este provedor.',
+    };
+  }
 
   if (!process.env[descriptor.envVar]) {
     return {

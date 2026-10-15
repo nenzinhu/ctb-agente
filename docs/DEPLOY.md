@@ -108,9 +108,10 @@ Settings → Environment Variables, marcadas para **Production** (e Preview, se 
 | `ADMIN_USERNAME` | você (opcional; padrão `nenzinhu`) | Usuário do painel master |
 | `ADMIN_PASSWORD_HASH` | bcrypt (abaixo) | Login do painel master |
 | `GROQ_API_KEY` | Groq Console | Provedor 1 (resposta rápida) / voz |
-| `NVIDIA_API_KEY` | NVIDIA NIM | Provedor 2 |
-| `OPENROUTER_API_KEY` | OpenRouter | Provedor 3 |
-| `MISTRAL_API_KEY` | Mistral | Provedor 4 + embeddings (vetores semânticos; sem ela a busca usa só palavras) |
+| `CEREBRAS_API_KEY` | Cerebras Cloud | Provedor 2 de respostas |
+| `COHERE_API_KEY` | Cohere Dashboard | Provedor 3 de respostas |
+| `OPENROUTER_API_KEY` | OpenRouter | Provedor 4 de respostas (modelos gratuitos autorizados) |
+| `MISTRAL_API_KEY` | Mistral | Somente embeddings do RAG (vetores semânticos; sem ela a busca usa só palavras) |
 | `NEXT_PUBLIC_TURNSTILE_SITE_KEY` | Cloudflare Turnstile | Exibe o widget |
 | `TURNSTILE_SECRET_KEY` | Cloudflare Turnstile | Valida o token no servidor |
 | `RATE_LIMIT_QUERIES_PER_HOUR` | você | Limite inicial (depois ajustável no painel) |

@@ -1,51 +1,5 @@
-import { AIProvider, AIModel, EmbeddingProvider } from './base';
+import { EmbeddingProvider } from './base';
 import { fetchWithTimeout } from './timeout';
-import { SISTEMA_PORTUGUES_BR } from '../portugues';
-
-export class MistralProvider implements AIProvider {
-  name = 'Mistral';
-  private apiKey: string;
-  private baseUrl = 'https://api.mistral.ai/v1';
-
-  constructor(apiKey: string) {
-    this.apiKey = apiKey;
-  }
-
-  async getModels(): Promise<AIModel[]> {
-    // Mistral free tier
-    return [
-      { id: 'mistral-small', name: 'Mistral Small', maxTokens: 8000, costPer1kTokens: 0, isFree: true },
-      { id: 'mistral-medium', name: 'Mistral Medium', maxTokens: 8000, costPer1kTokens: 0, isFree: true },
-    ];
-  }
-
-  async generate(prompt: string, model: string, maxTokens: number, temperature = 0.7, signal?: AbortSignal): Promise<string> {
-    const response = await fetchWithTimeout(`${this.baseUrl}/chat/completions`, {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${this.apiKey}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        model,
-        messages: [
-          { role: 'system', content: SISTEMA_PORTUGUES_BR },
-          { role: 'user', content: prompt },
-        ],
-        max_tokens: maxTokens,
-        temperature,
-      }),
-      signal,
-    });
-
-    if (!response.ok) {
-      throw new Error(`Erro na API da Mistral: ${response.statusText || `HTTP ${response.status}`}`);
-    }
-
-    const data = await response.json();
-    return data.choices[0]?.message?.content || '';
-  }
-}
 
 // Statuses worth retrying: rate limiting (the free tier allows very few
 // requests per second — a document upload hits it immediately) and

@@ -46,7 +46,6 @@ export default function AdminProvedores() {
   const [providers, setProviders] = useState<ProviderStatus[]>([]);
   const [preferencia, setPreferencia] = useState<Preferencia | null>(null);
   const [selecionado, setSelecionado] = useState<Record<string, string>>({});
-  const [catalogo, setCatalogo] = useState<Record<string, { modelos: string[]; erro?: string }>>({});
   const [pings, setPings] = useState<Record<string, PingResult>>({});
   const [testando, setTestando] = useState<Set<string>>(new Set());
   const [progresso, setProgresso] = useState<{ feitos: number; total: number } | null>(null);
@@ -132,20 +131,6 @@ export default function AdminProvedores() {
     setAviso(`${funcionando} de ${fila.length} modelos responderam.`);
   };
 
-  const verCatalogo = async (providerId: string) => {
-    setCatalogo((atual) => ({ ...atual, [providerId]: { modelos: [], erro: 'Carregando…' } }));
-    try {
-      const resposta = await fetch(`/api/admin/providers?modelos=${encodeURIComponent(providerId)}`);
-      const data = (await resposta.json()) as { modelos: string[]; erro?: string };
-      setCatalogo((atual) => ({ ...atual, [providerId]: data }));
-    } catch (error) {
-      setCatalogo((atual) => ({
-        ...atual,
-        [providerId]: { modelos: [], erro: error instanceof Error ? error.message : 'Erro desconhecido' },
-      }));
-    }
-  };
-
   const salvarPreferencia = async (valor: Preferencia | null) => {
     setErro(null);
     setAviso(null);
@@ -219,8 +204,7 @@ export default function AdminProvedores() {
         {providers.map((provider) => {
           const modelo = modeloDe(provider);
           const ping = pings[chave(provider.id, modelo)];
-          const vivo = catalogo[provider.id];
-          const opcoes = Array.from(new Set([...provider.modelos, ...(vivo?.modelos ?? []), modelo]));
+          const opcoes = provider.modelos;
           const emUso = preferencia?.providerId === provider.id && preferencia.modelo === modelo;
           const resultados = provider.modelos
             .map((m) => pings[chave(provider.id, m)])
@@ -287,40 +271,7 @@ export default function AdminProvedores() {
                 >
                   {emUso ? 'Em uso' : 'Usar este'}
                 </button>
-                {provider.configurado && (
-                  <button
-                    onClick={() => verCatalogo(provider.id)}
-                    className="text-xs underline text-ds-subtle hover:text-ds-text"
-                  >
-                    ver todos os modelos grátis
-                  </button>
-                )}
               </div>
-
-              <details className="text-xs text-ds-subtle">
-                <summary className="cursor-pointer underline">usar outro modelo (digitar o nome)</summary>
-                <label htmlFor={`modelo-livre-${provider.id}`} className="label mt-2">
-                  Nome exato do modelo em {provider.nome}
-                </label>
-                <input
-                  id={`modelo-livre-${provider.id}`}
-                  className="input min-h-[40px] py-1.5 text-sm"
-                  placeholder="ex.: fornecedor/modelo:free"
-                  spellCheck={false}
-                  autoCapitalize="none"
-                  onChange={(e) => {
-                    const valor = e.target.value.trim();
-                    if (valor) setSelecionado((atual) => ({ ...atual, [provider.id]: valor }));
-                  }}
-                />
-                <p className="hint">Depois use &quot;Testar&quot; e &quot;Usar este&quot; acima.</p>
-              </details>
-
-              {vivo && (
-                <p className={`text-xs ${vivo.erro ? 'text-ds-danger' : 'text-ds-subtle'}`}>
-                  {vivo.erro ?? `${vivo.modelos.length} modelos grátis no catálogo atual — escolha na lista acima.`}
-                </p>
-              )}
 
               {ping && (
                 <p className={`text-sm ${ping.ok ? 'text-ds-success' : 'text-ds-danger'}`} role="status">

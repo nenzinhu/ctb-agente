@@ -2,7 +2,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { validateSession } from '@/lib/auth/session';
-import { listLiveModels, listProviders, pingProvider, PROVIDERS } from '@/lib/ai/providers/registry';
+import { listProviders, pingProvider, PROVIDERS } from '@/lib/ai/providers/registry';
 import { getAIPreference, setAIPreference } from '@/lib/ai/preference';
 
 // "Testar todos" pings one model per request, but a big free model can take
@@ -11,24 +11,22 @@ export const maxDuration = 60;
 
 /**
  * GET /api/admin/providers
- * GET /api/admin/providers?modelos=<providerId> — that provider's live free catalog
  * @returns Provider chain in fallback order, with configuration status and
  * the master's current choice
  */
-export async function GET(request: NextRequest) {
+export async function GET(_request: NextRequest) {
   if (!(await validateSession())) {
     return NextResponse.json({ error: 'Não autorizado.' }, { status: 401 });
   }
 
-  const catalogo = request.nextUrl.searchParams.get('modelos');
-  if (catalogo) {
-    return NextResponse.json(await listLiveModels(catalogo), { status: 200 });
-  }
+  const preferenciaSalva = await getAIPreference();
+  const preferencia = preferenciaSalva && PROVIDERS.some(
+    (provider) => provider.id === preferenciaSalva.providerId && provider.modelos.includes(preferenciaSalva.modelo)
+  )
+    ? preferenciaSalva
+    : null;
 
-  return NextResponse.json(
-    { providers: listProviders(), preferencia: await getAIPreference() },
-    { status: 200 }
-  );
+  return NextResponse.json({ providers: listProviders(), preferencia }, { status: 200 });
 }
 
 /**
@@ -83,8 +81,12 @@ export async function PUT(request: NextRequest) {
   if (!parsed.success) {
     return NextResponse.json({ error: 'validation_error' }, { status: 400 });
   }
-  if (parsed.data && !PROVIDERS.some((p) => p.id === parsed.data!.providerId)) {
-    return NextResponse.json({ error: 'unknown_provider' }, { status: 400 });
+  if (parsed.data) {
+    const provider = PROVIDERS.find((item) => item.id === parsed.data!.providerId);
+    if (!provider) return NextResponse.json({ error: 'unknown_provider' }, { status: 400 });
+    if (!provider.modelos.includes(parsed.data.modelo)) {
+      return NextResponse.json({ error: 'model_not_allowed' }, { status: 400 });
+    }
   }
 
   try {

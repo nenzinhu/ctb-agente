@@ -26,7 +26,7 @@ Aplicativo PWA que permite consulta interativa da legislação de trânsito (Có
 - Favoritos no aparelho (`/favoritos`), guardados em localStorage — nada vai para o servidor
 - Compartilhamento de cartão como texto + link, pela folha nativa do celular ou cópia
 - Rate limiting por IP + Turnstile anti-bot + filtro PII (placas, CPF, CNPJ)
-- Suporte a múltiplos LLMs em cadeia de fallback (Groq, NVIDIA, Nous, OrcaRouter, AnyAPI, OpenRouter, Mistral)
+- Suporte a múltiplos LLMs em cadeia de fallback com lista fixa (Groq, Cerebras, Cohere e OpenRouter)
 - Painel master com base CTB, POP-PMSC, enquadramentos, provedores, uso e limites
 
 ## 🏗️ Stack
@@ -36,7 +36,8 @@ Aplicativo PWA que permite consulta interativa da legislação de trânsito (Có
 - **Database:** Supabase PostgreSQL + pgvector
 - **Search:** BM25 (tsvector) + pgvector embeddings
 - **PDF:** @react-pdf/renderer
-- **LLM:** Pluggable em cadeia (Groq → NVIDIA → Nous → OrcaRouter → AnyAPI → OpenRouter → Mistral)
+- **LLM:** cadeia de respostas Groq → Cerebras → Cohere → OpenRouter
+- **Vetores do RAG:** Mistral, usada exclusivamente para embeddings
 - **Testes:** Jest (unit + componentes + rotas) e Playwright (E2E)
 
 ## 🧱 Organização do código

@@ -15,13 +15,13 @@ const PROVIDERS = [
     configurado: true,
   },
   {
-    id: 'gemini',
-    nome: 'Google Gemini (AI Studio)',
-    envVar: 'GEMINI_API_KEY',
-    modeloPadrao: 'gemini-2.5-flash',
-    modelos: ['gemini-2.5-flash'],
+    id: 'cohere',
+    nome: 'Cohere',
+    envVar: 'COHERE_API_KEY',
+    modeloPadrao: 'command-a-03-2025',
+    modelos: ['command-a-03-2025'],
     papel: 'resposta analitica',
-    cadastro: 'https://aistudio.google.com/apikey',
+    cadastro: 'https://dashboard.cohere.com/api-keys',
     ordem: 2,
     configurado: false,
   },
@@ -71,7 +71,7 @@ describe('AdminProvedores', () => {
 
     expect(await screen.findByText(/1 de 2 modelos responderam/)).toBeInTheDocument();
     const pings = fetchMock.mock.calls.filter(([, init]) => init?.method === 'POST');
-    // Gemini has no key, so only Groq's two models are pinged.
+    // Cohere has no key, so only Groq's two models are pinged.
     expect(pings.map(([, init]) => JSON.parse(init!.body as string).modelo).sort()).toEqual([
       'llama-3.3-70b-versatile',
       'openai/gpt-oss-20b',
@@ -102,12 +102,21 @@ describe('AdminProvedores', () => {
   it('does not let a provider without a key be chosen', async () => {
     mockFetch();
     render(<AdminProvedores />);
-    await screen.findByText('Google Gemini (AI Studio)');
+    await screen.findByText('Cohere');
 
     expect(screen.getAllByRole('button', { name: 'Usar este' })[1]).toBeDisabled();
     expect(screen.getAllByText('criar chave grátis')[1]).toHaveAttribute(
       'href',
-      'https://aistudio.google.com/apikey'
+      'https://dashboard.cohere.com/api-keys'
     );
+  });
+
+  it('não oferece catálogo dinâmico nem nome de modelo livre', async () => {
+    mockFetch();
+    render(<AdminProvedores />);
+    await screen.findByText('Groq');
+
+    expect(screen.queryByText(/ver todos os modelos/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/usar outro modelo/i)).not.toBeInTheDocument();
   });
 });

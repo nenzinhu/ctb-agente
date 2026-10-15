@@ -3,7 +3,7 @@
 // it, the order of PROVIDERS is the failover order. A provider without its
 // env var is skipped, so the chain works with any subset of keys configured.
 import type { AIModel, AIProvider } from './base';
-import { PROVIDERS } from './registry';
+import { modeloPermitido, PROVIDERS } from './registry';
 import { getAIPreference, type AIPreference } from '../preference';
 import { pareceRespostaEmIngles, promptReescreverEmPortugues } from '../portugues';
 import {
@@ -96,7 +96,9 @@ export class ProviderChain implements AIProvider {
    */
   tentativas(preferencia: AIPreference | null): Array<{ elo: Elo; modelo: string }> {
     const disponiveis = this.elos.filter((e) => isProviderAvailable(e.id));
-    const preferido = preferencia && disponiveis.find((e) => e.id === preferencia.providerId);
+    const preferido = preferencia && modeloPermitido(preferencia.providerId, preferencia.modelo)
+      ? disponiveis.find((e) => e.id === preferencia.providerId)
+      : undefined;
     const resto = disponiveis
       .filter((e) => e !== preferido)
       .map((elo, ordem) => ({ elo, modelo: elo.modeloPadrao, ordem }))
@@ -106,15 +108,13 @@ export class ProviderChain implements AIProvider {
   }
 
   async getModels(): Promise<AIModel[]> {
-    const allModels: AIModel[] = [];
-    for (const { provider } of this.elos) {
-      try {
-        allModels.push(...(await provider.getModels()));
-      } catch (error) {
-        console.warn(`Falha ao consultar os modelos de ${provider.name}:`, error);
-      }
-    }
-    return allModels;
+    return PROVIDERS.flatMap((provider) => provider.modelos.map((id) => ({
+      id,
+      name: id,
+      maxTokens: 8_000,
+      costPer1kTokens: 0,
+      isFree: true,
+    })));
   }
 
   /**

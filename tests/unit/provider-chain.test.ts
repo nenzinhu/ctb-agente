@@ -21,39 +21,55 @@ describe('ProviderChain', () => {
   it('wires only the providers whose env var is set, in registry order', () => {
     process.env.GROQ_API_KEY = 'k';
     process.env.MISTRAL_API_KEY = 'k';
-    delete process.env.NVIDIA_API_KEY;
-    delete process.env.NOUS_API_KEY;
-    delete process.env.ORCAROUTER_API_KEY;
-    delete process.env.ANYAPI_API_KEY;
+    process.env.COHERE_API_KEY = 'k';
+    delete process.env.CEREBRAS_API_KEY;
     delete process.env.OPENROUTER_API_KEY;
 
     const chain = new ProviderChain();
-    expect(chain.ativos).toEqual(['Groq', 'Mistral']);
+    expect(chain.ativos).toEqual(['Groq', 'Cohere']);
   });
 
   it('tries the preferred model first, then each other provider with its own default model', () => {
     for (const p of PROVIDERS) delete process.env[p.envVar];
     process.env.GROQ_API_KEY = 'k';
-    process.env.MISTRAL_API_KEY = 'k';
+    process.env.COHERE_API_KEY = 'k';
     process.env.OPENROUTER_API_KEY = 'k';
 
     const chain = new ProviderChain();
     const plano = chain
-      .tentativas({ providerId: 'openrouter', modelo: 'openrouter/free' })
+      .tentativas({ providerId: 'openrouter', modelo: 'poolside/laguna-s-2.1:free' })
       .map((t) => `${t.elo.id}:${t.modelo}`);
 
     const padrao = (id: string) => PROVIDERS.find((p) => p.id === id)!.modelos[0];
     expect(plano).toEqual([
-      'openrouter:openrouter/free',
+      'openrouter:poolside/laguna-s-2.1:free',
       `groq:${padrao('groq')}`,
-      `mistral:${padrao('mistral')}`,
+      `cohere:${padrao('cohere')}`,
+    ]);
+  });
+
+  it.each([
+    { providerId: 'nvidia', modelo: 'modelo-legado' },
+    { providerId: 'groq', modelo: 'llama-3.3-70b-versatile' },
+  ])('ignora a preferência legada $providerId/$modelo', (preferencia) => {
+    for (const p of PROVIDERS) delete process.env[p.envVar];
+    process.env.GROQ_API_KEY = 'k';
+    process.env.COHERE_API_KEY = 'k';
+
+    const plano = new ProviderChain()
+      .tentativas(preferencia)
+      .map((tentativa) => `${tentativa.elo.id}:${tentativa.modelo}`);
+
+    expect(plano).toEqual([
+      `groq:${PROVIDERS.find((p) => p.id === 'groq')!.modelos[0]}`,
+      `cohere:${PROVIDERS.find((p) => p.id === 'cohere')!.modelos[0]}`,
     ]);
   });
 
   it('falls over to the next provider with that provider\'s model', async () => {
     for (const p of PROVIDERS) delete process.env[p.envVar];
     process.env.GROQ_API_KEY = 'k';
-    process.env.MISTRAL_API_KEY = 'k';
+    process.env.COHERE_API_KEY = 'k';
 
     const originalFetch = global.fetch;
     const modelosPedidos: string[] = [];
@@ -70,7 +86,7 @@ describe('ProviderChain', () => {
       await expect(chain.generate('x', 'ignored', 8)).resolves.toBe('resposta');
       expect(modelosPedidos).toEqual([
         PROVIDERS.find((p) => p.id === 'groq')!.modelos[0],
-        PROVIDERS.find((p) => p.id === 'mistral')!.modelos[0],
+        PROVIDERS.find((p) => p.id === 'cohere')!.modelos[0],
       ]);
     } finally {
       (global as { fetch: unknown }).fetch = originalFetch;
@@ -80,11 +96,11 @@ describe('ProviderChain', () => {
   it('generateRapido keeps the first model that answers', async () => {
     for (const p of PROVIDERS) delete process.env[p.envVar];
     process.env.GROQ_API_KEY = 'k';
-    process.env.MISTRAL_API_KEY = 'k';
+    process.env.COHERE_API_KEY = 'k';
 
     const originalFetch = global.fetch;
     (global as { fetch: unknown }).fetch = jest.fn(async (url: string) => {
-      // Groq is slow, Mistral answers at once
+      // Groq is slow, Cohere answers at once
       if (url.includes('groq')) await new Promise((r) => setTimeout(r, 200));
       const content = url.includes('groq') ? 'lenta' : 'rápida';
       return { ok: true, json: async () => ({ choices: [{ message: { content } }] }) };
@@ -93,7 +109,7 @@ describe('ProviderChain', () => {
     try {
       const resultado = await new ProviderChain().generateRapido('x', 8);
       expect(resultado.texto).toBe('rápida');
-      expect(resultado.provedor).toBe('Mistral');
+      expect(resultado.provedor).toBe('Cohere');
     } finally {
       (global as { fetch: unknown }).fetch = originalFetch;
     }
@@ -102,12 +118,12 @@ describe('ProviderChain', () => {
   it('rebaixa um provedor após falha e usa primeiro o que respondeu', async () => {
     for (const p of PROVIDERS) delete process.env[p.envVar];
     process.env.GROQ_API_KEY = 'k';
-    process.env.MISTRAL_API_KEY = 'k';
+    process.env.COHERE_API_KEY = 'k';
 
     const originalFetch = global.fetch;
     const chamadas: string[] = [];
     (global as { fetch: unknown }).fetch = jest.fn(async (url: string) => {
-      chamadas.push(url.includes('groq') ? 'groq' : 'mistral');
+      chamadas.push(url.includes('groq') ? 'groq' : 'cohere');
       if (url.includes('groq')) return { ok: false, status: 404, statusText: '', text: async () => '{}' };
       return { ok: true, json: async () => ({ choices: [{ message: { content: 'resposta' } }] }) };
     });
@@ -118,7 +134,7 @@ describe('ProviderChain', () => {
       await chain.generateDetailed('x', 8);
       await chain.generateDetailed('x', 8);
       expect(chamadas.filter((item) => item === 'groq')).toHaveLength(1);
-      expect(chamadas.filter((item) => item === 'mistral')).toHaveLength(3);
+      expect(chamadas.filter((item) => item === 'cohere')).toHaveLength(3);
     } finally {
       (global as { fetch: unknown }).fetch = originalFetch;
     }

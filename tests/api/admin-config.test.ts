@@ -66,7 +66,7 @@ jest.mock('../../lib/response/cache', () => ({
 }));
 
 const listProviders = jest.fn(() => [
-  { id: 'groq', nome: 'Groq', envVar: 'GROQ_API_KEY', modeloPadrao: 'llama', papel: 'x', ordem: 1, configurado: false },
+  { id: 'groq', nome: 'Groq', envVar: 'GROQ_API_KEY', modeloPadrao: 'qwen', modelos: ['qwen'], papel: 'x', ordem: 1, configurado: false },
 ]);
 interface PingResultLike {
   provider: string;
@@ -87,12 +87,9 @@ const pingProvider = jest.fn(
   })
 );
 
-const listLiveModels = jest.fn(async (..._args: unknown[]) => ({ modelos: ['llama', 'qwen'] }));
-
 jest.mock('../../lib/ai/providers/registry', () => ({
-  PROVIDERS: [{ id: 'groq' }],
+  PROVIDERS: [{ id: 'groq', modelos: ['qwen'] }],
   listProviders: () => listProviders(),
-  listLiveModels: (...args: unknown[]) => listLiveModels(...args),
   pingProvider: (...args: unknown[]) => pingProvider(...args),
 }));
 
@@ -158,6 +155,7 @@ describe('Admin configuration API', () => {
   beforeEach(async () => {
     jest.clearAllMocks();
     cookieStore.clear();
+    preferenciaSalva = null;
     await createSession('nenzinhu');
   });
 
@@ -271,12 +269,10 @@ describe('Admin configuration API', () => {
       expect(corpo).toHaveProperty('preferencia');
     });
 
-    it('lists a provider live free catalog', async () => {
-      const resposta = await getProviders(
-        new NextRequest('http://localhost/api/admin/providers?modelos=groq')
-      );
-      expect(listLiveModels).toHaveBeenCalledWith('groq');
-      expect((await resposta.json()).modelos).toEqual(['llama', 'qwen']);
+    it('ignores a saved preference that is no longer in the fixed list', async () => {
+      preferenciaSalva = { providerId: 'groq', modelo: 'modelo-removido' };
+      const resposta = await getProviders(new NextRequest('http://localhost/api/admin/providers'));
+      expect((await resposta.json()).preferencia).toBeNull();
     });
 
     it('pings the specific model the master picked', async () => {
@@ -299,6 +295,14 @@ describe('Admin configuration API', () => {
     it('refuses a preference for an unknown provider', async () => {
       const resposta = await putProvider(
         requisicao('/api/admin/providers', { providerId: 'nope', modelo: 'x' }, 'PUT')
+      );
+      expect(resposta.status).toBe(400);
+      expect(setAIPreference).not.toHaveBeenCalled();
+    });
+
+    it('refuses a model outside the fixed provider list', async () => {
+      const resposta = await putProvider(
+        requisicao('/api/admin/providers', { providerId: 'groq', modelo: 'modelo-livre' }, 'PUT')
       );
       expect(resposta.status).toBe(400);
       expect(setAIPreference).not.toHaveBeenCalled();
