@@ -26,7 +26,8 @@ describe('MobileNavigation', () => {
     const trigger = screen.getByRole('button', { name: /ferramentas/i });
     await user.click(trigger);
     expect(screen.getByRole('dialog', { name: /ferramentas/i })).toBeInTheDocument();
-    expect(screen.getByRole('link', { name: /enquadramento guiado/i })).toHaveFocus();
+    expect(screen.queryByRole('link', { name: /enquadramento guiado/i })).not.toBeInTheDocument();
+    expect(screen.getByRole('link', { name: /consultar pops/i })).toHaveFocus();
     await user.keyboard('{Escape}');
     await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument());
     expect(trigger).toHaveFocus();

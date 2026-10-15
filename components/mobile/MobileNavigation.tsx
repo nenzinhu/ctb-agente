@@ -7,7 +7,6 @@ import Icone, { type NomeIcone } from '@/components/ui/Icone';
 import BottomSheet from './BottomSheet';
 
 const FERRAMENTAS: Array<{ href: string; label: string; descricao: string; icone: NomeIcone }> = [
-  { href: '/enquadramento', label: 'Enquadramento guiado', descricao: 'Confira alternativas passo a passo', icone: 'lista' },
   { href: '/pop', label: 'Consultar POPs', descricao: 'Procedimentos operacionais', icone: 'escudo' },
   { href: '/fatos-pmsc', label: 'Lista de Fatos PMSC', descricao: 'Naturezas e potencial ofensivo', icone: 'arquivo' },
   { href: '/pesos-dimensoes', label: 'Pesos e Dimensões', descricao: 'PBT, PBTC, CMT e excesso de peso', icone: 'balanca' },

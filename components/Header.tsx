@@ -8,7 +8,6 @@ import Icone from './ui/Icone';
 const SECOES: ItemNav[] = [
   { href: '/', label: 'Consulta CTB', curto: 'Consulta', icone: 'busca', tambem: ['/consulta'] },
   { href: '/pop', label: 'POP-PMSC', curto: 'POP', icone: 'escudo' },
-  { href: '/enquadramento', label: 'Enquadramento guiado', curto: 'Guiado', icone: 'lista' },
   { href: '/fatos-pmsc', label: 'Lista de Fatos (PMSC Mobile)', curto: 'Fatos', icone: 'arquivo' },
   { href: '/pesos-dimensoes', label: 'Pesos e Dimensões', curto: 'Pesos', icone: 'balanca' },
   { href: '/estrangeiros', label: 'Condutores e Veículos Estrangeiros', curto: 'Estrangeiros', icone: 'globo' },

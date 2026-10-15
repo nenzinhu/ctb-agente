@@ -16,5 +16,6 @@ describe('Header no mobile', () => {
     );
     expect(screen.getByRole('link', { name: 'Lista de Fatos (PMSC Mobile)' })).toHaveTextContent(/^Fatos$/);
     expect(screen.getByRole('link', { name: 'Condutores e Veículos Estrangeiros' })).toHaveAttribute('href', '/estrangeiros');
+    expect(screen.queryByRole('link', { name: /enquadramento guiado/i })).not.toBeInTheDocument();
   });
 });
