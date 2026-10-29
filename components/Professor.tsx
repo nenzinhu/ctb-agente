@@ -35,14 +35,37 @@ const MODOS: Array<{ valor: ModoProfessor; titulo: string; descricao: string }> 
   { valor: 'simulador', titulo: 'Simulador', descricao: 'Analisa uma ocorrência' },
 ];
 
-const SUGESTOES = [
-  'Posso usar o celular parado no semáforo?',
-  'Qual a infração de dirigir sem CNH e quanto custa a multa?',
-  'Recusar o bafômetro dá multa? Existe jurisprudência?',
-  'Qual POP orienta a busca pessoal durante uma abordagem?',
-  'Quando o uso de algemas é permitido pelo POP?',
-  'A lei do farol baixo nas rodovias mudou?',
-  'Tem projeto de lei para mudar a pontuação da CNH?',
+// Short, concrete questions a layperson would ask, grouped so the first
+// screen teaches what the professor can do.
+const SUGESTOES: { tema: string; perguntas: string[] }[] = [
+  { tema: 'Procedimentos operacionais', perguntas: [
+    'Qual POP orienta a busca pessoal durante uma abordagem?',
+    'Quando o uso de algemas é permitido pelo POP?',
+  ] },
+  {
+    tema: 'Explica fácil',
+    perguntas: [
+      'Explique a lei seca como se eu tivesse 12 anos',
+      'Por que criança precisa de cadeirinha no carro?',
+      'O que acontece se eu dirigir sem carteira?',
+    ],
+  },
+  {
+    tema: 'Na prática',
+    perguntas: [
+      'Posso usar o celular parado no semáforo?',
+      'Recusar o bafômetro dá multa?',
+      'Parar em cima da calçada é infração?',
+    ],
+  },
+  {
+    tema: 'Lei e tribunais',
+    perguntas: [
+      'A lei do farol baixo nas rodovias mudou?',
+      'Tem projeto de lei para mudar a pontuação da CNH?',
+      'Existe jurisprudência sobre recusa do bafômetro?',
+    ],
+  },
 ];
 
 const TIPO: Record<TipoFonte, string> = {
@@ -310,15 +333,19 @@ export default function Professor() {
           </div>
 
           {turnos.length === 0 && (
-            <div>
-              <p className="label">Experimente</p>
-              <div className="flex flex-wrap gap-2">
-                {SUGESTOES.map((s) => (
-                  <button key={s} type="button" className="chip" onClick={() => void perguntar(s)} disabled={carregando}>
-                    {s}
-                  </button>
-                ))}
-              </div>
+            <div className="space-y-3">
+              {SUGESTOES.map((grupo) => (
+                <div key={grupo.tema}>
+                  <p className="label">{grupo.tema}</p>
+                  <div className="flex flex-wrap gap-2">
+                    {grupo.perguntas.map((s) => (
+                      <button key={s} type="button" className="chip" onClick={() => void perguntar(s)} disabled={carregando}>
+                        {s}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              ))}
             </div>
           )}
         </form>

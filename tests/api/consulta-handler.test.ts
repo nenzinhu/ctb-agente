@@ -3,6 +3,7 @@ const getEnquadramentoByCodigo = jest.fn(async (_codigo: string) => null);
 const searchDispositivos = jest.fn(async () => []);
 const hybridSearch = jest.fn(async () => []);
 const generateDetailed = jest.fn();
+const mockGetCachedCard = jest.fn();
 
 jest.mock('../../lib/db/queries', () => ({
   getEnquadramentoByCodigo: (codigo: string) => getEnquadramentoByCodigo(codigo),
@@ -13,7 +14,7 @@ jest.mock('../../lib/db/queries', () => ({
 }));
 jest.mock('../../lib/search/hybrid', () => ({ hybridSearch: () => hybridSearch() }));
 jest.mock('../../lib/response/cache', () => ({
-  getCachedCard: async () => null,
+  getCachedCard: (...args: unknown[]) => mockGetCachedCard(...args),
   setCachedCard: async () => undefined,
 }));
 jest.mock('../../lib/ratelimit/limiter', () => ({
@@ -34,7 +35,27 @@ jest.mock('../../lib/ai/providers/chain', () => ({
 import { handleConsulta } from '@/app/api/consulta/handler';
 
 describe('consulta com identificador legal explícito', () => {
-  beforeEach(() => jest.clearAllMocks());
+  beforeEach(() => {
+    jest.clearAllMocks();
+    mockGetCachedCard.mockResolvedValue(null);
+  });
+
+  it('atualiza dados oficiais de uma ficha em cache preservando a confiança da busca', async () => {
+    const original = await handleConsulta('516-91', '127.0.0.1');
+    const ficha = original.card.fichas_mbft![0];
+    mockGetCachedCard.mockResolvedValueOnce({
+      ...original.card,
+      fichas_mbft: [{ ...ficha, tipificacaoResumida: 'Texto antigo do cache', scoreConfianca: 88, metodoEncontrado: 'contexto_lexical' }],
+    });
+    const result = await handleConsulta('516-91', '127.0.0.1');
+    expect(result.cache_hit).toBe(true);
+    expect(result.card.fichas_mbft![0]).toMatchObject({
+      tipificacaoResumida: ficha.tipificacaoResumida,
+      scoreConfianca: 88,
+      metodoEncontrado: 'contexto_lexical',
+      historicoLei: expect.any(Array),
+    });
+  });
 
   it.each(['51691', '5169-1', '516 91', 'código 516-91'])(
     'normaliza %s e responde pela ficha oficial local sem esperar o banco',

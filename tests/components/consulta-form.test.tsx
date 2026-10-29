@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import ConsultaForm from '@/components/ConsultaForm';
 
@@ -12,6 +12,15 @@ jest.mock('next/navigation', () => ({
 }));
 
 describe('ConsultaForm', () => {
+  it('suggests related infractions for slang, instantly, and opens the chosen one', () => {
+    render(<ConsultaForm />);
+    fireEvent.change(screen.getByLabelText('Sua consulta'), { target: { value: 'recusou o bafômetro' } });
+    expect(screen.getByText(/Você quis dizer: Álcool ou droga ao volante/)).toBeInTheDocument();
+    expect(screen.getByText(/Explicando fácil/)).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: /757-90/ }));
+    expect(mockPush).toHaveBeenCalledWith('/consulta?q=757-90');
+  });
+
   beforeEach(() => mockPush.mockClear());
 
   it('interpreta um número como artigo quando o atalho Artigo está selecionado', async () => {

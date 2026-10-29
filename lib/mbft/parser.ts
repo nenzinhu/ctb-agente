@@ -28,6 +28,8 @@ export interface FichaMbft {
   pagina: number;
   scoreConfianca?: number;
   metodoEncontrado?: MetodoEncontrado;
+  /** Laws that changed the cited article, from the compiled CTB (added at load) */
+  historicoLei?: string[];
 }
 
 export interface Fragmento {

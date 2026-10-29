@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from 'react';
 import { saveQuery } from '@/lib/search/local-storage';
 import TurnstileWidget, { turnstileConfigurado } from './TurnstileWidget';
 import BotaoVoz, { AvisoVoz, useDitado } from './BotaoVoz';
+import SugestoesIntencao from './SugestoesIntencao';
 import Field from './ui/Field';
 import PrimaryButton from './ui/PrimaryButton';
 import SearchSuggestions from './SearchSuggestions';
@@ -153,6 +154,14 @@ export default function ConsultaForm({ autoFocus = false, exemplos = [] }: Consu
           }}
         />
       </div>
+
+      <SugestoesIntencao
+        texto={query}
+        onEscolher={(codigo) => {
+          setQuery(codigo);
+          consultar(codigo);
+        }}
+      />
 
       <PrimaryButton
         type="submit"

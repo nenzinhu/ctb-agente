@@ -118,7 +118,7 @@ export function promptProfessor(pergunta: string, historico: MensagemProfessor[]
     '',
     'Como responder:',
     '1. Comece pela resposta direta. Se for uma infração, diga qual é: código do MBFT, artigo, gravidade, pontos e penalidade.',
-    '2. Explique para qualquer pessoa entender, com um exemplo concreto do dia a dia.',
+    '2. Explique para qualquer pessoa entender: termine com uma linha "Explicando fácil:" e um exemplo concreto do dia a dia, sem termos técnicos.',
     '3. Para uma dúvida operacional, indique o POP e resuma a sequência aplicável em passos curtos.',
     '4. Cite a fonte de cada afirmação com o número entre colchetes, ex.: [1] ou [2][3].',
     '5. Só fale de jurisprudência ou projetos de lei quando o aluno perguntar sobre isso. Mencione apenas os itens presentes nas FONTES.',

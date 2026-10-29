@@ -14,6 +14,7 @@ const SECOES: ItemNav[] = [
   { href: '/favoritos', label: 'Favoritos', curto: 'Favoritos', icone: 'estrela' },
   { href: '/apostila', label: 'Apostila IA', curto: 'Apostila', icone: 'livro' },
   { href: '/professor', label: 'Professor Emérito', curto: 'Emérito', icone: 'professor' },
+  { href: '/casos', label: 'Casos práticos', curto: 'Casos', icone: 'check' },
   { href: '/comprimir-pdf', label: 'Comprimir PDF', curto: 'Comprimir', icone: 'comprimir' },
 ];
 
