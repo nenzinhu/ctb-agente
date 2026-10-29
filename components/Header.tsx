@@ -11,9 +11,9 @@ const SECOES: ItemNav[] = [
   { href: '/fatos-pmsc', label: 'Lista de Fatos (PMSC Mobile)', curto: 'Fatos', icone: 'arquivo' },
   { href: '/pesos-dimensoes', label: 'Pesos e Dimensões', curto: 'Pesos', icone: 'balanca' },
   { href: '/estrangeiros', label: 'Condutores e Veículos Estrangeiros', curto: 'Estrangeiros', icone: 'globo' },
-  { href: '/professor', label: 'Professor Emérito', curto: 'Emérito', icone: 'professor' },
   { href: '/favoritos', label: 'Favoritos', curto: 'Favoritos', icone: 'estrela' },
   { href: '/apostila', label: 'Apostila IA', curto: 'Apostila', icone: 'livro' },
+  { href: '/professor', label: 'Professor Emérito', curto: 'Emérito', icone: 'professor' },
   { href: '/comprimir-pdf', label: 'Comprimir PDF', curto: 'Comprimir', icone: 'comprimir' },
 ];
 
@@ -52,7 +52,7 @@ export default function Header() {
         </div>
       </div>
 
-      <div data-testid="desktop-navigation" className="header-strip hidden md:block">
+      <div className="header-strip">
         <div className="mx-auto max-w-6xl px-4 sm:px-6">
           <NavTabs itens={SECOES} />
         </div>

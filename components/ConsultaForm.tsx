@@ -8,6 +8,13 @@ import BotaoVoz, { AvisoVoz, useDitado } from './BotaoVoz';
 import Field from './ui/Field';
 import PrimaryButton from './ui/PrimaryButton';
 import SearchSuggestions from './SearchSuggestions';
+import Icone, { type NomeIcone } from './ui/Icone';
+
+const ATALHOS = [
+  { id: 'codigo', label: 'Código', icone: 'lista', placeholder: 'Ex: 516-91', dica: 'Informe o código de enquadramento MBFT, com ou sem hífen.' },
+  { id: 'artigo', label: 'Artigo', icone: 'livro', placeholder: 'Ex: 165 ou art. 181, XX', dica: 'Digite o número do artigo do CTB. Acrescente o inciso quando souber.' },
+  { id: 'palavra', label: 'Palavra-chave', icone: 'busca', placeholder: 'Ex: 516-91, art. 165 ou celular', dica: 'Descreva a conduta. Aceita palavras incompletas, abreviações e gírias.' },
+] satisfies { id: string; label: string; icone: NomeIcone; placeholder: string; dica: string }[];
 
 interface ConsultaFormProps {
   autoFocus?: boolean;
@@ -28,6 +35,8 @@ export const LIMITE_CONSULTA = 1000;
 
 export default function ConsultaForm({ autoFocus = false, exemplos = [] }: ConsultaFormProps) {
   const [query, setQuery] = useState('');
+  const [atalho, setAtalho] = useState('palavra');
+  const configuracao = ATALHOS.find((item) => item.id === atalho)!;
   const [loading, setLoading] = useState(false);
   const [token, setToken] = useState<string | null>(null);
   const [erro, setErro] = useState<Erro | null>(null);
@@ -47,7 +56,8 @@ export default function ConsultaForm({ autoFocus = false, exemplos = [] }: Consu
   }, []);
 
   const consultar = (entrada: string) => {
-    const texto = entrada.trim();
+    const digitado = entrada.trim();
+    const texto = atalho === 'artigo' && /^\d+[a-z]?$/i.test(digitado) ? `art. ${digitado}` : digitado;
     if (!texto) return;
 
     if (texto.length > LIMITE_CONSULTA) {
@@ -84,6 +94,26 @@ export default function ConsultaForm({ autoFocus = false, exemplos = [] }: Consu
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4" aria-busy={loading}>
+      <fieldset disabled={loading}>
+        <legend className="mb-2 text-xs font-semibold text-ds-subtle">Buscar por</legend>
+        <div className="search-shortcuts">
+          {ATALHOS.map((item) => (
+            <button
+              key={item.id}
+              type="button"
+              className="search-shortcut"
+              aria-pressed={atalho === item.id}
+              onClick={() => {
+                setAtalho(item.id);
+                campoRef.current?.focus();
+              }}
+            >
+              <Icone nome={item.icone} tamanho={17} className="shrink-0" />
+              {item.label}
+            </button>
+          ))}
+        </div>
+      </fieldset>
       <div>
         <Field
           as="textarea"
@@ -102,13 +132,13 @@ export default function ConsultaForm({ autoFocus = false, exemplos = [] }: Consu
               consultar(query);
             }
           }}
-          placeholder="Ex: 516-91, art. 165 ou motorista mexendo no celular"
+          placeholder={configuracao.placeholder}
           maxLength={LIMITE_CONSULTA}
           autoFocus={autoFocus}
           enterKeyHint="search"
-          rows={4}
-          controlClassName="mobile-query-field min-h-[108px] resize-y leading-relaxed sm:min-h-[124px]"
-          hint="Use código, artigo, parte da palavra, abreviações ou gírias como “zap”, “bafom” e “doc atrasado”. Enter consulta; Shift + Enter cria uma nova linha."
+          rows={2}
+          controlClassName="mobile-query-field min-h-[88px] resize-y leading-relaxed sm:min-h-[96px]"
+          hint={<>{configuracao.dica}<span className="hidden sm:inline"> Enter consulta; Shift + Enter cria uma nova linha.</span></>}
           erro={erro?.doCampo ? erro.mensagem : null}
           acao={<BotaoVoz ditado={ditado} />}
         />

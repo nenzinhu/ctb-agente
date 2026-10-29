@@ -1,6 +1,5 @@
 import Link from 'next/link';
 import ConsultaForm from '@/components/ConsultaForm';
-import ConsultaModes from '@/components/ConsultaModes';
 import RecentQueries from '@/components/RecentQueries';
 import HomeReveal from '@/components/HomeReveal';
 import Icone, { type NomeIcone } from '@/components/ui/Icone';
@@ -23,38 +22,40 @@ const ATALHOS: { href: string; titulo: string; texto: string; icone: NomeIcone }
 export default function Home() {
   return (
     <HomeReveal>
-      <main className="page max-w-6xl space-y-5 sm:space-y-9">
-        <div className="consultation-intro mobile-home-intro" data-home-reveal data-home-reveal-group="0">
+      <main className="page max-w-6xl space-y-6 sm:space-y-9">
+        <div className="consultation-intro mobile-home-intro operational-intro" data-home-reveal data-home-reveal-group="0">
           <p className="eyebrow">Ferramenta operacional para agentes de campo</p>
-          <h1 className="consultation-title">CTB Agente</h1>
-          <p className="consultation-lead">
+          <h1 className="consultation-title">Consulta rápida.<br /><span className="operational-tagline text-ds-primary-strong">Apoio em cada abordagem.</span></h1>
+          <p className="consultation-lead sm:hidden">CTB, MBFT e POPs para apoiar sua atuação.</p>
+          <p className="consultation-lead hidden sm:block">
             Aplicativo de apoio ao agente em campo para consultar rapidamente o CTB, as fichas do MBFT e os POPs,
             esclarecer dúvidas e conferir a fonte oficial antes da atuação.
           </p>
-          <p className="mt-3 text-sm leading-relaxed text-ds-subtle">
-            Ferramenta de apoio. A decisão e o procedimento devem observar a norma e o documento vigente.
-          </p>
         </div>
 
-        <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_320px]">
+        <div className="mx-auto w-full max-w-3xl">
           <div className="min-w-0" data-home-reveal data-home-reveal-group="1">
             <SectionCard titulo="Consultar infrações e artigos" icone="busca" className="min-w-0 consultation-card">
-              <ConsultaModes atual="ctb" />
               <ConsultaForm exemplos={EXEMPLOS} />
               <div id="consultas-recentes" className="scroll-mt-24"><RecentQueries /></div>
             </SectionCard>
+            <p className="mt-3 flex items-start justify-center gap-2 text-xs leading-relaxed text-ds-subtle">
+              <Icone nome="escudo" tamanho={16} className="mt-0.5 shrink-0" />
+              Ferramenta de apoio. A decisão e o procedimento devem observar a norma e o documento vigente.
+            </p>
           </div>
+        </div>
 
-          <aside
-            className="min-w-0 space-y-5"
-            aria-label="Ajuda para consultar"
-            data-home-reveal
-            data-home-reveal-group="2"
-          >
+        <aside
+          className="min-w-0"
+          aria-label="Ajuda para consultar"
+          data-home-reveal
+          data-home-reveal-group="2"
+        >
             <section className="search-guide" aria-labelledby="como-perguntar">
               <h2 id="como-perguntar" className="text-lg font-semibold text-ds-text">Como perguntar</h2>
               <p className="mt-1 text-sm text-ds-subtle">Não precisa lembrar o termo exato.</p>
-              <ul className="mt-5 space-y-5">
+              <ul className="mt-5 grid gap-5 md:grid-cols-3 md:gap-6">
                 {TIPOS.map((tipo) => (
                   <li key={tipo.titulo} className="flex items-start gap-3">
                     <span className="search-guide-icon"><Icone nome={tipo.icone} tamanho={18} /></span>
@@ -67,12 +68,11 @@ export default function Home() {
                 ))}
               </ul>
             </section>
-            <p className="flex items-start gap-2 px-1 text-xs leading-relaxed text-ds-subtle">
+            <p className="mt-3 flex items-start gap-2 px-1 text-xs leading-relaxed text-ds-subtle">
               <Icone nome="info" tamanho={16} className="mt-0.5 shrink-0" />
               Mais detalhes ajudam: informe o veículo, a conduta e o local quando forem relevantes.
             </p>
-          </aside>
-        </div>
+        </aside>
 
         <section aria-labelledby="ferramentas-titulo" data-home-reveal data-home-reveal-group="3">
           <div className="mb-3 flex items-center justify-between gap-3">
