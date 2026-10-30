@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import Icone from '@/components/ui/Icone';
+import AdminModeloVetorial from './AdminModeloVetorial';
 
 interface HealthRag {
   banco: 'ok' | 'indisponivel';
@@ -114,6 +115,10 @@ export default function AdminRagFineTuning() {
           ))}
         </ol>
       </section>
+
+      <AdminModeloVetorial onChange={() => {
+        void fetch('/api/health', { cache: 'no-store' }).then((r) => r.json()).then(setHealth).catch(() => setErro(true));
+      }} />
 
       <section className="card card-pad">
         <h2 className="text-xl font-bold text-ds-text">Saúde dos provedores de IA</h2>

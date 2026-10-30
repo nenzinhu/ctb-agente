@@ -94,9 +94,15 @@ export async function GET(request: NextRequest) {
       migracaoPendente = true;
     }
 
+    let avisoVetores: string | undefined;
     const [legado, pendentesVetor] = await Promise.all([
       colecao === 'pop' ? Promise.resolve([]) : gruposLegados(),
-      countPendingEmbeddings(),
+      countPendingEmbeddings().catch((error: unknown) => {
+        const mensagem = error instanceof Error ? error.message : '';
+        if (!mensagem.includes('migrations-015-nemotron')) throw error;
+        avisoVetores = mensagem;
+        return 0;
+      }),
     ]);
 
     return NextResponse.json(
@@ -107,6 +113,7 @@ export async function GET(request: NextRequest) {
         migracaoPendente,
         migracaoQualidadePendente,
         bancoConfigurado: true,
+        ...(avisoVetores ? { message: avisoVetores } : {}),
       },
       { status: 200 }
     );

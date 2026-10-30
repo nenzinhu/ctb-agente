@@ -1,5 +1,22 @@
 import { expect, test } from '@playwright/test';
 
+test('preserva a entrada ao aguardar o campo ficar pronto para digitar', async ({ page }) => {
+  let release!: () => void;
+  const scripts = new Promise<void>((resolve) => { release = resolve; });
+  await page.route('**/_next/static/**/*.js', async (route) => {
+    await scripts;
+    await route.continue().catch(() => {});
+  });
+  try {
+    await page.goto('/', { waitUntil: 'commit' });
+    await expect(page.getByLabel('Sua consulta', { exact: true })).toBeDisabled();
+  } finally { release(); }
+  const field = page.getByLabel('Sua consulta', { exact: true });
+  await field.fill('165');
+  await page.getByRole('button', { name: 'Código', exact: true }).click();
+  await expect(field).toHaveValue('165');
+});
+
 test('mostra campo e botão de consulta na primeira tela do celular', async ({ page }) => {
   await page.setViewportSize({ width: 360, height: 800 });
   await page.goto('/');
@@ -9,20 +26,43 @@ test('mostra campo e botão de consulta na primeira tela do celular', async ({ p
   expect(caixa!.y + caixa!.height).toBeLessThanOrEqual(736);
 });
 
-test('mantém a navegação por pills acessível em telas estreitas', async ({ page }) => {
-  await page.setViewportSize({ width: 360, height: 800 });
-  await page.goto('/');
+for (const width of [320, 360, 390]) {
+  test(`descobre todos os módulos sem rolagem lateral em ${width}px`, async ({ page }) => {
+    await page.setViewportSize({ width, height: 800 });
+    await page.goto('/');
+    const atalhos = page.getByRole('navigation', { name: 'Consultas rápidas', exact: true });
+    for (const nome of ['Consulta CTB', 'POP-PMSC', 'Lista de Fatos (PMSC Mobile)']) {
+      await expect(atalhos.getByRole('link', { name: nome, exact: true })).toBeVisible();
+    }
+    const trigger = page.getByRole('button', { name: 'Todos os módulos', exact: true });
+    await trigger.click();
+    const dialog = page.getByRole('dialog', { name: 'Todos os módulos', exact: true });
+    for (const href of ['/', '/pop', '/fatos-pmsc', '/pesos-dimensoes', '/estrangeiros',
+      '/favoritos', '/apostila', '/professor', '/casos', '/gerador-pdf', '/comprimir-pdf']) {
+      const link = dialog.locator(`a[href="${href}"]`);
+      await link.scrollIntoViewIfNeeded();
+      await expect(link).toBeVisible();
+      const caixa = await link.boundingBox();
+      expect(caixa!.height).toBeGreaterThanOrEqual(44);
+      expect(caixa!.x + caixa!.width).toBeLessThanOrEqual(width);
+    }
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+    await page.keyboard.press('Escape');
+    await expect(dialog).not.toBeVisible();
+    await expect(trigger).toBeFocused();
+    await trigger.click();
+    await page.getByRole('dialog').locator('a[href="/favoritos"]').click();
+    await expect(page).toHaveURL(/\/favoritos$/);
+    await expect(page.getByRole('navigation', { name: 'Navegação mobile', exact: true })
+      .getByRole('link', { name: 'Favoritos', exact: true })).toHaveAttribute('aria-current', 'page');
+  });
+}
+
+test('mantém pills e página ativa no tablet', async ({ page }) => {
+  await page.setViewportSize({ width: 768, height: 1024 });
+  await page.goto('/favoritos');
   const navegacao = page.getByRole('navigation', { name: 'Navegação principal', exact: true });
-  for (const nome of ['Consulta CTB', 'POP-PMSC', 'Lista de Fatos (PMSC Mobile)', 'Pesos e Dimensões',
-    'Condutores e Veículos Estrangeiros', 'Favoritos', 'Apostila IA']) {
-    const pill = navegacao.getByRole('link', { name: nome, exact: true });
-    await pill.scrollIntoViewIfNeeded();
-    await expect(pill).toBeVisible();
-    const caixa = await pill.boundingBox();
-    expect(caixa!.height).toBeGreaterThanOrEqual(44);
-  }
-  await navegacao.getByRole('link', { name: 'Favoritos', exact: true }).click();
-  await expect(page).toHaveURL(/\/favoritos$/);
+  await expect(navegacao).toBeVisible();
   await expect(navegacao.getByRole('link', { name: 'Favoritos', exact: true })).toHaveAttribute('aria-current', 'page');
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
 });

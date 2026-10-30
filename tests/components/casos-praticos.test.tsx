@@ -31,7 +31,7 @@ describe('CasosPraticos (consulta de campo)', () => {
 
     fireEvent.click(screen.getByRole('button', { name: 'recusou o bafômetro' }));
     expect(await screen.findByText('Conduta indicada para “recusou o bafômetro”')).toBeInTheDocument();
-    expect(fetchMock).toHaveBeenCalledWith('/api/casos?tema=recus' + 'ou%20o%20baf%C3%B4metro', { cache: 'no-store' });
+    expect(fetchMock).toHaveBeenCalledWith('/api/casos?tema=recus' + 'ou%20o%20baf%C3%B4metro', { cache: 'no-store', signal: expect.any(AbortSignal) });
     expect(screen.getByText('757-90')).toBeInTheDocument();
     expect(screen.getAllByText('Quando NÃO autuar').length).toBeGreaterThan(0);
     expect(screen.getAllByText(/Como descrever no AIT/).length).toBeGreaterThan(0);
@@ -43,12 +43,12 @@ describe('CasosPraticos (consulta de campo)', () => {
 
   it('mostra a mensagem quando não há ficha para o tema', async () => {
     global.fetch = jest.fn().mockResolvedValue({
-      ok: false,
+      ok: false, status: 404,
       json: async () => ({ message: 'Nenhuma ficha do MBFT para “xyz”.' }),
     }) as unknown as typeof fetch;
     render(<CasosPraticos />);
     fireEvent.change(screen.getByLabelText('Qual é a situação?'), { target: { value: 'xyz' } });
     fireEvent.click(screen.getByRole('button', { name: /Ver a conduta/ }));
-    expect(await screen.findByRole('alert')).toHaveTextContent('Nenhuma ficha do MBFT para “xyz”');
+    expect(await screen.findByRole('status')).toHaveTextContent('Nenhuma ficha do MBFT para “xyz”');
   });
 });

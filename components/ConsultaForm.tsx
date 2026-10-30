@@ -35,6 +35,7 @@ export const TURNSTILE_STORAGE_KEY = 'ctb-turnstile-token';
 export const LIMITE_CONSULTA = 1000;
 
 export default function ConsultaForm({ autoFocus = false, exemplos = [] }: ConsultaFormProps) {
+  const [ready, setReady] = useState(false);
   const [query, setQuery] = useState('');
   const [atalho, setAtalho] = useState('palavra');
   const configuracao = ATALHOS.find((item) => item.id === atalho)!;
@@ -52,11 +53,13 @@ export default function ConsultaForm({ autoFocus = false, exemplos = [] }: Consu
 
   // "Nova consulta" links land here as /?form=1: jump straight to the field.
   // Not on every visit — on a phone that would pop the keyboard over the page.
+  useEffect(() => { setReady(true); }, []);
   useEffect(() => {
-    if (new URLSearchParams(window.location.search).get('form') === '1') campoRef.current?.focus();
-  }, []);
+    if (ready && (autoFocus || new URLSearchParams(window.location.search).get('form') === '1')) campoRef.current?.focus();
+  }, [ready, autoFocus]);
 
   const consultar = (entrada: string) => {
+    if (!ready || loading) return;
     const digitado = entrada.trim();
     const texto = atalho === 'artigo' && /^\d+[a-z]?$/i.test(digitado) ? `art. ${digitado}` : digitado;
     if (!texto) return;
@@ -94,8 +97,8 @@ export default function ConsultaForm({ autoFocus = false, exemplos = [] }: Consu
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4" aria-busy={loading}>
-      <fieldset disabled={loading}>
+    <form onSubmit={handleSubmit} className="space-y-4" aria-busy={loading || !ready}>
+      <fieldset disabled={loading || !ready}>
         <legend className="mb-2 text-xs font-semibold text-ds-subtle">Buscar por</legend>
         <div className="search-shortcuts">
           {ATALHOS.map((item) => (
@@ -122,6 +125,7 @@ export default function ConsultaForm({ autoFocus = false, exemplos = [] }: Consu
           ref={campoRef}
           label="Sua consulta"
           value={query}
+          disabled={!ready}
           onChange={(e) => {
             setQuery(e.target.value);
             setErro(null);
@@ -168,7 +172,7 @@ export default function ConsultaForm({ autoFocus = false, exemplos = [] }: Consu
         icone="busca"
         carregando={loading}
         textoCarregando="Consultando..."
-        disabled={!query.trim()}
+        disabled={!ready || !query.trim()}
         className="min-h-[48px] w-full text-base"
       >
         Consultar
@@ -191,7 +195,7 @@ export default function ConsultaForm({ autoFocus = false, exemplos = [] }: Consu
                 key={exemplo}
                 type="button"
                 className="chip query-example"
-                disabled={loading}
+                disabled={loading || !ready}
                 onClick={() => {
                   setQuery(exemplo);
                   consultar(exemplo);

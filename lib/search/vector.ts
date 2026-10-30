@@ -1,6 +1,7 @@
 // Vector similarity search using pgvector
 import { databaseConfigured, supabase } from '@/lib/db/client';
 import { embeddingChain } from '@/lib/ai/embeddings';
+import { getEmbeddingConfig } from '@/lib/ai/embedding-config';
 
 /**
  * Search dispositivos using vector embeddings (pgvector)
@@ -21,11 +22,14 @@ import { embeddingChain } from '@/lib/ai/embeddings';
  * @returns Array of search results with similarity score
  */
 export async function searchByVector(query: string, limit = 10) {
-  if (!databaseConfigured || !process.env.MISTRAL_API_KEY) return [];
+  if (!databaseConfigured) return [];
+  const config = await getEmbeddingConfig();
+  if (!config.configurado) return [];
 
-  const embedding = await embeddingChain.embed(query);
+  const embedding = await embeddingChain.embed(query, config.id);
 
-  const { data, error } = await supabase.rpc('search_dispositivos_vector', {
+  const rpc = config.coluna === 'embedding_nemotron' ? 'search_dispositivos_nemotron' : 'search_dispositivos_vector';
+  const { data, error } = await supabase.rpc(rpc, {
     query_embedding: embedding,
     limit_count: limit,
   });

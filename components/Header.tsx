@@ -53,7 +53,10 @@ export default function Header() {
         </div>
       </div>
 
-      <div className="header-strip">
+      <nav aria-label="Consultas rápidas" className="header-strip md:hidden px-3">
+        <NavTabs itens={SECOES.slice(0, 3)} compacto />
+      </nav>
+      <div className="header-strip hidden md:block">
         <div className="mx-auto max-w-6xl px-4 sm:px-6">
           <NavTabs itens={SECOES} />
         </div>

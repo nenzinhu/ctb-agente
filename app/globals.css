@@ -585,7 +585,21 @@ body::before {
     border-top: 1px solid var(--ds-header-line);
     border-bottom: 1px solid var(--ds-header-line);
   }
-  /* Phones: a horizontally scrolling strip, faded at the right edge */
+  .mobile-quick-links {
+    @apply grid grid-cols-3 gap-2 py-2;
+  }
+  .mobile-quick-links .nav-tab {
+    @apply justify-center gap-1 px-1;
+  }
+  .mobile-sheet-link[aria-current='page'] {
+    border-color: var(--ds-primary);
+    background-color: var(--ds-primary-soft);
+  }
+  .mobile-sheet-link > span:nth-child(2) {
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+  /* Desktop section pills retain horizontal scrolling when needed. */
   .nav-tabs {
     @apply relative -mx-1 flex snap-x snap-mandatory gap-2 overflow-x-auto px-1 py-2 pr-8 lg:pr-1;
     scrollbar-width: none;

@@ -1,7 +1,9 @@
 'use client';
 
+import { requestJson, RequestError } from '@/lib/client/request';
+
 import Link from 'next/link';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import type { CasoPratico } from '@/lib/mbft/casos';
 import BotaoVoz, { AvisoVoz, useDitado } from './BotaoVoz';
 import Field from './ui/Field';
@@ -89,9 +91,12 @@ function CartaoCaso({ caso }: { caso: CasoPratico }) {
  * article) and gets the official MBFT conduct with its criteria. No AI.
  */
 export default function CasosPraticos() {
+  const [semResultados, setSemResultados] = useState(false);
   const [busca, setBusca] = useState('');
   const [resultado, setResultado] = useState<Resultado | null>(null);
   const [carregando, setCarregando] = useState(false);
+  const requisicao = useRef<AbortController | null>(null);
+  useEffect(() => () => { requisicao.current?.abort(); }, []);
   const [erro, setErro] = useState<string | null>(null);
   const ditado = useDitado({ onTranscricao: (t) => setBusca((atual) => (atual ? `${atual} ${t}` : t)) });
 
@@ -99,18 +104,24 @@ export default function CasosPraticos() {
     const tema = texto.trim();
     if (tema.length < 2 || carregando) return;
     setBusca(tema);
+    if (requisicao.current && !requisicao.current.signal.aborted) requisicao.current.abort();
+    const controller = new AbortController();
+    requisicao.current = controller;
     setCarregando(true);
+    setResultado(null);
     setErro(null);
+    setSemResultados(false);
     try {
-      const resposta = await fetch(`/api/casos?tema=${encodeURIComponent(tema)}`, { cache: 'no-store' });
-      const corpo = await resposta.json().catch(() => null);
-      if (!resposta.ok) throw new Error(corpo?.message || 'Não foi possível consultar.');
-      setResultado(corpo as Resultado);
+      const corpo = await requestJson<Resultado>(`/api/casos?tema=${encodeURIComponent(tema)}`, { cache: 'no-store', signal: controller.signal });
+      if (controller.signal.aborted || requisicao.current !== controller) return;
+      setResultado(corpo);
     } catch (error) {
+      if (controller.signal.aborted || requisicao.current !== controller || (error instanceof RequestError && error.kind === 'aborted')) return;
+      setSemResultados(error instanceof RequestError && error.status === 404);
       setResultado(null);
       setErro(error instanceof Error ? error.message : 'Erro desconhecido.');
     } finally {
-      setCarregando(false);
+      if (!controller.signal.aborted && requisicao.current === controller) setCarregando(false);
     }
   };
 
@@ -149,7 +160,7 @@ export default function CasosPraticos() {
           disabled={busca.trim().length < 2}
           className="w-full text-base"
         >
-          Ver a conduta
+          {erro && !semResultados ? 'Tentar novamente' : 'Ver a conduta'}
         </PrimaryButton>
         <div className="flex flex-wrap gap-2">
           {TEMAS.map((t) => (
@@ -161,14 +172,15 @@ export default function CasosPraticos() {
       </form>
 
       {erro && (
-        <p className="field-error" role="alert">
-          {erro}
+        <p className={semResultados ? "text-sm text-ds-subtle" : "field-error"} role={semResultados ? "status" : "alert"}>
+          {erro} <Link className="underline" href="/consulta">Consultar as fichas do MBFT</Link>
         </p>
       )}
 
       {resultado && (
         <section aria-label="Resultado" aria-live="polite" className="space-y-4">
           <h2 className="section-title">Conduta indicada para “{resultado.tema}”</h2>
+          {resultado.principais.length === 0 && <p role="status">Nenhuma ficha encontrada. Tente outras palavras ou o código da infração.</p>}
           {resultado.principais.map((c) => (
             <CartaoCaso key={c.codigo} caso={c} />
           ))}

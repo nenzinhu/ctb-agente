@@ -174,6 +174,8 @@ export default function DocumentList({ colecao, refreshTrigger, onChange }: Docu
         </div>
       )}
 
+      {dados.message && dados.bancoConfigurado && <p className="alert-warn" role="note">{dados.message}</p>}
+
       {dados.migracaoPendente && (
         <div className="alert-warn">
           <Icone nome="base" className="mt-0.5 shrink-0 text-ds-warn" />
