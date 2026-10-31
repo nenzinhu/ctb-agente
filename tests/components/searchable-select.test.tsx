@@ -24,7 +24,7 @@ describe('SearchableSelect', () => {
       />,
     );
 
-    const trigger = screen.getByRole('combobox', { name: 'Selecione o procedimento' });
+    const trigger = screen.getByRole('combobox', { name: /Selecione o procedimento/i });
     expect(trigger).toHaveClass('w-full', 'min-w-0', 'max-w-full');
     await user.click(trigger);
 
@@ -37,6 +37,54 @@ describe('SearchableSelect', () => {
 
     await user.click(within(listbox).getByRole('option', { name: /POP 004/i }));
     expect(onChange).toHaveBeenCalledWith('004');
+    expect(screen.queryByRole('listbox')).not.toBeInTheDocument();
+  });
+
+  it('permite navegar e escolher opções inteiramente pelo teclado', async () => {
+    const user = userEvent.setup();
+    const onChange = jest.fn();
+    render(
+      <SearchableSelect
+        label="Selecione o procedimento"
+        placeholder="Escolher POP"
+        searchPlaceholder="Buscar por número ou nome"
+        value=""
+        options={options}
+        onChange={onChange}
+      />,
+    );
+
+    await user.click(screen.getByRole('combobox', { name: /Selecione o procedimento/i }));
+    const search = screen.getByRole('searchbox', { name: 'Buscar por número ou nome' });
+    expect(search).toHaveAttribute('aria-controls');
+
+    await user.keyboard('{ArrowDown}{ArrowDown}');
+    expect(search).toHaveAttribute('aria-activedescendant', expect.stringMatching(/option-2$/));
+    await user.keyboard('{Enter}');
+
+    expect(onChange).toHaveBeenCalledWith('005');
+    expect(screen.queryByRole('listbox')).not.toBeInTheDocument();
+  });
+
+  it('fecha a lista ao tocar fora do componente', async () => {
+    const user = userEvent.setup();
+    render(
+      <div>
+        <SearchableSelect
+          label="Selecione o procedimento"
+          placeholder="Escolher POP"
+          searchPlaceholder="Buscar por número ou nome"
+          value=""
+          options={options}
+          onChange={jest.fn()}
+        />
+        <button type="button">Fora</button>
+      </div>,
+    );
+
+    await user.click(screen.getByRole('combobox', { name: /Selecione o procedimento/i }));
+    expect(screen.getByRole('listbox')).toBeVisible();
+    await user.click(screen.getByRole('button', { name: 'Fora' }));
     expect(screen.queryByRole('listbox')).not.toBeInTheDocument();
   });
 });

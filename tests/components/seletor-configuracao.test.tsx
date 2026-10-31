@@ -12,7 +12,7 @@ describe('Seletor visual de configuração', () => {
 
     expect(gatilho).toHaveClass('flex-col', 'sm:flex-row');
     expect(screen.getAllByText('Caminhão truck — 3 eixos').find((element) => element.tagName === 'STRONG')).toHaveClass('uppercase');
-    expect(container.querySelector('svg')).toHaveClass('h-24', 'w-full');
+    expect(container.querySelector('svg')).toHaveClass('h-32', 'w-full');
 
     await userEvent.click(gatilho);
     const opcao = screen.getAllByRole('option')[0];
