@@ -6,6 +6,19 @@ import SeletorConfiguracao from '@/components/pesos-dimensoes/SeletorConfiguraca
 import { listarConfiguracoes, obterConfiguracao } from '@/lib/pesos-dimensoes/catalogo';
 
 describe('Seletor visual de configuração', () => {
+  it('organiza desenho e informações em cards responsivos com nome em maiúsculas', async () => {
+    const { container } = render(<SeletorConfiguracao valor="truck-3-eixos" onChange={jest.fn()} />);
+    const gatilho = screen.getByRole('button', { name: /selecionar configuração/i });
+
+    expect(gatilho).toHaveClass('flex-col', 'sm:flex-row');
+    expect(screen.getAllByText('Caminhão truck — 3 eixos').find((element) => element.tagName === 'STRONG')).toHaveClass('uppercase');
+    expect(container.querySelector('svg')).toHaveClass('h-24', 'w-full');
+
+    await userEvent.click(gatilho);
+    const opcao = screen.getAllByRole('option')[0];
+    expect(opcao).toHaveClass('flex-col', 'sm:flex-row');
+  });
+
   it('abre opções em linhas com nome, eixos e desenho', async () => {
     const onChange = jest.fn();
     render(<SeletorConfiguracao valor="truck-3-eixos" onChange={onChange} />);

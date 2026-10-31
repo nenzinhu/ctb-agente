@@ -59,6 +59,16 @@ describe('DesenhoVeiculo profissional', () => {
     expect(grupos[1]).toHaveAttribute('aria-label', expect.stringMatching(/tandem traseiro.*17\.000 kg/i));
   });
 
+  it('amplia o desenho compacto e as legendas técnicas para leitura em campo', () => {
+    const configuracao = obterConfiguracao('bitruck-4-eixos')!;
+    const { container } = render(<DesenhoVeiculo configuracao={configuracao} compacto />);
+    const desenho = screen.getByRole('img', { name: /bitruck.*4 eixos/i });
+
+    expect(desenho).toHaveClass('h-24', 'w-full');
+    expect(container.querySelector('[data-eixo-rotulo="true"]')).toHaveAttribute('font-size', '13');
+    expect(container.querySelector('[data-grupo-eixo="true"] text')).toHaveAttribute('font-size', '11');
+  });
+
   it('diferencia pneus simples e duplos e inclui detalhes de cabine e acoplamento', () => {
     const configuracao = obterConfiguracao('cavalo-3s3')!;
     const { container } = render(<DesenhoVeiculo configuracao={configuracao} />);

@@ -10,6 +10,7 @@ import Field from '../ui/Field';
 import Icone from '../ui/Icone';
 import PrimaryButton from '../ui/PrimaryButton';
 import SectionCard from '../ui/SectionCard';
+import SearchableSelect from '../ui/SearchableSelect';
 import RespostaFormatada from './RespostaFormatada';
 import FichaPop from './FichaPop';
 import type { Pop } from '@/lib/pop/parser';
@@ -463,11 +464,18 @@ function ManualDisponivel({ catalogo }: { catalogo: ResumoPop[] }) {
     return () => controller.abort();
   }, [numero, tentativa]);
   return <div className="space-y-3">
-    <label htmlFor="manual-pop" className="block text-sm font-semibold">Selecione o procedimento</label>
-    <select id="manual-pop" className="w-full min-w-0 rounded-lg border border-ds-line bg-ds-surface p-3 text-ds-text" value={numero} onChange={(e) => setNumero(e.target.value)}>
-      <option value="">Escolher POP</option>
-      {catalogo.map((item) => <option key={item.numero} value={item.numero}>POP {item.numero} — {item.titulo}</option>)}
-    </select>
+    <SearchableSelect
+      label="Selecione o procedimento"
+      placeholder="Escolher POP"
+      searchPlaceholder="Buscar por número ou nome"
+      value={numero}
+      onChange={setNumero}
+      options={catalogo.map((item) => ({
+        value: item.numero,
+        label: `POP ${item.numero} — ${item.titulo}`,
+        keywords: item.titulo,
+      }))}
+    />
     {carregando && <p role="status">Abrindo procedimento…</p>}
     {erro && <div role="alert"><p>{erro}</p><button type="button" className="btn-secondary mt-2" onClick={() => setTentativa((atual) => atual + 1)}>Tentar novamente</button></div>}
     {pop && <PopsEncontrados key={pop.numero} pops={[pop]} catalogo={catalogo} />}
