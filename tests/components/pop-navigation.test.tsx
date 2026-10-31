@@ -33,6 +33,18 @@ describe('navegação entre POPs relacionados', () => {
 
   afterEach(() => jest.restoreAllMocks());
 
+  it('mantém a escolha entre vários POPs em um seletor compacto', async () => {
+    const usuario = userEvent.setup();
+    render(<PopsEncontrados pops={[inicial, relacionado]} />);
+
+    const seletor = screen.getByRole('combobox', { name: /POPs encontrados \(2\)/i });
+    expect(seletor).toHaveClass('w-full', 'max-w-full', 'min-w-0');
+
+    await usuario.selectOptions(seletor, '1');
+
+    expect(screen.getByRole('heading', { name: /busca pessoal/i })).toBeInTheDocument();
+  });
+
   it('mantém o POP atual quando a referência responde com seções inválidas', async () => {
     global.fetch = jest.fn().mockResolvedValue({ ok: true, json: async () => ({ ...relacionado, material: [{ texto: null, nivel: 0 }] }) });
     render(<PopsEncontrados pops={[inicial]} catalogo={[{ numero: '002', titulo: 'Busca pessoal' }]} />);

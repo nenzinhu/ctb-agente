@@ -7,7 +7,6 @@ import { referenciaDaFonte } from '@/lib/rag/pop';
 import TurnstileWidget, { turnstileConfigurado } from '../TurnstileWidget';
 import BotaoVoz, { AvisoVoz, useDitado } from '../BotaoVoz';
 import Field from '../ui/Field';
-import ResultChoices from '../ui/ResultChoices';
 import Icone from '../ui/Icone';
 import PrimaryButton from '../ui/PrimaryButton';
 import SectionCard from '../ui/SectionCard';
@@ -130,13 +129,22 @@ export function PopsEncontrados({ pops, catalogo = [] }: { pops: Pop[]; catalogo
   return (
     <div className="space-y-4">
       {pops.length > 1 && (
-          <ResultChoices
+        <section className="card card-pad min-w-0 overflow-hidden">
+          <Field
+            as="select"
             label={`POPs encontrados (${pops.length})`}
             value={String(indice)}
-            onChange={(value) => selecionarResultado(Number(value))}
-            hint="Confira os procedimentos encontrados e selecione qual deseja ler."
-            options={pops.map((pop, i) => ({ value: String(i), title: `POP ${pop.numero}`, description: pop.titulo }))}
-          />
+            onChange={(event) => selecionarResultado(Number(event.target.value))}
+            hint="Selecione o procedimento que deseja ler."
+            controlClassName="w-full max-w-full min-w-0 truncate"
+          >
+            {pops.map((pop, i) => (
+              <option key={`${pop.numero}-${i}`} value={String(i)}>
+                POP {pop.numero} — {pop.titulo}
+              </option>
+            ))}
+          </Field>
+        </section>
       )}
       {historico.length > 1 && (
         <nav className="rounded-control border border-ds-line bg-ds-surface p-3" aria-label="Histórico de POPs consultados">
