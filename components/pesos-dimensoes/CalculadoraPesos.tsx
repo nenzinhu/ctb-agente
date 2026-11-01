@@ -72,7 +72,7 @@ export default function CalculadoraPesos() {
       onChange={(evento) => alterar(nome, evento.target.value)}
       inputMode="decimal"
       autoComplete="off"
-      placeholder="Ex: 23.000"
+      placeholder="Ex.: 23.000"
       hint={hint}
     />
   );
@@ -161,7 +161,7 @@ export default function CalculadoraPesos() {
               onChange={(evento) => alterarPbt(evento.target.value)}
               inputMode="decimal"
               autoComplete="off"
-              placeholder="Ex: 23.000"
+              placeholder="Ex.: 23.000"
               hint={
                 configuracao.limiteTotalKg === null
                   ? 'Esta configuração só tem limite na AET: informe aqui o PBT/PBTC autorizado.'

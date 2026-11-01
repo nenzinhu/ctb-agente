@@ -33,7 +33,7 @@ export default function RecentQueries() {
           Consultas recentes
         </h3>
         <button type="button" onClick={handleClear} className="btn-ghost btn-sm">
-          Limpar
+          Limpar histórico
         </button>
       </div>
       <div className="flex flex-wrap gap-2">

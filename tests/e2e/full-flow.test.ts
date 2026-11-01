@@ -7,7 +7,7 @@ test.describe('CTB Agente — fluxo completo', () => {
 
     await expect(page.getByRole('heading', { name: 'CTB Agente' })).toBeVisible();
     await expect(page.getByLabel('Sua consulta')).toBeVisible();
-    await expect(page.getByRole('link', { name: /POP-PMSC.*procedimentos/i })).toBeVisible();
+    await expect(page.getByRole('navigation', { name: 'Tipo de consulta' }).getByRole('link', { name: /POP-PMSC/ })).toBeVisible();
     await expect(page.getByRole('link', { name: /Gerar apostila/ })).toBeVisible();
     await expect(page.getByRole('link', { name: /Comprimir PDF.*somente texto/i })).toBeVisible();
   });
@@ -16,8 +16,8 @@ test.describe('CTB Agente — fluxo completo', () => {
     await page.setViewportSize({ width: 360, height: 800 });
     await page.goto('/');
 
-    await expect(page.getByText(/Aplicativo de apoio ao agente em campo/)).toBeVisible();
-    await expect(page.getByText('CTB Agente — desenvolvido pelo Cabo Jeferson')).toBeVisible();
+    await expect(page.getByText(/Consulte o CTB, as fichas MBFT/)).toBeVisible();
+    await expect(page.getByText('CTB Agente · Manual de campo')).toBeVisible();
     const semRolagemHorizontal = await page.evaluate(
       () => document.documentElement.scrollWidth <= document.documentElement.clientWidth,
     );
@@ -38,7 +38,7 @@ test.describe('CTB Agente — fluxo completo', () => {
   test('o rodapé é global e a animação fica restrita à home', async ({ page }) => {
     await page.goto('/apostila');
 
-    await expect(page.getByText('CTB Agente — desenvolvido pelo Cabo Jeferson')).toBeVisible();
+    await expect(page.getByText('CTB Agente · Manual de campo')).toBeVisible();
     await expect(page.locator('[data-home-reveal]')).toHaveCount(0);
   });
 

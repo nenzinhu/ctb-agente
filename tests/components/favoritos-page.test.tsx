@@ -102,7 +102,7 @@ describe('FavoritosPage', () => {
     const usuario = userEvent.setup();
 
     render(<FavoritosPage />);
-    await usuario.click(await screen.findByRole('button', { name: 'Limpar tudo' }));
+    await usuario.click(await screen.findByRole('button', { name: 'Excluir todos os favoritos' }));
 
     expect(await screen.findByText('Nenhum favorito ainda')).toBeInTheDocument();
   });

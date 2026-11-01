@@ -93,7 +93,7 @@ export async function PUT(request: NextRequest) {
     await setAIPreference(parsed.data);
   } catch (error) {
     return NextResponse.json(
-      { error: 'persist_failed', message: error instanceof Error ? error.message : 'Falha ao salvar' },
+      { error: 'persist_failed', message: error instanceof Error ? error.message : 'Não foi possível salvar a escolha.' },
       { status: 500 }
     );
   }

@@ -205,7 +205,7 @@ export default function PopConsulta({ catalogo = [] }: { catalogo?: ResumoPop[] 
       if (!resposta.ok) throw new Error(corpo?.message || 'Não foi possível consultar os POPs.');
       setResultado(corpo as RespostaPop);
     } catch (error) {
-      setErro(error instanceof Error ? error.message : 'Erro desconhecido.');
+      setErro(error instanceof Error ? error.message : 'Não foi possível concluir a ação. Tente novamente.');
     } finally {
       setCarregando(false);
     }
@@ -242,7 +242,7 @@ export default function PopConsulta({ catalogo = [] }: { catalogo?: ResumoPop[] 
               rows={4}
               maxLength={500}
               enterKeyHint="search"
-              placeholder="Ex: Como proceder na abordagem a veículo suspeito?"
+              placeholder="Ex.: Como proceder na abordagem a veículo suspeito?"
               controlClassName="min-h-[124px] resize-y leading-relaxed"
               hint="Use número, assunto, parte da palavra ou termos como “baculejo”, “blitz” e “encontrado morto”. Enter consulta; Shift + Enter cria uma nova linha."
               acao={<BotaoVoz ditado={ditado} />}

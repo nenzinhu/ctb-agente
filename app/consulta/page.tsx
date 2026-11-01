@@ -16,7 +16,7 @@ function LoadingFallback() {
     <main className="page-narrow" role="status" aria-live="polite">
       <div className="skeleton mb-4 h-9 w-36" />
       <div className="skeleton h-8 w-64" />
-      <span className="sr-only">Carregando...</span>
+      <span className="sr-only">Carregando…</span>
     </main>
   );
 }

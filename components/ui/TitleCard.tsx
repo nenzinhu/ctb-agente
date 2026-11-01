@@ -17,8 +17,12 @@ interface TitleCardProps {
 export default function TitleCard({ titulo, icone, subtitulo, className, children }: TitleCardProps) {
   return (
     <div className={cx('card-destaque', className)}>
+      {icone && (
+        <span className="card-destaque-icon" aria-hidden="true">
+          <Icone nome={icone} tamanho={24} />
+        </span>
+      )}
       <h1 className="card-destaque-titulo">
-        {icone && <Icone nome={icone} tamanho={22} className="shrink-0" />}
         <span className="min-w-0 break-words">{titulo}</span>
       </h1>
       {subtitulo && <p className="card-destaque-sub">{subtitulo}</p>}

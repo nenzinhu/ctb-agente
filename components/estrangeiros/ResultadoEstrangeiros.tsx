@@ -63,8 +63,8 @@ export default function ResultadoEstrangeiros({ resultado }: { resultado: Result
                 </div>
                 <blockquote className="mt-2 border-l-2 border-ds-accent pl-3 text-sm text-ds-subtle">{trecho.texto}</blockquote>
                 <div className="mt-3 flex flex-wrap gap-4 text-xs">
-                  {trecho.arquivo && <a className="text-ds-accent underline" href={trecho.arquivo} target="_blank" rel="noreferrer">Abrir PDF anexado</a>}
-                  {trecho.urlOficial && <a className="text-ds-accent underline" href={trecho.urlOficial} target="_blank" rel="noreferrer">Ver fonte oficial</a>}
+                  {trecho.arquivo && <a className="font-semibold text-ds-ink underline" href={trecho.arquivo} target="_blank" rel="noreferrer">Abrir PDF anexado</a>}
+                  {trecho.urlOficial && <a className="font-semibold text-ds-ink underline" href={trecho.urlOficial} target="_blank" rel="noreferrer">Ver fonte oficial</a>}
                 </div>
               </div>
             ))}

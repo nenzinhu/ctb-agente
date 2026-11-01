@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import Link from 'next/link';
 import { CartaoEstruturado } from '@/lib/response/response-types';
 import { listarFichasMbft, type MbftFields } from '@/lib/response/mbft-fields';
@@ -153,6 +153,7 @@ function FichaEscolhida({ card }: { card: CartaoEstruturado }) {
 
 export default function ConsultaResult({ card }: ConsultaResultProps) {
   const [view, setView] = useState<'ficha' | 'tecnico' | 'simples'>('ficha');
+  const tabRefs = useRef<Array<HTMLButtonElement | null>>([]);
 
   // The sheet is always shown, even with nothing found: empty fields read "—".
   if (!card.sucesso) {
@@ -186,22 +187,41 @@ export default function ConsultaResult({ card }: ConsultaResultProps) {
 
   // Short labels on phones: the three full ones don't fit a 360px screen.
   const abas: { id: 'ficha' | 'tecnico' | 'simples'; label: string; curto: string }[] = [
-    { id: 'ficha', label: 'Ficha de Fiscalização', curto: 'Ficha' },
+    { id: 'ficha', label: 'Ficha de fiscalização', curto: 'Ficha' },
     { id: 'tecnico', label: 'Técnico', curto: 'Técnico' },
-    { id: 'simples', label: 'Em Palavras Simples', curto: 'Simples' },
+    { id: 'simples', label: 'Em palavras simples', curto: 'Simples' },
   ];
+
+  const moverAba = (evento: React.KeyboardEvent<HTMLButtonElement>, indice: number) => {
+    const teclas: Record<string, number> = {
+      ArrowRight: (indice + 1) % abas.length,
+      ArrowLeft: (indice - 1 + abas.length) % abas.length,
+      Home: 0,
+      End: abas.length - 1,
+    };
+    const destino = teclas[evento.key];
+    if (destino === undefined) return;
+    evento.preventDefault();
+    setView(abas[destino].id);
+    tabRefs.current[destino]?.focus();
+  };
 
   return (
     <div className="mobile-results-enter mt-6 space-y-5">
       <div className="mobile-result-toolbar flex flex-wrap items-center justify-between gap-3 print:hidden">
         <div role="tablist" aria-label="Forma de apresentação" className="tabs tabs-responsive">
-          {abas.map((aba) => (
+          {abas.map((aba, indice) => (
             <button
               key={aba.id}
+              ref={(elemento) => { tabRefs.current[indice] = elemento; }}
               type="button"
               role="tab"
+              id={`aba-${aba.id}`}
+              aria-controls={`painel-${aba.id}`}
               aria-selected={view === aba.id}
+              tabIndex={view === aba.id ? 0 : -1}
               onClick={() => setView(aba.id)}
+              onKeyDown={(evento) => moverAba(evento, indice)}
               aria-label={aba.label}
               className={`tab ${view === aba.id ? 'tab-active' : ''}`}
             >
@@ -227,7 +247,7 @@ export default function ConsultaResult({ card }: ConsultaResultProps) {
       )}
 
       {view === 'ficha' && (
-        <div className="space-y-5">
+        <div id="painel-ficha" role="tabpanel" aria-labelledby="aba-ficha" tabIndex={0} className="space-y-5">
           <FichaEscolhida card={card} />
           {card.checklist_ait && card.checklist_ait.length > 0 && <ChecklistAit itens={card.checklist_ait} />}
           <JurisprudenciaBloco decisoes={card.jurisprudencia} />
@@ -235,7 +255,7 @@ export default function ConsultaResult({ card }: ConsultaResultProps) {
       )}
 
       {view === 'tecnico' && (
-        <div className="space-y-5">
+        <div id="painel-tecnico" role="tabpanel" aria-labelledby="aba-tecnico" tabIndex={0} className="space-y-5">
           <CartaoTecnico card={card} />
           <NormasAplicaveis normas={card.normas} />
 
@@ -245,7 +265,7 @@ export default function ConsultaResult({ card }: ConsultaResultProps) {
             <section className="card card-pad" aria-labelledby="erros-comuns">
               <h3 id="erros-comuns" className="section-title">
                 <Icone nome="alerta" tamanho={18} className="text-ds-danger" />
-                Erros Comuns
+                Erros comuns
               </h3>
               <ul className="mt-3 space-y-2">
                 {card.erros_comuns.map((item, idx) => {
@@ -271,7 +291,7 @@ export default function ConsultaResult({ card }: ConsultaResultProps) {
       )}
 
       {view === 'simples' && (
-        <div className="space-y-5">
+        <div id="painel-simples" role="tabpanel" aria-labelledby="aba-simples" tabIndex={0} className="space-y-5">
           <CartaoSimples card={card} />
           <JurisprudenciaBloco decisoes={card.jurisprudencia} />
           <CitacaoEvidencia citacoes={card.citacoes} />

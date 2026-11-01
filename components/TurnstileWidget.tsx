@@ -80,10 +80,10 @@ export default function TurnstileWidget({ onToken, theme = 'auto' }: TurnstileWi
         onReady={() => setScriptReady(true)}
         onLoad={() => setScriptReady(true)}
       />
-      <div ref={containerRef} className="mb-2" aria-label="Verificação anti-bot" />
+      <div ref={containerRef} className="mb-2" aria-label="Verificação de segurança" />
       <noscript>
         <p className="text-sm text-ds-danger">
-          A verificação anti-bot requer JavaScript. Ative o JavaScript para consultar.
+          A verificação de segurança precisa de JavaScript. Ative o JavaScript para consultar.
         </p>
       </noscript>
     </>

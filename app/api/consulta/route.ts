@@ -15,7 +15,7 @@ const MENSAGEM_POR_ERRO: Record<ConsultaError, string> = {
   rate_limit_exceeded:
     'Limite de consultas por hora atingido. Tente novamente mais tarde.',
   ip_blocked: 'Acesso bloqueado. Fale com o administrador.',
-  turnstile_failed: 'Falha na verificação anti-bot. Recarregue a página e tente novamente.',
+  turnstile_failed: 'Não foi possível concluir a verificação de segurança. Recarregue a página e tente novamente.',
   internal_error: 'Erro interno ao processar a consulta.',
 };
 

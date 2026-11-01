@@ -128,7 +128,7 @@ export default function AdminUploadForm({ onUploadSuccess, colecao = 'ctb', comp
           setResultados([...enviados]);
         } catch (error) {
           console.error('Upload error:', error);
-          falhas.push(`Falha ao enviar ${file.name}: ${error instanceof Error ? error.message : 'erro desconhecido'}`);
+          falhas.push(`Não foi possível enviar ${file.name}: ${error instanceof Error ? error.message : 'Não foi possível concluir a ação. Tente novamente.'}`);
         }
       }
     } finally {
@@ -140,7 +140,7 @@ export default function AdminUploadForm({ onUploadSuccess, colecao = 'ctb', comp
 
     setErros(falhas);
     if (enviados.length > 0) {
-      setSucesso(`${enviados.length} arquivo(s) enviado(s) com sucesso.`);
+      setSucesso(`${enviados.length} ${enviados.length === 1 ? 'arquivo enviado' : 'arquivos enviados'} com sucesso.`);
       onUploadSuccess?.();
     }
   };
@@ -371,7 +371,7 @@ export default function AdminUploadForm({ onUploadSuccess, colecao = 'ctb', comp
                   {r.nota ? ` · ${r.nota}` : ''}
                   {!r.duplicado && r.semVetor > 0 && (
                     <span className="block text-xs">
-                      {r.semVetor} trecho(s) ainda sem vetor semântico — a busca por palavras já funciona; gere os vetores
+                      {r.semVetor} {r.semVetor === 1 ? 'trecho ainda sem vetor semântico' : 'trechos ainda sem vetor semântico'} — a busca por palavras já funciona; gere os vetores
                       em “Vetores pendentes”.
                     </span>
                   )}

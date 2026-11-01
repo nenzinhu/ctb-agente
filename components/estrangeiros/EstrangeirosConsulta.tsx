@@ -41,7 +41,7 @@ export default function EstrangeirosConsulta() {
   return (
     <div className="space-y-6">
       <section className="card p-5 sm:p-6">
-        <h2 className="text-xl font-semibold">Consulta rápida</h2>
+        <h2 className="text-xl font-semibold text-ds-text">Consulta rápida</h2>
         <p className="mt-1 text-sm text-ds-subtle">Use frases como “argentino com carteira vencida” ou “carro paraguaio sem seguro”.</p>
         <label htmlFor="consulta-estrangeiros" className="mt-4 block text-sm font-medium">Descreva a situação</label>
         <div className="mt-2 flex flex-col gap-2 sm:flex-row">
@@ -51,15 +51,15 @@ export default function EstrangeirosConsulta() {
       </section>
 
       <section className="card p-5 sm:p-6">
-        <h2 className="text-xl font-semibold">Documentos oficiais anexados</h2>
+        <h2 className="text-xl font-semibold text-ds-text">Documentos oficiais anexados</h2>
         <p className="mt-1 text-sm text-ds-subtle">A consulta recupera trechos destes documentos e mostra artigo, página e origem para conferência humana.</p>
         <div className="mt-4 grid gap-3 sm:grid-cols-2">
           {FONTES_ESTRANGEIROS.map((fonte) => (
             <article key={fonte.id} className="rounded-card border border-ds-line p-4">
-              <a className="font-semibold text-ds-accent underline-offset-4 hover:underline" href={fonte.arquivo} target="_blank" rel="noreferrer">{fonte.titulo}</a>
+              <a className="font-semibold text-ds-ink underline-offset-4 hover:underline" href={fonte.arquivo} target="_blank" rel="noreferrer">{fonte.titulo}</a>
               <p className="mt-1 text-xs text-ds-subtle">{fonte.orgao} · conferido em {new Date(`${fonte.conferidoEm}T00:00:00`).toLocaleDateString('pt-BR')}</p>
               {fonte.urlOficial ? (
-                <a className="mt-2 inline-block text-xs text-ds-accent underline" href={fonte.urlOficial} target="_blank" rel="noreferrer">Consultar publicação oficial</a>
+                <a className="mt-2 inline-block text-xs font-semibold text-ds-ink underline" href={fonte.urlOficial} target="_blank" rel="noreferrer">Consultar publicação oficial</a>
               ) : (
                 <p className="mt-2 text-xs font-medium text-amber-700 dark:text-amber-300">Pendente de confirmação em fonte oficial</p>
               )}
@@ -69,7 +69,7 @@ export default function EstrangeirosConsulta() {
       </section>
 
       <section className="card p-5 sm:p-6">
-        <h2 className="text-xl font-semibold">Fiscalização guiada</h2>
+        <h2 className="text-xl font-semibold text-ds-text">Fiscalização guiada</h2>
         <p className="mt-1 text-sm text-ds-subtle">Informe apenas os fatos necessários. Não digite nome, placa ou número de documento.</p>
         <div className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           <label className="text-sm font-medium">País emissor da habilitação

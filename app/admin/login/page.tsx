@@ -124,10 +124,6 @@ export default function LoginPage() {
             Entrar
           </PrimaryButton>
         </form>
-
-        <p className="mt-6 text-center text-xs text-ds-subtle">
-          O usuário vem de <code className="font-mono">ADMIN_USERNAME</code>; a senha usa um hash bcrypt em <code className="font-mono">ADMIN_PASSWORD_HASH</code>.
-        </p>
       </div>
     </main>
   );

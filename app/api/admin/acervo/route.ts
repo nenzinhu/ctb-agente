@@ -140,6 +140,6 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'migration_pending', message: error.message }, { status: 503 });
     }
     console.error('Acervo indexing failed:', error);
-    return NextResponse.json({ error: 'Falha ao indexar o documento do acervo.' }, { status: 500 });
+    return NextResponse.json({ error: 'Não foi possível indexar o documento do acervo.' }, { status: 500 });
   }
 }

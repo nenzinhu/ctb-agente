@@ -36,7 +36,7 @@ export async function POST() {
   } catch (error) {
     console.error('Embedding backfill failed:', error);
     return NextResponse.json(
-      { error: 'backfill_failed', message: error instanceof Error ? error.message : 'Falha ao gerar vetores.' },
+      { error: 'backfill_failed', message: error instanceof Error ? error.message : 'Não foi possível gerar os vetores.' },
       { status: 500 }
     );
   }

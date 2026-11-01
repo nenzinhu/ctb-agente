@@ -1,4 +1,9 @@
 import type { Metadata, Viewport } from 'next';
+import '@fontsource-variable/atkinson-hyperlegible-next';
+import '@fontsource/barlow-condensed/latin-ext-600.css';
+import '@fontsource/barlow-condensed/latin-ext-700.css';
+import '@fontsource/ibm-plex-mono/latin-ext-400.css';
+import '@fontsource/ibm-plex-mono/latin-ext-600.css';
 import './globals.css';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
@@ -26,7 +31,7 @@ export const viewport: Viewport = {
   viewportFit: 'cover',
   // Meta tags can't read CSS variables: this is the top of the header,
   // --ds-header-from under --ds-header-scrim (app/globals.css).
-  themeColor: '#01552e',
+  themeColor: '#083f2c',
 };
 
 // Applies the saved themes before the first paint, so the page never flashes
@@ -40,7 +45,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="pt-BR" suppressHydrationWarning>
+    <html lang="pt-BR" suppressHydrationWarning data-scroll-behavior="smooth">
       <head>
         <script dangerouslySetInnerHTML={{ __html: TEMA_SALVO }} />
       </head>

@@ -47,9 +47,9 @@ function emItens(valor: string): string[] {
   return partes.length > 0 ? partes : [valor];
 }
 
-function SecaoTitulo({ children }: { children: ReactNode }) {
+function SecaoTitulo({ id, children }: { id: string; children: ReactNode }) {
   return (
-    <h3 className="border-b-2 border-ds-text pb-1.5 font-mono text-xs font-bold uppercase tracking-[0.08em] text-ds-primary sm:text-sm">
+    <h3 id={id} className="border-b-2 border-ds-text pb-1.5 font-mono text-xs font-bold uppercase tracking-[0.08em] text-ds-primary sm:text-sm">
       {children}
     </h3>
   );
@@ -73,10 +73,12 @@ function SimNao({ valor, fallback }: { valor: string | null; fallback: boolean }
 
 const GRAVIDADES = ['leve', 'média', 'grave', 'gravíssima'];
 
-/** "7" → "7 ponto(s)"; "Não Computável" stays as written */
-function pontos(valor: string | null | undefined): string | null {
-  if (!valor) return null;
-  return /^\d+$/.test(valor.trim()) ? `${valor.trim()} ponto(s)` : valor;
+/** "7" → "7 pontos"; "Não Computável" stays as written */
+function pontos(valor: string | number | null | undefined): string | null {
+  if (valor === null || valor === undefined || valor === '') return null;
+  const texto = String(valor).trim();
+  if (!/^\d+$/.test(texto)) return texto;
+  return `${texto} ${Number(texto) === 1 ? 'ponto' : 'pontos'}`;
 }
 
 /**
@@ -180,7 +182,7 @@ export default function FichaFiscalizacao({ card, campos: doBanco, oficial = nul
         {oficial && <ExplicacaoSimples key={oficial.codigo} tipo="ficha" id={oficial.codigo} />}
 
         <section aria-labelledby="identificacao-infracao">
-          <SecaoTitulo>Identificação da Infração</SecaoTitulo>
+          <SecaoTitulo id="identificacao-infracao">Identificação da Infração</SecaoTitulo>
           <dl className="mt-2">
             <Linha rotulo="Tipificação Resumida:">
               <Valor>{oficial?.tipificacaoResumida || enquadramento?.descricao || ia?.tipificacaoResumida || campos?.tipificacao}</Valor>
@@ -213,7 +215,7 @@ export default function FichaFiscalizacao({ card, campos: doBanco, oficial = nul
         </section>
 
         <section aria-labelledby="classificacao-penalidades">
-          <SecaoTitulo>Classificação e Penalidades</SecaoTitulo>
+          <SecaoTitulo id="classificacao-penalidades">Classificação e Penalidades</SecaoTitulo>
           <dl className="mt-2">
             <Linha rotulo="Gravidade:">
               {enquadramento ? (
@@ -225,7 +227,7 @@ export default function FichaFiscalizacao({ card, campos: doBanco, oficial = nul
               )}
             </Linha>
             <Linha rotulo="Pontuação:">
-              <Valor>{enquadramento ? `${enquadramento.pontos} ponto(s)` : pontos(campos?.pontuacao)}</Valor>
+              <Valor>{enquadramento ? pontos(enquadramento.pontos) : pontos(campos?.pontuacao)}</Valor>
             </Linha>
             <Linha rotulo="Penalidade:">
               <Valor>
@@ -247,7 +249,7 @@ export default function FichaFiscalizacao({ card, campos: doBanco, oficial = nul
         </section>
 
         <section aria-labelledby="criterios-autuacao" className="space-y-4">
-          <SecaoTitulo>Critérios de Autuação</SecaoTitulo>
+          <SecaoTitulo id="criterios-autuacao">Critérios de Autuação</SecaoTitulo>
           <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
             <div className="panel p-4">
               <h4 className="flex items-center gap-2 font-mono text-xs font-bold uppercase tracking-[0.06em] text-ds-text">
@@ -283,12 +285,12 @@ export default function FichaFiscalizacao({ card, campos: doBanco, oficial = nul
         </section>
 
         <section aria-labelledby="definicoes-procedimentos">
-          <SecaoTitulo>Definições e Procedimentos</SecaoTitulo>
-          <Valor>{campos?.definicoes}</Valor>
+          <SecaoTitulo id="definicoes-procedimentos">Definições e Procedimentos</SecaoTitulo>
+          <p className="mt-2 whitespace-pre-line text-sm leading-relaxed text-ds-text">{campos?.definicoes || '—'}</p>
         </section>
 
         <section aria-labelledby="exemplos-observacoes">
-          <SecaoTitulo>Exemplos do Campo de Observações do AIT</SecaoTitulo>
+          <SecaoTitulo id="exemplos-observacoes">Exemplos do Campo de Observações do AIT</SecaoTitulo>
           {campos?.exemplosObservacoes && campos.exemplosObservacoes.length > 0 ? (
             <ol className="mt-2 list-inside list-decimal space-y-2 text-sm leading-relaxed text-ds-text">
               {campos.exemplosObservacoes.map((exemplo, i) => (
@@ -303,7 +305,7 @@ export default function FichaFiscalizacao({ card, campos: doBanco, oficial = nul
         </section>
 
         <section aria-labelledby="informacoes-complementares">
-          <SecaoTitulo>Informações Complementares</SecaoTitulo>
+          <SecaoTitulo id="informacoes-complementares">Informações Complementares</SecaoTitulo>
           <dl className="mt-2">
             <Linha rotulo="Unidade de multa:">
               <Valor>{enquadramento?.unidade ?? null}</Valor>

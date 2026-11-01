@@ -76,7 +76,7 @@ export default function ResultadoPesos({ resultado }: { resultado: RespostaCalcu
                   const enquadramento = ENQUADRAMENTOS[codigo];
                   return (
                     <li key={codigo} className="flex items-start gap-3 rounded-md bg-ds-surface p-3">
-                      <span className="shrink-0 rounded-md bg-ds-danger px-2.5 py-1 font-mono font-bold text-white">{codigo}</span>
+                      <span className="shrink-0 rounded-[3px] bg-ds-danger px-2.5 py-1 font-mono font-bold text-ds-on-solid">{codigo}</span>
                       <span className="text-sm">
                         <strong className="block text-ds-text">{enquadramento?.descricao ?? 'Enquadramento de trânsito identificado.'}</strong>
                         {enquadramento && <small className="mt-0.5 block text-ds-subtle">{enquadramento.amparo}</small>}
@@ -90,7 +90,7 @@ export default function ResultadoPesos({ resultado }: { resultado: RespostaCalcu
           )}
 
           <details className="mt-5 rounded-control border border-ds-line p-4" open>
-            <summary className="cursor-pointer font-semibold">Memória de cálculo</summary>
+            <summary className="cursor-pointer font-semibold">Detalhes do cálculo</summary>
             {fiscalizacao.memoriaPeso && (
               <p className="mt-3 rounded-md bg-ds-primary-soft px-3 py-2 font-mono text-sm font-semibold text-ds-primary-strong">
                 {fiscalizacao.memoriaPeso}

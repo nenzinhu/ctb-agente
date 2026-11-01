@@ -21,7 +21,7 @@ const STATUS: Record<PopErro, number> = {
 const MENSAGEM: Record<PopErro, string> = {
   rate_limit_exceeded: 'Limite de consultas por hora atingido. Tente novamente mais tarde.',
   ip_blocked: 'Acesso bloqueado. Fale com o administrador.',
-  turnstile_failed: 'Falha na verificação anti-bot. Recarregue a página e tente novamente.',
+  turnstile_failed: 'Não foi possível concluir a verificação de segurança. Recarregue a página e tente novamente.',
   migration_pending: 'A base de POPs ainda não está disponível.',
   internal_error: 'Erro interno ao consultar os POPs.',
 };

@@ -60,13 +60,13 @@ export default function GerarPDFTab() {
 
       if (!resposta.ok) {
         const detalhe = (await resposta.json().catch(() => null)) as { message?: string } | null;
-        throw new Error(detalhe?.message || 'Falha ao gerar o dossiê.');
+        throw new Error(detalhe?.message || 'Não foi possível gerar o dossiê.');
       }
 
       setCache((resposta.headers.get('X-CTB-Cache') as 'HIT' | 'MISS') ?? null);
       baixarArquivo(await resposta.blob(), `ctb-${temaId}.pdf`);
     } catch (error) {
-      setErro(error instanceof Error ? error.message : 'Erro desconhecido ao gerar o PDF.');
+      setErro(error instanceof Error ? error.message : 'Não foi possível gerar o PDF. Tente novamente.');
     } finally {
       setCarregando(false);
     }
@@ -89,7 +89,7 @@ export default function GerarPDFTab() {
           label="Tema"
           value={temaId}
           onChange={(e) => escolherTema(e.target.value)}
-          hint={tema?.artigo ? `Âncora legal: ${tema.artigo} · códigos MBFT ${tema.codigos.join(', ')}` : undefined}
+          hint={tema?.artigo ? `Base legal: ${tema.artigo} · códigos MBFT ${tema.codigos.join(', ')}` : undefined}
         >
           {THEMES.map((item) => (
             <option key={item.id} value={item.id}>

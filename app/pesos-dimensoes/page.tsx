@@ -27,8 +27,8 @@ export default function PesosDimensoesPage() {
             <ol className="mt-3 list-decimal space-y-2 pl-5 text-sm text-ds-subtle">
               <li>Escolha a configuração pelo desenho: o PBT/PBTC entra sozinho.</li>
               <li>Se souber o PBT/PBTC, digite: o desenho correspondente é selecionado.</li>
-              <li>Informe peso da nota ou da balança.</li>
-              <li>Revise memória, código, responsável e providência.</li>
+              <li>Informe o peso da nota fiscal ou da balança.</li>
+              <li>Revise os detalhes do cálculo, o código, o responsável e a providência.</li>
             </ol>
             <p className="mt-4 border-t border-ds-line pt-3 text-xs text-ds-subtle">A tolerância serve somente à fiscalização por balança e não aumenta a capacidade de carga.</p>
           </div>

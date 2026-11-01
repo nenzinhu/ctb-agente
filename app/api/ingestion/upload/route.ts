@@ -173,7 +173,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     }
     console.error('Upload error:', error);
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : 'Falha ao enviar o arquivo' },
+      { error: error instanceof Error ? error.message : 'Não foi possível enviar o arquivo.' },
       { status: 500 }
     );
   } finally {

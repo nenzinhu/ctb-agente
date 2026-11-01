@@ -103,7 +103,7 @@ describe('POST /api/consulta', () => {
 
     const resposta = await POST(post(JSON.stringify({ consulta: 'consulta' })));
     expect(resposta.status).toBe(403);
-    expect((await resposta.json()).message).toMatch(/anti-bot/);
+    expect((await resposta.json()).message).toMatch(/verificação de segurança/i);
   });
 
   it('maps an internal failure to 500', async () => {

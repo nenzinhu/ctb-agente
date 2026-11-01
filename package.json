@@ -3,6 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@fontsource-variable/atkinson-hyperlegible-next": "^5.3.0",
+    "@fontsource/barlow-condensed": "^5.3.0",
+    "@fontsource/ibm-plex-mono": "^5.3.0",
     "@react-pdf/renderer": "^4.8.0",
     "@serwist/next": "^9.5.13",
     "@supabase/supabase-js": "^2.45.0",
@@ -19,6 +22,7 @@
     "zod": "^4.6.5"
   },
   "devDependencies": {
+    "@axe-core/playwright": "^4.14.0",
     "@playwright/test": "^1.49.0",
     "@serwist/cli": "^9.5.13",
     "@testing-library/jest-dom": "^7.0.1",

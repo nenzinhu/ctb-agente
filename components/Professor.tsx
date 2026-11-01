@@ -152,7 +152,7 @@ export default function Professor() {
       setTurnos((atual) => [...atual, { pergunta: texto, ...(corpo as Omit<Turno, 'pergunta'>) }]);
       setPergunta('');
     } catch (error) {
-      setErro(error instanceof Error ? error.message : 'Erro desconhecido.');
+      setErro(error instanceof Error ? error.message : 'Não foi possível concluir a ação. Tente novamente.');
     } finally {
       setCarregando(false);
     }
@@ -296,7 +296,7 @@ export default function Professor() {
               type="submit"
               icone="professor"
               carregando={carregando}
-              textoCarregando="O Professor Emérito está pensando…"
+              textoCarregando="Gerando resposta…"
               disabled={pergunta.trim().length < 3}
               className="flex-1 text-base"
             >

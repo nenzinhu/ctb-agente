@@ -71,12 +71,12 @@ export default function DocumentList({ colecao, refreshTrigger, onChange }: Docu
         : `legado=${encodeURIComponent(alvo.norma_id)}&tipo=${encodeURIComponent(alvo.tipo)}`;
       const resposta = await fetch(`/api/admin/documents?${query}`, { method: 'DELETE' });
       const corpo = await resposta.json().catch(() => ({}));
-      if (!resposta.ok) throw new Error(corpo.message || corpo.error || 'Falha ao excluir.');
-      setAviso(`${ehDocumento ? alvo.titulo : `Trechos antigos de ${alvo.norma_id}`} excluído(s).`);
+      if (!resposta.ok) throw new Error(corpo.message || corpo.error || 'Não foi possível excluir.');
+      setAviso(`${ehDocumento ? alvo.titulo : `Trechos antigos de ${alvo.norma_id}`} ${ehDocumento ? 'excluído' : 'excluídos'}.`);
       await carregar();
       onChange?.();
     } catch (error) {
-      setAviso(error instanceof Error ? error.message : 'Falha ao excluir.');
+      setAviso(error instanceof Error ? error.message : 'Não foi possível excluir.');
     } finally {
       setOcupado(null);
     }
@@ -91,13 +91,13 @@ export default function DocumentList({ colecao, refreshTrigger, onChange }: Docu
         const resposta = await fetch('/api/admin/documents/vetores', { method: 'POST' });
         const corpo = await resposta.json().catch(() => ({}));
         total += Number(corpo.atualizados ?? 0);
-        if (!resposta.ok) throw new Error(corpo.message || corpo.erro || 'Falha ao gerar vetores.');
-        setVetores({ rodando: true, mensagem: `${total} vetor(es) gerado(s) · faltam ${corpo.restantes}` });
+        if (!resposta.ok) throw new Error(corpo.message || corpo.erro || 'Não foi possível gerar vetores.');
+        setVetores({ rodando: true, mensagem: `${total} ${total === 1 ? 'vetor gerado' : 'vetores gerados'} · faltam ${corpo.restantes}` });
         if (!corpo.restantes || Number(corpo.atualizados ?? 0) === 0) break;
       }
-      setVetores({ rodando: false, mensagem: `${total} vetor(es) gerado(s).` });
+      setVetores({ rodando: false, mensagem: `${total} ${total === 1 ? 'vetor gerado' : 'vetores gerados'}.` });
     } catch (error) {
-      setVetores({ rodando: false, mensagem: error instanceof Error ? error.message : 'Falha ao gerar vetores.' });
+      setVetores({ rodando: false, mensagem: error instanceof Error ? error.message : 'Não foi possível gerar vetores.' });
     } finally {
       await carregar();
     }
@@ -125,13 +125,13 @@ export default function DocumentList({ colecao, refreshTrigger, onChange }: Docu
         body: JSON.stringify({ ...edicao, situacao: 'vigente' }),
       });
       const corpo = await resposta.json().catch(() => ({}));
-      if (!resposta.ok) throw new Error(corpo.message || corpo.error || 'Falha ao revisar o documento.');
+      if (!resposta.ok) throw new Error(corpo.message || corpo.error || 'Não foi possível revisar o documento.');
       setAviso('Metadados oficiais atualizados.');
       setEdicao(null);
       await carregar();
       onChange?.();
     } catch (error) {
-      setAviso(error instanceof Error ? error.message : 'Falha ao revisar o documento.');
+      setAviso(error instanceof Error ? error.message : 'Não foi possível revisar o documento.');
     } finally {
       setOcupado(null);
     }
@@ -198,7 +198,7 @@ export default function DocumentList({ colecao, refreshTrigger, onChange }: Docu
         <div className="panel flex flex-col gap-3 p-4 sm:flex-row sm:items-center">
           <Icone nome="faisca" className="shrink-0 text-ds-primary" />
           <p className="flex-1 text-sm text-ds-text">
-            <strong>{dados.pendentesVetor} trecho(s) sem vetor semântico.</strong>{' '}
+            <strong>{dados.pendentesVetor} {dados.pendentesVetor === 1 ? 'trecho sem vetor semântico' : 'trechos sem vetor semântico'}.</strong>{' '}
             <span className="text-ds-subtle">
               A busca por palavras já os encontra; os vetores ajudam perguntas feitas com outras palavras.
             </span>

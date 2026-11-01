@@ -52,15 +52,15 @@ export default function AdminCorpusAudit() {
     <div className="space-y-6">
       <section className="grid gap-3 sm:grid-cols-3">
         <div className="stat bg-ds-surface"><p className="stat-label">Base CTB</p><p className="stat-value text-base">{dados.corpus.ctbIndexado ? 'CTB indexado' : 'CTB não indexado'}</p></div>
-        <div className="stat bg-ds-surface"><p className="stat-label">Conteúdo</p><p className="stat-value">{dados.corpus.trechos.toLocaleString('pt-BR')}</p><p className="text-xs text-ds-subtle">trechos em {dados.corpus.documentos} documento(s)</p></div>
+        <div className="stat bg-ds-surface"><p className="stat-label">Conteúdo</p><p className="stat-value">{dados.corpus.trechos.toLocaleString('pt-BR')}</p><p className="text-xs text-ds-subtle">trechos em {dados.corpus.documentos} {dados.corpus.documentos === 1 ? 'documento' : 'documentos'}</p></div>
         <div className="stat bg-ds-surface"><p className="stat-label">Vetores</p><p className="stat-value">{dados.corpus.vetoresPendentes}</p><p className="text-xs text-ds-subtle">{dados.corpus.vetoresPendentes} trechos sem vetor</p></div>
       </section>
 
       <section className="card card-pad">
         <h2 className="text-xl font-bold text-ds-text">Revisão dos enquadramentos</h2>
-        <p className="mt-1 text-sm text-ds-subtle">Compara {dados.enquadramentos.totalBanco} registro(s) do banco com {dados.enquadramentos.totalMbft} fichas MBFT. Nada é alterado automaticamente.</p>
+        <p className="mt-1 text-sm text-ds-subtle">Compara {dados.enquadramentos.totalBanco} {dados.enquadramentos.totalBanco === 1 ? 'registro' : 'registros'} do banco com {dados.enquadramentos.totalMbft} fichas MBFT. Nada é alterado automaticamente.</p>
         <div className="mt-4 flex flex-wrap gap-2">
-          {([['todos', 'Todos'], ['divergentes', 'Divergentes'], ['sem_ficha', 'Sem ficha'], ['seed', 'Exemplos do seed']] as const).map(([id, label]) => (
+          {([['todos', 'Todos'], ['divergentes', 'Divergentes'], ['sem_ficha', 'Sem ficha'], ['seed', 'Dados de exemplo']] as const).map(([id, label]) => (
             <button key={id} type="button" className={filtro === id ? 'btn-primary btn-sm' : 'btn-secondary btn-sm'} onClick={() => setFiltro(id)}>{label}</button>
           ))}
         </div>
@@ -68,7 +68,7 @@ export default function AdminCorpusAudit() {
         <ul className="mt-4 space-y-3">
           {itens.map((item, index) => (
             <li key={`${item.codigo}-${index}`} className="rounded-control border border-ds-line p-4">
-              <div className="flex flex-wrap items-center gap-2"><strong className="font-mono text-ds-text">{item.codigo}</strong>{item.exemploSeed && <span className="badge-neutral">Exemplo do seed</span>}{!item.fichaEncontrada && <span className="badge bg-ds-warn/10 text-ds-warn">Sem ficha MBFT</span>}</div>
+              <div className="flex flex-wrap items-center gap-2"><strong className="font-mono text-ds-text">{item.codigo}</strong>{item.exemploSeed && <span className="badge-neutral">Dado de exemplo</span>}{!item.fichaEncontrada && <span className="badge bg-ds-warn/10 text-ds-warn">Sem ficha MBFT</span>}</div>
               {item.divergencias.map((d) => <p key={d.campo} className="mt-2 text-sm text-ds-subtle"><strong>{CAMPO[d.campo] ?? d.campo}:</strong> banco “{d.banco}” · MBFT “{d.mbft}”</p>)}
               {item.revisaoHumana.map((campo) => <p key={campo} className="mt-2 text-sm text-ds-warn">{CAMPO[campo] ?? campo}: revisão humana necessária.</p>)}
             </li>

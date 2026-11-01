@@ -167,7 +167,7 @@ export default function AdminRagFineTuning() {
           resultadosEsperados,
         }),
       });
-      if (!resposta.ok) throw new Error('Falha ao salvar');
+      if (!resposta.ok) throw new Error('Não foi possível salvar');
       setExemplosIntencao((atuais) => atuais.map((item) => item.id === exemplo.id ? {
         ...item,
         revisada: true,

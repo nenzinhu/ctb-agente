@@ -62,7 +62,7 @@ describe('ConsultaResult', () => {
   it('renders the fiscalização sheet by default and keeps the technical view available', () => {
     render(<ConsultaResult card={mockCard} />);
 
-    expect(screen.getByRole('tab', { name: 'Ficha de Fiscalização' })).toHaveAttribute(
+    expect(screen.getByRole('tab', { name: 'Ficha de fiscalização' })).toHaveAttribute(
       'aria-selected',
       'true'
     );
@@ -100,7 +100,7 @@ describe('ConsultaResult', () => {
   it('displays points and fine information', () => {
     render(<ConsultaResult card={mockCard} />);
 
-    expect(screen.getByText('7 ponto(s)')).toBeInTheDocument();
+    expect(screen.getByText('7 pontos')).toBeInTheDocument();
     verTecnico();
     expect(screen.getByText('7')).toBeInTheDocument();
   });
@@ -109,7 +109,7 @@ describe('ConsultaResult', () => {
     render(<ConsultaResult card={mockCard} />);
     expect(screen.getByRole('tablist', { name: /forma de apresentação/i })).toHaveClass('tabs-responsive');
     expect(screen.getByText('Técnico')).toBeInTheDocument();
-    expect(screen.getByText('Em Palavras Simples')).toBeInTheDocument();
+    expect(screen.getByText('Em palavras simples')).toBeInTheDocument();
   });
 
   it('lists the applicable norms with their source on the technical view', () => {

@@ -9,7 +9,7 @@ import Header from '@/components/Header';
 describe('Header no mobile', () => {
   it('mantém a marca compacta e deixa as abas completas somente para desktop', () => {
     render(<Header />);
-    expect(screen.getByRole('link', { name: /ctb agente — início/i })).toHaveClass('mobile-header-brand');
+    expect(screen.getByRole('link', { name: 'CTB Agente' })).toHaveClass('mobile-header-brand');
     expect(screen.getByTestId('desktop-navigation')).toHaveClass('hidden', 'md:block');
     expect(screen.getByRole('navigation', { name: /navegação principal/i }).querySelector('ul')).toHaveClass(
       'nav-tabs-compact',

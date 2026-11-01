@@ -13,7 +13,7 @@ const SECOES: ItemNav[] = [
   { href: '/estrangeiros', label: 'Condutores e Veículos Estrangeiros', curto: 'Estrangeiros', icone: 'globo' },
   { href: '/professor', label: 'Professor Emérito', curto: 'Emérito', icone: 'professor' },
   { href: '/favoritos', label: 'Favoritos', curto: 'Favoritos', icone: 'estrela' },
-  { href: '/apostila', label: 'Apostila IA', curto: 'Apostila', icone: 'livro' },
+  { href: '/apostila', label: 'Apostila com IA', curto: 'Apostila', icone: 'livro' },
   { href: '/comprimir-pdf', label: 'Comprimir PDF', curto: 'Comprimir', icone: 'comprimir' },
 ];
 
@@ -25,15 +25,15 @@ export default function Header() {
   return (
     <header className="ds-header sticky top-0 z-40 print:hidden">
       <div className="mx-auto flex h-12 max-w-6xl items-center gap-2 px-3 sm:h-14 sm:gap-3 sm:px-6">
-        <Link href="/" aria-label="CTB Agente — início" className="mobile-header-brand flex min-w-0 items-center gap-2 rounded-control sm:gap-2.5">
-          {/* Decorative: the link's aria-label already names it */}
+        <Link href="/" className="mobile-header-brand flex min-w-0 items-center gap-2 rounded-control sm:gap-2.5">
+          {/* Decorative: the link's text and aria-label name the destination */}
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src="/brasao-cpmrv.png" alt="" width={38} height={48} className="h-9 w-auto shrink-0 drop-shadow sm:h-12" />
           <span className="min-w-0">
             <span className="header-title block">
               <span className="text-ds-accent">CTB</span> Agente
             </span>
-            <span className="header-sub hidden sm:block">Trânsito · POP-PMSC</span>
+            <span className="header-sub hidden sm:block" aria-hidden="true">Trânsito · POP-PMSC</span>
           </span>
         </Link>
 

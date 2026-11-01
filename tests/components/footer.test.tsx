@@ -6,8 +6,8 @@ describe('Footer', () => {
     render(<Footer />);
 
     const footer = screen.getByRole('contentinfo');
-    expect(footer).toHaveTextContent('CTB Agente — desenvolvido pelo Cabo Jeferson');
-    expect(footer).toHaveTextContent(/apoio à consulta/i);
+    expect(footer).toHaveTextContent('CTB Agente · Manual de campo');
+    expect(footer).toHaveTextContent('Desenvolvido pelo Cabo Jeferson');
     expect(footer).toHaveTextContent(/fonte vigente/i);
   });
 });

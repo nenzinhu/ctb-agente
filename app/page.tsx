@@ -28,12 +28,14 @@ export default function Home() {
           <p className="eyebrow">Ferramenta operacional para agentes de campo</p>
           <h1 className="consultation-title">CTB Agente</h1>
           <p className="consultation-lead">
-            Aplicativo de apoio ao agente em campo para consultar rapidamente o CTB, as fichas do MBFT e os POPs,
-            esclarecer dúvidas e conferir a fonte oficial antes da atuação.
+            Consulte o CTB, as fichas MBFT e os POPs com a fonte ao lado antes de atuar.
           </p>
           <p className="mt-3 text-sm leading-relaxed text-ds-subtle">
             Ferramenta de apoio. A decisão e o procedimento devem observar a norma e o documento vigente.
           </p>
+          <div className="hero-route" aria-hidden="true">
+            <span>CTB</span><span>MBFT</span><span>POP-PMSC</span><span>fonte oficial</span>
+          </div>
         </div>
 
         <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_320px]">
@@ -75,9 +77,10 @@ export default function Home() {
         </div>
 
         <section aria-labelledby="ferramentas-titulo" data-home-reveal data-home-reveal-group="3">
-          <div className="mb-3 flex items-center justify-between gap-3">
-            <h2 id="ferramentas-titulo" className="text-lg font-semibold text-ds-text">No seu dia a dia</h2>
-            <span className="text-xs text-ds-subtle">Ferramentas de apoio</span>
+          <div className="mb-3 flex items-center gap-3">
+            <span className="h-px flex-1 bg-ds-line" />
+            <h2 id="ferramentas-titulo" className="font-display text-xl font-bold uppercase tracking-[0.03em] text-ds-text">Ferramentas de campo</h2>
+            <span className="h-px flex-1 bg-ds-line" />
           </div>
           <ul className="grid gap-3 sm:grid-cols-3">
             {ATALHOS.map((atalho) => (

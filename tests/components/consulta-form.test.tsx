@@ -12,7 +12,7 @@ jest.mock('next/navigation', () => ({
 describe('ConsultaForm', () => {
   it('renders textarea and button', () => {
     render(<ConsultaForm />);
-    expect(screen.getByPlaceholderText(/Ex: 516-91/)).toBeInTheDocument();
+    expect(screen.getByPlaceholderText(/Ex\.: 516-91/)).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /Consultar/ })).toBeInTheDocument();
   });
 

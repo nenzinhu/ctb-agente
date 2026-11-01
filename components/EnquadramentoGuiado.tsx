@@ -111,7 +111,7 @@ export default function EnquadramentoGuiado() {
               onChange={(event) => { setDescricao(event.target.value); setErro(null); }}
               rows={5}
               maxLength={1000}
-              placeholder="Ex: O condutor dirigia digitando uma mensagem no telefone celular"
+              placeholder="Ex.: O condutor dirigia digitando uma mensagem no telefone celular"
               hint="Não informe placa, CPF, nome ou outros dados pessoais. Você também pode digitar o código MBFT completo."
               erro={erro}
               acao={<BotaoVoz ditado={ditado} />}

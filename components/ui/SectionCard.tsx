@@ -38,7 +38,11 @@ export default function SectionCard({
           {numero !== undefined ? (
             <span className="section-number">{numero}.</span>
           ) : (
-            icone && <Icone nome={icone} tamanho={18} className="shrink-0" />
+            icone && (
+              <span className="section-icon" aria-hidden="true">
+                <Icone nome={icone} tamanho={16} />
+              </span>
+            )
           )}
           <span className="min-w-0">{titulo}</span>
         </Titulo>

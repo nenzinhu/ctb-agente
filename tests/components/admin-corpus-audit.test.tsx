@@ -20,7 +20,7 @@ describe('AdminCorpusAudit', () => {
     expect(await screen.findByText('CTB indexado')).toBeInTheDocument();
     expect(screen.getByText(/3 trechos sem vetor/)).toBeInTheDocument();
     expect(screen.getByText('516-91')).toBeInTheDocument();
-    expect(screen.getByText('Exemplo do seed')).toBeInTheDocument();
+    expect(screen.getByText('Dado de exemplo')).toBeInTheDocument();
     expect(screen.getByText(/valor da multa/i)).toBeInTheDocument();
     expect(screen.queryByRole('button', { name: /corrigir automaticamente/i })).not.toBeInTheDocument();
   });

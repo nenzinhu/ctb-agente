@@ -12,7 +12,7 @@ const FERRAMENTAS: Array<{ href: string; label: string; descricao: string; icone
   { href: '/pesos-dimensoes', label: 'Pesos e Dimensões', descricao: 'PBT, PBTC, CMT e excesso de peso', icone: 'balanca' },
   { href: '/estrangeiros', label: 'Condutores e Veículos Estrangeiros', descricao: 'Documentos, acordos e possíveis enquadramentos', icone: 'globo' },
   { href: '/professor', label: 'Professor Emérito', descricao: 'Explique e compare situações', icone: 'professor' },
-  { href: '/apostila', label: 'Apostila IA', descricao: 'Material para estudo', icone: 'livro' },
+  { href: '/apostila', label: 'Apostila com IA', descricao: 'Material para estudo', icone: 'livro' },
   { href: '/gerador-pdf', label: 'Ferramentas de PDF', descricao: 'Gerar ou comprimir documentos', icone: 'comprimir' },
 ];
 
@@ -42,7 +42,7 @@ export default function MobileNavigation() {
 
   return (
     <>
-      <nav className="mobile-nav mobile-nav-compact print:hidden md:hidden" aria-label="Navegação mobile">
+      <nav className="mobile-nav mobile-nav-compact print:hidden md:hidden" aria-label="Navegação no celular">
         <Link href="/" className="mobile-nav-action" aria-current={buscaAtiva ? 'page' : undefined}>
           <Icone nome="busca" tamanho={20} /><span>Buscar</span>
         </Link>

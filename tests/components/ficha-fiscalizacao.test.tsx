@@ -98,7 +98,7 @@ describe('FichaFiscalizacao', () => {
   it('exibe a pontuação vinda do banco', () => {
     render(<FichaFiscalizacao card={mockCard} campos={campos} />);
 
-    expect(screen.getByText('7 ponto(s)')).toBeInTheDocument();
+    expect(screen.getByText('7 pontos')).toBeInTheDocument();
   });
 
   it('renderiza os exemplos do campo de observações', () => {

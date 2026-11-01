@@ -197,7 +197,7 @@ export default function GerarApostila() {
   return (
     <div className="space-y-6">
       <TitleCard
-        titulo="Apostila por IA"
+        titulo="Apostila com IA"
         icone="livro"
         subtitulo="Pesquise qualquer documento indexado e crie uma apostila didática do conteúdo inteiro ou de páginas selecionadas."
       />

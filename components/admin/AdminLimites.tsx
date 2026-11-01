@@ -25,13 +25,13 @@ export default function AdminLimites() {
   const carregar = useCallback(async () => {
     try {
       const resposta = await fetch('/api/admin/limites');
-      if (!resposta.ok) throw new Error('Falha ao carregar limites.');
+      if (!resposta.ok) throw new Error('Não foi possível carregar limites.');
       const data = (await resposta.json()) as LimitesResponse;
       setDados(data);
       setLimite(data.settings.consultas_por_hora);
       setTurnstile(data.settings.turnstile_ativo);
     } catch (error) {
-      setErro(error instanceof Error ? error.message : 'Erro desconhecido');
+      setErro(error instanceof Error ? error.message : 'Não foi possível concluir a ação. Tente novamente.');
     }
   }, []);
 
@@ -49,11 +49,11 @@ export default function AdminLimites() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ consultas_por_hora: limite, turnstile_ativo: turnstile }),
       });
-      if (!resposta.ok) throw new Error('Falha ao salvar limites.');
+      if (!resposta.ok) throw new Error('Não foi possível salvar limites.');
       setMensagem('Limites atualizados. A mudança vale em até 30 segundos.');
       await carregar();
     } catch (error) {
-      setErro(error instanceof Error ? error.message : 'Erro desconhecido');
+      setErro(error instanceof Error ? error.message : 'Não foi possível concluir a ação. Tente novamente.');
     } finally {
       setSalvando(false);
     }
@@ -69,14 +69,14 @@ export default function AdminLimites() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ ip: novoIp.trim(), motivo }),
       });
-      if (!resposta.ok) throw new Error('Falha ao bloquear IP.');
+      if (!resposta.ok) throw new Error('Não foi possível bloquear IP.');
       const data = (await resposta.json()) as { ipBloqueados: string[] };
       setDados((atual) => (atual ? { ...atual, ipBloqueados: data.ipBloqueados } : atual));
       setNovoIp('');
       setMotivo('');
       setMensagem('IP bloqueado.');
     } catch (error) {
-      setErro(error instanceof Error ? error.message : 'Erro desconhecido');
+      setErro(error instanceof Error ? error.message : 'Não foi possível concluir a ação. Tente novamente.');
     }
   };
 
@@ -86,11 +86,11 @@ export default function AdminLimites() {
       const resposta = await fetch(`/api/admin/limites?ip=${encodeURIComponent(ip)}`, {
         method: 'DELETE',
       });
-      if (!resposta.ok) throw new Error('Falha ao desbloquear IP.');
+      if (!resposta.ok) throw new Error('Não foi possível desbloquear IP.');
       const data = (await resposta.json()) as { ipBloqueados: string[] };
       setDados((atual) => (atual ? { ...atual, ipBloqueados: data.ipBloqueados } : atual));
     } catch (error) {
-      setErro(error instanceof Error ? error.message : 'Erro desconhecido');
+      setErro(error instanceof Error ? error.message : 'Não foi possível concluir a ação. Tente novamente.');
     }
   };
 
@@ -117,7 +117,7 @@ export default function AdminLimites() {
             className="w-full accent-ds-primary"
           />
           <p className="text-xs text-ds-subtle mt-1">
-            Padrão da especificação: 30 consultas/IP/hora.
+            Valor padrão: 30 consultas por IP por hora.
           </p>
         </div>
 

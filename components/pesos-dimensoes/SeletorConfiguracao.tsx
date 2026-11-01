@@ -73,15 +73,15 @@ export default function SeletorConfiguracao({ valor, onChange }: Props) {
       <button
         ref={gatilhoRef}
         type="button"
-        aria-label="Selecionar configuração do veículo"
         aria-haspopup="listbox"
         aria-expanded={aberto}
         onClick={() => setAberto((estado) => !estado)}
-        className="flex min-h-24 w-full items-center gap-3 rounded-control border-2 border-ds-border bg-ds-surface px-3 py-2 text-left shadow-sm transition hover:border-ds-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ds-primary"
+        className="flex min-h-24 w-full items-center gap-3 rounded-control border-2 border-ds-border bg-ds-surface px-3 py-2 text-left shadow-sm transition hover:border-ds-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ds-focus"
       >
+        <span className="sr-only">Selecionar configuração do veículo: </span>
         <DesenhoVeiculo configuracao={selecionada} compacto />
         <span className="min-w-0 flex-1">
-          <span className="mb-1 inline-flex rounded bg-ds-primary px-2 py-0.5 font-mono text-xs font-bold text-white">{selecionada.codigo}</span>
+          <span className="mb-1 inline-flex rounded-[3px] bg-ds-primary px-2 py-0.5 font-mono text-xs font-bold text-ds-on-solid">{selecionada.codigo}</span>
           <strong className="block text-sm text-ds-text">{selecionada.nome}</strong>
           <small className="mt-1 block text-xs text-ds-subtle">
             {selecionada.quantidadeEixos} eixos · {selecionada.requerAet ? 'AET obrigatória' : 'configuração comum'}
@@ -109,7 +109,7 @@ export default function SeletorConfiguracao({ valor, onChange }: Props) {
                 onChange(configuracao.id);
                 fechar();
               }}
-              className="mb-1 flex min-h-24 w-full items-center gap-3 rounded-control border border-transparent px-2 py-2 text-left last:mb-0 hover:border-ds-primary hover:bg-ds-soft focus-visible:border-ds-primary focus-visible:bg-ds-soft focus-visible:outline-none aria-selected:border-ds-accent aria-selected:bg-ds-accent/10"
+              className="mb-1 flex min-h-24 w-full items-center gap-3 rounded-control border border-transparent px-2 py-2 text-left last:mb-0 hover:border-ds-primary hover:bg-ds-muted focus-visible:border-ds-primary focus-visible:bg-ds-muted focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ds-focus aria-selected:border-ds-accent aria-selected:bg-ds-accent/10"
             >
               <DesenhoVeiculo configuracao={configuracao} compacto />
               <span className="min-w-0 flex-1">
@@ -126,7 +126,7 @@ export default function SeletorConfiguracao({ valor, onChange }: Props) {
         </div>
       )}
 
-      <div className="mt-3 rounded-control border border-ds-line bg-ds-soft/50 p-3">
+      <div className="mt-3 rounded-control border border-ds-line bg-ds-muted/50 p-3">
         <p className="text-xs font-semibold uppercase tracking-wide text-ds-primary">Identificação dos eixos</p>
         <ul className="mt-2 grid gap-1.5 text-xs text-ds-text sm:grid-cols-2">
           {selecionada.gruposEixo.map((grupo, indice) => {

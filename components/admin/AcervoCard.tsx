@@ -51,16 +51,16 @@ export default function AcervoCard({ onIndexado }: AcervoCardProps) {
         body: JSON.stringify({ id: item.id }),
       });
       const corpo = await resposta.json().catch(() => ({}));
-      if (!resposta.ok) throw new Error(corpo.message || corpo.error || 'Falha ao indexar.');
+      if (!resposta.ok) throw new Error(corpo.message || corpo.error || 'Não foi possível indexar.');
       const semVetor = corpo.data?.semVetor ?? 0;
       setMensagem({
         tipo: 'ok',
-        texto: `${corpo.message}${semVetor > 0 ? ` ${semVetor} trecho(s) sem vetor — gere os vetores abaixo quando quiser.` : ''}`,
+        texto: `${corpo.message}${semVetor > 0 ? ` ${semVetor} ${semVetor === 1 ? 'trecho sem vetor' : 'trechos sem vetor'} — gere os vetores abaixo quando quiser.` : ''}`,
       });
       await carregar();
       onIndexado?.();
     } catch (error) {
-      setMensagem({ tipo: 'erro', texto: error instanceof Error ? error.message : 'Falha ao indexar.' });
+      setMensagem({ tipo: 'erro', texto: error instanceof Error ? error.message : 'Não foi possível indexar.' });
     } finally {
       setIndexando(null);
     }

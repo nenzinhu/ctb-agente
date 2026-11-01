@@ -55,12 +55,12 @@ export default function AdminProvedores() {
   const carregar = useCallback(async () => {
     try {
       const resposta = await fetch('/api/admin/providers');
-      if (!resposta.ok) throw new Error('Falha ao carregar provedores.');
+      if (!resposta.ok) throw new Error('Não foi possível carregar provedores.');
       const data = await resposta.json();
       setProviders(data.providers ?? []);
       setPreferencia(data.preferencia ?? null);
     } catch (error) {
-      setErro(error instanceof Error ? error.message : 'Erro desconhecido');
+      setErro(error instanceof Error ? error.message : 'Não foi possível concluir a ação. Tente novamente.');
     }
   }, []);
 
@@ -90,7 +90,7 @@ export default function AdminProvedores() {
         ok: false,
         modeloUsado: modelo,
         latenciaMs: 0,
-        erro: error instanceof Error ? error.message : 'Erro desconhecido',
+        erro: error instanceof Error ? error.message : 'Não foi possível concluir a ação. Tente novamente.',
       };
       setPings((atual) => ({ ...atual, [k]: falha }));
       return falha;
@@ -142,12 +142,12 @@ export default function AdminProvedores() {
       });
       if (!resposta.ok) {
         const data = await resposta.json().catch(() => ({}));
-        throw new Error(data.message || 'Falha ao salvar a escolha.');
+        throw new Error(data.message || 'Não foi possível salvar a escolha.');
       }
       setPreferencia(valor);
       setAviso(valor ? `Modelo em uso: ${valor.modelo}.` : 'Voltou para a ordem padrão.');
     } catch (error) {
-      setErro(error instanceof Error ? error.message : 'Erro desconhecido');
+      setErro(error instanceof Error ? error.message : 'Não foi possível concluir a ação. Tente novamente.');
     }
   };
 

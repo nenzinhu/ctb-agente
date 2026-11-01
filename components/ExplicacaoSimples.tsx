@@ -32,7 +32,7 @@ export default function ExplicacaoSimples({ tipo, id }: { tipo: 'ficha' | 'pop';
       setExplicacao(corpo as Explicacao);
       setEstado('pronto');
     } catch (error) {
-      setErro(error instanceof Error ? error.message : 'Erro desconhecido.');
+      setErro(error instanceof Error ? error.message : 'Não foi possível gerar a explicação. Tente novamente.');
       setEstado('erro');
     }
   };
@@ -54,7 +54,7 @@ export default function ExplicacaoSimples({ tipo, id }: { tipo: 'ficha' | 'pop';
 
       {estado === 'inicio' && (
         <p className="mt-2 text-sm text-ds-subtle">
-          Explicação para quem não é da área, com exemplos do dia a dia sobre esta {tipo === 'ficha' ? 'infração' : 'situação'}.
+          Veja um exemplo prático desta {tipo === 'ficha' ? 'infração' : 'situação'}.
         </p>
       )}
       {estado === 'carregando' && (

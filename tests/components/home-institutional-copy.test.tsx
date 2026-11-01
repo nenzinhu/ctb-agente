@@ -27,7 +27,7 @@ describe('apresentação institucional da página inicial', () => {
     expect(screen.getByText('Ferramenta operacional para agentes de campo')).toBeInTheDocument();
     expect(
       screen.getByText(
-        'Aplicativo de apoio ao agente em campo para consultar rapidamente o CTB, as fichas do MBFT e os POPs, esclarecer dúvidas e conferir a fonte oficial antes da atuação.',
+        'Consulte o CTB, as fichas MBFT e os POPs com a fonte ao lado antes de atuar.',
       ),
     ).toBeInTheDocument();
     expect(

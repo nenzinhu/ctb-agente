@@ -34,10 +34,10 @@ export default function AdminUso() {
     setCarregando(true);
     try {
       const resposta = await fetch(`/api/admin/uso?dias=${janela}`);
-      if (!resposta.ok) throw new Error('Falha ao carregar estatísticas.');
+      if (!resposta.ok) throw new Error('Não foi possível carregar estatísticas.');
       setDados((await resposta.json()) as UsoResponse);
     } catch (error) {
-      setErro(error instanceof Error ? error.message : 'Erro desconhecido');
+      setErro(error instanceof Error ? error.message : 'Não foi possível concluir a ação. Tente novamente.');
     } finally {
       setCarregando(false);
     }
@@ -120,7 +120,7 @@ export default function AdminUso() {
             Lacunas da base: perguntas que não retornaram resultado relevante.
           </p>
           {dados.perguntasSemResposta.length === 0 ? (
-            <p className="text-sm text-ds-subtle">Nenhuma lacuna registrada. 🎉</p>
+            <p className="text-sm text-ds-subtle">Nenhuma pergunta sem resposta neste período.</p>
           ) : (
             <ul className="space-y-2 text-sm">
               {dados.perguntasSemResposta.map((item, idx) => (

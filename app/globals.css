@@ -16,79 +16,82 @@
    Contrast (WCAG AA) was checked for every text/background pair in use.
    ========================================================================= */
 :root {
-  /* Native fonts keep startup/build independent of third-party font downloads. */
-  --font-sans: 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, Arial, sans-serif;
-  --font-mono: 'SFMono-Regular', Consolas, 'Liberation Mono', monospace;
-  /* Palette */
-  --ds-bg: #f3f6f4;
-  --ds-surface: #ffffff; /* cards and inputs */
-  --ds-text: #1e293b; /* main text (slate-800) */
-  --ds-border: #1e293b; /* thick borders */
-  --ds-primary: #008448; /* institutional green: header, CTA, titles */
-  --ds-gold: #c8933f; /* gold: decorative details */
-  --ds-accent: #fbbf24; /* highlight yellow */
-  --ds-ink: #2b6cb0; /* links and information */
-  --ds-muted: #f1f5f3; /* soft backgrounds */
-  --ds-danger: #dc2626;
+  /* "Manual de campo": condensed signage, a low-vision reading face and
+     precise monospaced references. Fonts are bundled, never fetched at runtime. */
+  --font-display: 'Barlow Condensed', sans-serif;
+  --font-sans: 'Atkinson Hyperlegible Next', sans-serif;
+  --font-mono: 'IBM Plex Mono', monospace;
+
+  /* Palette: warm field paper, deep institutional green and a signal amber.
+     Amber is a fill/detail colour, never small text on a light surface. */
+  --ds-bg: #f4f1e8;
+  --ds-surface: #fffefa;
+  --ds-text: #17241d;
+  --ds-border: #17241d;
+  --ds-primary: #0b5238;
+  --ds-gold: #c58a2a;
+  --ds-accent: #f3b544;
+  --ds-ink: #174f78;
+  --ds-muted: #ebe8dd;
+  --ds-danger: #a52820;
 
   /* Derived tokens the palette needs to stay readable */
-  --ds-subtle: #475569; /* secondary text: 7.6:1 on surface */
-  --ds-line: color-mix(in srgb, var(--ds-border) 16%, transparent); /* hairlines */
-  --ds-border-input: var(--ds-border); /* form control outline, >= 3:1 */
-  --ds-primary-strong: #01713d; /* CTA hover; green text on tinted fills */
-  --ds-primary-soft: color-mix(in srgb, var(--ds-primary) 12%, var(--ds-surface));
-  --ds-gold-strong: #946420; /* gold as TEXT: --ds-gold is only 2.7:1 on white */
-  --ds-on-solid: #ffffff; /* text on solid fills (primary, status) */
-  --ds-on-accent: #1e293b; /* text on the yellow accent, in every theme */
-  --ds-warn: #b45309;
+  --ds-subtle: #506057; /* 6.6:1 on the surface */
+  --ds-line: color-mix(in srgb, var(--ds-border) 18%, transparent);
+  --ds-border-input: #34483c;
+  --ds-primary-strong: #073d2a;
+  --ds-primary-soft: #e2ece3;
+  --ds-gold-strong: #785015; /* 6.5:1 on paper */
+  --ds-on-solid: #ffffff;
+  --ds-on-accent: #17241d; /* 9.0:1 on amber */
+  --ds-warn: #815300;
   --ds-success: var(--ds-primary);
-  --ds-focus: var(--ds-primary);
-  --ds-focus-width: 2px;
+  --ds-focus: #b84c00;
+  --ds-focus-width: 3px;
 
-  /* Infraction severity (CTB art. 258) */
-  --ds-sev-leve: var(--ds-ink);
-  --ds-sev-media: var(--ds-warn);
-  --ds-sev-grave: #c2410c;
-  --ds-sev-gravissima: var(--ds-danger);
+  /* Infraction severity: solid fills that all accept white text. */
+  --ds-sev-leve: #165b86;
+  --ds-sev-media: #815300;
+  --ds-sev-grave: #9b3b13;
+  --ds-sev-gravissima: #a52820;
 
-  /* Header: the gradient is drawn under a scrim so small white text keeps
-     >= 5:1 across the whole bar (the bare gradient drops to 3.5:1). */
-  --ds-header-from: #01713d;
-  --ds-header-via: #008448;
-  --ds-header-to: #1d8c45;
-  --ds-header-scrim: rgb(0 0 0 / 0.25);
-  --ds-header-line: rgb(255 255 255 / 0.14);
-  --ds-header-pill: rgb(255 255 255 / 0.12);
+  /* Header: a solid field-green signboard with a signal-amber rule. */
+  --ds-header-from: #083f2c;
+  --ds-header-via: #0a4933;
+  --ds-header-to: #0b5238;
+  --ds-header-scrim: transparent;
+  --ds-header-line: rgb(255 255 255 / 0.2);
+  --ds-header-pill: rgb(255 255 255 / 0.09);
   --ds-header-pill-hover: rgb(255 255 255 / 0.16);
-  --ds-header-pill-border: rgb(255 255 255 / 0.3);
+  --ds-header-pill-border: rgb(255 255 255 / 0.4);
   --ds-on-header: #ffffff;
-  --ds-on-header-soft: rgb(255 255 255 / 0.85);
-  --ds-header-shadow: 0 3px 14px rgb(0 0 0 / 0.10);
+  --ds-on-header-soft: #e7f0e9;
+  --ds-header-shadow: 0 4px 0 rgb(7 35 24 / 0.16);
 
-  /* Shadows and radii */
-  --ds-shadow-color: rgb(30 41 59 / 0.06);
-  --ds-shadow-solid: 0 4px 20px var(--ds-shadow-color);
-  --ds-shadow-pressed: 0 1px 3px var(--ds-shadow-color);
-  --ds-shadow-overlay: 0 12px 40px rgb(0 0 0 / 0.22);
-  --ds-radius-control: 12px;
-  --ds-radius-card: 16px;
-  --ds-radius-pill: 9999px;
+  /* Crisp field-manual surfaces, not floating glass cards. */
+  --ds-shadow-color: rgb(23 36 29 / 0.12);
+  --ds-shadow-solid: 0 3px 0 var(--ds-shadow-color);
+  --ds-shadow-pressed: 0 1px 0 var(--ds-shadow-color);
+  --ds-shadow-overlay: 0 18px 50px rgb(7 35 24 / 0.3);
+  --ds-radius-control: 8px;
+  --ds-radius-card: 12px;
+  --ds-radius-pill: 4px;
 
-  /* Page background layers: the colors of the CPMRv crest — sun at the top,
-     green field at the bottom, the red of its ribbon as a glow. */
-  --ds-crest-red: #e5252c;
-  --ds-crest-orange: #f7a616;
-  --ds-crest-yellow: #f6e10f;
-  --ds-crest-green: #1c8a3c;
-  --ds-fundo-topo: color-mix(in srgb, var(--ds-crest-yellow) 22%, #ffffff);
-  --ds-fundo-meio: color-mix(in srgb, var(--ds-crest-orange) 10%, #ffffff);
-  --ds-fundo-base: color-mix(in srgb, var(--ds-crest-green) 14%, #ffffff);
-  --ds-glow-red: color-mix(in srgb, var(--ds-crest-red) 22%, transparent);
-  --ds-grid-line: color-mix(in srgb, var(--ds-text) 5%, transparent);
-  --ds-grid-size: 32px;
-  --ds-blob-green: color-mix(in srgb, var(--ds-header-via) 25%, transparent);
-  --ds-blob-gold: color-mix(in srgb, var(--ds-gold) 45%, transparent);
-  --ds-vignette: rgb(0 0 0 / 0.18);
+  /* A restrained survey grid on warm paper. */
+  --ds-crest-red: #a52820;
+  --ds-crest-orange: #b84c00;
+  --ds-crest-yellow: #f3b544;
+  --ds-crest-green: #0b5238;
+  --ds-fundo-topo: #f4f1e8;
+  --ds-fundo-meio: #f4f1e8;
+  --ds-fundo-base: #f4f1e8;
+  --ds-glow-red: transparent;
+  --ds-grid-line: color-mix(in srgb, var(--ds-primary) 8%, transparent);
+  --ds-grid-size: 48px;
+  --ds-blob-green: transparent;
+  --ds-blob-gold: transparent;
+  --ds-vignette: transparent;
+
 
   color-scheme: light;
 }
@@ -96,38 +99,44 @@
 /* Screen only: a printout always uses the light tokens. */
 @media screen {
   :root.dark {
-    --ds-bg: #0f172a;
-    --ds-surface: #1e293b;
-    --ds-text: #eaeaea;
-    --ds-border: #334155;
-    --ds-primary: #22c55e;
-    --ds-ink: #60a5fa;
-    --ds-muted: #1e293b;
-    --ds-danger: #f87171;
-    --ds-accent: #fbbf24;
+    --ds-bg: #101813;
+    --ds-surface: #17231c;
+    --ds-text: #f6f2e7;
+    --ds-border: #66786d;
+    --ds-primary: #80d6a7;
+    --ds-ink: #8ec8f0;
+    --ds-muted: #202e25;
+    --ds-danger: #ff9e95;
+    --ds-accent: #f3b544;
 
-    --ds-subtle: #94a3b8;
-    --ds-line: var(--ds-border);
-    --ds-border-input: #64748b; /* #334155 would be 1.4:1 on the surface */
-    --ds-primary-strong: #4ade80;
-    --ds-primary-soft: color-mix(in srgb, var(--ds-primary) 16%, var(--ds-surface));
-    --ds-gold-strong: var(--ds-gold);
-    --ds-on-solid: #0f172a; /* white on #22c55e would be 2.3:1 */
-    --ds-warn: #fbbf24;
-    --ds-sev-grave: #fb923c;
+    --ds-subtle: #c6d0c8;
+    --ds-line: color-mix(in srgb, var(--ds-text) 22%, transparent);
+    --ds-border-input: #8da096;
+    --ds-primary-strong: #a5e8bf;
+    --ds-primary-soft: #22392c;
+    --ds-gold-strong: #f3c66f;
+    --ds-on-solid: #0c1b13;
+    --ds-on-accent: #17241d;
+    --ds-warn: #f3c66f;
+    --ds-sev-leve: #8ecdf0;
+    --ds-sev-media: #f3c66f;
+    --ds-sev-grave: #ffb08f;
+    --ds-sev-gravissima: #ff9e95;
 
-    --ds-shadow-color: rgb(0 0 0 / 0.6);
-    --ds-fundo-topo: color-mix(in srgb, var(--ds-crest-orange) 14%, #0f172a);
-    --ds-fundo-meio: #0f172a;
-    --ds-fundo-base: color-mix(in srgb, var(--ds-crest-green) 22%, #0f172a);
-    --ds-glow-red: color-mix(in srgb, var(--ds-crest-red) 16%, transparent);
-    --ds-grid-line: color-mix(in srgb, var(--ds-text) 4%, transparent);
-    --ds-blob-green: color-mix(in srgb, var(--ds-header-via) 30%, transparent);
-    --ds-blob-gold: color-mix(in srgb, var(--ds-gold) 18%, transparent);
-    --ds-vignette: rgb(0 0 0 / 0.35);
+    --ds-header-from: #071f17;
+    --ds-header-via: #09291d;
+    --ds-header-to: #0b3223;
+    --ds-header-shadow: 0 4px 0 rgb(0 0 0 / 0.38);
+    --ds-shadow-color: rgb(0 0 0 / 0.5);
+    --ds-fundo-topo: #101813;
+    --ds-fundo-meio: #101813;
+    --ds-fundo-base: #101813;
+    --ds-grid-line: rgb(128 214 167 / 0.08);
+    --ds-vignette: transparent;
 
     color-scheme: dark;
   }
+
 }
 
 /* Modo sol: pure black on white, no decoration. Declared after .dark and
@@ -194,10 +203,23 @@ html {
 body {
   background-color: var(--ds-bg);
   color: var(--ds-text);
+  font-feature-settings: 'kern', 'liga';
   -webkit-font-smoothing: antialiased;
   /* Own stacking context, so the fixed background layer below sits above the
      body color and under the content. */
   isolation: isolate;
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--font-display);
+  letter-spacing: 0.012em;
+  text-wrap: balance;
+}
+
+p {
+  text-wrap: pretty;
 }
 
 @media (max-width: 767px) {
@@ -206,7 +228,7 @@ body {
   }
 }
 
-/* A restrained green wash keeps the search and source documents in focus. */
+/* Survey-paper grid: a precise, quiet reference plane for the field manual. */
 body::before {
   content: '';
   position: fixed;
@@ -217,16 +239,21 @@ body::before {
   height: 100vh;
   height: 100lvh;
   pointer-events: none;
-  background-image: radial-gradient(ellipse at 85% 0%, color-mix(in srgb, var(--ds-primary) 6%, transparent), transparent 60%);
+  background-image:
+    linear-gradient(var(--ds-grid-line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--ds-grid-line) 1px, transparent 1px);
+  background-size: var(--ds-grid-size) var(--ds-grid-size);
+  mask-image: linear-gradient(to bottom, black, rgb(0 0 0 / 0.25) 70%, transparent);
 }
 
 :focus-visible {
   outline: var(--ds-focus-width) solid var(--ds-focus);
-  outline-offset: 2px;
+  outline-offset: 3px;
 }
 
 ::selection {
-  background: color-mix(in srgb, var(--ds-primary) 22%, transparent);
+  background: color-mix(in srgb, var(--ds-accent) 60%, transparent);
+  color: var(--ds-text);
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -254,21 +281,28 @@ body::before {
     @apply mx-auto w-full max-w-3xl px-4 pb-16 pt-5 sm:px-6 sm:pt-8;
   }
 
-  /* ---- Type: readable headings and compact mono reference labels ---- */
+  /* ---- Type: condensed field-sign headings, mono reference labels ---- */
   .eyebrow {
-    @apply font-mono text-xs font-semibold uppercase tracking-[0.12em] text-ds-gold-strong;
+    @apply inline-flex items-center gap-2 font-mono text-[11px] font-semibold uppercase tracking-[0.13em] text-ds-gold-strong;
+  }
+  .eyebrow::before {
+    content: '';
+    @apply block h-1 w-5 shrink-0 bg-ds-accent;
   }
   .page-title {
-    @apply text-xl font-bold tracking-tight text-ds-text sm:text-2xl;
+    @apply font-display text-3xl font-bold uppercase leading-none tracking-[0.01em] text-ds-text sm:text-4xl;
   }
   .page-lead {
-    @apply mt-2 max-w-2xl text-base text-ds-subtle;
+    @apply mt-3 max-w-2xl text-base leading-relaxed text-ds-subtle;
   }
   .section-title {
-    @apply flex min-w-0 items-center gap-2 text-base font-semibold text-ds-text;
+    @apply flex min-w-0 items-center gap-2 font-display text-xl font-bold uppercase leading-none tracking-[0.025em] text-ds-text;
   }
   .section-number {
-    @apply text-ds-gold-strong;
+    @apply font-mono text-sm text-ds-gold-strong;
+  }
+  .section-icon {
+    @apply grid h-7 w-7 shrink-0 place-items-center rounded-[3px] border border-ds-border bg-ds-accent text-ds-on-accent;
   }
   .label {
     @apply mb-2 block text-sm font-semibold text-ds-text;
@@ -282,52 +316,65 @@ body::before {
 
   /* ---- Cards ---- */
   .card {
-    @apply rounded-card border border-ds-line bg-ds-surface shadow-solid;
+    @apply relative rounded-card border border-ds-line bg-ds-surface shadow-solid;
   }
   .card-pad {
     @apply p-4 sm:p-6;
   }
-  /* A subtle divider keeps the heading separate from the content. */
+  /* A rule with a short amber registration mark, like a manual chapter head. */
   .card-head {
-    @apply mb-5 flex flex-wrap items-center justify-between gap-x-3 gap-y-2 border-b border-ds-line pb-4;
+    @apply relative mb-5 flex flex-wrap items-center justify-between gap-x-3 gap-y-2 border-b border-ds-line pb-4;
   }
-  /* Soft box inside a card */
+  .card-head::after {
+    content: '';
+    @apply absolute -bottom-px left-0 h-0.5 w-10 bg-ds-accent;
+  }
   .panel {
     @apply rounded-control border border-ds-line bg-ds-muted;
   }
-  /* Highlight / page title card */
   .card-destaque {
-    @apply rounded-card border border-ds-line bg-ds-surface px-4 py-5 text-center sm:px-6;
+    @apply relative overflow-hidden rounded-card border border-ds-line bg-ds-surface px-4 py-6 text-center shadow-solid sm:px-6;
+  }
+  .card-destaque::before {
+    content: '';
+    @apply absolute inset-x-0 top-0 h-1 bg-ds-accent;
+  }
+  .card-destaque-icon {
+    @apply mx-auto mb-4 grid h-11 w-11 place-items-center rounded-[4px] border border-ds-border bg-ds-accent text-ds-on-accent shadow-pressed;
   }
   .card-destaque-titulo {
-    @apply inline-flex items-center justify-center gap-2 text-xl font-bold tracking-tight text-ds-primary sm:text-2xl;
+    @apply inline-flex items-center justify-center gap-2 font-display text-3xl font-bold uppercase leading-none tracking-[0.02em] text-ds-primary sm:text-4xl;
   }
   .card-destaque-sub {
-    @apply mx-auto mt-1.5 max-w-2xl text-sm text-ds-subtle;
+    @apply mx-auto mt-2 max-w-2xl text-sm leading-relaxed text-ds-subtle;
   }
 
-  /* ---- Buttons ---- */
+  /* ---- Buttons: road-sign labels with a physical edge ---- */
   .btn {
-    @apply inline-flex min-h-[44px] items-center justify-center gap-2 rounded-control px-4 py-2.5 text-center text-sm font-semibold transition-[transform,box-shadow,background-color,border-color,color] duration-150 disabled:cursor-not-allowed disabled:opacity-50;
+    @apply inline-flex min-h-[44px] items-center justify-center gap-2 rounded-control border px-4 py-2.5 text-center font-display text-base font-bold uppercase tracking-[0.035em] transition-[transform,box-shadow,background-color,border-color,color] duration-150 disabled:cursor-not-allowed;
   }
-  /* A small press movement provides feedback without shifting the layout. */
+  .btn:disabled,
+  .btn:disabled:hover {
+    @apply border-ds-line bg-ds-muted text-ds-subtle shadow-none;
+    transform: none;
+  }
   .btn-primary {
-    @apply btn bg-ds-primary text-ds-on-solid shadow-solid hover:bg-ds-primary-strong active:translate-x-0.5 active:translate-y-0.5 active:shadow-pressed;
+    @apply btn border-ds-primary-strong bg-ds-primary text-ds-on-solid hover:bg-ds-primary-strong active:translate-x-0.5 active:translate-y-0.5 active:shadow-pressed;
   }
   .btn-secondary {
-    @apply btn border-2 border-ds-border bg-ds-surface text-ds-text shadow-solid hover:bg-ds-muted active:translate-x-0.5 active:translate-y-0.5 active:shadow-pressed;
+    @apply btn border-ds-border bg-ds-surface text-ds-text hover:bg-ds-muted active:translate-x-0.5 active:translate-y-0.5 active:shadow-pressed;
   }
   .btn-ghost {
-    @apply btn text-ds-subtle hover:bg-ds-muted hover:text-ds-text;
+    @apply btn border-transparent text-ds-subtle hover:bg-ds-muted hover:text-ds-text;
   }
   .btn-danger {
-    @apply btn border-2 border-ds-danger bg-ds-surface text-ds-danger hover:bg-ds-danger/10;
+    @apply btn border-ds-danger bg-ds-surface text-ds-danger hover:bg-ds-danger/10;
   }
   .btn-sm {
-    @apply min-h-[36px] px-3 py-1.5 text-xs;
+    @apply min-h-[36px] px-3 py-1.5 text-sm;
   }
   .icon-btn {
-    @apply inline-grid h-10 w-10 shrink-0 place-items-center rounded-control border-2 border-ds-primary bg-ds-surface text-ds-primary transition-colors hover:bg-ds-primary-soft disabled:cursor-not-allowed disabled:opacity-50;
+    @apply inline-grid h-11 w-11 shrink-0 place-items-center rounded-control border-2 border-ds-primary bg-ds-surface text-ds-primary transition-colors hover:bg-ds-primary-soft disabled:cursor-not-allowed disabled:opacity-60;
   }
   .icon-btn-perigo {
     @apply border-ds-danger bg-ds-danger/10 text-ds-danger hover:bg-ds-danger/15;
@@ -335,25 +382,25 @@ body::before {
 
   /* ---- Form controls ---- */
   .input {
-    @apply block min-h-[48px] w-full rounded-control border border-ds-border-input bg-ds-surface px-3.5 py-3 text-base text-ds-text placeholder:text-ds-subtle/80 disabled:cursor-not-allowed disabled:opacity-60 aria-[invalid=true]:border-ds-danger;
+    @apply block min-h-[48px] w-full rounded-control border-2 border-ds-border-input bg-ds-surface px-3.5 py-3 text-base text-ds-text placeholder:text-ds-subtle focus:border-ds-primary disabled:cursor-not-allowed disabled:opacity-65 aria-[invalid=true]:border-ds-danger;
   }
 
   .chip {
-    @apply inline-flex min-h-[36px] max-w-full items-center gap-1.5 truncate rounded-full border border-ds-line bg-ds-surface px-3 py-1 text-[13px] text-ds-text transition-colors hover:border-ds-primary hover:bg-ds-primary-soft disabled:cursor-not-allowed disabled:opacity-50;
+    @apply inline-flex min-h-[40px] max-w-full items-center gap-1.5 truncate rounded-control border border-ds-line bg-ds-surface px-3 py-1 text-[13px] font-semibold text-ds-text transition-colors hover:border-ds-primary hover:bg-ds-primary-soft disabled:cursor-not-allowed disabled:opacity-60;
   }
 
   /* ---- CTB and POP consultation workspace ---- */
   .consultation-intro {
-    @apply pt-1 sm:pt-3;
+    @apply relative pt-1 sm:pt-3;
   }
   .consultation-title {
-    @apply mt-2 text-3xl font-bold tracking-tight text-ds-text sm:text-[2.75rem] sm:leading-tight;
+    @apply mt-2 font-display text-5xl font-bold uppercase leading-[0.9] tracking-[0.005em] text-ds-text sm:text-7xl;
   }
   .consultation-lead {
-    @apply mt-2 max-w-2xl text-base leading-relaxed text-ds-subtle sm:text-lg;
+    @apply mt-4 max-w-2xl text-base leading-relaxed text-ds-subtle sm:text-lg;
   }
   .mobile-home-intro .consultation-title {
-    @apply text-2xl sm:text-[2.75rem];
+    @apply text-4xl sm:text-7xl;
   }
   .mobile-home-intro .consultation-lead {
     @apply text-sm sm:text-lg;
@@ -361,62 +408,72 @@ body::before {
   .mobile-query-field {
     field-sizing: content;
   }
+  .hero-route {
+    @apply mt-6 flex flex-wrap items-center gap-x-4 gap-y-2 border-y border-ds-line py-2.5 font-mono text-[10px] font-semibold uppercase tracking-[0.11em] text-ds-subtle;
+  }
+  .hero-route span {
+    @apply inline-flex items-center gap-2;
+  }
+  .hero-route span:not(:last-child)::after {
+    content: '';
+    @apply block h-1.5 w-1.5 rotate-45 bg-ds-accent;
+  }
   .consultation-card {
     @apply border-t-4 border-t-ds-primary;
   }
   .consultation-modes {
-    @apply mb-6 grid grid-cols-2 gap-2 rounded-control bg-ds-muted p-1.5;
+    @apply mb-6 grid grid-cols-3 gap-1.5 rounded-control border border-ds-line bg-ds-muted p-1.5;
   }
   .consultation-mode {
-    @apply flex min-w-0 items-center gap-2 rounded-lg border border-transparent px-2.5 py-3 text-sm text-ds-subtle transition-colors hover:bg-ds-surface sm:gap-3 sm:px-3;
+    @apply flex min-w-0 flex-col items-center justify-center gap-1 rounded-[6px] border border-transparent px-1 py-2 text-center text-[11px] leading-tight text-ds-subtle transition-colors hover:bg-ds-surface sm:flex-row sm:justify-start sm:gap-3 sm:px-3 sm:py-3 sm:text-left sm:text-sm;
   }
   .consultation-mode[aria-current='page'] {
-    @apply border-ds-primary bg-ds-surface text-ds-primary-strong shadow-sm;
+    @apply border-ds-primary bg-ds-surface text-ds-primary-strong shadow-pressed;
   }
   .query-example {
     @apply min-h-[40px] whitespace-normal text-left;
     overflow-wrap: anywhere;
   }
   .search-guide {
-    @apply rounded-card border border-ds-line bg-ds-surface/70 p-5;
+    @apply rounded-card border border-ds-line bg-ds-surface p-5 shadow-solid;
   }
   .search-guide-icon {
-    @apply grid h-9 w-9 shrink-0 place-items-center rounded-lg bg-ds-primary-soft text-ds-primary-strong;
+    @apply grid h-9 w-9 shrink-0 place-items-center rounded-[6px] bg-ds-primary-soft text-ds-primary-strong;
   }
   .tool-link {
-    @apply block h-full rounded-card border border-ds-line bg-ds-surface p-5 transition-colors hover:border-ds-primary;
+    @apply block h-full rounded-card border border-ds-line bg-ds-surface p-5 shadow-solid transition-colors hover:border-ds-primary hover:bg-ds-primary-soft/40;
   }
 
-  /* ---- Badges: solid fills keep >= 4.5:1 in both themes ---- */
+  /* ---- Badges: squared reference stamps, never pill-shaped ---- */
   .badge {
-    @apply inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 font-mono text-[11px] font-bold uppercase tracking-[0.06em];
+    @apply inline-flex items-center gap-1 rounded-[4px] border px-2 py-0.5 font-mono text-[11px] font-bold uppercase tracking-[0.05em];
   }
   .badge-neutral {
-    @apply badge border border-ds-line bg-ds-muted text-ds-text;
+    @apply badge border-ds-line bg-ds-muted text-ds-text;
   }
   .badge-brand {
-    @apply badge bg-ds-primary-soft text-ds-primary-strong;
+    @apply badge border border-ds-primary/30 bg-ds-primary-soft text-ds-primary-strong;
   }
   .badge-leve {
-    @apply badge bg-ds-sev-leve text-ds-on-solid;
+    @apply badge border-ds-sev-leve bg-ds-sev-leve text-ds-on-solid;
   }
   .badge-media {
-    @apply badge bg-ds-sev-media text-ds-on-solid;
+    @apply badge border-ds-sev-media bg-ds-sev-media text-ds-on-solid;
   }
   .badge-grave {
-    @apply badge bg-ds-sev-grave text-ds-on-solid;
+    @apply badge border-ds-sev-grave bg-ds-sev-grave text-ds-on-solid;
   }
   .badge-gravissima {
-    @apply badge bg-ds-sev-gravissima text-ds-on-solid;
+    @apply badge border-ds-sev-gravissima bg-ds-sev-gravissima text-ds-on-solid;
   }
 
-  /* ---- Alerts: opaque tint over the surface, so the grid never shows through ---- */
+  /* ---- Alerts: an amber index bar makes urgency scannable ---- */
   .alert {
-    @apply flex gap-3 rounded-control border-2 px-4 py-3 text-sm text-ds-text;
+    @apply flex gap-3 rounded-control border border-l-4 px-4 py-3 text-sm text-ds-text;
   }
   .alert-info {
     @apply alert border-ds-ink;
-    background-color: color-mix(in srgb, var(--ds-ink) 7%, var(--ds-surface));
+    background-color: color-mix(in srgb, var(--ds-ink) 6%, var(--ds-surface));
   }
   .alert-warn {
     @apply alert border-ds-warn;
@@ -448,16 +505,16 @@ body::before {
 
   /* ---- Segmented tabs (result views, admin sections) ---- */
   .tabs {
-    @apply inline-flex max-w-full gap-0.5 rounded-lg border border-ds-border bg-ds-surface/95 p-0.5 shadow-sm backdrop-blur-sm;
+    @apply inline-flex max-w-full gap-1 rounded-control border border-ds-border bg-ds-muted p-1 shadow-pressed;
   }
   .tab {
-    @apply inline-flex min-h-[34px] items-center justify-center gap-1 whitespace-nowrap rounded-md px-2.5 font-mono text-[11px] font-semibold uppercase tracking-[0.045em] text-ds-subtle transition-all duration-200 hover:bg-ds-muted hover:text-ds-text;
+    @apply inline-flex min-h-[38px] items-center justify-center gap-1 whitespace-nowrap rounded-[5px] px-3 font-mono text-[11px] font-semibold uppercase tracking-[0.04em] text-ds-subtle transition-all duration-200 hover:bg-ds-surface hover:text-ds-text;
   }
   .tab-active {
-    @apply -translate-y-px bg-ds-primary text-ds-on-solid shadow-sm hover:bg-ds-primary hover:text-ds-on-solid;
+    @apply bg-ds-primary text-ds-on-solid shadow-pressed hover:bg-ds-primary hover:text-ds-on-solid;
   }
 
-  /* ---- Stepper: squares joined by a 2px line ---- */
+  /* ---- Stepper: numbered route markers joined by a rule ---- */
   .stepper {
     @apply flex items-start;
   }
@@ -467,59 +524,58 @@ body::before {
   .step + .step::before {
     content: '';
     position: absolute;
-    top: 13px;
-    left: calc(-50% + 20px);
-    right: calc(50% + 20px);
+    top: 14px;
+    left: calc(-50% + 22px);
+    right: calc(50% + 22px);
     height: 2px;
-    background-color: var(--ds-text);
+    background-color: var(--ds-line);
   }
   .step[data-estado='feita'] + .step::before {
     background-color: var(--ds-primary);
   }
   .step-box {
-    @apply grid h-7 w-7 place-items-center rounded-md bg-ds-text font-mono text-xs font-bold text-ds-surface;
+    @apply grid h-8 w-8 place-items-center rounded-[4px] border border-ds-border bg-ds-muted font-mono text-xs font-bold text-ds-text;
   }
   .step[data-estado='feita'] .step-box,
   .step[data-estado='atual'] .step-box {
-    @apply bg-ds-primary text-ds-on-solid;
+    @apply border-ds-primary bg-ds-primary text-ds-on-solid;
   }
   .step[data-estado='atual'] .step-box {
-    outline: 2px solid var(--ds-gold);
+    outline: 3px solid var(--ds-accent);
     outline-offset: 2px;
   }
   .step-label {
-    @apply max-w-full break-words font-mono text-[10px] font-semibold uppercase leading-tight tracking-[0.08em] text-ds-text sm:text-[11px];
+    @apply max-w-full break-words font-mono text-[11px] font-semibold uppercase leading-tight tracking-[0.06em] text-ds-text sm:text-xs;
   }
   .step[data-estado='atual'] .step-label {
     @apply font-bold;
   }
 
-  /* ---- Header ---- */
+  /* ---- Header: a roadside signboard with a signal rule ---- */
   .ds-header {
     color: var(--ds-on-header);
-    background-image:
-      linear-gradient(var(--ds-header-scrim), var(--ds-header-scrim)),
-      linear-gradient(165deg, var(--ds-header-from) 0%, var(--ds-header-via) 58%, var(--ds-header-to) 100%);
+    background-color: var(--ds-header-from);
+    background-image: linear-gradient(105deg, var(--ds-header-from), var(--ds-header-via) 62%, var(--ds-header-to));
     box-shadow: var(--ds-header-shadow);
   }
-  /* Green focus would vanish on the green bar */
+  /* Amber focus is unmistakable on the green bar */
   .ds-header :focus-visible {
     outline-color: var(--ds-accent);
   }
   .header-mark {
-    @apply grid h-9 w-9 shrink-0 place-items-center rounded-control border;
+    @apply grid h-9 w-9 shrink-0 place-items-center rounded-[4px] border;
     background-color: var(--ds-header-pill);
     border-color: var(--ds-header-pill-border);
   }
   .header-title {
-    @apply min-w-0 truncate text-base font-bold leading-none tracking-tight sm:text-xl;
+    @apply min-w-0 truncate font-display text-xl font-bold uppercase leading-none tracking-[0.035em] sm:text-2xl;
   }
   .header-sub {
-    @apply mt-1 font-mono text-[10px] font-semibold uppercase leading-none tracking-[0.14em];
+    @apply mt-1 font-mono text-[10px] font-semibold uppercase leading-none tracking-[0.12em];
     color: var(--ds-on-header-soft);
   }
   .header-pill {
-    @apply inline-flex min-h-[38px] min-w-[38px] items-center justify-center gap-1.5 rounded-full border px-2 font-mono text-[11px] font-semibold uppercase tracking-[0.08em] transition-colors md:px-3;
+    @apply inline-flex min-h-[40px] min-w-[40px] items-center justify-center gap-1.5 rounded-[4px] border px-2 font-mono text-[11px] font-semibold uppercase tracking-[0.06em] transition-colors md:px-3;
     background-color: var(--ds-header-pill);
     border-color: var(--ds-header-pill-border);
     color: var(--ds-on-header);
@@ -534,11 +590,11 @@ body::before {
   }
   .header-strip {
     border-top: 1px solid var(--ds-header-line);
-    border-bottom: 2px solid var(--ds-gold);
+    border-bottom: 3px solid var(--ds-accent);
   }
-  /* Phones: a horizontally scrolling strip, faded at the right edge */
+  /* Phones: horizontally scrolling route tabs, faded at the right edge */
   .nav-tabs {
-    @apply relative -mx-1 flex snap-x snap-mandatory gap-0.5 overflow-x-auto px-1 py-1 pr-8 md:pr-1;
+    @apply relative -mx-1 flex snap-x snap-mandatory gap-1 overflow-x-auto px-1 py-1 pr-8 md:pr-1;
     scrollbar-width: none;
     mask-image: linear-gradient(to right, black calc(100% - 2rem), transparent);
     scroll-behavior: smooth;
@@ -548,7 +604,7 @@ body::before {
     display: none;
   }
   .nav-tab {
-    @apply flex min-h-[32px] snap-start items-center gap-1 whitespace-nowrap rounded-md border border-transparent px-2.5 text-[11px] font-medium transition-all duration-200;
+    @apply flex min-h-[34px] snap-start items-center gap-1 whitespace-nowrap rounded-[4px] border border-transparent px-2.5 font-mono text-[11px] font-semibold uppercase tracking-[0.03em] transition-all duration-200;
     color: var(--ds-on-header-soft);
   }
   .nav-tab:hover {
@@ -560,19 +616,20 @@ body::before {
     color: var(--ds-on-header);
     background-color: var(--ds-header-pill);
     border-color: var(--ds-header-pill-border);
-    box-shadow: 0 2px 8px rgb(0 0 0 / 14%);
+    box-shadow: inset 0 -3px 0 var(--ds-accent);
   }
 
   .mobile-nav {
-    @apply fixed inset-x-0 bottom-0 z-40 grid grid-cols-4 border-t border-ds-line bg-ds-surface shadow-overlay;
+    @apply fixed inset-x-0 bottom-0 z-40 grid grid-cols-4 border-t-2 border-ds-border bg-ds-surface shadow-overlay;
     min-height: calc(4rem + env(safe-area-inset-bottom));
     padding: 0.2rem 0.25rem max(0.2rem, env(safe-area-inset-bottom));
   }
   .mobile-nav-action {
-    @apply relative flex min-h-[46px] min-w-0 flex-col items-center justify-center gap-0.5 rounded-lg px-1 text-[10px] font-semibold text-ds-subtle transition-all duration-200;
+    @apply relative flex min-h-[48px] min-w-0 flex-col items-center justify-center gap-0.5 rounded-[4px] px-1 font-mono text-[11px] font-semibold uppercase tracking-[0.02em] text-ds-subtle transition-all duration-200;
   }
   .mobile-nav-action[aria-current='page'] {
-    @apply -translate-y-0.5 bg-ds-primary-soft text-ds-primary-strong shadow-sm;
+    @apply bg-ds-primary-soft text-ds-primary-strong;
+    box-shadow: inset 0 3px 0 var(--ds-accent);
   }
   .mobile-sheet-layer {
     @apply fixed inset-0 z-50;
@@ -581,12 +638,12 @@ body::before {
     @apply absolute inset-0 h-full w-full bg-black/50;
   }
   .mobile-sheet {
-    @apply absolute inset-x-0 bottom-0 max-h-[85dvh] overflow-y-auto rounded-t-[24px] border-t border-ds-line bg-ds-surface px-4 pb-5 shadow-overlay;
+    @apply absolute inset-x-0 bottom-0 max-h-[85dvh] overflow-y-auto rounded-t-[12px] border-2 border-b-0 border-ds-border bg-ds-surface px-4 pb-5 shadow-overlay;
     padding-bottom: max(1.25rem, env(safe-area-inset-bottom));
     animation: mobile-sheet-in 180ms ease-out;
   }
   .mobile-sheet-handle {
-    @apply mx-auto my-2 h-1 w-10 rounded-full bg-ds-subtle/35;
+    @apply mx-auto my-2 h-1 w-10 rounded-full bg-ds-border;
   }
   .mobile-sheet-header {
     @apply flex items-center justify-between gap-3 border-b border-ds-line pb-3;
@@ -601,7 +658,7 @@ body::before {
     @apply flex min-h-[60px] items-center gap-3 rounded-control border border-ds-line bg-ds-surface p-3 text-ds-text transition-colors duration-200 hover:border-ds-primary hover:bg-ds-primary-soft;
   }
   .mobile-sheet-link-icon {
-    @apply grid h-10 w-10 shrink-0 place-items-center rounded-control bg-ds-primary-soft text-ds-primary-strong;
+    @apply grid h-10 w-10 shrink-0 place-items-center rounded-[4px] border border-ds-line bg-ds-primary-soft text-ds-primary-strong;
   }
   .mobile-sheet-link strong,
   .mobile-sheet-link small {

@@ -34,7 +34,7 @@ export default function PerguntasPesos() {
   };
 
   return (
-    <SectionCard titulo="Tire uma dúvida nas fontes oficiais" icone="professor">
+    <SectionCard titulo="Tire dúvidas com as fontes oficiais" icone="professor">
       <form onSubmit={enviar} className="space-y-4">
         <Field
           as="textarea"
@@ -44,7 +44,7 @@ export default function PerguntasPesos() {
           rows={3}
           minLength={3}
           maxLength={500}
-          placeholder="Ex: Nota fiscal sem peso em kg: como proceder?"
+          placeholder="Ex.: Nota fiscal sem peso em kg: como proceder?"
           hint="A resposta usa a Resolução CONTRAN nº 882/2021 e as fichas do MBFT. Não informe dados pessoais."
           erro={erro}
         />

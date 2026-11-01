@@ -68,7 +68,7 @@ export default function FatosPmscConsulta() {
               onChange={(event) => { setConsulta(event.target.value); setErro(null); }}
               rows={4}
               maxLength={500}
-              placeholder="Ex: Som alto perturbando os vizinhos"
+              placeholder="Ex.: Som alto perturbando os vizinhos"
               hint="Aceita abreviações, gírias, erros de digitação, palavras incompletas e frases. Não informe dados pessoais."
               erro={erro}
               acao={<BotaoVoz ditado={ditado} />}

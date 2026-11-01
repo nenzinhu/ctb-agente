@@ -28,6 +28,7 @@ export const LIMITE_CONSULTA = 1000;
 
 export default function ConsultaForm({ autoFocus = false, exemplos = [] }: ConsultaFormProps) {
   const [query, setQuery] = useState('');
+  const [pronto, setPronto] = useState(false);
   const [loading, setLoading] = useState(false);
   const [token, setToken] = useState<string | null>(null);
   const [erro, setErro] = useState<Erro | null>(null);
@@ -39,6 +40,12 @@ export default function ConsultaForm({ autoFocus = false, exemplos = [] }: Consu
       setErro(null);
     },
   });
+
+  // The field only enters the DOM after hydration. That prevents a fast tap
+  // from landing on server HTML that React is about to reconcile and erase.
+  useEffect(() => {
+    setPronto(true);
+  }, []);
 
   // "Nova consulta" links land here as /?form=1: jump straight to the field.
   // Not on every visit — on a phone that would pop the keyboard over the page.
@@ -56,7 +63,7 @@ export default function ConsultaForm({ autoFocus = false, exemplos = [] }: Consu
     }
 
     if (turnstileConfigurado && !token) {
-      setErro({ mensagem: 'Aguarde a verificação anti-bot e tente novamente.', doCampo: false });
+      setErro({ mensagem: 'Aguarde a verificação de segurança e tente novamente.', doCampo: false });
       return;
     }
 
@@ -85,33 +92,43 @@ export default function ConsultaForm({ autoFocus = false, exemplos = [] }: Consu
   return (
     <form onSubmit={handleSubmit} className="space-y-4" aria-busy={loading}>
       <div>
-        <Field
-          as="textarea"
-          id="consulta"
-          ref={campoRef}
-          label="Sua consulta"
-          value={query}
-          onChange={(e) => {
-            setQuery(e.target.value);
-            setErro(null);
-          }}
-          onKeyDown={(e) => {
-            // Enter sends, Shift+Enter breaks the line (like a chat).
-            if (e.key === 'Enter' && !e.shiftKey && !e.nativeEvent.isComposing) {
-              e.preventDefault();
-              consultar(query);
-            }
-          }}
-          placeholder="Ex: 516-91, art. 165 ou motorista mexendo no celular"
-          maxLength={LIMITE_CONSULTA}
-          autoFocus={autoFocus}
-          enterKeyHint="search"
-          rows={4}
-          controlClassName="mobile-query-field min-h-[108px] resize-y leading-relaxed sm:min-h-[124px]"
-          hint="Use código, artigo, parte da palavra, abreviações ou gírias como “zap”, “bafom” e “doc atrasado”. Enter consulta; Shift + Enter cria uma nova linha."
-          erro={erro?.doCampo ? erro.mensagem : null}
-          acao={<BotaoVoz ditado={ditado} />}
-        />
+        {pronto ? (
+          <Field
+            as="textarea"
+            id="consulta"
+            ref={campoRef}
+            label="Sua consulta"
+            value={query}
+            onChange={(e) => {
+              setQuery(e.target.value);
+              setErro(null);
+            }}
+            onKeyDown={(e) => {
+              // Enter sends, Shift+Enter breaks the line (like a chat).
+              if (e.key === 'Enter' && !e.shiftKey && !e.nativeEvent.isComposing) {
+                e.preventDefault();
+                consultar(query);
+              }
+            }}
+            placeholder="Ex.: 516-91, art. 165 ou motorista usando o celular"
+            maxLength={LIMITE_CONSULTA}
+            autoFocus={autoFocus}
+            enterKeyHint="search"
+            rows={4}
+            controlClassName="mobile-query-field min-h-[108px] resize-y leading-relaxed sm:min-h-[124px]"
+            hint="Digite um código, artigo, parte da palavra ou descreva a situação. Enter consulta; Shift + Enter cria uma nova linha."
+            erro={erro?.doCampo ? erro.mensagem : null}
+            acao={<BotaoVoz ditado={ditado} />}
+          />
+        ) : (
+          <>
+            <p className="sr-only" role="status">Preparando o campo de consulta…</p>
+            <div aria-hidden="true">
+              <span className="label">Sua consulta</span>
+              <div className="skeleton min-h-[108px] sm:min-h-[124px]" />
+            </div>
+          </>
+        )}
         <AvisoVoz ditado={ditado} />
         <SearchSuggestions
           query={query}
@@ -128,7 +145,7 @@ export default function ConsultaForm({ autoFocus = false, exemplos = [] }: Consu
         type="submit"
         icone="busca"
         carregando={loading}
-        textoCarregando="Consultando..."
+        textoCarregando="Consultando…"
         disabled={!query.trim()}
         className="min-h-[48px] w-full text-base"
       >

@@ -67,7 +67,7 @@ export default function ConsultaPageContent() {
 
         setResult(data.card ?? null);
       } catch (err) {
-        setError(err instanceof Error ? err.message : 'Erro desconhecido');
+        setError(err instanceof Error ? err.message : 'Não foi possível concluir a consulta. Tente novamente.');
       } finally {
         setLoading(false);
       }
@@ -151,7 +151,7 @@ function VoltarLink() {
 function CarregandoResultado() {
   return (
     <div className="mt-6 space-y-4" role="status" aria-live="polite">
-      <span className="sr-only">Buscando informações...</span>
+      <span className="sr-only">Buscando informações…</span>
       <div className="card card-pad space-y-4">
         <div className="skeleton h-6 w-2/3" />
         <div className="grid grid-cols-3 gap-3">

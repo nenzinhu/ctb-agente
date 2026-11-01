@@ -41,7 +41,7 @@ export default function FavoritosPage() {
         {favoritos && favoritos.length > 0 && (
           <button type="button" onClick={limpar} className="btn-secondary btn-sm mt-4">
             <Icone nome="lixeira" tamanho={16} />
-            Limpar tudo
+            Excluir todos os favoritos
           </button>
         )}
       </TitleCard>

@@ -181,6 +181,7 @@ O conjunto E2E que depende de base populada só roda com `E2E_SEEDED=1`.
 - `docs/specs/2026-09-21-ctb-agente-design.md` — Especificação completa
 - `docs/plans/2026-09-21-ctb-agente-implementation.md` — Plano de implementação
 - `docs/DEPLOY.md` — Deploy, variáveis de ambiente e verificação pós-deploy
+- `docs/DESIGN.md` — Padrão visual, paleta, microcopia e acessibilidade
 - `docs/BUSCA-E-AVALIACAO.md` — Busca por gírias/abreviações, critérios de avaliação e próximos passos para fine-tuning
 - `BATCH-4-7-STATUS.md` — Status histórico das entregas
 

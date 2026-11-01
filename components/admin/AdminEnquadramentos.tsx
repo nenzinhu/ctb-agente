@@ -37,12 +37,12 @@ export default function AdminEnquadramentos() {
     setCarregando(true);
     try {
       const resposta = await fetch('/api/admin/enquadramentos');
-      if (!resposta.ok) throw new Error('Falha ao carregar enquadramentos.');
+      if (!resposta.ok) throw new Error('Não foi possível carregar enquadramentos.');
       const data = await resposta.json();
       setItens(data.enquadramentos ?? []);
       setAviso(data.aviso ?? null);
     } catch (error) {
-      setErro(error instanceof Error ? error.message : 'Erro desconhecido');
+      setErro(error instanceof Error ? error.message : 'Não foi possível concluir a ação. Tente novamente.');
     } finally {
       setCarregando(false);
     }
@@ -74,7 +74,7 @@ export default function AdminEnquadramentos() {
       if (!resposta.ok) {
         // `error` is a machine code (upsert_failed): show the human sentence first.
         throw new Error(
-          data.message || data.issues?.[0]?.mensagem || data.error || 'Falha ao salvar enquadramento.'
+          data.message || data.issues?.[0]?.mensagem || data.error || 'Não foi possível salvar enquadramento.'
         );
       }
 
@@ -82,7 +82,7 @@ export default function AdminEnquadramentos() {
       setForm(VAZIO);
       await carregar();
     } catch (error) {
-      setErro(error instanceof Error ? error.message : 'Erro desconhecido');
+      setErro(error instanceof Error ? error.message : 'Não foi possível concluir a ação. Tente novamente.');
     } finally {
       setSalvando(false);
     }
@@ -95,11 +95,11 @@ export default function AdminEnquadramentos() {
         `/api/admin/enquadramentos?codigo=${encodeURIComponent(codigo)}`,
         { method: 'DELETE' }
       );
-      if (!resposta.ok) throw new Error('Falha ao remover.');
+      if (!resposta.ok) throw new Error('Não foi possível remover.');
       setMensagem(`Enquadramento ${codigo} removido.`);
       await carregar();
     } catch (error) {
-      setErro(error instanceof Error ? error.message : 'Erro desconhecido');
+      setErro(error instanceof Error ? error.message : 'Não foi possível concluir a ação. Tente novamente.');
     }
   };
 

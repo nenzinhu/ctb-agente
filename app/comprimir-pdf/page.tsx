@@ -14,7 +14,7 @@ export default function ComprimirPdfPage() {
       <TitleCard
         titulo="Comprimir PDF"
         icone="comprimir"
-        subtitulo="Reduza o tamanho de PDFs sem enviar nada para a internet. Na compressão máxima, fica só o texto — sem design — e o arquivo passa a caber em qualquer envio e a ser indexado sem problemas."
+        subtitulo="Reduza o tamanho de PDFs sem enviar nada para a internet. No modo máximo, o resultado contém somente o texto, sem o design original."
       />
 
       <CompressorPdf />
