@@ -76,7 +76,7 @@ export default function ResultadoPesos({ resultado }: { resultado: RespostaCalcu
                   const enquadramento = ENQUADRAMENTOS[codigo];
                   return (
                     <li key={codigo} className="flex items-start gap-3 rounded-md bg-ds-surface p-3">
-                      <span className="shrink-0 rounded-md bg-ds-danger px-2.5 py-1 font-mono font-bold text-white">{codigo}</span>
+                      <span className="shrink-0 rounded-md bg-ds-danger px-2.5 py-1 font-mono font-bold text-ds-on-solid">{codigo}</span>
                       <span className="text-sm">
                         <strong className="block text-ds-text">{enquadramento?.descricao ?? 'Enquadramento de trânsito identificado.'}</strong>
                         {enquadramento && <small className="mt-0.5 block text-ds-subtle">{enquadramento.amparo}</small>}

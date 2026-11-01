@@ -1,3 +1,4 @@
+import { getEmbeddingConfig } from '@/lib/ai/embedding-config';
 import { supabaseAdmin } from '@/lib/db/client';
 import { isMissingSchemaError, QualityMigrationPendingError } from '@/lib/ingestion/documents';
 import type { ColecaoQualidade, DiagnosticoBase } from './types';
@@ -24,7 +25,9 @@ export async function verificarSchemaQualidade(): Promise<void> {
 
 export async function obterEstatisticasDocumentais(colecao: ColecaoQualidade): Promise<EstatisticasDocumentais> {
   await verificarSchemaQualidade();
-  const { data, error } = await supabaseAdmin.rpc('document_quality_stats', { p_colecao: colecao });
+  const config = await getEmbeddingConfig();
+  const rpc = config.coluna === 'embedding_nemotron' ? 'document_quality_stats_nemotron' : 'document_quality_stats';
+  const { data, error } = await supabaseAdmin.rpc(rpc, { p_colecao: colecao });
   if (error) erroDeSchema(error);
   const linha = (Array.isArray(data) ? data[0] : data) as Record<string, unknown> | null;
   return {

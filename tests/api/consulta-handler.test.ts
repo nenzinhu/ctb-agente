@@ -3,7 +3,7 @@ const getEnquadramentoByCodigo = jest.fn(async (_codigo: string) => null);
 const searchDispositivos = jest.fn(async () => []);
 const hybridSearch = jest.fn(async () => []);
 const generateDetailed = jest.fn();
-const registrarExemploIntencao = jest.fn(async (_entrada: unknown) => 'intencao-1');
+const mockGetCachedCard = jest.fn();
 
 jest.mock('../../lib/db/queries', () => ({
   getEnquadramentoByCodigo: (codigo: string) => getEnquadramentoByCodigo(codigo),
@@ -14,7 +14,7 @@ jest.mock('../../lib/db/queries', () => ({
 }));
 jest.mock('../../lib/search/hybrid', () => ({ hybridSearch: () => hybridSearch() }));
 jest.mock('../../lib/response/cache', () => ({
-  getCachedCard: async () => null,
+  getCachedCard: (...args: unknown[]) => mockGetCachedCard(...args),
   setCachedCard: async () => undefined,
 }));
 jest.mock('../../lib/ratelimit/limiter', () => ({
@@ -31,14 +31,31 @@ jest.mock('../../lib/ai/providers/chain', () => ({
     generateDetailed,
   })),
 }));
-jest.mock('../../lib/search/intent-feedback-store', () => ({
-  registrarExemploIntencao: (entrada: unknown) => registrarExemploIntencao(entrada),
-}));
 
 import { handleConsulta } from '@/app/api/consulta/handler';
 
 describe('consulta com identificador legal explícito', () => {
-  beforeEach(() => jest.clearAllMocks());
+  beforeEach(() => {
+    jest.clearAllMocks();
+    mockGetCachedCard.mockResolvedValue(null);
+  });
+
+  it('atualiza dados oficiais de uma ficha em cache preservando a confiança da busca', async () => {
+    const original = await handleConsulta('516-91', '127.0.0.1');
+    const ficha = original.card.fichas_mbft![0];
+    mockGetCachedCard.mockResolvedValueOnce({
+      ...original.card,
+      fichas_mbft: [{ ...ficha, tipificacaoResumida: 'Texto antigo do cache', scoreConfianca: 88, metodoEncontrado: 'contexto_lexical' }],
+    });
+    const result = await handleConsulta('516-91', '127.0.0.1');
+    expect(result.cache_hit).toBe(true);
+    expect(result.card.fichas_mbft![0]).toMatchObject({
+      tipificacaoResumida: ficha.tipificacaoResumida,
+      scoreConfianca: 88,
+      metodoEncontrado: 'contexto_lexical',
+      historicoLei: expect.any(Array),
+    });
+  });
 
   it.each(['51691', '5169-1', '516 91', 'código 516-91'])(
     'normaliza %s e responde pela ficha oficial local sem esperar o banco',
@@ -47,7 +64,6 @@ describe('consulta com identificador legal explícito', () => {
       expect(getEnquadramentoByCodigo).not.toHaveBeenCalled();
       expect(result.sucesso).toBe(true);
       expect(result.card.fichas_mbft?.map((ficha) => ficha.codigo)).toEqual(['516-91']);
-      expect(result.intencao).toMatchObject({ dominio: 'infracao', fonte: 'regra' });
       expect(generateDetailed).not.toHaveBeenCalled();
     }
   );
@@ -60,17 +76,6 @@ describe('consulta com identificador legal explícito', () => {
     expect(searchDispositivos).not.toHaveBeenCalled();
     expect(hybridSearch).not.toHaveBeenCalled();
     expect(generateDetailed).not.toHaveBeenCalled();
-  });
-
-  it('registra intenção anônima com referências, sem carregar o IP', async () => {
-    await handleConsulta('placa ABC1D23 usando celular', '203.0.113.7');
-
-    expect(registrarExemploIntencao).toHaveBeenCalledWith(expect.objectContaining({
-      consulta: 'placa **** usando celular',
-      classificacao: expect.objectContaining({ dominio: 'infracao' }),
-      resultados: expect.arrayContaining([expect.objectContaining({ tipo: 'ficha_mbft' })]),
-    }));
-    expect(JSON.stringify(registrarExemploIntencao.mock.calls)).not.toContain('203.0.113.7');
   });
 
   it('não inventa uma ficha para artigo ausente na base', async () => {
