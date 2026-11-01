@@ -225,6 +225,15 @@ body::before {
   outline-offset: 2px;
 }
 
+/* Field use: remove the historic mobile tap delay without disabling zoom. */
+button,
+a,
+input,
+textarea,
+select {
+  touch-action: manipulation;
+}
+
 ::selection {
   background: color-mix(in srgb, var(--ds-primary) 22%, transparent);
 }
@@ -339,7 +348,7 @@ body::before {
   }
 
   .chip {
-    @apply inline-flex min-h-[36px] max-w-full items-center gap-1.5 truncate rounded-full border border-ds-line bg-ds-surface px-3 py-1 text-[13px] text-ds-text transition-colors hover:border-ds-primary hover:bg-ds-primary-soft disabled:cursor-not-allowed disabled:opacity-50;
+    @apply inline-flex min-h-[36px] max-w-full items-center gap-1.5 truncate rounded-full border border-ds-line bg-ds-surface px-3 py-1 text-left text-[13px] leading-snug text-ds-text transition-colors hover:border-ds-primary hover:bg-ds-primary-soft disabled:cursor-not-allowed disabled:opacity-50;
   }
 
   /* ---- CTB and POP consultation workspace ---- */
@@ -375,6 +384,8 @@ body::before {
   }
   .query-example {
     @apply min-h-[40px] whitespace-normal text-left;
+    overflow: visible;
+    text-overflow: clip;
     overflow-wrap: anywhere;
   }
   .search-guide {
