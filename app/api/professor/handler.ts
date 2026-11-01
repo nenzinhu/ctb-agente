@@ -3,7 +3,7 @@ import { buscarFichas } from '@/lib/mbft/fichas';
 import { buscarPops } from '@/lib/pop/pops';
 import { buscarProjetosDeLei } from '@/lib/pdf/projetos-de-lei';
 import { filterPII } from '@/lib/query/pii-filter';
-import { codigoMbft } from '@/lib/query/router';
+import { codigoMbft, numeroPop } from '@/lib/query/router';
 import { fontesDosPops, validarCitacoes } from '@/lib/rag/pop';
 import {
   montarFontes,
@@ -19,6 +19,9 @@ import {
 import { checkRateLimit, recordQuery } from '@/lib/ratelimit/limiter';
 import { getJurisprudencia } from '@/lib/response/card-builder';
 import { hybridSearch } from '@/lib/search/hybrid';
+import { classificarDominioConsulta } from '@/lib/search/intent-specialist';
+import { registrarExemploIntencao } from '@/lib/search/intent-feedback-store';
+import type { ResultadoIntencao } from '@/lib/search/intent-feedback';
 
 export type ProfessorErro = 'rate_limit_exceeded' | 'ip_blocked';
 
@@ -62,11 +65,6 @@ const pedeJurisprudencia = (texto: string) =>
 
 const pedeProjeto = (texto: string) =>
   /projeto de lei|\bPL\s*\d|tramita|tramita[cç][aã]o|proposta (?:para|de) mudar/i.test(texto);
-
-const pareceDuvidaDePop = (texto: string) => {
-  const simples = texto.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
-  return /\bpop\b|procedimento|como (?:fazer|realizar|proceder)|abordagem|busca pessoal|revista pessoal|baculejo|algema|barreira policial|\bblitz\b|ocorrencia policial|prisao|conducao|uso progressivo|violencia domestica/.test(simples);
-};
 
 function consultaFocadaDoPop(texto: string): string {
   const simples = texto.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
@@ -150,6 +148,25 @@ const comparacaoDasFichas = (fichas: ReturnType<typeof buscarFichas>): Comparaca
     quandoAutuar: resumir(ficha.quandoAutuar[0] ?? ficha.tipificacao, 360),
   }));
 
+function resultadosDasFontes(fontes: FonteProfessor[]): ResultadoIntencao[] {
+  const resultados = fontes.flatMap((fonte): ResultadoIntencao[] => {
+    if (fonte.tipo === 'mbft') {
+      const codigo = /\b(\d{3}-\d{2})\b/.exec(fonte.titulo)?.[1];
+      return codigo ? [{ tipo: 'ficha_mbft', id: codigo }] : [];
+    }
+    if (fonte.tipo === 'ctb') {
+      const id = fonte.titulo.replace(/^CTB\s*[—-]\s*/i, '').trim();
+      return id ? [{ tipo: 'artigo_ctb', id }] : [];
+    }
+    if (fonte.tipo === 'pop') {
+      const id = numeroPop(fonte.titulo);
+      return id ? [{ tipo: 'pop', id }] : [];
+    }
+    return [];
+  });
+  return resultados.length > 0 ? resultados : [{ tipo: 'nenhum', id: 'sem_resultado' }];
+}
+
 function esclarecimentoDasFichas(
   fichas: ReturnType<typeof buscarFichas>,
   simulador: boolean
@@ -188,6 +205,7 @@ export async function perguntarAoProfessor(
   const inicio = Date.now();
   // Follow-ups ("e a multa?") need the subject of the previous question
   const contexto = [conversa.filter((m) => m.papel === 'agente').slice(-1)[0]?.texto ?? '', filtrada].join(' ').trim();
+  const intencao = classificarDominioConsulta(contexto);
 
   const codigosComparacao = modo !== 'pop' ? codigosParaComparar(filtrada) : [];
   if (codigosComparacao.length >= 2) {
@@ -204,7 +222,7 @@ export async function perguntarAoProfessor(
   // Separate the two corpora before ranking. Operational vocabulary selects
   // POP; otherwise legal/infraction questions select MBFT. This prevents a
   // weak match in one manual from outranking a strong match in the other.
-  const consultaPop = modo === 'pop' || (modo === 'auto' && pareceDuvidaDePop(contexto));
+  const consultaPop = modo === 'pop' || (modo === 'auto' && intencao.dominio === 'pop');
   const consultaInfracao = modo === 'infracao' || modo === 'simulador' || modo === 'auto';
   const simulacaoVaga = modo === 'simulador' && !descricaoSuficienteParaSimular(contexto);
   const fichas = consultaPop || modo === 'ctb'
@@ -296,5 +314,10 @@ export async function perguntarAoProfessor(
     { tipo: 'professor', sucesso: resposta !== null, tempoMs: Date.now() - inicio, modelo: modelo ?? 'database' },
     limite.registroId
   );
+  await registrarExemploIntencao({
+    consulta: filtrada,
+    classificacao: intencao,
+    resultados: resultadosDasFontes(fontes),
+  });
   return { resposta: { resposta, fontes, modelo, local, aviso, esclarecimento } };
 }

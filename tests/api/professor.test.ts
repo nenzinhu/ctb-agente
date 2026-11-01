@@ -8,6 +8,11 @@ jest.mock('../../lib/ratelimit/limiter', () => ({
   recordQuery: (...a: unknown[]) => recordQuery(...a),
 }));
 
+const registrarExemploIntencao = jest.fn(async (_entrada: unknown) => 'e1');
+jest.mock('../../lib/search/intent-feedback-store', () => ({
+  registrarExemploIntencao: (entrada: unknown) => registrarExemploIntencao(entrada),
+}));
+
 const hybridSearch = jest.fn();
 jest.mock('../../lib/search/hybrid', () => ({ hybridSearch: (...a: unknown[]) => hybridSearch(...a) }));
 
@@ -80,6 +85,10 @@ describe('POST /api/professor', () => {
     expect(prompt).not.toMatch(/festas juninas/);
     expect(hybridSearch).not.toHaveBeenCalled();
     expect(getJurisprudencia).not.toHaveBeenCalled();
+    expect(registrarExemploIntencao).toHaveBeenCalledWith(expect.objectContaining({
+      classificacao: expect.objectContaining({ dominio: 'infracao' }),
+      resultados: expect.arrayContaining([expect.objectContaining({ tipo: 'ficha_mbft', id: '763-31' })]),
+    }));
   });
 
   it('keeps the subject of follow-up questions and filters personal data', async () => {
@@ -129,6 +138,14 @@ describe('POST /api/professor', () => {
     expect(hybridSearch).not.toHaveBeenCalled();
     expect(buscarFichas).not.toHaveBeenCalled();
     expect(buscarPops).toHaveBeenCalledWith('busca pessoal', 3);
+  });
+
+  it('encaminha vocabulário operacional isolado para o RAG de POP', async () => {
+    buscarFichas.mockReturnValue([]);
+    buscarPops.mockReturnValue([]);
+    await perguntar({ pergunta: 'maria da penha' });
+    expect(buscarPops).toHaveBeenCalled();
+    expect(buscarFichas).not.toHaveBeenCalled();
   });
 
   it('honors the selected POP and CTB consultation modes', async () => {

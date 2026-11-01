@@ -11,6 +11,9 @@ import { getCachedValue, setCachedValue } from '@/lib/response/cache';
 import { buscarPops, sugerirPops } from '@/lib/pop/pops';
 import { numeroPop } from '@/lib/query/router';
 import { ehSemResposta, fontesDosPops, montarPrompt, validarCitacoes, type FontePop, type RespostaPop } from '@/lib/rag/pop';
+import { classificarDominioConsulta } from '@/lib/search/intent-specialist';
+import { registrarExemploIntencao } from '@/lib/search/intent-feedback-store';
+import type { ResultadoIntencao } from '@/lib/search/intent-feedback';
 
 export type PopErro = 'rate_limit_exceeded' | 'ip_blocked' | 'turnstile_failed' | 'migration_pending' | 'internal_error';
 
@@ -29,6 +32,24 @@ function chaveCache(pergunta: string): string {
   // A new ranking must not reuse an answer grounded in the old source list.
   // v8 discards answers that could have been written without an official POP source.
   return `pop:v8:${pergunta.toLowerCase().replace(/\s+/g, ' ').trim()}`;
+}
+
+function resultadosDosPops(resposta: RespostaPop): ResultadoIntencao[] {
+  const ids = [
+    ...(resposta.pops ?? []).map((pop) => pop.numero),
+    ...resposta.fontes.map((fonte) => numeroPop(fonte.titulo) ?? fonte.documento_id),
+  ].filter((id, indice, todos) => id && todos.indexOf(id) === indice);
+  return ids.length > 0
+    ? ids.map((id) => ({ tipo: 'pop' as const, id }))
+    : [{ tipo: 'nenhum', id: 'sem_resultado' }];
+}
+
+async function registrarIntencaoPop(pergunta: string, resposta: RespostaPop) {
+  await registrarExemploIntencao({
+    consulta: pergunta,
+    classificacao: classificarDominioConsulta(pergunta),
+    resultados: resultadosDosPops(resposta),
+  });
 }
 
 async function gerarResposta(
@@ -91,6 +112,7 @@ export async function responderPop(pergunta: string, ip: string, turnstileToken?
       { tipo: 'pop', cacheHit: true, sucesso: !resposta.semResposta, tempoMs: resposta.tempo_ms, modelo: 'cache' },
       limite.registroId
     );
+    await registrarIntencaoPop(filtrada, resposta);
     return { resposta };
   }
 
@@ -157,6 +179,7 @@ export async function responderPop(pergunta: string, ip: string, turnstileToken?
     if (resposta && !semResposta) {
       await setCachedValue(chave, final, { pergunta: filtrada, modelo: modelo ?? 'database', tempoMs: final.tempo_ms });
     }
+    await registrarIntencaoPop(filtrada, final);
     return { resposta: final };
   } catch (error) {
     if (error instanceof MigrationPendingError) {

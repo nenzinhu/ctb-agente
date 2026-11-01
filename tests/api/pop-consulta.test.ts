@@ -4,6 +4,11 @@
 const buscarTrechos = jest.fn();
 jest.mock('../../lib/search/trechos', () => ({ buscarTrechos: (...args: unknown[]) => buscarTrechos(...args) }));
 
+const registrarExemploIntencao = jest.fn(async (_entrada: unknown) => 'e1');
+jest.mock('../../lib/search/intent-feedback-store', () => ({
+  registrarExemploIntencao: (entrada: unknown) => registrarExemploIntencao(entrada),
+}));
+
 const checkRateLimit = jest.fn();
 const recordQuery = jest.fn(async () => undefined);
 jest.mock('../../lib/ratelimit/limiter', () => ({
@@ -92,6 +97,10 @@ describe('POST /api/pop/consulta', () => {
     // Responses based on the previous ranking must be recomputed with new sources.
     expect(getCachedValue).toHaveBeenCalledWith('pop:v8:como abordar uma pessoa?');
     expect(setCachedValue.mock.calls[0][0]).toBe('pop:v8:como abordar uma pessoa?');
+    expect(registrarExemploIntencao).toHaveBeenCalledWith(expect.objectContaining({
+      classificacao: expect.objectContaining({ dominio: 'pop' }),
+      resultados: expect.arrayContaining([expect.objectContaining({ tipo: 'pop' })]),
+    }));
   });
 
   it('filters personal data before searching, logging or prompting', async () => {

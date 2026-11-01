@@ -24,6 +24,9 @@ import {
   searchDispositivos,
 } from '@/lib/db/queries';
 import type { CartaoEstruturado, NormaAplicavel, TipoConsulta } from '@/lib/response/response-types';
+import { classificarDominioConsulta, type ClassificacaoDominio } from '@/lib/search/intent-specialist';
+import { registrarExemploIntencao } from '@/lib/search/intent-feedback-store';
+import type { ResultadoIntencao } from '@/lib/search/intent-feedback';
 
 export type ConsultaError =
   | 'rate_limit_exceeded'
@@ -36,6 +39,7 @@ export interface ConsultaResponse {
   sucesso: boolean;
   tempo_ms: number;
   cache_hit: boolean;
+  intencao: ClassificacaoDominio;
   error?: ConsultaError;
 }
 
@@ -65,11 +69,12 @@ export async function handleConsulta(
 ): Promise<ConsultaResponse> {
   const startTime = Date.now();
   const tipo = TIPO_POR_QUERY[identifyQueryType(consulta)] ?? 'situacao';
+  const consultaFiltrada = filterPII(consulta);
+  const intencao = classificarDominioConsulta(consultaFiltrada);
 
   try {
     // PII leaves this function only in filtered form: the usage log and the
     // cache key must never store plates, CPFs or CNPJs typed by the agent.
-    const consultaFiltrada = filterPII(consulta);
     const limit = await checkRateLimit(ipAddress, {
       tipo,
       pergunta: consultaFiltrada,
@@ -82,6 +87,7 @@ export async function handleConsulta(
         sucesso: false,
         tempo_ms: Date.now() - startTime,
         cache_hit: false,
+        intencao,
         error: erro,
       };
     }
@@ -101,6 +107,7 @@ export async function handleConsulta(
           sucesso: false,
           tempo_ms: Date.now() - startTime,
           cache_hit: false,
+          intencao,
           error: 'turnstile_failed',
         };
       }
@@ -122,11 +129,17 @@ export async function handleConsulta(
         tempoMs: card.tempo_ms,
         modelo: 'cache',
       }, limit.registroId);
+      await registrarExemploIntencao({
+        consulta: consultaFiltrada,
+        classificacao: intencao,
+        resultados: resultadosDoCartao(card),
+      });
       return {
         card,
         sucesso: card.sucesso,
         tempo_ms: card.tempo_ms,
         cache_hit: true,
+        intencao,
       };
     }
 
@@ -166,7 +179,13 @@ export async function handleConsulta(
       await setCachedCard(consultaFiltrada, finalCard);
     }
 
-    return { card: finalCard, sucesso: finalCard.sucesso, tempo_ms: tempo, cache_hit: false };
+    await registrarExemploIntencao({
+      consulta: consultaFiltrada,
+      classificacao: intencao,
+      resultados: resultadosDoCartao(finalCard),
+    });
+
+    return { card: finalCard, sucesso: finalCard.sucesso, tempo_ms: tempo, cache_hit: false, intencao };
   } catch (error) {
     console.error('Consulta failed:', error);
     await recordQuery(ipAddress, filterPII(consulta), { tipo, sucesso: false, tempoMs: Date.now() - startTime });
@@ -175,9 +194,27 @@ export async function handleConsulta(
       sucesso: false,
       tempo_ms: Date.now() - startTime,
       cache_hit: false,
+      intencao,
       error: 'internal_error',
     };
   }
+}
+
+function resultadosDoCartao(card: CartaoEstruturado): ResultadoIntencao[] {
+  const resultados: ResultadoIntencao[] = [];
+  const vistos = new Set<string>();
+  const incluir = (resultado: ResultadoIntencao) => {
+    const chave = `${resultado.tipo}:${resultado.id}`;
+    if (!resultado.id || vistos.has(chave)) return;
+    vistos.add(chave);
+    resultados.push(resultado);
+  };
+
+  for (const ficha of card.fichas_mbft ?? []) incluir({ tipo: 'ficha_mbft', id: ficha.codigo });
+  if (card.enquadramento?.codigo_mbft) incluir({ tipo: 'ficha_mbft', id: card.enquadramento.codigo_mbft });
+  for (const norma of card.normas) incluir({ tipo: 'artigo_ctb', id: norma.numero_dispositivo });
+  if (resultados.length === 0) incluir({ tipo: 'nenhum', id: 'sem_resultado' });
+  return resultados;
 }
 
 /**

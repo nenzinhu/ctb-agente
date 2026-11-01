@@ -135,6 +135,17 @@ npm test -- --runInBand tests/unit/search.test.ts tests/unit/search-language.tes
 
 ## Quando considerar treinamento de um modelo
 
+O aplicativo já separa a intenção em quatro domínios (`ctb`, `infracao`,
+`pop` e `fato_pmsc`) e pode registrar, após a migração 015, consultas
+anonimizadas com a classificação prevista e apenas os IDs das fontes
+recuperadas. O painel administrativo permite revisar o domínio e registrar os
+IDs esperados. IP e texto integral da legislação não fazem parte dessa base.
+
+Identificadores oficiais continuam sendo resolvidos por regras determinísticas.
+Um futuro modelo pequeno só poderá atuar em consultas ambíguas e sua predição
+será descartada abaixo do limiar de confiança. O conteúdo da resposta sempre
+continua vindo do RAG.
+
 Não há conjunto de treinamento supervisionado nem pipeline de fine-tuning neste
 repositório. Os documentos brutos não substituem pares revisados de consulta e
 fonte relevante, ou de contexto e resposta correta. Nenhum modelo foi treinado

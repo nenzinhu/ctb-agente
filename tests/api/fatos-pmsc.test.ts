@@ -1,6 +1,11 @@
 /**
  * @jest-environment node
  */
+const registrarExemploIntencao = jest.fn(async (_entrada: unknown) => 'e1');
+jest.mock('../../lib/search/intent-feedback-store', () => ({
+  registrarExemploIntencao: (entrada: unknown) => registrarExemploIntencao(entrada),
+}));
+
 import { NextRequest } from 'next/server';
 import { POST } from '@/app/api/fatos-pmsc/route';
 
@@ -22,6 +27,10 @@ describe('POST /api/fatos-pmsc', () => {
       scoreConfianca: expect.any(Number),
       metodoEncontrado: 'giria_exata',
     });
+    expect(registrarExemploIntencao).toHaveBeenCalledWith(expect.objectContaining({
+      classificacao: expect.objectContaining({ dominio: 'fato_pmsc' }),
+      resultados: expect.arrayContaining([expect.objectContaining({ tipo: 'fato_pmsc' })]),
+    }));
   });
 
   it('valida a consulta, filtra PII e desabilita cache', async () => {

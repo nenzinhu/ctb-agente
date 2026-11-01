@@ -3,6 +3,7 @@ const getEnquadramentoByCodigo = jest.fn(async (_codigo: string) => null);
 const searchDispositivos = jest.fn(async () => []);
 const hybridSearch = jest.fn(async () => []);
 const generateDetailed = jest.fn();
+const registrarExemploIntencao = jest.fn(async (_entrada: unknown) => 'intencao-1');
 
 jest.mock('../../lib/db/queries', () => ({
   getEnquadramentoByCodigo: (codigo: string) => getEnquadramentoByCodigo(codigo),
@@ -30,6 +31,9 @@ jest.mock('../../lib/ai/providers/chain', () => ({
     generateDetailed,
   })),
 }));
+jest.mock('../../lib/search/intent-feedback-store', () => ({
+  registrarExemploIntencao: (entrada: unknown) => registrarExemploIntencao(entrada),
+}));
 
 import { handleConsulta } from '@/app/api/consulta/handler';
 
@@ -43,6 +47,7 @@ describe('consulta com identificador legal explícito', () => {
       expect(getEnquadramentoByCodigo).not.toHaveBeenCalled();
       expect(result.sucesso).toBe(true);
       expect(result.card.fichas_mbft?.map((ficha) => ficha.codigo)).toEqual(['516-91']);
+      expect(result.intencao).toMatchObject({ dominio: 'infracao', fonte: 'regra' });
       expect(generateDetailed).not.toHaveBeenCalled();
     }
   );
@@ -55,6 +60,17 @@ describe('consulta com identificador legal explícito', () => {
     expect(searchDispositivos).not.toHaveBeenCalled();
     expect(hybridSearch).not.toHaveBeenCalled();
     expect(generateDetailed).not.toHaveBeenCalled();
+  });
+
+  it('registra intenção anônima com referências, sem carregar o IP', async () => {
+    await handleConsulta('placa ABC1D23 usando celular', '203.0.113.7');
+
+    expect(registrarExemploIntencao).toHaveBeenCalledWith(expect.objectContaining({
+      consulta: 'placa **** usando celular',
+      classificacao: expect.objectContaining({ dominio: 'infracao' }),
+      resultados: expect.arrayContaining([expect.objectContaining({ tipo: 'ficha_mbft' })]),
+    }));
+    expect(JSON.stringify(registrarExemploIntencao.mock.calls)).not.toContain('203.0.113.7');
   });
 
   it('não inventa uma ficha para artigo ausente na base', async () => {

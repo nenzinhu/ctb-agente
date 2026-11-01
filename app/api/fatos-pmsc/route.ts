@@ -4,6 +4,8 @@ import { buscarFatosPmscComScore, todosOsFatosPmsc } from '@/lib/fatos-pmsc/fato
 import { combinarFatosComRag } from '@/lib/fatos-pmsc/rag';
 import { filterPII } from '@/lib/query/pii-filter';
 import { buscarTrechos } from '@/lib/search/trechos';
+import { classificarDominioConsulta } from '@/lib/search/intent-specialist';
+import { registrarExemploIntencao } from '@/lib/search/intent-feedback-store';
 
 export const dynamic = 'force-dynamic';
 
@@ -29,6 +31,13 @@ export async function POST(request: NextRequest) {
         scoreConfianca: pontuacao?.scoreConfianca ?? 72,
         metodoEncontrado: pontuacao?.metodoEncontrado ?? 'contexto_lexical',
       };
+    });
+    await registrarExemploIntencao({
+      consulta: filtrada,
+      classificacao: classificarDominioConsulta(filtrada),
+      resultados: alternativas.length > 0
+        ? alternativas.map((fato) => ({ tipo: 'fato_pmsc' as const, id: fato.natureza }))
+        : [{ tipo: 'nenhum', id: 'sem_resultado' }],
     });
     return NextResponse.json({ alternativas, decisaoAutomatica: false }, { headers: semCache });
   } catch (error) {

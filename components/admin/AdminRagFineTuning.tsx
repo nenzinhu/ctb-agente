@@ -26,6 +26,54 @@ interface ProviderRag {
   };
 }
 
+type DominioIntencao = 'ctb' | 'infracao' | 'pop' | 'fato_pmsc';
+
+interface ExemploIntencao {
+  id: string;
+  consulta_anonimizada: string;
+  dominio_previsto: DominioIntencao;
+  confianca: number;
+  revisada: boolean;
+  resultados: { tipo: string; id: string }[];
+  dominio_esperado?: DominioIntencao | null;
+  resultados_esperados?: { tipo: string; id: string }[];
+}
+
+type TipoResultado = 'artigo_ctb' | 'ficha_mbft' | 'pop' | 'fato_pmsc' | 'nenhum';
+
+const TIPO_POR_DOMINIO: Record<DominioIntencao, TipoResultado> = {
+  ctb: 'artigo_ctb',
+  infracao: 'ficha_mbft',
+  pop: 'pop',
+  fato_pmsc: 'fato_pmsc',
+};
+
+const TIPOS_RESULTADO = new Set<TipoResultado>(['artigo_ctb', 'ficha_mbft', 'pop', 'fato_pmsc', 'nenhum']);
+
+function formatarResultados(resultados: { tipo: string; id: string }[], dominio: DominioIntencao): string {
+  const tipoPadrao = TIPO_POR_DOMINIO[dominio];
+  const mistos = resultados.some((item) => item.tipo !== tipoPadrao);
+  return resultados.map((item) => mistos ? `${item.tipo}:${item.id}` : item.id).join(', ');
+}
+
+function interpretarResultados(valor: string, dominio: DominioIntencao): { tipo: TipoResultado; id: string }[] {
+  const tipoPadrao = TIPO_POR_DOMINIO[dominio];
+  return valor.split(',').map((item) => item.trim()).filter(Boolean).map((item) => {
+    const separador = item.indexOf(':');
+    if (separador > 0) {
+      const tipo = item.slice(0, separador) as TipoResultado;
+      const id = item.slice(separador + 1).trim();
+      if (TIPOS_RESULTADO.has(tipo) && id) return { tipo, id };
+    }
+    return { tipo: tipoPadrao, id: item };
+  });
+}
+
+function resultadosDoExemplo(exemplo: ExemploIntencao): { tipo: string; id: string }[] {
+  if (exemplo.revisada && exemplo.resultados_esperados !== undefined) return exemplo.resultados_esperados;
+  return exemplo.resultados_esperados?.length ? exemplo.resultados_esperados : exemplo.resultados;
+}
+
 function Estado({ ok, children }: { ok: boolean; children: React.ReactNode }) {
   return (
     <span className={ok ? 'badge bg-ds-success/10 text-ds-success' : 'badge bg-ds-warn/10 text-ds-text'}>
@@ -47,6 +95,10 @@ export default function AdminRagFineTuning() {
   const [providers, setProviders] = useState<ProviderRag[]>([]);
   const [testando, setTestando] = useState<string | null>(null);
   const [erro, setErro] = useState(false);
+  const [exemplosIntencao, setExemplosIntencao] = useState<ExemploIntencao[]>([]);
+  const [rascunhos, setRascunhos] = useState<Record<string, { dominio?: DominioIntencao; ids?: string }>>({});
+  const [salvandoIntencao, setSalvandoIntencao] = useState<string | null>(null);
+  const [mensagemIntencao, setMensagemIntencao] = useState('');
 
   useEffect(() => {
     let ativo = true;
@@ -55,6 +107,13 @@ export default function AdminRagFineTuning() {
       .then((dados) => ativo && setHealth(dados as HealthRag))
       .catch(() => ativo && setErro(true));
     return () => { ativo = false; };
+  }, []);
+
+  useEffect(() => {
+    fetch('/api/admin/intencoes', { cache: 'no-store' })
+      .then(async (resposta) => resposta.json())
+      .then((dados) => setExemplosIntencao(Array.isArray(dados.exemplos) ? dados.exemplos : []))
+      .catch(() => setExemplosIntencao([]));
   }, []);
 
   useEffect(() => {
@@ -88,6 +147,41 @@ export default function AdminRagFineTuning() {
     }
   };
 
+  const salvarCorrecao = async (exemplo: ExemploIntencao) => {
+    const rascunho = rascunhos[exemplo.id] ?? {};
+    const dominio = rascunho.dominio ?? exemplo.dominio_esperado ?? exemplo.dominio_previsto;
+    const valorResultados = rascunho.ids ?? formatarResultados(
+      resultadosDoExemplo(exemplo),
+      dominio
+    );
+    const resultadosEsperados = interpretarResultados(valorResultados, dominio);
+    setSalvandoIntencao(exemplo.id);
+    setMensagemIntencao('');
+    try {
+      const resposta = await fetch('/api/admin/intencoes', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          id: exemplo.id,
+          dominioEsperado: dominio,
+          resultadosEsperados,
+        }),
+      });
+      if (!resposta.ok) throw new Error('Falha ao salvar');
+      setExemplosIntencao((atuais) => atuais.map((item) => item.id === exemplo.id ? {
+        ...item,
+        revisada: true,
+        dominio_esperado: dominio,
+        resultados_esperados: resultadosEsperados,
+      } : item));
+      setMensagemIntencao('Correção salva. O exemplo está pronto para compor uma base revisada.');
+    } catch {
+      setMensagemIntencao('Não foi possível salvar a correção agora.');
+    } finally {
+      setSalvandoIntencao(null);
+    }
+  };
+
   return (
     <div className="space-y-6">
       <section className="card card-pad">
@@ -113,6 +207,83 @@ export default function AdminRagFineTuning() {
             </li>
           ))}
         </ol>
+      </section>
+
+      <section className="card card-pad">
+        <div className="flex flex-wrap items-start justify-between gap-3">
+          <div>
+            <h2 className="text-xl font-bold text-ds-text">Base de intenção revisável</h2>
+            <p className="mt-1 text-sm text-ds-subtle">
+              Consultas anonimizadas, rótulos de domínio e IDs das fontes esperadas. Nenhum texto de legislação entra no treinamento.
+            </p>
+          </div>
+          <span className="badge-neutral">{exemplosIntencao.filter((item) => !item.revisada).length} pendentes</span>
+        </div>
+
+        {exemplosIntencao.length === 0 ? (
+          <p className="mt-4 rounded-xl border border-ds-line bg-ds-muted p-4 text-sm text-ds-subtle">
+            Ainda não há consultas coletadas para revisão.
+          </p>
+        ) : (
+          <ul className="mt-4 space-y-4">
+            {exemplosIntencao.map((exemplo) => {
+              const rascunho = rascunhos[exemplo.id] ?? {};
+              const dominio = rascunho.dominio ?? exemplo.dominio_esperado ?? exemplo.dominio_previsto;
+              const resultadosSalvos = resultadosDoExemplo(exemplo);
+              const ids = rascunho.ids ?? formatarResultados(resultadosSalvos, dominio);
+              return (
+                <li key={exemplo.id} className="rounded-xl border border-ds-line p-4">
+                  <p className="font-medium text-ds-text">{exemplo.consulta_anonimizada}</p>
+                  <p className="mt-1 text-xs text-ds-subtle">
+                    Previsto: {exemplo.dominio_previsto} · confiança {Math.round(exemplo.confianca * 100)}%
+                    {exemplo.revisada ? ' · revisado' : ''}
+                  </p>
+                  <div className="mt-3 grid gap-3 sm:grid-cols-2">
+                    <label className="text-sm text-ds-text" htmlFor={`dominio-${exemplo.id}`}>
+                      Domínio esperado
+                      <select
+                        id={`dominio-${exemplo.id}`}
+                        className="input mt-1 w-full"
+                        value={dominio}
+                        onChange={(evento) => setRascunhos((atuais) => ({
+                          ...atuais,
+                          [exemplo.id]: { ...atuais[exemplo.id], dominio: evento.target.value as DominioIntencao },
+                        }))}
+                      >
+                        <option value="ctb">CTB</option>
+                        <option value="infracao">Infração / MBFT</option>
+                        <option value="pop">POP</option>
+                        <option value="fato_pmsc">Fato PMSC</option>
+                      </select>
+                    </label>
+                    <label className="text-sm text-ds-text" htmlFor={`ids-${exemplo.id}`}>
+                      IDs oficiais esperados
+                      <input
+                        id={`ids-${exemplo.id}`}
+                        className="input mt-1 w-full"
+                        value={ids}
+                        placeholder="Ex.: 763-32 ou ficha_mbft:763-32, artigo_ctb:art. 252"
+                        onChange={(evento) => setRascunhos((atuais) => ({
+                          ...atuais,
+                          [exemplo.id]: { ...atuais[exemplo.id], ids: evento.target.value },
+                        }))}
+                      />
+                    </label>
+                  </div>
+                  <button
+                    type="button"
+                    className="btn-primary btn-sm mt-3"
+                    disabled={salvandoIntencao === exemplo.id}
+                    onClick={() => void salvarCorrecao(exemplo)}
+                  >
+                    {salvandoIntencao === exemplo.id ? 'Salvando…' : 'Salvar correção'}
+                  </button>
+                </li>
+              );
+            })}
+          </ul>
+        )}
+        {mensagemIntencao && <p className="mt-3 text-sm text-ds-subtle" role="status">{mensagemIntencao}</p>}
       </section>
 
       <section className="card card-pad">
@@ -188,7 +359,7 @@ export default function AdminRagFineTuning() {
             <h2 className="text-xl font-bold text-ds-text">Ajuste fino: treinamento especializado</h2>
             <p className="mt-1 text-sm text-ds-subtle">Estado atual: <strong>nenhum modelo foi treinado por este aplicativo</strong>.</p>
           </div>
-          <span className="badge-neutral">Planejamento</span>
+          <span className="badge-neutral">Coleta supervisionada</span>
         </div>
 
         <div className="mt-5 grid gap-4 lg:grid-cols-2">
