@@ -9,8 +9,8 @@ describe('abas responsivas', () => {
   });
 
   it('preserva alvos confortáveis em dispositivos de toque', () => {
-    expect(css).toMatch(/@media \(pointer: coarse\)[\s\S]*?\.tab\s*{\s*min-height: 40px;/);
-    expect(css).toMatch(/@media \(pointer: coarse\)[\s\S]*?\.nav-tab\s*{\s*min-height: 44px;/);
+    expect(css).toMatch(/@media \(pointer: coarse\)[\s\S]*?\.tab\s*{\s*min-height: 52px;/);
+    expect(css).toMatch(/@media \(pointer: coarse\)[\s\S]*?\.nav-tab\s*{\s*min-height: 52px;/);
   });
 
   it('distribui as três abas de resultado em telas estreitas', () => {

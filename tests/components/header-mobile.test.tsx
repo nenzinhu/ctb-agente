@@ -7,13 +7,11 @@ jest.mock('../../components/TemaToggle', () => () => <button>Modo sol</button>);
 import Header from '@/components/Header';
 
 describe('Header no mobile', () => {
-  it('mantém a marca compacta e oferece os módulos também no celular', () => {
+  it('mantém a marca compacta e organiza os módulos em pilares', () => {
     render(<Header />);
     expect(screen.getByRole('link', { name: /ctb agente — início/i })).toHaveClass('mobile-header-brand');
-    expect(screen.getByRole('navigation', { name: /navegação principal/i }).closest('.header-strip')).toHaveClass('hidden', 'md:block');
-    const atalhos = screen.getByRole('navigation', { name: /consultas rápidas/i });
-    expect(atalhos).toHaveClass('md:hidden');
-    expect(atalhos.querySelectorAll('a')).toHaveLength(3);
+    expect(screen.getByRole('navigation', { name: /pilares operacionais/i })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /fiscalização/i })).toBeInTheDocument();
     expect(screen.queryByRole('link', { name: /enquadramento guiado/i })).not.toBeInTheDocument();
   });
 });

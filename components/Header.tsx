@@ -1,22 +1,9 @@
 import Link from 'next/link';
 import InstalarApp from './InstalarApp';
-import NavTabs, { type ItemNav } from './NavTabs';
+import OperationalNavigation from './OperationalNavigation';
 import TemaEscuroToggle from './TemaEscuroToggle';
 import TemaToggle from './TemaToggle';
 import Icone from './ui/Icone';
-
-const SECOES: ItemNav[] = [
-  { href: '/', label: 'Consulta CTB', curto: 'Consulta', icone: 'busca', tambem: ['/consulta'] },
-  { href: '/pop', label: 'POP-PMSC', curto: 'POP', icone: 'escudo' },
-  { href: '/fatos-pmsc', label: 'Consultar fatos PMSC', curto: 'Fatos', icone: 'arquivo' },
-  { href: '/pesos-dimensoes', label: 'Calcular peso e dimensões', curto: 'Pesos', icone: 'balanca' },
-  { href: '/estrangeiros', label: 'Condutores e Veículos Estrangeiros', curto: 'Estrangeiros', icone: 'globo' },
-  { href: '/favoritos', label: 'Favoritos', curto: 'Favoritos', icone: 'estrela' },
-  { href: '/apostila', label: 'Material de estudo', curto: 'Estudo', icone: 'livro' },
-  { href: '/professor', label: 'Professor CTB', curto: 'Professor', icone: 'professor' },
-  { href: '/casos', label: 'Casos práticos', curto: 'Casos', icone: 'check' },
-  { href: '/comprimir-pdf', label: 'Comprimir PDF', curto: 'Comprimir', icone: 'comprimir' },
-];
 
 /**
  * Sticky header in two strips: brand and utility pills on top, section tabs
@@ -53,12 +40,9 @@ export default function Header() {
         </div>
       </div>
 
-      <nav aria-label="Consultas rápidas" className="header-strip md:hidden px-3">
-        <NavTabs itens={SECOES.slice(0, 3)} compacto />
-      </nav>
-      <div className="header-strip hidden md:block">
-        <div className="mx-auto max-w-6xl px-4 sm:px-6">
-          <NavTabs itens={SECOES} />
+      <div className="header-strip">
+        <div className="mx-auto max-w-6xl px-3 sm:px-6">
+          <OperationalNavigation />
         </div>
       </div>
     </header>

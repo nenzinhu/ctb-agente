@@ -12,6 +12,46 @@ const PAISES = [
   ['AR', 'Argentina'], ['BO', 'Bolívia'], ['CL', 'Chile'], ['PY', 'Paraguai'], ['PE', 'Peru'], ['UY', 'Uruguai'], ['OUTRO', 'Outro país'],
 ] as const;
 
+const PAISES_RAPIDOS = [
+  ['AR', 'Argentina'], ['UY', 'Uruguai'], ['PY', 'Paraguai'], ['CL', 'Chile'],
+] as const;
+
+function ChecklistDocumental({ pais }: { pais?: string }) {
+  const [itens, setItens] = useState<Record<string, boolean>>({});
+  const seguro = pais === 'AR' || pais === 'UY' || pais === 'PY' ? 'Carta Verde' : 'RCI / seguro internacional';
+  const lista = [
+    'CNH ou habilitação estrangeira válida',
+    'Documento do veículo (CRLV ou padrão do país)',
+    seguro,
+  ];
+  return (
+    <section className="card card-pad" aria-labelledby="checklist-estrangeiro">
+      <div className="flex items-start justify-between gap-3">
+        <div>
+          <p className="eyebrow">Conferência de saída</p>
+          <h2 id="checklist-estrangeiro" className="mt-1 text-xl font-bold">Checklist documental</h2>
+        </div>
+        <span className="badge-neutral">{Object.values(itens).filter(Boolean).length}/{lista.length}</span>
+      </div>
+      <ul className="mt-4 grid gap-2 sm:grid-cols-3">
+        {lista.map((item) => (
+          <li key={item}>
+            <label className="flex min-h-[52px] cursor-pointer items-start gap-2 rounded-control border-2 border-ds-line p-3 text-sm font-semibold">
+              <input type="checkbox" checked={Boolean(itens[item])} onChange={(evento) => setItens((atual) => ({ ...atual, [item]: evento.target.checked }))} className="mt-0.5 h-5 w-5 shrink-0 accent-ds-primary" />
+              <span>{item}</span>
+            </label>
+          </li>
+        ))}
+      </ul>
+      <div className="mt-4 flex items-start gap-2 rounded-control border-2 border-ds-danger bg-ds-danger/10 p-3 text-sm font-semibold text-ds-danger" role="note" aria-label="Alerta de multas pendentes">
+        <span aria-hidden="true">!</span>
+        <span>Antes de liberar a saída, confirme se existem multas ou restrições pendentes no sistema competente.</span>
+      </div>
+      <p className="mt-3 text-xs text-ds-subtle">Checklist de apoio. Confirme a exigência vigente e a fonte oficial antes de concluir a fiscalização.</p>
+    </section>
+  );
+}
+
 export default function EstrangeirosConsulta() {
   const [pergunta, setPergunta] = useState('');
   const [fatos, setFatos] = useState<FatosEstrangeiros>({});
@@ -89,6 +129,14 @@ export default function EstrangeirosConsulta() {
       <section className="card p-5 sm:p-6">
         <h2 className="text-xl font-semibold">Fiscalização guiada</h2>
         <p className="mt-1 text-sm text-ds-subtle">Informe apenas os fatos necessários. Não digite nome, placa ou número de documento.</p>
+        <div className="mt-4" aria-label="Filtros rápidos por país">
+          <p className="label">País do veículo ou condutor</p>
+          <div className="flex flex-wrap gap-2">
+            {PAISES_RAPIDOS.map(([valor, nome]) => (
+              <button key={valor} type="button" className="chip" aria-pressed={fatos.paisHabilitacao === valor} onClick={() => atualizar('paisHabilitacao', fatos.paisHabilitacao === valor ? undefined : valor)}>{nome}</button>
+            ))}
+          </div>
+        </div>
         <div className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           <label className="text-sm font-medium">País emissor da habilitação
             <select className="input mt-1" value={fatos.paisHabilitacao ?? ''} onChange={(e) => atualizar('paisHabilitacao', e.target.value || undefined)}><option value="">Selecione</option>{PAISES.map(([valor, nome]) => <option key={valor} value={valor}>{nome}</option>)}</select>
@@ -115,6 +163,7 @@ export default function EstrangeirosConsulta() {
         </div>
         <button type="button" className="btn-primary mt-5" disabled={consultando} onClick={() => { setErro(null); setResultado(avaliarEstrangeiro(fatos)); }}>Analisar situação</button>
       </section>
+      <ChecklistDocumental pais={fatos.paisHabilitacao} />
       {resultado && <Resultado resultado={resultado} />}
     </div>
   );

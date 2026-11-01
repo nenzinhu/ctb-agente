@@ -209,6 +209,9 @@ export default function CalculadoraPesos() {
                 </label>
               ))}
             </div>
+            <p className="mt-3 rounded-control border border-ds-line bg-ds-muted p-3 text-xs leading-relaxed text-ds-subtle">
+              Tolerância aplicada automaticamente: <strong className="text-ds-text">5% no peso total</strong> e <strong className="text-ds-text">12,5% por grupo de eixo</strong>, quando houver aferição individualizada.
+            </p>
           </fieldset>
 
           <div className="mt-4 grid gap-4 sm:grid-cols-2">

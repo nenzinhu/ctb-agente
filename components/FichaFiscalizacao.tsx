@@ -80,6 +80,14 @@ function pontos(valor: string | null | undefined): string | null {
   return /^\d+$/.test(valor.trim()) ? `${valor.trim()} ponto(s)` : valor;
 }
 
+function competenciaResumida(valor: string | null | undefined): string {
+  if (!valor) return 'Conferir ficha oficial';
+  if (/concorrente/i.test(valor)) return 'Concorrente';
+  if (/estadual/i.test(valor)) return 'Estadual';
+  if (/municipal/i.test(valor)) return 'Municipal';
+  return valor;
+}
+
 /**
  * Ficha de Fiscalização — the MBFT sheet view of a consultation card.
  * Fields filled from the MBFT chunk text when present, from the
@@ -157,13 +165,31 @@ export default function FichaFiscalizacao({ card, campos: doBanco, oficial = nul
                 </>
               )}
               {ia?.codigoEnquadramento && (
-                <span className="result-code">
+                <span className="result-code result-code-primary">
                   {ia.codigoEnquadramento}
                 </span>
               )}
               {!oficial && <span className="text-sm text-ds-subtle">Consulta: “{card.consulta}”</span>}
             </>
           )}
+        </div>
+        <div className="result-critical-grid" aria-label="Dados críticos para o auto de infração">
+          <div>
+            <span className="result-critical-label">Código / desdobramento MBFT</span>
+            <strong className="result-code result-code-primary">
+              {enquadramento
+                ? `${enquadramento.codigo_mbft}${enquadramento.desdobramento > 0 ? `-${enquadramento.desdobramento}` : ''}`
+                : (oficial?.codigo ?? ia?.codigoEnquadramento ?? '—')}
+            </strong>
+          </div>
+          <div>
+            <span className="result-critical-label">Competência</span>
+            <span className="result-competence-badge">{competenciaResumida(campos?.competencia)}</span>
+          </div>
+        </div>
+        <div className="result-measure-alert" role="note">
+          <Icone nome="alerta" tamanho={19} />
+          <span><strong>Medida administrativa:</strong> {enquadramento?.medida_administrativa ?? campos?.medidaAdministrativa ?? 'Conferir ficha oficial'}</span>
         </div>
         <dl className="result-conduct mt-4">
           <dt className="stat-label">Tipificação Resumida:</dt>

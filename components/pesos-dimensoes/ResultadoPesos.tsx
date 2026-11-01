@@ -89,6 +89,13 @@ export default function ResultadoPesos({ resultado }: { resultado: RespostaCalcu
             </div>
           )}
 
+          {fiscalizacao.status === 'autuavel' && (
+            <div className="mt-4 rounded-control border-2 border-ds-danger bg-ds-danger/10 p-4 text-sm font-semibold text-ds-danger" role="alert">
+              <strong className="block text-base">Transbordo ou remanejamento obrigatório</strong>
+              <span className="mt-1 block font-normal">A carga excedente deve ser regularizada antes de o veículo prosseguir, conforme a providência indicada na análise.</span>
+            </div>
+          )}
+
           <details className="mt-5 rounded-control border border-ds-line p-4" open>
             <summary className="cursor-pointer font-semibold">Memória de cálculo</summary>
             {fiscalizacao.memoriaPeso && (
