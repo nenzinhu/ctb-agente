@@ -257,7 +257,7 @@ body::before {
 @layer components {
   /* ---- Page frame (16px gutter on phones) ---- */
   .page {
-    @apply mx-auto w-full max-w-5xl px-4 pb-16 pt-5 sm:px-6 sm:pt-8;
+    @apply mx-auto w-full max-w-5xl px-3 pb-16 pt-4 sm:px-6 sm:pt-8;
   }
   .page-narrow {
     @apply mx-auto w-full max-w-3xl px-4 pb-16 pt-5 sm:px-6 sm:pt-8;
@@ -294,7 +294,7 @@ body::before {
     @apply rounded-card border border-ds-line bg-ds-surface shadow-solid;
   }
   .card-pad {
-    @apply p-4 sm:p-6;
+    @apply p-3.5 sm:p-6;
   }
   /* A subtle divider keeps the heading separate from the content. */
   .card-head {
@@ -356,7 +356,7 @@ body::before {
     @apply pt-1 sm:pt-3;
   }
   .consultation-title {
-    @apply mt-2 text-3xl font-bold tracking-tight text-ds-text sm:text-[2.75rem] sm:leading-tight;
+    @apply mt-2 text-[2rem] font-bold tracking-tight text-ds-text sm:text-[2.75rem] sm:leading-tight;
   }
   .consultation-lead {
     @apply mt-2 max-w-2xl text-base leading-relaxed text-ds-subtle sm:text-lg;
@@ -497,10 +497,10 @@ body::before {
 
   /* ---- Segmented tabs (result views, admin sections) ---- */
   .tabs {
-    @apply inline-flex max-w-full gap-0.5 rounded-lg border border-ds-border bg-ds-surface/95 p-0.5 shadow-sm backdrop-blur-sm;
+    @apply inline-flex max-w-full gap-0.5 rounded-control border border-ds-line bg-ds-surface/95 p-0.5 shadow-sm backdrop-blur-sm;
   }
   .tab {
-    @apply inline-flex min-h-[34px] items-center justify-center gap-1 whitespace-nowrap rounded-md px-2.5 font-mono text-xs font-semibold uppercase tracking-[0.045em] text-ds-subtle transition-all duration-200 hover:bg-ds-muted hover:text-ds-text;
+    @apply inline-flex min-h-[36px] items-center justify-center gap-1 whitespace-nowrap rounded-lg px-2 font-mono text-[11px] font-semibold uppercase tracking-[0.035em] text-ds-subtle transition-all duration-200 hover:bg-ds-muted hover:text-ds-text sm:px-2.5 sm:text-xs;
   }
   .tab-active {
     @apply -translate-y-px bg-ds-primary text-ds-on-solid shadow-sm hover:bg-ds-primary hover:text-ds-on-solid;
@@ -586,7 +586,7 @@ body::before {
     border-bottom: 1px solid var(--ds-header-line);
   }
   .mobile-quick-links {
-    @apply grid grid-cols-3 gap-2 py-2;
+    @apply grid grid-cols-3 gap-1.5 py-1.5;
   }
   .mobile-quick-links .nav-tab {
     @apply justify-center gap-1 px-1;
@@ -611,7 +611,7 @@ body::before {
     display: none;
   }
   .nav-tab {
-    @apply flex min-h-[44px] snap-start items-center gap-2 whitespace-nowrap rounded-full border px-3.5 text-xs font-semibold transition-colors duration-200;
+    @apply flex min-h-[40px] snap-start items-center gap-1.5 whitespace-nowrap rounded-full border px-2.5 text-[11px] font-semibold transition-colors duration-200 sm:min-h-[42px] sm:gap-2 sm:px-3.5 sm:text-xs;
     color: var(--ds-on-header-soft);
     border-color: var(--ds-header-pill-border);
   }
@@ -631,7 +631,7 @@ body::before {
     padding: 0.2rem 0.25rem max(0.2rem, env(safe-area-inset-bottom));
   }
   .mobile-nav-action {
-    @apply relative flex min-h-[46px] min-w-0 flex-col items-center justify-center gap-0.5 rounded-lg px-1 text-xs font-semibold text-ds-subtle transition-all duration-200;
+    @apply relative flex min-h-[46px] min-w-0 flex-col items-center justify-center gap-0.5 rounded-lg px-1 text-[11px] font-semibold text-ds-subtle transition-all duration-200;
   }
   .mobile-nav-action[aria-current='page'] {
     @apply -translate-y-0.5 bg-ds-primary-soft text-ds-primary-strong shadow-sm;
@@ -671,6 +671,12 @@ body::before {
   }
   .mobile-sheet-link small {
     @apply mt-0.5 text-xs text-ds-subtle;
+  }
+
+  /* Vehicle diagrams are information-dense: keep a calm frame around them so
+     the axle labels remain legible without making the selector too tall. */
+  .vehicle-illustration {
+    @apply rounded-control border border-ds-line bg-ds-muted/70 p-1.5;
   }
 }
 
