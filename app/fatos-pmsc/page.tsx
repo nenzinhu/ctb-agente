@@ -12,7 +12,7 @@ export default function FatosPmscPage() {
     <main className="page max-w-6xl">
       <div className="consultation-intro">
         <p className="eyebrow">Consulta operacional</p>
-        <h1 className="consultation-title">LISTA DE FATOS (PMSC MOBILE)</h1>
+        <h1 className="consultation-title">Consultar fatos PMSC</h1>
         <p className="consultation-lead">Encontre grupo, natureza e potencial ofensivo usando a descrição da ocorrência.</p>
       </div>
       <div className="mt-7 grid grid-cols-1 items-start gap-6 sm:mt-9 lg:grid-cols-[minmax(0,1fr)_300px]">

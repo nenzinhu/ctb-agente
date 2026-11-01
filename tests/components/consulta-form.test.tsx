@@ -24,7 +24,7 @@ describe('ConsultaForm', () => {
 
   it('usa uma área de consulta compacta no mobile e mantém ação de toque grande', () => {
     render(<ConsultaForm />);
-    expect(screen.getByLabelText('Sua consulta')).toHaveClass('mobile-query-field');
+    expect(screen.getByLabelText('O que aconteceu?')).toHaveClass('mobile-query-field');
     expect(screen.getByRole('button', { name: /Consultar/ })).toHaveClass('min-h-[48px]');
   });
 });

@@ -25,14 +25,14 @@ export default function Home() {
     <HomeReveal>
       <main className="page max-w-6xl space-y-5 sm:space-y-9">
         <div className="consultation-intro mobile-home-intro" data-home-reveal data-home-reveal-group="0">
-          <p className="eyebrow">Ferramenta operacional para agentes de campo</p>
+          <p className="eyebrow">Apoio operacional para agentes de campo</p>
           <h1 className="consultation-title">CTB Agente</h1>
           <p className="consultation-lead">
             Aplicativo de apoio ao agente em campo para consultar rapidamente o CTB, as fichas do MBFT e os POPs,
             esclarecer dúvidas e conferir a fonte oficial antes da atuação.
           </p>
           <p className="mt-3 text-sm leading-relaxed text-ds-subtle">
-            Ferramenta de apoio. A decisão e o procedimento devem observar a norma e o documento vigente.
+            Use como apoio e confirme a norma vigente antes de agir.
           </p>
         </div>
 

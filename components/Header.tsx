@@ -8,12 +8,12 @@ import Icone from './ui/Icone';
 const SECOES: ItemNav[] = [
   { href: '/', label: 'Consulta CTB', curto: 'Consulta', icone: 'busca', tambem: ['/consulta'] },
   { href: '/pop', label: 'POP-PMSC', curto: 'POP', icone: 'escudo' },
-  { href: '/fatos-pmsc', label: 'Lista de Fatos (PMSC Mobile)', curto: 'Fatos', icone: 'arquivo' },
-  { href: '/pesos-dimensoes', label: 'Pesos e Dimensões', curto: 'Pesos', icone: 'balanca' },
+  { href: '/fatos-pmsc', label: 'Consultar fatos PMSC', curto: 'Fatos', icone: 'arquivo' },
+  { href: '/pesos-dimensoes', label: 'Calcular peso e dimensões', curto: 'Pesos', icone: 'balanca' },
   { href: '/estrangeiros', label: 'Condutores e Veículos Estrangeiros', curto: 'Estrangeiros', icone: 'globo' },
-  { href: '/professor', label: 'Professor Emérito', curto: 'Emérito', icone: 'professor' },
+  { href: '/professor', label: 'Professor CTB', curto: 'Professor', icone: 'professor' },
   { href: '/favoritos', label: 'Favoritos', curto: 'Favoritos', icone: 'estrela' },
-  { href: '/apostila', label: 'Apostila IA', curto: 'Apostila', icone: 'livro' },
+  { href: '/apostila', label: 'Material de estudo', curto: 'Estudo', icone: 'livro' },
   { href: '/comprimir-pdf', label: 'Comprimir PDF', curto: 'Comprimir', icone: 'comprimir' },
 ];
 

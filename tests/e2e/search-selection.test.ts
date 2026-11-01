@@ -3,7 +3,7 @@ import { expect, test } from '@playwright/test';
 test.describe('Consulta aos manuais incluídos no aplicativo', () => {
   test('encontra a ficha do celular mesmo com erro de digitação', async ({ page }) => {
     await page.goto('/');
-    await page.getByLabel('Sua consulta').fill('segurando celualr');
+    await page.getByLabel('O que aconteceu?').fill('segurando celualr');
     await page.getByRole('button', { name: 'Consultar', exact: true }).click();
     const ficha = page.getByRole('article', { name: 'Ficha de Fiscalização', exact: true });
     await expect(ficha).toContainText('763-31');

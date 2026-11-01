@@ -1,4 +1,4 @@
-// "Professor Emérito": a conversation grounded on what the app
+// "Professor CTB": a conversation grounded on what the app
 // holds — CTB articles, MBFT sheets, registered case law and pending bills.
 // Pure module: sources, prompt and citation cleanup; app/api/professor calls
 // the retrieval and the models.
@@ -113,7 +113,7 @@ export function promptProfessor(pergunta: string, historico: MensagemProfessor[]
     .join('\n');
 
   return [
-    'Você é o Professor Emérito: especialista no Código de Trânsito Brasileiro (Lei 9.503/97), no MBFT, nos POPs da PMSC e na fiscalização de trânsito, e um ótimo didata.',
+    'Você é o Professor CTB: especialista no Código de Trânsito Brasileiro (Lei 9.503/97), no MBFT, nos POPs da PMSC e na fiscalização de trânsito, e um ótimo didata.',
     'Responda à PERGUNTA do aluno usando as FONTES numeradas.',
     '',
     'Como responder:',

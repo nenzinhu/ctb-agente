@@ -244,7 +244,7 @@ export default function PopConsulta({ catalogo = [] }: { catalogo?: ResumoPop[] 
               enterKeyHint="search"
               placeholder="Ex: Como proceder na abordagem a veículo suspeito?"
               controlClassName="min-h-[124px] resize-y leading-relaxed"
-              hint="Use número, assunto, parte da palavra ou termos como “baculejo”, “blitz” e “encontrado morto”. Enter consulta; Shift + Enter cria uma nova linha."
+              hint="Use o número, o assunto ou descreva a situação com suas palavras."
               acao={<BotaoVoz ditado={ditado} />}
             />
             <AvisoVoz ditado={ditado} />

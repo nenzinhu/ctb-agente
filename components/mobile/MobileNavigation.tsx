@@ -8,11 +8,11 @@ import BottomSheet from './BottomSheet';
 
 const FERRAMENTAS: Array<{ href: string; label: string; descricao: string; icone: NomeIcone }> = [
   { href: '/pop', label: 'Consultar POPs', descricao: 'Procedimentos operacionais', icone: 'escudo' },
-  { href: '/fatos-pmsc', label: 'Lista de Fatos PMSC', descricao: 'Naturezas e potencial ofensivo', icone: 'arquivo' },
-  { href: '/pesos-dimensoes', label: 'Pesos e Dimensões', descricao: 'PBT, PBTC, CMT e excesso de peso', icone: 'balanca' },
+  { href: '/fatos-pmsc', label: 'Consultar fatos PMSC', descricao: 'Naturezas e potencial ofensivo', icone: 'arquivo' },
+  { href: '/pesos-dimensoes', label: 'Calcular peso e dimensões', descricao: 'PBT, PBTC, CMT e excesso de peso', icone: 'balanca' },
   { href: '/estrangeiros', label: 'Condutores e Veículos Estrangeiros', descricao: 'Documentos, acordos e possíveis enquadramentos', icone: 'globo' },
-  { href: '/professor', label: 'Professor Emérito', descricao: 'Explique e compare situações', icone: 'professor' },
-  { href: '/apostila', label: 'Apostila IA', descricao: 'Material para estudo', icone: 'livro' },
+  { href: '/professor', label: 'Professor CTB', descricao: 'Explique e compare situações', icone: 'professor' },
+  { href: '/apostila', label: 'Material de estudo', descricao: 'Crie uma apostila', icone: 'livro' },
   { href: '/gerador-pdf', label: 'Ferramentas de PDF', descricao: 'Gerar ou comprimir documentos', icone: 'comprimir' },
 ];
 

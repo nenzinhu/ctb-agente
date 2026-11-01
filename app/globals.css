@@ -389,7 +389,7 @@ body::before {
 
   /* ---- Badges: solid fills keep >= 4.5:1 in both themes ---- */
   .badge {
-    @apply inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 font-mono text-[11px] font-bold uppercase tracking-[0.06em];
+    @apply inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 font-mono text-xs font-bold uppercase tracking-[0.06em];
   }
   .badge-neutral {
     @apply badge border border-ds-line bg-ds-muted text-ds-text;
@@ -436,7 +436,7 @@ body::before {
     @apply rounded-control border border-ds-line bg-ds-muted px-4 py-3;
   }
   .stat-label {
-    @apply font-mono text-[11px] font-semibold uppercase tracking-[0.08em] text-ds-subtle;
+    @apply font-mono text-xs font-semibold uppercase tracking-[0.08em] text-ds-subtle;
   }
   .stat-value {
     @apply mt-0.5 font-mono text-xl font-bold text-ds-text;
@@ -451,7 +451,7 @@ body::before {
     @apply inline-flex max-w-full gap-0.5 rounded-lg border border-ds-border bg-ds-surface/95 p-0.5 shadow-sm backdrop-blur-sm;
   }
   .tab {
-    @apply inline-flex min-h-[34px] items-center justify-center gap-1 whitespace-nowrap rounded-md px-2.5 font-mono text-[11px] font-semibold uppercase tracking-[0.045em] text-ds-subtle transition-all duration-200 hover:bg-ds-muted hover:text-ds-text;
+    @apply inline-flex min-h-[34px] items-center justify-center gap-1 whitespace-nowrap rounded-md px-2.5 font-mono text-xs font-semibold uppercase tracking-[0.045em] text-ds-subtle transition-all duration-200 hover:bg-ds-muted hover:text-ds-text;
   }
   .tab-active {
     @apply -translate-y-px bg-ds-primary text-ds-on-solid shadow-sm hover:bg-ds-primary hover:text-ds-on-solid;
@@ -488,7 +488,7 @@ body::before {
     outline-offset: 2px;
   }
   .step-label {
-    @apply max-w-full break-words font-mono text-[10px] font-semibold uppercase leading-tight tracking-[0.08em] text-ds-text sm:text-[11px];
+    @apply max-w-full break-words font-mono text-xs font-semibold uppercase leading-tight tracking-[0.08em] text-ds-text;
   }
   .step[data-estado='atual'] .step-label {
     @apply font-bold;
@@ -515,11 +515,11 @@ body::before {
     @apply min-w-0 truncate text-base font-bold leading-none tracking-tight sm:text-xl;
   }
   .header-sub {
-    @apply mt-1 font-mono text-[10px] font-semibold uppercase leading-none tracking-[0.14em];
+    @apply mt-1 font-mono text-[11px] font-semibold uppercase leading-none tracking-[0.14em];
     color: var(--ds-on-header-soft);
   }
   .header-pill {
-    @apply inline-flex min-h-[38px] min-w-[38px] items-center justify-center gap-1.5 rounded-full border px-2 font-mono text-[11px] font-semibold uppercase tracking-[0.08em] transition-colors md:px-3;
+    @apply inline-flex min-h-[38px] min-w-[38px] items-center justify-center gap-1.5 rounded-full border px-2 font-mono text-xs font-semibold uppercase tracking-[0.08em] transition-colors md:px-3;
     background-color: var(--ds-header-pill);
     border-color: var(--ds-header-pill-border);
     color: var(--ds-on-header);
@@ -548,7 +548,7 @@ body::before {
     display: none;
   }
   .nav-tab {
-    @apply flex min-h-[32px] snap-start items-center gap-1 whitespace-nowrap rounded-md border border-transparent px-2.5 text-[11px] font-medium transition-all duration-200;
+    @apply flex min-h-[32px] snap-start items-center gap-1 whitespace-nowrap rounded-md border border-transparent px-2.5 text-xs font-medium transition-all duration-200;
     color: var(--ds-on-header-soft);
   }
   .nav-tab:hover {
@@ -569,7 +569,7 @@ body::before {
     padding: 0.2rem 0.25rem max(0.2rem, env(safe-area-inset-bottom));
   }
   .mobile-nav-action {
-    @apply relative flex min-h-[46px] min-w-0 flex-col items-center justify-center gap-0.5 rounded-lg px-1 text-[10px] font-semibold text-ds-subtle transition-all duration-200;
+    @apply relative flex min-h-[46px] min-w-0 flex-col items-center justify-center gap-0.5 rounded-lg px-1 text-xs font-semibold text-ds-subtle transition-all duration-200;
   }
   .mobile-nav-action[aria-current='page'] {
     @apply -translate-y-0.5 bg-ds-primary-soft text-ds-primary-strong shadow-sm;
