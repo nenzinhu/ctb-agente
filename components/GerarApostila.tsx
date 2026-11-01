@@ -1,6 +1,7 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { requestJson, RequestError } from '@/lib/client/request';
 import { baixarArquivo } from '@/lib/download';
 import { pdfDeBlocos } from '@/lib/pdf-tools/pdf-writer';
 import { blocosDaApostila } from '@/lib/rag/apostila';
@@ -73,6 +74,11 @@ function Opcao({ nome, valor, marcada, onChange, titulo, texto, disabled = false
 }
 
 export default function GerarApostila() {
+  const catalogRequest = useRef<AbortController | null>(null);
+  const generationRequest = useRef<AbortController | null>(null);
+  const ultimaBusca = useRef('');
+  const [erroCatalogo, setErroCatalogo] = useState<string | null>(null);
+  const [falhaGeracao, setFalhaGeracao] = useState(false);
   const [documentos, setDocumentos] = useState<DocumentoApostila[]>([]);
   const [documentoId, setDocumentoId] = useState<string | null>(null);
   const [consulta, setConsulta] = useState('');
@@ -98,27 +104,37 @@ export default function GerarApostila() {
   const etapaAtual = documento ? (resultado ? 2 : 1) : 0;
 
   const carregar = async (termo = '') => {
+    catalogRequest.current?.abort();
+    const controller = new AbortController();
+    catalogRequest.current = controller;
+    ultimaBusca.current = termo;
     setCarregando(true);
-    setErro(null);
+    setErroCatalogo(null);
     try {
       const url = termo ? `/api/apostila?q=${encodeURIComponent(termo)}` : '/api/apostila';
-      const resposta = await fetch(url);
-      const corpo = await resposta.json();
-      if (!resposta.ok) throw new Error(corpo?.message || 'Não foi possível carregar os documentos.');
-      setDocumentos(corpo.documentos as DocumentoApostila[]);
-      if (!corpo.bancoConfigurado) setErro('O banco documental ainda não está configurado.');
+      const corpo = await requestJson<{ documentos: DocumentoApostila[]; bancoConfigurado: boolean }>(url, { signal: controller.signal });
+      if (!corpo || !Array.isArray(corpo.documentos) || typeof corpo.bancoConfigurado !== 'boolean' || !corpo.documentos.every((item) => item && typeof item.id === 'string' && typeof item.titulo === 'string')) {
+        throw new RequestError('invalid-response', 'O serviço retornou uma lista de documentos inválida. Tente novamente.');
+      }
+      if (controller.signal.aborted) return;
+      if (!corpo.bancoConfigurado) throw new Error('O banco documental ainda não está configurado.');
+      setDocumentos(corpo.documentos);
     } catch (error) {
-      setErro(error instanceof Error ? error.message : 'Não foi possível carregar os documentos.');
+      if (!controller.signal.aborted) setErroCatalogo(error instanceof Error ? error.message : 'Não foi possível carregar os documentos.');
     } finally {
-      setCarregando(false);
+      if (!controller.signal.aborted) setCarregando(false);
     }
   };
 
   useEffect(() => {
     void carregar();
+    return () => { catalogRequest.current?.abort(); generationRequest.current?.abort(); };
   }, []);
 
   const escolherDocumento = (item: DocumentoApostila) => {
+    generationRequest.current?.abort();
+    setGerando(false);
+    setFalhaGeracao(false);
     const inteiroDisponivel = item.paginas !== null
       && item.paginas <= MAXIMO_PAGINAS_APOSTILA;
     setDocumentoId(item.id);
@@ -145,6 +161,10 @@ export default function GerarApostila() {
         return;
       }
     }
+    generationRequest.current?.abort();
+    const controller = new AbortController();
+    generationRequest.current = controller;
+    setFalhaGeracao(false);
     setGerando(true);
     setErro(null);
     setResultado(null);
@@ -152,18 +172,23 @@ export default function GerarApostila() {
       ? { modo: 'inteiro' }
       : { modo: 'paginas', intervalos: intervalos.trim() };
     try {
-      const resposta = await fetch('/api/apostila', {
+      const corpo = await requestJson<Resultado>('/api/apostila', {
+        signal: controller.signal,
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ documentoId: documento.id, selecao, publico, titulo: titulo.trim() }),
-      });
-      const corpo = await resposta.json();
-      if (!resposta.ok) throw new Error(corpo?.message || 'Não foi possível gerar a apostila.');
-      setResultado(corpo as Resultado);
+      }, 65000);
+      if (!corpo || typeof corpo.titulo !== 'string' || typeof corpo.selecaoRotulo !== 'string' || !corpo.documento || !Array.isArray(corpo.capitulos) || !corpo.capitulos.every((capitulo) => capitulo && typeof capitulo.texto === 'string' && Array.isArray(capitulo.paginas))) {
+        throw new RequestError('invalid-response', 'O serviço retornou uma apostila inválida. Tente novamente.');
+      }
+      if (!controller.signal.aborted) setResultado(corpo);
     } catch (error) {
-      setErro(error instanceof Error ? error.message : 'Não foi possível gerar a apostila.');
+      if (!controller.signal.aborted) {
+        setErro(error instanceof Error ? error.message : 'Não foi possível gerar a apostila.');
+        setFalhaGeracao(true);
+      }
     } finally {
-      setGerando(false);
+      if (!controller.signal.aborted) setGerando(false);
     }
   };
 
@@ -216,16 +241,18 @@ export default function GerarApostila() {
             placeholder="Título, assunto, artigo ou palavra do conteúdo"
             maxLength={200}
           />
-          <button type="submit" className="btn-secondary min-h-[44px]" disabled={carregando}>
+          <button type="submit" className="btn-secondary min-h-[44px]" disabled={carregando || gerando}>
             <Icone nome="busca" tamanho={16} />
             {carregando ? 'Pesquisando…' : 'Pesquisar'}
           </button>
         </form>
 
-        <fieldset className="mt-4">
+        <fieldset className="mt-4" disabled={gerando}>
           <legend className="label">Documentos encontrados</legend>
           {carregando ? (
             <p className="text-sm text-ds-subtle" role="status">Carregando documentos…</p>
+          ) : erroCatalogo ? (
+            <div className="alert-error" role="alert"><div><p>{erroCatalogo}</p><button type="button" className="btn-secondary mt-3" onClick={() => void carregar(ultimaBusca.current)}>Tentar novamente</button></div></div>
           ) : documentos.length === 0 ? (
             <p className="text-sm text-ds-subtle">Nenhum documento encontrado.</p>
           ) : (
@@ -264,7 +291,7 @@ export default function GerarApostila() {
         {!documento ? (
           <p className="text-sm text-ds-subtle">Escolha um documento para definir o conteúdo.</p>
         ) : (
-          <div className="space-y-4">
+          <fieldset className="space-y-4" disabled={gerando}>
             {documento.situacao === 'revisar' && (
               <div className="alert-warn" role="alert">
                 <Icone nome="alerta" className="mt-0.5 shrink-0" />
@@ -308,14 +335,14 @@ export default function GerarApostila() {
               <p>{modo === 'inteiro' ? 'Documento inteiro' : intervalos.trim() || 'Informe as páginas'}</p>
               <p>{documento.situacao === 'revisar' ? 'Em revisão — confirme a fonte' : 'Vigente'}</p>
             </div>
-          </div>
+          </fieldset>
         )}
       </SectionCard>
 
       <SectionCard numero={3} titulo="Gerar">
         <div className="space-y-4">
           <p className="text-sm text-ds-subtle">A IA organiza somente o texto selecionado em explicações, exemplos didáticos, questões e gabarito. A fonte e as páginas permanecem identificadas.</p>
-          {erro && <div className="alert-error" role="alert"><Icone nome="alerta" className="mt-0.5 shrink-0" /><p>{erro}</p></div>}
+          {erro && <div className="alert-error" role="alert"><Icone nome="alerta" className="mt-0.5 shrink-0" /><div><p>{erro}</p>{falhaGeracao && <button type="button" className="btn-secondary mt-3" onClick={() => void gerar()}>Tentar novamente</button>}</div></div>}
           <PrimaryButton icone="faisca" carregando={gerando} textoCarregando="Escrevendo a apostila…" disabled={!documento || !titulo.trim() || !selecaoDisponivel} onClick={() => void gerar()} className="w-full text-base">
             Gerar apostila
           </PrimaryButton>

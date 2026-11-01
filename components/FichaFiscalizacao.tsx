@@ -7,6 +7,7 @@ import type { FichaMbft } from '@/lib/mbft/parser';
 import { formatarMulta, labelResponsavel } from '@/lib/response/format';
 import BadgeGravidade from './ui/BadgeGravidade';
 import ExplicacaoSimples from './ExplicacaoSimples';
+import { AlertaCrime, ExplicarAoCidadao, HistoricoLei } from './FichaExtras';
 import Icone from './ui/Icone';
 
 interface FichaFiscalizacaoProps {
@@ -128,14 +129,14 @@ export default function FichaFiscalizacao({ card, campos: doBanco, oficial = nul
 
   return (
     <article className="card overflow-hidden" aria-labelledby="ficha-fiscalizacao">
-      <header className="border-b-2 border-ds-border bg-ds-primary-soft px-4 py-5 sm:px-6">
+      <header className="result-card-header">
         <h2 id="ficha-fiscalizacao" className="font-mono text-base font-bold uppercase tracking-[0.08em] text-ds-text sm:text-lg">
           Ficha de Fiscalização
         </h2>
         <div className="mt-3 flex flex-wrap items-center gap-2">
           {enquadramento ? (
             <>
-              <span className="rounded-md border-2 border-ds-border bg-ds-surface px-2.5 py-1 font-mono text-sm font-bold text-ds-text">
+              <span className="result-code">
                 {enquadramento.codigo_mbft}
               </span>
               {enquadramento.desdobramento > 0 && (
@@ -147,7 +148,7 @@ export default function FichaFiscalizacao({ card, campos: doBanco, oficial = nul
             <>
               {oficial && (
                 <>
-                  <span className="rounded-md border-2 border-ds-border bg-ds-surface px-2.5 py-1 font-mono text-sm font-bold text-ds-text">
+                  <span className="result-code">
                     {oficial.codigo}
                   </span>
                   {GRAVIDADES.includes(oficial.gravidade.toLowerCase()) && (
@@ -156,7 +157,7 @@ export default function FichaFiscalizacao({ card, campos: doBanco, oficial = nul
                 </>
               )}
               {ia?.codigoEnquadramento && (
-                <span className="rounded-md border-2 border-ds-border bg-ds-surface px-2.5 py-1 font-mono text-sm font-bold text-ds-text">
+                <span className="result-code">
                   {ia.codigoEnquadramento}
                 </span>
               )}
@@ -164,6 +165,11 @@ export default function FichaFiscalizacao({ card, campos: doBanco, oficial = nul
             </>
           )}
         </div>
+        <dl className="result-conduct mt-4">
+          <dt className="stat-label">Tipificação Resumida:</dt>
+          <Valor>{oficial?.tipificacaoResumida || enquadramento?.descricao || ia?.tipificacaoResumida || campos?.tipificacao}</Valor>
+        </dl>
+        {oficial && <AlertaCrime ficha={oficial} />}
         {ia && (
           <p className="alert-warn mt-3" role="note">
             <Icone nome="faisca" tamanho={16} className="mt-0.5 shrink-0 text-ds-warn" />
@@ -176,22 +182,35 @@ export default function FichaFiscalizacao({ card, campos: doBanco, oficial = nul
         )}
       </header>
 
+      <div role="group" aria-label="Resumo operacional">
+        <dl className="result-summary">
+          <div className="stat col-span-2 sm:col-span-1">
+            <dt className="stat-label">Código de Enquadramento:</dt>
+            <Valor>{enquadramento
+              ? `${enquadramento.codigo_mbft}${enquadramento.desdobramento > 0 ? `-${enquadramento.desdobramento}` : ''}`
+              : (oficial?.codigo ?? ia?.codigoEnquadramento)}</Valor>
+          </div>
+          <div className="stat">
+            <dt className="stat-label">Pontuação:</dt>
+            <Valor>{enquadramento ? `${enquadramento.pontos} ponto(s)` : pontos(campos?.pontuacao)}</Valor>
+          </div>
+          <div className="stat">
+            <dt className="stat-label">Penalidade:</dt>
+            <Valor>{campos?.penalidade ?? (enquadramento
+              ? `Multa de ${formatarMulta(enquadramento.valor_multa)} (${enquadramento.unidade})`
+              : null)}</Valor>
+          </div>
+        </dl>
+      </div>
+
       <div className="space-y-6 p-4 sm:p-6">
         {oficial && <ExplicacaoSimples key={oficial.codigo} tipo="ficha" id={oficial.codigo} />}
+        {oficial && <ExplicarAoCidadao ficha={oficial} />}
+        {oficial && <HistoricoLei ficha={oficial} />}
 
         <section aria-labelledby="identificacao-infracao">
           <SecaoTitulo>Identificação da Infração</SecaoTitulo>
           <dl className="mt-2">
-            <Linha rotulo="Tipificação Resumida:">
-              <Valor>{oficial?.tipificacaoResumida || enquadramento?.descricao || ia?.tipificacaoResumida || campos?.tipificacao}</Valor>
-            </Linha>
-            <Linha rotulo="Código de Enquadramento:">
-              <Valor>
-                {enquadramento
-                  ? `${enquadramento.codigo_mbft}${enquadramento.desdobramento > 0 ? `-${enquadramento.desdobramento}` : ''}`
-                  : (oficial?.codigo ?? ia?.codigoEnquadramento)}
-              </Valor>
-            </Linha>
             <Linha rotulo="Amparo Legal:">
               <Valor>{enquadramento?.amparo_legal ?? campos?.amparo}</Valor>
             </Linha>
@@ -223,17 +242,6 @@ export default function FichaFiscalizacao({ card, campos: doBanco, oficial = nul
               ) : (
                 <Valor>{campos?.gravidade}</Valor>
               )}
-            </Linha>
-            <Linha rotulo="Pontuação:">
-              <Valor>{enquadramento ? `${enquadramento.pontos} ponto(s)` : pontos(campos?.pontuacao)}</Valor>
-            </Linha>
-            <Linha rotulo="Penalidade:">
-              <Valor>
-                {campos?.penalidade ??
-                  (enquadramento
-                    ? `Multa de ${formatarMulta(enquadramento.valor_multa)} (${enquadramento.unidade})`
-                    : null)}
-              </Valor>
             </Linha>
             <Linha rotulo="Medida Administrativa:">
               <Valor>{enquadramento?.medida_administrativa ?? campos?.medidaAdministrativa}</Valor>

@@ -105,6 +105,7 @@ Aplicar as migrations no Supabase (SQL Editor), na ordem:
 13. `scripts/migrations-012-fatos-pmsc.sql` (habilita a coleção RAG da Lista de Fatos PMSC Mobile)
 14. `scripts/migrations-013-estrangeiros.sql` (habilita o acervo e a consulta de fiscalização de estrangeiros)
 15. `scripts/migrations-014-apostila-paginas.sql` (preserva páginas e habilita o catálogo completo de apostilas)
+16. `scripts/migrations-015-nemotron-embeddings.sql` (adiciona vetores Nemotron separados dos vetores Mistral existentes)
 
 A migration 007 é opcional: sem ela o app continua funcionando (rate limit
 legado e invalidação via fallback), mas perde a atomicidade anti-rajada e a
@@ -116,8 +117,29 @@ normas diferentes).
 
 A migration 008 é necessária para a aba POP-PMSC e para a busca nova. Depois
 dela, entre em `/admin` → Base CTB → **Indexar agora** para carregar o CTB
-compilado, e use "Gerar vetores pendentes" quando houver `MISTRAL_API_KEY`
+compilado, e use "Gerar vetores pendentes" quando a chave do modelo vetorial escolhido estiver configurada
 (sem vetores, a busca por palavras já funciona).
+
+### Modelo vetorial principal do RAG
+
+Em **Painel → RAG e ajuste fino → Modelo vetorial do RAG**, a opção principal é
+**NVIDIA: Nemotron 3.5 Embed 8B (free)**, via OpenRouter, usando a mesma variável
+`OPENROUTER_API_KEY` já disponível para esse serviço. O ID da API é
+`nvidia/nemotron-3.5-embed-8b:free`. Esta escolha é independente do modelo que redige respostas.
+
+Antes de usá-lo, aplique a migração 015, configure a chave no ambiente do servidor e
+use **Gerar vetores pendentes** na Base CTB ou POP-PMSC. O painel também permite testar
+o provedor com uma frase de exemplo, sem enviar documentos para esse teste.
+
+Nemotron grava vetores normalizados de 1024 dimensões em `embedding_nemotron`.
+Os vetores Mistral existentes permanecem em `embedding`: cada modelo consulta apenas
+seu próprio espaço. Falha no provedor mantém a busca textual e nunca substitui
+o vetor de consulta por um de outro modelo.
+
+Mistral continua como alternativa com `MISTRAL_API_KEY`. Instalações que têm somente
+essa chave mantêm o funcionamento anterior. Para definir o modelo pelo ambiente
+antes de escolher no painel, use `RAG_EMBEDDING_MODEL=nvidia/nemotron-3.5-embed-8b:free`
+ou `RAG_EMBEDDING_MODEL=mistral-embed`. A escolha salva no painel tem prioridade.
 
 A migration 010 refina o RAG do CTB e dos POPs. Ela faz consultas como
 `estacion` alcançarem `estacionar`, reduz falsos positivos em frases longas e

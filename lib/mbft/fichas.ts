@@ -4,6 +4,7 @@ import { readFileSync } from 'node:fs';
 import path from 'node:path';
 import { normalizarBusca } from '@/lib/search/sinonimos';
 import { buscarNoIndice, criarIndiceBusca, type IndiceBusca } from '@/lib/search/lexical';
+import { historicoDaLei } from './ficha-extras';
 import type { FichaMbft } from './parser';
 import { codigoMbft, extractArticleRef } from '@/lib/query/router';
 import { FatoMatcher, type ResultadoMatcher } from '@/lib/search/domain-matcher';
@@ -16,6 +17,8 @@ export function todasAsFichas(): FichaMbft[] {
   if (!cache) {
     try {
       cache = JSON.parse(readFileSync(path.join(process.cwd(), 'data/acervo/mbft-fichas.json'), 'utf8')) as FichaMbft[];
+      const ctb = lerCtb();
+      if (ctb) cache = cache.map((f) => ({ ...f, historicoLei: historicoDaLei(f.amparoLegal, ctb) }));
     } catch (error) {
       console.warn('MBFT sheets unavailable:', error);
       cache = [];
@@ -27,6 +30,20 @@ export function todasAsFichas(): FichaMbft[] {
 const normalizar = normalizarBusca;
 const indices = new WeakMap<FichaMbft[], IndiceBusca<FichaMbft>>();
 const matchers = new WeakMap<FichaMbft[], FatoMatcher<FichaMbft>>();
+
+function lerCtb(): string | null {
+  try {
+    return readFileSync(path.join(process.cwd(), 'data/acervo/ctb-lei-9503-compilado.txt'), 'utf8');
+  } catch (error) {
+    console.warn('Compiled CTB unavailable, sheets go without law history:', error);
+    return null;
+  }
+}
+
+/** The bundled sheet for a code, or null */
+export function fichaPorCodigo(codigo: string): FichaMbft | null {
+  return todasAsFichas().find((f) => f.codigo === codigo) ?? null;
+}
 
 /**
  * A bare article is a listing request: the agent must see every desdobramento,

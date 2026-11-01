@@ -3,6 +3,7 @@
 import { NextResponse } from 'next/server';
 import { validateSession } from '@/lib/auth/session';
 import { databaseConfigured } from '@/lib/db/client';
+import { getEmbeddingConfig } from '@/lib/ai/embedding-config';
 import { backfillEmbeddings } from '@/lib/ingestion/backfill';
 
 export const maxDuration = 60;
@@ -20,11 +21,12 @@ export async function POST() {
   if (!databaseConfigured) {
     return NextResponse.json({ error: 'database_not_configured', message: 'Banco não configurado.' }, { status: 503 });
   }
-  if (!process.env.MISTRAL_API_KEY) {
+  const config = await getEmbeddingConfig();
+  if (!config.configurado) {
     return NextResponse.json(
       {
         error: 'embeddings_not_configured',
-        message: 'Defina MISTRAL_API_KEY para gerar vetores. Sem eles a busca por palavras continua funcionando.',
+        message: `Defina ${config.envVar} para gerar vetores com ${config.nome}. A busca por palavras continua funcionando.`,
       },
       { status: 503 }
     );

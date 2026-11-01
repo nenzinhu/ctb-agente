@@ -33,6 +33,27 @@ describe('navegação entre POPs relacionados', () => {
 
   afterEach(() => jest.restoreAllMocks());
 
+  it('mantém a escolha entre vários POPs em um seletor compacto', async () => {
+    const usuario = userEvent.setup();
+    render(<PopsEncontrados pops={[inicial, relacionado]} />);
+
+    const seletor = screen.getByRole('combobox', { name: /POPs encontrados \(2\)/i });
+    expect(seletor).toHaveClass('w-full', 'max-w-full', 'min-w-0');
+
+    await usuario.selectOptions(seletor, '1');
+
+    expect(screen.getByRole('heading', { name: /busca pessoal/i })).toBeInTheDocument();
+  });
+
+  it('mantém o POP atual quando a referência responde com seções inválidas', async () => {
+    global.fetch = jest.fn().mockResolvedValue({ ok: true, json: async () => ({ ...relacionado, material: [{ texto: null, nivel: 0 }] }) });
+    render(<PopsEncontrados pops={[inicial]} catalogo={[{ numero: '002', titulo: 'Busca pessoal' }]} />);
+    await userEvent.click(screen.getByRole('button', { name: /abrir pop 002/i }));
+    expect(await screen.findByRole('alert')).toHaveTextContent(/procedimento inválido/i);
+    expect(screen.getByRole('heading', { name: /abordagem/i })).toBeInTheDocument();
+    expect(screen.queryByRole('heading', { name: /busca pessoal/i })).not.toBeInTheDocument();
+  });
+
   it('abre uma referência válida e permite voltar e avançar pelo histórico', async () => {
     const usuario = userEvent.setup();
     render(
@@ -48,7 +69,7 @@ describe('navegação entre POPs relacionados', () => {
     await usuario.click(screen.getByRole('button', { name: /abrir pop 002.*busca pessoal/i }));
 
     await waitFor(() => expect(screen.getByRole('heading', { name: /busca pessoal/i })).toBeInTheDocument());
-    expect(global.fetch).toHaveBeenCalledWith('/api/pop/002');
+    expect(global.fetch).toHaveBeenCalledWith('/api/pop/002', expect.objectContaining({ signal: expect.any(AbortSignal) }));
     expect(screen.getByText('POP 001 → POP 002')).toBeInTheDocument();
 
     await usuario.click(screen.getByRole('button', { name: 'POP anterior' }));
