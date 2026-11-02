@@ -1,5 +1,7 @@
 'use client';
 
+import { requestJson, RequestError } from '@/lib/client/request';
+
 import { useEffect, useRef, useState } from 'react';
 import type {
   ComparacaoInfracao,
@@ -35,14 +37,37 @@ const MODOS: Array<{ valor: ModoProfessor; titulo: string; descricao: string }> 
   { valor: 'simulador', titulo: 'Simulador', descricao: 'Analisa uma ocorrência' },
 ];
 
-const SUGESTOES = [
-  'Posso usar o celular parado no semáforo?',
-  'Qual a infração de dirigir sem CNH e quanto custa a multa?',
-  'Recusar o bafômetro dá multa? Existe jurisprudência?',
-  'Qual POP orienta a busca pessoal durante uma abordagem?',
-  'Quando o uso de algemas é permitido pelo POP?',
-  'A lei do farol baixo nas rodovias mudou?',
-  'Tem projeto de lei para mudar a pontuação da CNH?',
+// Short, concrete questions a layperson would ask, grouped so the first
+// screen teaches what the professor can do.
+const SUGESTOES: { tema: string; perguntas: string[] }[] = [
+  { tema: 'Procedimentos operacionais', perguntas: [
+    'Qual POP orienta a busca pessoal durante uma abordagem?',
+    'Quando o uso de algemas é permitido pelo POP?',
+  ] },
+  {
+    tema: 'Explica fácil',
+    perguntas: [
+      'Explique a lei seca como se eu tivesse 12 anos',
+      'Por que criança precisa de cadeirinha no carro?',
+      'O que acontece se eu dirigir sem carteira?',
+    ],
+  },
+  {
+    tema: 'Na prática',
+    perguntas: [
+      'Posso usar o celular parado no semáforo?',
+      'Recusar o bafômetro dá multa?',
+      'Parar em cima da calçada é infração?',
+    ],
+  },
+  {
+    tema: 'Lei e tribunais',
+    perguntas: [
+      'A lei do farol baixo nas rodovias mudou?',
+      'Tem projeto de lei para mudar a pontuação da CNH?',
+      'Existe jurisprudência sobre recusa do bafômetro?',
+    ],
+  },
 ];
 
 const TIPO: Record<TipoFonte, string> = {
@@ -111,7 +136,7 @@ function Comparacao({ itens }: { itens: ComparacaoInfracao[] }) {
 }
 
 /**
- * Chat with the "Professor Emérito". The conversation lives
+ * Chat with the "Professor CTB". The conversation lives
  * in the browser; each question goes with the recent turns so follow-ups
  * ("e a multa?") keep their subject.
  */
@@ -120,6 +145,8 @@ export default function Professor() {
   const [pergunta, setPergunta] = useState('');
   const [modo, setModo] = useState<ModoProfessor>('auto');
   const [carregando, setCarregando] = useState(false);
+  const requisicao = useRef<AbortController | null>(null);
+  useEffect(() => () => { requisicao.current?.abort(); }, []);
   const [erro, setErro] = useState<string | null>(null);
   const fimRef = useRef<HTMLDivElement>(null);
   const ditado = useDitado({ onTranscricao: (t) => setPergunta((atual) => (atual ? `${atual} ${t}` : t)) });
@@ -131,8 +158,12 @@ export default function Professor() {
   const perguntar = async (entrada: string) => {
     const texto = entrada.trim();
     if (texto.length < 3 || carregando) return;
+    if (requisicao.current && !requisicao.current.signal.aborted) requisicao.current.abort();
+    const controller = new AbortController();
+    requisicao.current = controller;
     setCarregando(true);
     setErro(null);
+    setPergunta(texto);
 
     const historico: MensagemProfessor[] = turnos
       .slice(-3)
@@ -142,28 +173,28 @@ export default function Professor() {
       ]);
 
     try {
-      const resposta = await fetch('/api/professor', {
-        method: 'POST',
+      const corpo = await requestJson<Omit<Turno, 'pergunta'>>('/api/professor', {
+        method: 'POST', signal: controller.signal,
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ pergunta: texto, historico, modo }),
-      });
-      const corpo = await resposta.json().catch(() => null);
-      if (!resposta.ok) throw new Error(corpo?.message || 'O Professor Emérito não conseguiu responder.');
-      setTurnos((atual) => [...atual, { pergunta: texto, ...(corpo as Omit<Turno, 'pergunta'>) }]);
-      setPergunta('');
+      }, 30000);
+      if (controller.signal.aborted || requisicao.current !== controller) return;
+      setTurnos((atual) => [...atual, { pergunta: texto, ...corpo }]);
+      setPergunta((atual) => atual === texto ? '' : atual);
     } catch (error) {
+      if (controller.signal.aborted || requisicao.current !== controller || (error instanceof RequestError && error.kind === 'aborted')) return;
       setErro(error instanceof Error ? error.message : 'Erro desconhecido.');
     } finally {
-      setCarregando(false);
+      if (!controller.signal.aborted && requisicao.current === controller) setCarregando(false);
     }
   };
 
   return (
     <div className="space-y-6">
       <TitleCard
-        titulo="Professor Emérito"
+        titulo="Professor CTB"
         icone="professor"
-        subtitulo="Tire dúvidas sobre CTB, infrações do MBFT e procedimentos dos POPs. O Professor Emérito consulta primeiro os manuais oficiais disponíveis no aplicativo."
+        subtitulo="Tire dúvidas sobre CTB, infrações do MBFT e procedimentos dos POPs. O Professor CTB consulta primeiro os manuais oficiais disponíveis no aplicativo."
       />
 
       {turnos.length > 0 && (
@@ -177,7 +208,7 @@ export default function Professor() {
               <article className="card card-pad">
                 <p className="section-title">
                   <Icone nome="professor" tamanho={18} className="shrink-0" />
-                  Professor Emérito
+                  Professor CTB
                 </p>
                 <div className="mt-3">
                   {turno.resposta ? (
@@ -256,7 +287,7 @@ export default function Professor() {
           <div>
             <Field
               as="textarea"
-              label={turnos.length ? 'Continue a conversa' : 'Sua pergunta ao Professor Emérito'}
+              label={turnos.length ? 'Continue a conversa' : 'Sua pergunta ao Professor CTB'}
               value={pergunta}
               onChange={(e) => setPergunta(e.target.value)}
               onKeyDown={(e) => {
@@ -287,7 +318,7 @@ export default function Professor() {
 
           {erro && (
             <p className="field-error" role="alert">
-              {erro}
+              {erro} <a className="underline" href={modo === 'pop' ? '/pop' : '/consulta'}>Consultar a biblioteca de fontes</a>
             </p>
           )}
 
@@ -296,11 +327,11 @@ export default function Professor() {
               type="submit"
               icone="professor"
               carregando={carregando}
-              textoCarregando="O Professor Emérito está pensando…"
+              textoCarregando="O Professor CTB está pensando…"
               disabled={pergunta.trim().length < 3}
               className="flex-1 text-base"
             >
-              Perguntar
+              {erro ? 'Tentar novamente' : 'Perguntar'}
             </PrimaryButton>
             {turnos.length > 0 && (
               <button type="button" className="btn-secondary" onClick={() => setTurnos([])} disabled={carregando}>
@@ -310,15 +341,19 @@ export default function Professor() {
           </div>
 
           {turnos.length === 0 && (
-            <div>
-              <p className="label">Experimente</p>
-              <div className="flex flex-wrap gap-2">
-                {SUGESTOES.map((s) => (
-                  <button key={s} type="button" className="chip" onClick={() => void perguntar(s)} disabled={carregando}>
-                    {s}
-                  </button>
-                ))}
-              </div>
+            <div className="space-y-3">
+              {SUGESTOES.map((grupo) => (
+                <div key={grupo.tema}>
+                  <p className="label">{grupo.tema}</p>
+                  <div className="flex flex-wrap gap-2">
+                    {grupo.perguntas.map((s) => (
+                      <button key={s} type="button" className="chip" onClick={() => void perguntar(s)} disabled={carregando}>
+                        {s}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              ))}
             </div>
           )}
         </form>

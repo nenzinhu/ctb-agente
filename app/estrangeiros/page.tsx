@@ -10,7 +10,7 @@ export default function EstrangeirosPage() {
   return (
     <main className="page max-w-6xl">
       <div className="consultation-intro">
-        <p className="eyebrow">Fiscalização orientada para o agente de campo</p>
+        <p className="eyebrow">Conferência para o agente de campo</p>
         <h1 className="consultation-title">CONDUTORES E VEÍCULOS ESTRANGEIROS</h1>
         <p className="consultation-lead">Confira documentos, condições de circulação e possíveis enquadramentos sem presumir acordos internacionais ou substituir a conferência do agente.</p>
       </div>

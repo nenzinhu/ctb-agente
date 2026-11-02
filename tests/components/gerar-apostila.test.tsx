@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from '@testing-library/react';
+import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import GerarApostila from '@/components/GerarApostila';
 
@@ -47,7 +47,7 @@ describe('GerarApostila', () => {
     await usuario.click(screen.getByLabelText('Resolução CONTRAN nº 882/2021'));
     expect(screen.getByLabelText('Agentes')).toBeChecked();
     expect(screen.queryByText(/em formação/i)).not.toBeInTheDocument();
-    expect(fetchMock).toHaveBeenCalledWith('/api/apostila');
+    expect(fetchMock).toHaveBeenCalledWith('/api/apostila', expect.objectContaining({ signal: expect.any(AbortSignal) }));
   });
 
   it('inicia na etapa Documento e avança para Conteúdo após a escolha', async () => {
@@ -70,7 +70,7 @@ describe('GerarApostila', () => {
     await usuario.type(screen.getByLabelText('Pesquisar documentos'), 'algemas');
     await usuario.click(screen.getByRole('button', { name: 'Pesquisar' }));
 
-    await waitFor(() => expect(fetchMock).toHaveBeenLastCalledWith('/api/apostila?q=algemas'));
+    await waitFor(() => expect(fetchMock).toHaveBeenLastCalledWith('/api/apostila?q=algemas', expect.objectContaining({ signal: expect.any(AbortSignal) })));
   });
 
   it('gera por intervalos e baixa PDF com identidade institucional', async () => {
@@ -156,5 +156,49 @@ describe('GerarApostila', () => {
 
     expect(await screen.findByText('Selecione no máximo 10 páginas por apostila.')).toBeInTheDocument();
     expect(fetchMock.mock.calls.some(([, opcoes]) => opcoes?.method === 'POST')).toBe(false);
+  });
+});
+
+describe('confiabilidade da apostila', () => {
+  beforeEach(() => { global.fetch = fetchMock as unknown as typeof fetch; fetchMock.mockReset(); });
+  afterEach(() => jest.useRealTimers());
+  it('encerra catálogo parado, não apresenta falha como vazio e permite nova tentativa', async () => {
+    jest.useFakeTimers();
+    let signal: AbortSignal | undefined;
+    fetchMock.mockImplementation((_url, init) => { signal = init?.signal; return new Promise(() => {}); });
+    const { unmount } = render(<GerarApostila />);
+    await act(async () => { await jest.advanceTimersByTimeAsync(15000); });
+    expect(screen.getByRole('alert')).toHaveTextContent(/tempo de espera/i);
+    expect(screen.queryByText('Nenhum documento encontrado.')).not.toBeInTheDocument();
+    fetchMock.mockImplementation(() => resposta({ documentos: [], bancoConfigurado: true }));
+    fireEvent.click(screen.getByRole('button', { name: /tentar novamente/i }));
+    await act(async () => {});
+    expect(screen.getByText('Nenhum documento encontrado.')).toBeInTheDocument();
+    expect(signal?.aborted).toBe(true);
+    unmount();
+  });
+  it('trata catálogo inválido e cancela a nova tentativa ao desmontar', async () => {
+    fetchMock.mockImplementationOnce(() => resposta({}));
+    const view = render(<GerarApostila />);
+    expect(await screen.findByRole('alert')).toHaveTextContent(/inválid/i);
+    let signal: AbortSignal | undefined;
+    fetchMock.mockImplementation((_url, init) => { signal = init?.signal; return new Promise(() => {}); });
+    fireEvent.click(screen.getByRole('button', { name: /tentar novamente/i }));
+    view.unmount(); expect(signal?.aborted).toBe(true);
+  });
+  it('encerra geração parada em 65s e preserva formulário para tentar novamente', async () => {
+    jest.useFakeTimers();
+    let signal: AbortSignal | undefined;
+    fetchMock.mockImplementation((_url, init) => init?.method === 'POST' ? (signal = init.signal, new Promise(() => {})) : resposta({ documentos, bancoConfigurado: true }));
+    const view = render(<GerarApostila />);
+    await act(async () => {});
+    fireEvent.click(screen.getByLabelText('Resolução CONTRAN nº 882/2021'));
+    fireEvent.change(screen.getByLabelText('Intervalos de páginas'), { target: { value: '1-2' } });
+    fireEvent.click(screen.getByRole('button', { name: 'Gerar apostila' }));
+    await act(async () => { await jest.advanceTimersByTimeAsync(65000); });
+    expect(screen.getByRole('alert')).toHaveTextContent(/tempo de espera/i);
+    expect(screen.getByLabelText('Intervalos de páginas')).toHaveValue('1-2');
+    fireEvent.click(screen.getByRole('button', { name: /tentar novamente/i }));
+    view.unmount(); expect(signal?.aborted).toBe(true);
   });
 });

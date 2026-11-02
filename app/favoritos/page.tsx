@@ -23,6 +23,8 @@ export default function FavoritosPage() {
   // null means "not read yet": favorites only exist in the browser, so they
   // cannot be read during server rendering.
   const [favoritos, setFavoritos] = useState<CartaoFavorito[] | null>(null);
+  const [erro, setErro] = useState<string | null>(null);
+  const [aviso, setAviso] = useState<string | null>(null);
 
   useEffect(() => {
     setFavoritos(getFavorites());
@@ -31,13 +33,19 @@ export default function FavoritosPage() {
   const atualizar = () => setFavoritos(getFavorites());
 
   const limpar = () => {
-    clearFavorites();
+    if (!clearFavorites()) {
+      setErro('Não foi possível apagar os favoritos. Verifique as permissões de armazenamento do navegador.');
+      return;
+    }
     setFavoritos([]);
+    setErro(null);
+    setAviso('Favoritos apagados deste aparelho.');
   };
 
   return (
     <main className="page-narrow">
       <TitleCard titulo="Favoritos" icone="estrela" subtitulo="Cartões salvos neste aparelho. Nada é enviado para o servidor.">
+        <p className="mt-3 text-xs leading-relaxed text-ds-subtle">A data de salvamento não é a data de revisão da fonte. Confira o documento vigente antes de usar uma cópia salva em uma atuação.</p>
         {favoritos && favoritos.length > 0 && (
           <button type="button" onClick={limpar} className="btn-secondary btn-sm mt-4">
             <Icone nome="lixeira" tamanho={16} />
@@ -45,6 +53,8 @@ export default function FavoritosPage() {
           </button>
         )}
       </TitleCard>
+      {erro && <p className="alert-error mt-4" role="alert">{erro}</p>}
+      {aviso && <p className="mt-4 text-sm text-ds-primary-strong" role="status">{aviso}</p>}
 
       {favoritos === null && (
         <div className="mt-6 space-y-3" role="status">
@@ -72,7 +82,11 @@ export default function FavoritosPage() {
 
       {favoritos && favoritos.length > 0 && (
         <ul className="mt-6 space-y-4">
-          {favoritos.map(({ id, card, salvo_em }) => (
+          {favoritos.map(({ id, card, salvo_em }) => {
+            const ficha = card.fichas_mbft?.[0];
+            const titulo = ficha?.tipificacaoResumida || card.enquadramento?.descricao || card.consulta;
+            const amparo = ficha?.amparoLegal || card.enquadramento?.amparo_legal;
+            return (
             <li key={id} className="card card-pad">
               {card.enquadramento && (
                 <div className="mb-2 flex flex-wrap items-center gap-2">
@@ -88,9 +102,12 @@ export default function FavoritosPage() {
                   href={`/consulta?q=${encodeURIComponent(card.consulta)}`}
                   className="rounded text-ds-text hover:text-ds-ink hover:underline"
                 >
-                  {card.enquadramento?.descricao ?? card.consulta}
+                  {titulo}
                 </Link>
               </h2>
+
+              {amparo && <p className="mt-2 text-sm text-ds-subtle">Amparo legal: {amparo}</p>}
+              {ficha && <p className="mt-1 text-xs text-ds-subtle">Fonte salva: MBFT{Number.isFinite(ficha.pagina) && ficha.pagina > 0 ? ` · página ${ficha.pagina}` : ''}. Confira a versão vigente.</p>}
 
               {card.enquadramento && (
                 <dl className="mt-3 grid grid-cols-2 gap-2 sm:max-w-sm">
@@ -114,7 +131,8 @@ export default function FavoritosPage() {
                 <BotoesCartao card={card} onChange={atualizar} />
               </div>
             </li>
-          ))}
+            );
+          })}
         </ul>
       )}
     </main>

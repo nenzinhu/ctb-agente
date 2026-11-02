@@ -80,7 +80,7 @@ describe('POST /api/professor', () => {
     expect(corpo.modelo).toBe('Groq · llama');
 
     const prompt = generateRapido.mock.calls[0][0] as string;
-    expect(prompt).toMatch(/Professor Emérito/);
+    expect(prompt).toMatch(/Professor CTB/);
     expect(prompt).toMatch(/PROJETO DE LEI EM TRAMITAÇÃO · PL 100\/2026/);
     expect(prompt).not.toMatch(/festas juninas/);
     expect(hybridSearch).not.toHaveBeenCalled();

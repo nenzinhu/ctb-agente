@@ -1,5 +1,4 @@
-import { render, screen, waitFor } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
+import { render, screen } from '@testing-library/react';
 
 let pathname = '/';
 jest.mock('next/navigation', () => ({ usePathname: () => pathname }));
@@ -9,43 +8,24 @@ import MobileNavigation from '@/components/mobile/MobileNavigation';
 describe('MobileNavigation', () => {
   beforeEach(() => { pathname = '/'; });
 
-  it('oferece os quatro destinos com alvos de toque e marca Buscar na consulta', () => {
+  it('oferece os quatro acessos críticos para a pista', () => {
     pathname = '/consulta';
     render(<MobileNavigation />);
-    expect(screen.getByRole('navigation', { name: /navegação mobile/i })).toHaveClass('mobile-nav-compact');
-    const buscar = screen.getByRole('link', { name: /buscar/i });
-    expect(buscar).toHaveAttribute('aria-current', 'page');
-    expect(screen.getByRole('button', { name: /ferramentas/i })).toHaveClass('mobile-nav-action');
-    expect(screen.getByRole('link', { name: /favoritos/i })).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /mais/i })).toBeInTheDocument();
+    const nav = screen.getByRole('navigation', { name: /navegação mobile/i });
+    expect(nav).toHaveClass('mobile-nav-compact');
+    expect(screen.getByRole('link', { name: /buscar/i })).toHaveAttribute('aria-current', 'page');
+    expect(screen.getByRole('link', { name: /pesos/i })).toHaveAttribute('href', '/pesos-dimensoes');
+    expect(screen.getByRole('link', { name: /estrangeiros/i })).toHaveAttribute('href', '/estrangeiros');
+    expect(screen.getByRole('link', { name: /favoritos/i })).toHaveAttribute('href', '/favoritos');
+    expect(nav.querySelectorAll('a')).toHaveLength(4);
   });
 
-  it('abre Ferramentas, fecha com Escape e devolve o foco ao acionador', async () => {
-    const user = userEvent.setup();
-    render(<MobileNavigation />);
-    const trigger = screen.getByRole('button', { name: /ferramentas/i });
-    await user.click(trigger);
-    expect(screen.getByRole('dialog', { name: /ferramentas/i })).toBeInTheDocument();
-    expect(screen.queryByRole('link', { name: /enquadramento guiado/i })).not.toBeInTheDocument();
-    expect(screen.getByRole('link', { name: /consultar pops/i })).toHaveFocus();
-    await user.keyboard('{Escape}');
-    await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument());
-    expect(trigger).toHaveFocus();
-  });
-
-  it('fecha a folha ao clicar no fundo', async () => {
-    const user = userEvent.setup();
-    render(<MobileNavigation />);
-    await user.click(screen.getByRole('button', { name: /mais/i }));
-    expect(screen.getByRole('dialog', { name: /mais opções/i })).toBeInTheDocument();
-    await user.click(screen.getByTestId('bottom-sheet-backdrop'));
-    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
-  });
-
-  it('oferece a fiscalização de estrangeiros nas ferramentas', async () => {
-    const user = userEvent.setup();
-    render(<MobileNavigation />);
-    await user.click(screen.getByRole('button', { name: /ferramentas/i }));
-    expect(screen.getByRole('link', { name: /condutores e veículos estrangeiros/i })).toHaveAttribute('href', '/estrangeiros');
+  it('marca pesos e estrangeiros conforme a rota ativa', () => {
+    pathname = '/estrangeiros';
+    const { rerender } = render(<MobileNavigation />);
+    expect(screen.getByRole('link', { name: /estrangeiros/i })).toHaveAttribute('aria-current', 'page');
+    pathname = '/pesos-dimensoes';
+    rerender(<MobileNavigation />);
+    expect(screen.getByRole('link', { name: /pesos/i })).toHaveAttribute('aria-current', 'page');
   });
 });

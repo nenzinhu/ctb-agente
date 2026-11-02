@@ -56,12 +56,16 @@ function limiteCurto(limiteKg: number | null): string {
 function Cabine({ gradiente }: { gradiente: string }) {
   return (
     <g data-elemento="cabine">
-      <path d="M12 70V39c0-5 4-9 9-9h27c6 0 11 3 14 8l10 16v16Z" fill={`url(#${gradiente})`} className="stroke-ds-primary" strokeWidth="2" />
-      <path data-elemento="parabrisa" d="M45 35h5c4 0 7 2 9 6l6 10H45Z" className="fill-ds-surface/80 stroke-ds-primary" strokeWidth="1.4" />
-      <path d="M19 36h20v20H19Z" className="fill-ds-surface/70 stroke-ds-primary" strokeWidth="1.2" />
-      <path d="M19 59h21M42 35v35" className="stroke-ds-primary/60" strokeWidth="1" />
-      <rect x="13" y="61" width="6" height="5" rx="1" className="fill-ds-accent stroke-ds-gold-strong" strokeWidth="1" />
-      <path d="M8 68h8M68 68h10" className="stroke-ds-text" strokeWidth="2.5" strokeLinecap="round" />
+      <path d="M12 70V39c0-5 4-9 9-9h27c6 0 11 3 14 8l10 16v16Z" fill={`url(#${gradiente})`} className="stroke-ds-primary" strokeWidth="2" strokeLinejoin="round" />
+      <path data-elemento="parabrisa" d="M45 35h5c6 0 9 3 11 7l6 9H45Z" className="fill-ds-surface/90 stroke-ds-primary" strokeWidth="1.4" />
+      <path data-elemento="janela-lateral" d="M19 36h20v20H19Z" className="fill-ds-surface/80 stroke-ds-primary" strokeWidth="1.2" />
+      <path d="M21 37h16M47 36l17 14" className="stroke-ds-surface" strokeWidth="1.2" strokeOpacity="0.7" />
+      <path data-elemento="porta" d="M19 59h21M42 35v35" className="stroke-ds-primary/60" strokeWidth="1" />
+      <path d="M24 59h9" className="stroke-ds-primary" strokeWidth="1.4" strokeLinecap="round" />
+      <circle cx="34" cy="59" r="1.3" className="fill-ds-gold-strong" />
+      <path data-elemento="retrovisor" d="M67 40h7l3 4h-7Z" className="fill-ds-accent stroke-ds-gold-strong" strokeWidth="1" />
+      <rect x="13" y="60" width="6" height="5" rx="1.5" className="fill-ds-accent stroke-ds-gold-strong" strokeWidth="1" />
+      <path d="M10 68h6M70 68h9" className="stroke-ds-text" strokeWidth="2.5" strokeLinecap="round" />
     </g>
   );
 }
@@ -70,9 +74,31 @@ function Bau({ x, largura, gradiente, indice, marcarUnidade = true }: { x: numbe
   return (
     <g data-unidade={marcarUnidade ? 'true' : undefined}>
       <rect x={x} y="31" width={largura} height="39" rx="4" fill={`url(#${gradiente})`} className="stroke-ds-primary" strokeWidth="2" />
-      <path d={`M${x + 7} 39H${x + largura - 7}M${x + 7} 47H${x + largura - 7}M${x + 7} 55H${x + largura - 7}`} className="stroke-ds-primary/25" strokeWidth="1" />
-      <rect x={x + largura - 9} y="34" width="4" height="30" rx="1" className="fill-ds-gold/70" />
+      <path data-elemento="nervuras" d={`M${x + 7} 39H${x + largura - 7}M${x + 7} 47H${x + largura - 7}M${x + 7} 55H${x + largura - 7}`} className="stroke-ds-primary/25" strokeWidth="1" />
+      <path data-elemento="porta-traseira" d={`M${x + largura - 18} 34v30M${x + largura - 13} 34v30`} className="stroke-ds-primary/50" strokeWidth="1" />
+      <rect x={x + largura - 9} y="34" width="4" height="30" rx="1.5" className="fill-ds-gold/70" />
+      <path d={`M${x + 5} 31h${Math.max(0, largura - 10)}`} className="stroke-ds-surface" strokeWidth="1.5" strokeOpacity="0.75" />
       <text x={x + 8} y="44" className="fill-ds-primary font-mono font-bold" fontSize="7">U{indice}</text>
+      <path data-elemento="apoio" d={`M${x + largura - 25} 70v5m12-5v5`} className="stroke-ds-text" strokeWidth="1.5" strokeLinecap="round" />
+    </g>
+  );
+}
+
+function RodaUnitaria({ x, secundária = false }: { x: number; secundária?: boolean }) {
+  return (
+    <g data-roda-unitaria={secundária ? 'secundaria' : 'principal'}>
+      <circle cx={x} cy="80" r="9" className="fill-ds-text/10 stroke-ds-text" strokeWidth="2" />
+      <circle cx={x} cy="80" r="5.5" className="fill-ds-surface stroke-ds-subtle" strokeWidth="1.5" />
+      <circle cx={x} cy="80" r="2.2" className="fill-ds-accent stroke-ds-gold-strong" strokeWidth="0.8" />
+    </g>
+  );
+}
+
+function Roda({ x, duplo = false }: { x: number; duplo?: boolean }) {
+  return (
+    <g data-roda="true">
+      {duplo && <RodaUnitaria x={x + 4} secundária />}
+      <RodaUnitaria x={x} />
     </g>
   );
 }
@@ -151,8 +177,10 @@ export default function DesenhoVeiculo({ configuracao, compacto = false }: Props
   return (
     <svg
       ref={raiz}
-      viewBox="0 0 320 126"
-      className={compacto ? 'h-16 w-[10.5rem] shrink-0 sm:w-48' : 'h-28 w-full max-w-[360px]'}
+      viewBox="0 0 320 136"
+      className={`vehicle-illustration ${compacto
+        ? 'h-32 w-full max-w-[22rem] shrink-0 max-[639px]:h-24 max-[639px]:w-[8.5rem] max-[639px]:max-w-[42%] sm:h-36 sm:w-64'
+        : 'h-44 w-full max-w-[30rem] sm:h-48'}`}
       role="img"
       aria-label={`${configuracao.nome}: ${configuracao.quantidadeEixos} eixos e ${configuracao.unidades} ${configuracao.unidades === 1 ? 'unidade' : 'unidades'}`}
     >
@@ -167,7 +195,7 @@ export default function DesenhoVeiculo({ configuracao, compacto = false }: Props
         </filter>
       </defs>
 
-      <ellipse cx="160" cy="82" rx="151" ry="7" className="fill-ds-text/10" />
+      <ellipse cx="160" cy="84" rx="151" ry="7" className="fill-ds-text/10" />
       <g filter={`url(#${idGradiente}-sombra)`}>
         <CorposVeiculo configuracao={configuracao} gradiente={idGradiente} />
       </g>
@@ -178,10 +206,8 @@ export default function DesenhoVeiculo({ configuracao, compacto = false }: Props
         return (
           <g key={eixo.numero} data-eixo="true" data-pneus={pneus}>
             <line x1={eixo.x} y1="66" x2={eixo.x} y2="77" className="stroke-ds-text" strokeWidth="2" />
-            {pneus === 'duplos' && <circle cx={eixo.x + 3} cy="80" r="8" className="fill-ds-surface stroke-ds-subtle" strokeWidth="2.5" />}
-            <circle cx={eixo.x} cy="80" r="8" className="fill-ds-surface stroke-ds-text" strokeWidth="3" />
-            <circle cx={eixo.x} cy="80" r="2.4" className="fill-ds-accent stroke-ds-gold-strong" strokeWidth="0.8" />
-            <text data-eixo-rotulo="true" x={eixo.x} y="96" textAnchor="middle" className="fill-ds-text font-mono font-bold" fontSize="9">E{eixo.numero}</text>
+            <Roda x={eixo.x} duplo={pneus === 'duplos'} />
+            <text data-eixo-rotulo="true" x={eixo.x} y="97" textAnchor="middle" className="fill-ds-text font-mono font-bold" fontSize="15">E{eixo.numero}</text>
           </g>
         );
       })}
@@ -194,7 +220,7 @@ export default function DesenhoVeiculo({ configuracao, compacto = false }: Props
         return (
           <g key={grupo.id} data-grupo-eixo="true" aria-label={`${grupo.nome}: limite ${limite} kg`} role="group">
             <path d={`M${inicio} 102v4h${fim - inicio}v-4`} className="stroke-ds-primary" strokeWidth="1.3" fill="none" />
-            <text x={(inicio + fim) / 2} y="117" textAnchor="middle" className="fill-ds-primary font-mono font-bold" fontSize="7.5">
+            <text x={(inicio + fim) / 2} y={indice % 2 === 0 ? 116 : 130} textAnchor="middle" className="fill-ds-primary font-mono font-bold" fontSize="13">
               G{indice + 1} · {limiteCurto(grupo.limiteKg)}
             </text>
           </g>

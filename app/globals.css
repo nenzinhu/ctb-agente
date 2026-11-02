@@ -96,25 +96,34 @@
 /* Screen only: a printout always uses the light tokens. */
 @media screen {
   :root.dark {
-    --ds-bg: #0f172a;
-    --ds-surface: #1e293b;
-    --ds-text: #eaeaea;
-    --ds-border: #334155;
-    --ds-primary: #22c55e;
-    --ds-ink: #60a5fa;
-    --ds-muted: #1e293b;
+    --ds-bg: #0b1220;
+    --ds-surface: #131e30;
+    --ds-text: #edf3fc;
+    --ds-border: #344760;
+    --ds-primary: #34e89b;
+    --ds-ink: #7bb8ff;
+    --ds-muted: #19283e;
     --ds-danger: #f87171;
     --ds-accent: #fbbf24;
 
-    --ds-subtle: #94a3b8;
+    --ds-subtle: #acbcd1;
     --ds-line: var(--ds-border);
     --ds-border-input: #64748b; /* #334155 would be 1.4:1 on the surface */
-    --ds-primary-strong: #4ade80;
-    --ds-primary-soft: color-mix(in srgb, var(--ds-primary) 16%, var(--ds-surface));
+    --ds-primary-strong: #68efb4;
+    --ds-primary-soft: color-mix(in srgb, var(--ds-primary) 9%, var(--ds-surface));
     --ds-gold-strong: var(--ds-gold);
     --ds-on-solid: #0f172a; /* white on #22c55e would be 2.3:1 */
     --ds-warn: #fbbf24;
     --ds-sev-grave: #fb923c;
+
+    --ds-header-from: #101b2b;
+    --ds-header-via: #13263b;
+    --ds-header-to: #15372f;
+    --ds-header-scrim: transparent;
+    --ds-header-line: #344760;
+    --ds-header-pill: rgb(123 184 255 / 0.10);
+    --ds-header-pill-hover: rgb(123 184 255 / 0.18);
+    --ds-header-pill-border: #59718e;
 
     --ds-shadow-color: rgb(0 0 0 / 0.6);
     --ds-fundo-topo: color-mix(in srgb, var(--ds-crest-orange) 14%, #0f172a);
@@ -137,28 +146,28 @@
   --ds-surface: #ffffff;
   --ds-text: #000000;
   --ds-border: #000000;
-  --ds-primary: #004628;
-  --ds-gold: #000000;
-  --ds-accent: #fbbf24;
-  --ds-ink: #00306e;
+  --ds-primary: #002244;
+  --ds-gold: #002244;
+  --ds-accent: #ffff00;
+  --ds-ink: #002244;
   --ds-muted: #ffffff;
   --ds-danger: #a30000;
 
   --ds-subtle: #000000;
   --ds-line: #000000;
   --ds-border-input: #000000;
-  --ds-primary-strong: #000000;
+  --ds-primary-strong: #00152b;
   --ds-primary-soft: #ffffff;
-  --ds-gold-strong: #000000;
+  --ds-gold-strong: #002244;
   --ds-on-solid: #ffffff;
   --ds-warn: #6b3a00;
   --ds-sev-grave: #8a2a00;
-  --ds-focus: #d97706;
+  --ds-focus: #002244;
   --ds-focus-width: 4px;
 
-  --ds-header-from: #000000;
-  --ds-header-via: #000000;
-  --ds-header-to: #000000;
+  --ds-header-from: #002244;
+  --ds-header-via: #002244;
+  --ds-header-to: #002244;
   --ds-header-scrim: transparent;
   --ds-header-line: #ffffff;
   --ds-header-pill: transparent;
@@ -225,6 +234,15 @@ body::before {
   outline-offset: 2px;
 }
 
+/* Field use: remove the historic mobile tap delay without disabling zoom. */
+button,
+a,
+input,
+textarea,
+select {
+  touch-action: manipulation;
+}
+
 ::selection {
   background: color-mix(in srgb, var(--ds-primary) 22%, transparent);
 }
@@ -248,7 +266,7 @@ body::before {
 @layer components {
   /* ---- Page frame (16px gutter on phones) ---- */
   .page {
-    @apply mx-auto w-full max-w-5xl px-4 pb-16 pt-5 sm:px-6 sm:pt-8;
+    @apply mx-auto w-full max-w-5xl px-3 pb-16 pt-4 sm:px-6 sm:pt-8;
   }
   .page-narrow {
     @apply mx-auto w-full max-w-3xl px-4 pb-16 pt-5 sm:px-6 sm:pt-8;
@@ -285,7 +303,7 @@ body::before {
     @apply rounded-card border border-ds-line bg-ds-surface shadow-solid;
   }
   .card-pad {
-    @apply p-4 sm:p-6;
+    @apply p-3.5 sm:p-6;
   }
   /* A subtle divider keeps the heading separate from the content. */
   .card-head {
@@ -339,7 +357,7 @@ body::before {
   }
 
   .chip {
-    @apply inline-flex min-h-[36px] max-w-full items-center gap-1.5 truncate rounded-full border border-ds-line bg-ds-surface px-3 py-1 text-[13px] text-ds-text transition-colors hover:border-ds-primary hover:bg-ds-primary-soft disabled:cursor-not-allowed disabled:opacity-50;
+    @apply inline-flex min-h-[36px] max-w-full items-center gap-1.5 truncate rounded-full border border-ds-line bg-ds-surface px-3 py-1 text-left text-[13px] leading-snug text-ds-text transition-colors hover:border-ds-primary hover:bg-ds-primary-soft disabled:cursor-not-allowed disabled:opacity-50;
   }
 
   /* ---- CTB and POP consultation workspace ---- */
@@ -347,7 +365,7 @@ body::before {
     @apply pt-1 sm:pt-3;
   }
   .consultation-title {
-    @apply mt-2 text-3xl font-bold tracking-tight text-ds-text sm:text-[2.75rem] sm:leading-tight;
+    @apply mt-2 text-[2rem] font-bold tracking-tight text-ds-text sm:text-[2.75rem] sm:leading-tight;
   }
   .consultation-lead {
     @apply mt-2 max-w-2xl text-base leading-relaxed text-ds-subtle sm:text-lg;
@@ -362,7 +380,65 @@ body::before {
     field-sizing: content;
   }
   .consultation-card {
-    @apply border-t-4 border-t-ds-primary;
+    @apply border-t-2 border-t-ds-primary;
+  }
+  .operational-intro {
+    @apply mx-auto max-w-3xl text-center;
+  }
+  .operational-intro .consultation-title {
+    @apply text-[1.75rem] leading-tight sm:text-[2.75rem];
+  }
+  .operational-intro .consultation-lead {
+    @apply mx-auto max-w-2xl text-sm leading-relaxed sm:text-base;
+  }
+  .operational-tagline {
+    @apply text-xl sm:text-[2.75rem];
+  }
+  .search-shortcuts {
+    @apply flex flex-wrap gap-1 sm:gap-2;
+  }
+  .search-shortcut {
+    @apply inline-flex min-h-[44px] items-center justify-center gap-1 rounded-full border border-ds-line bg-ds-surface px-1.5 text-xs font-semibold text-ds-subtle transition-colors hover:border-ds-ink hover:text-ds-ink disabled:cursor-not-allowed disabled:opacity-50 sm:gap-2 sm:px-4 sm:text-sm;
+  }
+  .search-shortcut[aria-pressed='true'] {
+    @apply border-ds-ink text-ds-ink;
+    background-color: color-mix(in srgb, var(--ds-ink) 10%, var(--ds-surface));
+  }
+  .result-card-header {
+    @apply border-b border-ds-line bg-ds-primary-soft px-4 py-5 sm:px-6;
+  }
+  .result-code {
+    @apply rounded-lg border border-ds-line bg-ds-surface px-3 py-1.5 font-mono text-sm font-bold text-ds-ink;
+  }
+  .result-code-primary {
+    @apply inline-flex min-h-[52px] items-center border-2 border-ds-primary px-3 py-2 text-2xl font-black tracking-tight sm:text-3xl;
+  }
+  .result-critical-grid {
+    @apply mt-5 grid gap-3 sm:grid-cols-2;
+  }
+  .result-critical-grid > div {
+    @apply flex min-w-0 flex-col items-start gap-1.5 rounded-control border-2 border-ds-border bg-ds-surface p-3;
+  }
+  .result-critical-label {
+    @apply font-mono text-[11px] font-bold uppercase tracking-[0.06em] text-ds-subtle;
+  }
+  .result-competence-badge {
+    @apply inline-flex min-h-[44px] items-center rounded-full border-2 border-ds-ink bg-ds-ink px-3 py-1 text-sm font-bold text-ds-on-solid;
+  }
+  .result-measure-alert {
+    @apply mt-3 flex min-h-[52px] items-center gap-2 rounded-control border-2 border-ds-danger bg-ds-danger/10 px-3 py-2 text-sm font-semibold text-ds-danger;
+  }
+  .result-summary {
+    @apply grid grid-cols-2 gap-3 border-b border-ds-line p-4 sm:grid-cols-3 sm:p-6;
+  }
+  .result-summary .stat-value {
+    @apply break-words text-base sm:text-xl;
+  }
+  .result-conduct dd {
+    @apply mt-1 text-lg font-semibold leading-snug sm:text-xl;
+  }
+  .result-summary dd {
+    @apply mt-2 break-words font-semibold;
   }
   .consultation-modes {
     @apply mb-6 grid grid-cols-2 gap-2 rounded-control bg-ds-muted p-1.5;
@@ -375,6 +451,8 @@ body::before {
   }
   .query-example {
     @apply min-h-[40px] whitespace-normal text-left;
+    overflow: visible;
+    text-overflow: clip;
     overflow-wrap: anywhere;
   }
   .search-guide {
@@ -389,7 +467,7 @@ body::before {
 
   /* ---- Badges: solid fills keep >= 4.5:1 in both themes ---- */
   .badge {
-    @apply inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 font-mono text-[11px] font-bold uppercase tracking-[0.06em];
+    @apply inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 font-mono text-xs font-bold uppercase tracking-[0.06em];
   }
   .badge-neutral {
     @apply badge border border-ds-line bg-ds-muted text-ds-text;
@@ -436,7 +514,7 @@ body::before {
     @apply rounded-control border border-ds-line bg-ds-muted px-4 py-3;
   }
   .stat-label {
-    @apply font-mono text-[11px] font-semibold uppercase tracking-[0.08em] text-ds-subtle;
+    @apply font-mono text-xs font-semibold uppercase tracking-[0.08em] text-ds-subtle;
   }
   .stat-value {
     @apply mt-0.5 font-mono text-xl font-bold text-ds-text;
@@ -448,10 +526,10 @@ body::before {
 
   /* ---- Segmented tabs (result views, admin sections) ---- */
   .tabs {
-    @apply inline-flex max-w-full gap-0.5 rounded-lg border border-ds-border bg-ds-surface/95 p-0.5 shadow-sm backdrop-blur-sm;
+    @apply inline-flex max-w-full gap-0.5 rounded-control border border-ds-line bg-ds-surface/95 p-0.5 shadow-sm backdrop-blur-sm;
   }
   .tab {
-    @apply inline-flex min-h-[34px] items-center justify-center gap-1 whitespace-nowrap rounded-md px-2.5 font-mono text-[11px] font-semibold uppercase tracking-[0.045em] text-ds-subtle transition-all duration-200 hover:bg-ds-muted hover:text-ds-text;
+    @apply inline-flex min-h-[36px] items-center justify-center gap-1 whitespace-nowrap rounded-lg px-2 font-mono text-[11px] font-semibold uppercase tracking-[0.035em] text-ds-subtle transition-all duration-200 hover:bg-ds-muted hover:text-ds-text sm:px-2.5 sm:text-xs;
   }
   .tab-active {
     @apply -translate-y-px bg-ds-primary text-ds-on-solid shadow-sm hover:bg-ds-primary hover:text-ds-on-solid;
@@ -488,7 +566,7 @@ body::before {
     outline-offset: 2px;
   }
   .step-label {
-    @apply max-w-full break-words font-mono text-[10px] font-semibold uppercase leading-tight tracking-[0.08em] text-ds-text sm:text-[11px];
+    @apply max-w-full break-words font-mono text-xs font-semibold uppercase leading-tight tracking-[0.08em] text-ds-text;
   }
   .step[data-estado='atual'] .step-label {
     @apply font-bold;
@@ -515,11 +593,11 @@ body::before {
     @apply min-w-0 truncate text-base font-bold leading-none tracking-tight sm:text-xl;
   }
   .header-sub {
-    @apply mt-1 font-mono text-[10px] font-semibold uppercase leading-none tracking-[0.14em];
+    @apply mt-1 font-mono text-[11px] font-semibold uppercase leading-none tracking-[0.14em];
     color: var(--ds-on-header-soft);
   }
   .header-pill {
-    @apply inline-flex min-h-[38px] min-w-[38px] items-center justify-center gap-1.5 rounded-full border px-2 font-mono text-[11px] font-semibold uppercase tracking-[0.08em] transition-colors md:px-3;
+    @apply inline-flex min-h-[44px] min-w-[44px] items-center justify-center gap-1.5 rounded-full border px-2 font-mono text-xs font-semibold uppercase tracking-[0.08em] transition-colors md:px-3;
     background-color: var(--ds-header-pill);
     border-color: var(--ds-header-pill-border);
     color: var(--ds-on-header);
@@ -534,11 +612,25 @@ body::before {
   }
   .header-strip {
     border-top: 1px solid var(--ds-header-line);
-    border-bottom: 2px solid var(--ds-gold);
+    border-bottom: 1px solid var(--ds-header-line);
   }
-  /* Phones: a horizontally scrolling strip, faded at the right edge */
+  .mobile-quick-links {
+    @apply grid grid-cols-3 gap-1.5 py-1.5;
+  }
+  .mobile-quick-links .nav-tab {
+    @apply justify-center gap-1 px-1;
+  }
+  .mobile-sheet-link[aria-current='page'] {
+    border-color: var(--ds-primary);
+    background-color: var(--ds-primary-soft);
+  }
+  .mobile-sheet-link > span:nth-child(2) {
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+  /* Desktop section pills retain horizontal scrolling when needed. */
   .nav-tabs {
-    @apply relative -mx-1 flex snap-x snap-mandatory gap-0.5 overflow-x-auto px-1 py-1 pr-8 md:pr-1;
+    @apply relative -mx-1 flex snap-x snap-mandatory gap-2 overflow-x-auto px-1 py-2 pr-8 lg:pr-1;
     scrollbar-width: none;
     mask-image: linear-gradient(to right, black calc(100% - 2rem), transparent);
     scroll-behavior: smooth;
@@ -548,19 +640,63 @@ body::before {
     display: none;
   }
   .nav-tab {
-    @apply flex min-h-[32px] snap-start items-center gap-1 whitespace-nowrap rounded-md border border-transparent px-2.5 text-[11px] font-medium transition-all duration-200;
+    @apply flex min-h-[40px] snap-start items-center gap-1.5 whitespace-nowrap rounded-full border px-2.5 text-[11px] font-semibold transition-colors duration-200 sm:min-h-[42px] sm:gap-2 sm:px-3.5 sm:text-xs;
     color: var(--ds-on-header-soft);
+    border-color: var(--ds-header-pill-border);
   }
   .nav-tab:hover {
     color: var(--ds-on-header);
     background-color: var(--ds-header-pill);
-    transform: translateY(-1px);
   }
   .nav-tab[aria-current='page'] {
+    color: var(--ds-on-solid);
+    background-color: var(--ds-primary);
+    border-color: var(--ds-primary);
+  }
+
+  /* Five operational pillars: one mental model on desktop and mobile. */
+  .operational-navigation {
+    position: relative;
+  }
+  .operational-pillars {
+    @apply flex gap-1.5 overflow-x-auto py-1;
+    scrollbar-width: none;
+  }
+  .operational-pillars::-webkit-scrollbar {
+    display: none;
+  }
+  .operational-pillar {
+    @apply relative shrink-0;
+  }
+  .operational-pillar-trigger {
+    @apply inline-flex min-h-[44px] items-center justify-center gap-1.5 rounded-full border px-3 font-semibold transition-colors duration-150;
+    color: var(--ds-on-header-soft);
+    border-color: var(--ds-header-pill-border);
+    font-size: 0.75rem;
+    touch-action: manipulation;
+  }
+  .operational-pillar-trigger:hover,
+  .operational-pillar-trigger[aria-expanded='true'],
+  .operational-pillar-trigger[aria-current='page'] {
     color: var(--ds-on-header);
     background-color: var(--ds-header-pill);
-    border-color: var(--ds-header-pill-border);
-    box-shadow: 0 2px 8px rgb(0 0 0 / 14%);
+  }
+  .operational-pillar-trigger[aria-current='page'] {
+    border-color: var(--ds-accent);
+  }
+  .operational-submenu {
+    @apply absolute left-0 top-full z-50 mt-1 grid min-w-[15rem] gap-1 rounded-control border-2 p-2 shadow-overlay;
+    background-color: var(--ds-surface);
+    border-color: var(--ds-border);
+  }
+  .operational-submenu-link {
+    @apply flex min-h-[52px] items-center gap-2 rounded-lg px-3 text-sm font-semibold transition-colors;
+    color: var(--ds-text);
+  }
+  .operational-submenu-link:hover,
+  .operational-submenu-link[aria-current='page'] {
+    color: var(--ds-primary-strong);
+    background-color: var(--ds-primary-soft);
   }
 
   .mobile-nav {
@@ -569,7 +705,7 @@ body::before {
     padding: 0.2rem 0.25rem max(0.2rem, env(safe-area-inset-bottom));
   }
   .mobile-nav-action {
-    @apply relative flex min-h-[46px] min-w-0 flex-col items-center justify-center gap-0.5 rounded-lg px-1 text-[10px] font-semibold text-ds-subtle transition-all duration-200;
+    @apply relative flex min-h-[52px] min-w-0 flex-col items-center justify-center gap-0.5 rounded-lg px-1 text-[11px] font-semibold text-ds-subtle transition-all duration-200;
   }
   .mobile-nav-action[aria-current='page'] {
     @apply -translate-y-0.5 bg-ds-primary-soft text-ds-primary-strong shadow-sm;
@@ -609,6 +745,12 @@ body::before {
   }
   .mobile-sheet-link small {
     @apply mt-0.5 text-xs text-ds-subtle;
+  }
+
+  /* Vehicle diagrams are information-dense: keep a calm frame around them so
+     the axle labels remain legible without making the selector too tall. */
+  .vehicle-illustration {
+    @apply rounded-control border border-ds-line bg-ds-muted/70 p-1.5;
   }
 }
 
@@ -659,12 +801,23 @@ body::before {
 }
 
 @media (pointer: coarse) {
+  .btn,
+  .icon-btn,
+  .header-pill,
+  .nav-tab,
+  .operational-pillar-trigger,
+  .mobile-nav-action,
+  .search-shortcut,
+  .chip {
+    min-height: 52px;
+  }
+
   .tab {
-    min-height: 40px;
+    min-height: 52px;
   }
 
   .nav-tab {
-    min-height: 36px;
+    min-height: 52px;
   }
 }
 
