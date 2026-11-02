@@ -1,4 +1,4 @@
-import { act, fireEvent, render, screen } from '@testing-library/react';
+import { act, fireEvent, render, screen, within } from '@testing-library/react';
 import EstrangeirosConsulta from '@/components/estrangeiros/EstrangeirosConsulta';
 
 describe('EstrangeirosConsulta', () => {
@@ -60,4 +60,30 @@ it('limita a espera e cancela a consulta ao desmontar', async () => {
   unmount();
   expect(signal.aborted).toBe(true);
   jest.useRealTimers();
+});
+
+
+it('oferece somente países estrangeiros da América do Sul com bandeiras', () => {
+  render(<EstrangeirosConsulta />);
+  const paises = screen.getByRole('combobox', { name: /país emissor/i });
+  expect(within(paises).getAllByRole('option')).toHaveLength(12);
+  expect(within(paises).getByRole('option', { name: 'Colômbia' })).toHaveValue('CO');
+  expect(within(paises).getByRole('option', { name: 'Suriname' })).toHaveValue('SR');
+  expect(within(paises).queryByRole('option', { name: /outro|estados unidos|brasil/i })).not.toBeInTheDocument();
+  const argentina = screen.getByRole('button', { name: 'Argentina' });
+  expect(argentina.querySelector('img')).toHaveAttribute('src', '/bandeiras/ar.svg');
+  fireEvent.click(screen.getByRole('button', { name: 'Colômbia' }));
+  expect(paises).toHaveValue('CO');
+  fireEvent.click(screen.getByRole('button', { name: /analisar situação/i }));
+  expect(screen.getByText(/Colômbia:.*reciprocidade/i)).toBeInTheDocument();
+});
+
+it('disponibiliza modelos ilustrativos dos documentos sob demanda', () => {
+  render(<EstrangeirosConsulta />);
+  expect(screen.getByRole('heading', { name: /modelos visuais dos documentos/i })).toBeInTheDocument();
+  expect(screen.getByText(/não reproduzem layouts oficiais/i)).toBeInTheDocument();
+  const modelo = screen.getByText('Ver modelo de habilitação').closest('details')!;
+  fireEvent.click(within(modelo).getByText('Ver modelo de habilitação'));
+  expect(within(modelo).getByRole('img', { name: /modelo ilustrativo.*habilitação/i })).toHaveAttribute('src', '/documentos/estrangeiros/modelos/habilitacao.svg');
+  expect(within(modelo).getByRole('link', { name: /ampliar modelo/i })).toHaveAttribute('target', '_blank');
 });

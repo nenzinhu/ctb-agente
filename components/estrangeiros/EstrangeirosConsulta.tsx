@@ -6,15 +6,9 @@ import { interpretarConsultaEstrangeiros } from '@/lib/estrangeiros/consulta';
 import { avaliarEstrangeiro } from '@/lib/estrangeiros/motor';
 import type { FatosEstrangeiros, ResultadoEstrangeiros } from '@/lib/estrangeiros/types';
 import Resultado from './ResultadoEstrangeiros';
+import ModelosDocumentos from './ModelosDocumentos';
+import { PAISES_AMERICA_SUL } from '@/lib/estrangeiros/paises-america-sul';
 import { FONTES_ESTRANGEIROS, buscarTrechosEstrangeiros } from '@/lib/estrangeiros/acervo';
-
-const PAISES = [
-  ['AR', 'Argentina'], ['BO', 'Bolívia'], ['CL', 'Chile'], ['PY', 'Paraguai'], ['PE', 'Peru'], ['UY', 'Uruguai'], ['OUTRO', 'Outro país'],
-] as const;
-
-const PAISES_RAPIDOS = [
-  ['AR', 'Argentina'], ['UY', 'Uruguai'], ['PY', 'Paraguai'], ['CL', 'Chile'],
-] as const;
 
 function ChecklistDocumental({ pais }: { pais?: string }) {
   const [itens, setItens] = useState<Record<string, boolean>>({});
@@ -132,14 +126,20 @@ export default function EstrangeirosConsulta() {
         <div className="mt-4" aria-label="Filtros rápidos por país">
           <p className="label">País do veículo ou condutor</p>
           <div className="flex flex-wrap gap-2">
-            {PAISES_RAPIDOS.map(([valor, nome]) => (
-              <button key={valor} type="button" className="chip" aria-pressed={fatos.paisHabilitacao === valor} onClick={() => atualizar('paisHabilitacao', fatos.paisHabilitacao === valor ? undefined : valor)}>{nome}</button>
+            {PAISES_AMERICA_SUL.map(([valor, nome]) => (
+              <button key={valor} type="button" className="inline-flex min-h-[44px] items-center gap-2 rounded-control border border-ds-line bg-ds-surface px-3 py-2 text-xs font-semibold transition-colors hover:bg-ds-muted aria-pressed:border-ds-primary aria-pressed:bg-ds-primary-soft aria-pressed:text-ds-primary-strong" aria-pressed={fatos.paisHabilitacao === valor} onClick={() => atualizar('paisHabilitacao', fatos.paisHabilitacao === valor ? undefined : valor)}>
+                {/* Flag assets from flag-icons (MIT), served locally for field use. */}
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={`/bandeiras/${valor.toLowerCase()}.svg`} alt="" width={24} height={18} className="h-[18px] w-6 rounded-sm border border-ds-line object-cover" />
+                {nome}
+              </button>
             ))}
           </div>
+          <p className="mt-2 text-xs text-ds-subtle">Países estrangeiros da América do Sul. Para veículos brasileiros, use a opção de registro brasileiro.</p>
         </div>
         <div className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           <label className="text-sm font-medium">País emissor da habilitação
-            <select className="input mt-1" value={fatos.paisHabilitacao ?? ''} onChange={(e) => atualizar('paisHabilitacao', e.target.value || undefined)}><option value="">Selecione</option>{PAISES.map(([valor, nome]) => <option key={valor} value={valor}>{nome}</option>)}</select>
+            <select className="input mt-1" value={fatos.paisHabilitacao ?? ''} onChange={(e) => atualizar('paisHabilitacao', e.target.value || undefined)}><option value="">Selecione</option>{PAISES_AMERICA_SUL.map(([valor, nome]) => <option key={valor} value={valor}>{nome}</option>)}</select>
           </label>
           <label className="text-sm font-medium">Situação no Brasil
             <select className="input mt-1" value={fatos.visitanteOuResidente ?? ''} onChange={(e) => atualizar('visitanteOuResidente', (e.target.value || undefined) as FatosEstrangeiros['visitanteOuResidente'])}><option value="">Selecione</option><option value="visitante">Visitante</option><option value="residente">Residente</option></select>
@@ -164,6 +164,7 @@ export default function EstrangeirosConsulta() {
         <button type="button" className="btn-primary mt-5" disabled={consultando} onClick={() => { setErro(null); setResultado(avaliarEstrangeiro(fatos)); }}>Analisar situação</button>
       </section>
       <ChecklistDocumental pais={fatos.paisHabilitacao} />
+      <ModelosDocumentos />
       {resultado && <Resultado resultado={resultado} />}
     </div>
   );

@@ -168,7 +168,7 @@ export default function CalculadoraPesos() {
   };
 
   return (
-    <div className="space-y-5">
+    <div className="min-w-0 space-y-5">
       <form onSubmit={calcular} className="space-y-5">
         <SectionCard numero={1} titulo="Configuração do veículo">
           <SeletorConfiguracao valor={configuracaoId} onChange={escolherDesenho} />
