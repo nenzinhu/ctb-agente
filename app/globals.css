@@ -327,7 +327,7 @@ body::before {
     @apply min-h-[36px] px-3 py-1.5 text-xs;
   }
   .icon-btn {
-    @apply inline-grid h-10 w-10 shrink-0 place-items-center rounded-control border-2 border-ds-primary bg-ds-surface text-ds-primary transition-colors hover:bg-ds-primary-soft disabled:cursor-not-allowed disabled:opacity-50;
+    @apply inline-grid h-11 w-11 shrink-0 place-items-center rounded-control border-2 border-ds-primary bg-ds-surface text-ds-primary transition-colors hover:bg-ds-primary-soft disabled:cursor-not-allowed disabled:opacity-50;
   }
   .icon-btn-perigo {
     @apply border-ds-danger bg-ds-danger/10 text-ds-danger hover:bg-ds-danger/15;
@@ -339,7 +339,7 @@ body::before {
   }
 
   .chip {
-    @apply inline-flex min-h-[36px] max-w-full items-center gap-1.5 truncate rounded-full border border-ds-line bg-ds-surface px-3 py-1 text-[13px] text-ds-text transition-colors hover:border-ds-primary hover:bg-ds-primary-soft disabled:cursor-not-allowed disabled:opacity-50;
+    @apply inline-flex min-h-[44px] max-w-full items-center gap-1.5 truncate rounded-full border border-ds-line bg-ds-surface px-3 py-1 text-[13px] text-ds-text transition-colors hover:border-ds-primary hover:bg-ds-primary-soft disabled:cursor-not-allowed disabled:opacity-50;
   }
 
   /* ---- CTB and POP consultation workspace ---- */
@@ -352,12 +352,6 @@ body::before {
   .consultation-lead {
     @apply mt-2 max-w-2xl text-base leading-relaxed text-ds-subtle sm:text-lg;
   }
-  .mobile-home-intro .consultation-title {
-    @apply text-2xl sm:text-[2.75rem];
-  }
-  .mobile-home-intro .consultation-lead {
-    @apply text-sm sm:text-lg;
-  }
   .mobile-query-field {
     field-sizing: content;
   }
@@ -365,7 +359,7 @@ body::before {
     @apply border-t-4 border-t-ds-primary;
   }
   .consultation-modes {
-    @apply mb-6 grid grid-cols-2 gap-2 rounded-control bg-ds-muted p-1.5;
+    @apply mb-4 grid grid-cols-2 gap-2 rounded-control bg-ds-muted p-1.5;
   }
   .consultation-mode {
     @apply flex min-w-0 items-center gap-2 rounded-lg border border-transparent px-2.5 py-3 text-sm text-ds-subtle transition-colors hover:bg-ds-surface sm:gap-3 sm:px-3;
@@ -374,7 +368,7 @@ body::before {
     @apply border-ds-primary bg-ds-surface text-ds-primary-strong shadow-sm;
   }
   .query-example {
-    @apply min-h-[40px] whitespace-normal text-left;
+    @apply min-h-[44px] whitespace-normal text-left;
     overflow-wrap: anywhere;
   }
   .search-guide {
@@ -519,7 +513,7 @@ body::before {
     color: var(--ds-on-header-soft);
   }
   .header-pill {
-    @apply inline-flex min-h-[38px] min-w-[38px] items-center justify-center gap-1.5 rounded-full border px-2 font-mono text-[11px] font-semibold uppercase tracking-[0.08em] transition-colors md:px-3;
+    @apply inline-flex min-h-[44px] min-w-[44px] items-center justify-center gap-1.5 rounded-full border px-2 font-mono text-[11px] font-semibold uppercase tracking-[0.08em] transition-colors md:px-3;
     background-color: var(--ds-header-pill);
     border-color: var(--ds-header-pill-border);
     color: var(--ds-on-header);
@@ -536,19 +530,11 @@ body::before {
     border-top: 1px solid var(--ds-header-line);
     border-bottom: 2px solid var(--ds-gold);
   }
-  /* Phones: a horizontally scrolling strip, faded at the right edge */
   .nav-tabs {
-    @apply relative -mx-1 flex snap-x snap-mandatory gap-0.5 overflow-x-auto px-1 py-1 pr-8 md:pr-1;
-    scrollbar-width: none;
-    mask-image: linear-gradient(to right, black calc(100% - 2rem), transparent);
-    scroll-behavior: smooth;
-    overscroll-behavior-inline: contain;
-  }
-  .nav-tabs::-webkit-scrollbar {
-    display: none;
+    @apply flex items-center gap-1 py-1;
   }
   .nav-tab {
-    @apply flex min-h-[32px] snap-start items-center gap-1 whitespace-nowrap rounded-md border border-transparent px-2.5 text-[11px] font-medium transition-all duration-200;
+    @apply flex min-h-[44px] items-center gap-2 whitespace-nowrap rounded-md border border-transparent px-3 text-sm font-medium transition-all duration-200;
     color: var(--ds-on-header-soft);
   }
   .nav-tab:hover {
@@ -556,11 +542,64 @@ body::before {
     background-color: var(--ds-header-pill);
     transform: translateY(-1px);
   }
-  .nav-tab[aria-current='page'] {
+  .nav-tab[aria-current='page'],
+  .nav-tab[data-active='true'] {
     color: var(--ds-on-header);
     background-color: var(--ds-header-pill);
     border-color: var(--ds-header-pill-border);
     box-shadow: 0 2px 8px rgb(0 0 0 / 14%);
+  }
+
+  /* Grouped navigation shares its catalogue across desktop, mobile and home. */
+  .desktop-tools > summary,
+  .search-help > summary {
+    @apply cursor-pointer list-none;
+  }
+  .desktop-tools > summary::-webkit-details-marker,
+  .search-help > summary::-webkit-details-marker {
+    display: none;
+  }
+  details[open] > summary .tools-chevron {
+    transform: rotate(180deg);
+  }
+  .desktop-tools-panel {
+    @apply absolute left-0 top-full mt-1 w-full max-w-4xl rounded-card border border-ds-line bg-ds-surface p-5 text-ds-text shadow-overlay;
+    max-height: calc(100dvh - 8rem);
+    overflow-y: auto;
+  }
+  .ds-header .desktop-tools-panel :focus-visible {
+    outline-color: var(--ds-focus);
+  }
+  .tool-groups {
+    @apply grid gap-5;
+  }
+  .desktop-tools-panel .tool-groups,
+  .home-tools .tool-groups {
+    @apply sm:grid-cols-3;
+  }
+  .tool-group-title {
+    @apply mb-2 px-2 text-sm font-semibold text-ds-subtle;
+  }
+  .tool-destination {
+    @apply flex min-h-[48px] items-start gap-3 rounded-control p-2 text-ds-text transition-colors hover:bg-ds-primary-soft;
+  }
+  .tool-destination[aria-current='page'] {
+    @apply bg-ds-primary-soft;
+  }
+  .tool-destination[aria-current='page'] strong {
+    @apply text-ds-primary-strong underline underline-offset-4;
+  }
+  .tools-recent {
+    @apply mt-4 flex min-h-[44px] items-center gap-2 border-t border-ds-line px-2 pt-3 text-sm font-medium text-ds-primary-strong;
+  }
+  .search-help {
+    @apply rounded-control border border-ds-line;
+  }
+  .search-help > summary {
+    @apply flex min-h-[52px] items-center justify-between gap-3 p-4 text-sm font-semibold text-ds-text;
+  }
+  .home-tools {
+    @apply border-t border-ds-line pt-6;
   }
 
   .mobile-nav {
@@ -664,13 +703,7 @@ body::before {
   }
 
   .nav-tab {
-    min-height: 36px;
-  }
-}
-
-@media (min-width: 1024px) {
-  .nav-tabs {
-    mask-image: none;
+    min-height: 44px;
   }
 }
 

@@ -17,7 +17,7 @@ describe('MobileNavigation', () => {
     expect(buscar).toHaveAttribute('aria-current', 'page');
     expect(screen.getByRole('button', { name: /ferramentas/i })).toHaveClass('mobile-nav-action');
     expect(screen.getByRole('link', { name: /favoritos/i })).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /mais/i })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: /pops/i })).toHaveAttribute('href', '/pop');
   });
 
   it('abre Ferramentas, fecha com Escape e devolve o foco ao acionador', async () => {
@@ -27,7 +27,11 @@ describe('MobileNavigation', () => {
     await user.click(trigger);
     expect(screen.getByRole('dialog', { name: /ferramentas/i })).toBeInTheDocument();
     expect(screen.queryByRole('link', { name: /enquadramento guiado/i })).not.toBeInTheDocument();
-    expect(screen.getByRole('link', { name: /consultar pops/i })).toHaveFocus();
+    expect(screen.getByRole('heading', { name: 'Fiscalização' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Estudo' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Documentos' })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: /lista de fatos/i })).toHaveFocus();
+    expect(screen.getByRole('link', { name: /comprimir pdf/i })).toHaveAttribute('href', '/comprimir-pdf');
     await user.keyboard('{Escape}');
     await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument());
     expect(trigger).toHaveFocus();
@@ -36,8 +40,8 @@ describe('MobileNavigation', () => {
   it('fecha a folha ao clicar no fundo', async () => {
     const user = userEvent.setup();
     render(<MobileNavigation />);
-    await user.click(screen.getByRole('button', { name: /mais/i }));
-    expect(screen.getByRole('dialog', { name: /mais opções/i })).toBeInTheDocument();
+    await user.click(screen.getByRole('button', { name: /ferramentas/i }));
+    expect(screen.getByRole('dialog', { name: /ferramentas/i })).toBeInTheDocument();
     await user.click(screen.getByTestId('bottom-sheet-backdrop'));
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
   });

@@ -3,69 +3,45 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import Icone, { type NomeIcone } from '@/components/ui/Icone';
+import Icone from '@/components/ui/Icone';
+import { destinoAtivo, ferramentaAtiva, NAVEGACAO_PRINCIPAL } from '@/lib/navigation';
+import ToolGroups from '@/components/ToolGroups';
 import BottomSheet from './BottomSheet';
-
-const FERRAMENTAS: Array<{ href: string; label: string; descricao: string; icone: NomeIcone }> = [
-  { href: '/pop', label: 'Consultar POPs', descricao: 'Procedimentos operacionais', icone: 'escudo' },
-  { href: '/fatos-pmsc', label: 'Lista de Fatos PMSC', descricao: 'Naturezas e potencial ofensivo', icone: 'arquivo' },
-  { href: '/pesos-dimensoes', label: 'Pesos e Dimensões', descricao: 'PBT, PBTC, CMT e excesso de peso', icone: 'balanca' },
-  { href: '/estrangeiros', label: 'Condutores e Veículos Estrangeiros', descricao: 'Documentos, acordos e possíveis enquadramentos', icone: 'globo' },
-  { href: '/professor', label: 'Professor Emérito', descricao: 'Explique e compare situações', icone: 'professor' },
-  { href: '/apostila', label: 'Apostila IA', descricao: 'Material para estudo', icone: 'livro' },
-  { href: '/gerador-pdf', label: 'Ferramentas de PDF', descricao: 'Gerar ou comprimir documentos', icone: 'comprimir' },
-];
-
-function SheetLink({ href, label, descricao, icone, onClick }: typeof FERRAMENTAS[number] & { onClick: () => void }) {
-  return (
-    <Link href={href} onClick={onClick} className="mobile-sheet-link">
-      <span className="mobile-sheet-link-icon"><Icone nome={icone} tamanho={21} /></span>
-      <span><strong>{label}</strong><small>{descricao}</small></span>
-      <Icone nome="chevron" tamanho={17} className="ml-auto -rotate-90" />
-    </Link>
-  );
-}
 
 export default function MobileNavigation() {
   const pathname = usePathname() ?? '/';
-  const [sheet, setSheet] = useState<'ferramentas' | 'mais' | null>(null);
+  const [open, setOpen] = useState(false);
   const ferramentasRef = useRef<HTMLButtonElement>(null);
-  const maisRef = useRef<HTMLButtonElement>(null);
-  const fechar = useCallback(() => setSheet(null), []);
+  const fechar = useCallback(() => setOpen(false), []);
 
-  useEffect(() => setSheet(null), [pathname]);
+  useEffect(() => setOpen(false), [pathname]);
+  useEffect(() => {
+    const media = typeof window.matchMedia === 'function' ? window.matchMedia('(min-width: 768px)') : null;
+    const aoMudarTela = () => { if (media?.matches) setOpen(false); };
+    media?.addEventListener('change', aoMudarTela);
+    return () => media?.removeEventListener('change', aoMudarTela);
+  }, []);
+
   if (pathname.startsWith('/admin')) return null;
-
-  const buscaAtiva = pathname === '/' || pathname.startsWith('/consulta');
-  const ferramentasAtiva = FERRAMENTAS.some(({ href }) => pathname === href || pathname.startsWith(`${href}/`));
-  const favoritosAtivo = pathname === '/favoritos' || pathname.startsWith('/favoritos/');
 
   return (
     <>
       <nav className="mobile-nav mobile-nav-compact print:hidden md:hidden" aria-label="Navegação mobile">
-        <Link href="/" className="mobile-nav-action" aria-current={buscaAtiva ? 'page' : undefined}>
-          <Icone nome="busca" tamanho={20} /><span>Buscar</span>
-        </Link>
-        <button ref={ferramentasRef} type="button" className="mobile-nav-action" aria-expanded={sheet === 'ferramentas'} aria-current={ferramentasAtiva ? 'page' : undefined} onClick={() => setSheet('ferramentas')}>
+        {NAVEGACAO_PRINCIPAL.map((item, index) => (
+          <Link key={item.href} href={item.href} className="mobile-nav-action" aria-current={destinoAtivo(item.href, pathname) ? 'page' : undefined}>
+            <Icone nome={item.icone} tamanho={20} /><span>{index === 0 ? 'Buscar' : index === 1 ? 'POPs' : item.label}</span>
+          </Link>
+        ))}
+        <button ref={ferramentasRef} type="button" className="mobile-nav-action" aria-haspopup="dialog" aria-expanded={open} aria-current={ferramentaAtiva(pathname) ? 'page' : undefined} onClick={() => setOpen(true)}>
           <Icone nome="lista" tamanho={20} /><span>Ferramentas</span>
-        </button>
-        <Link href="/favoritos" className="mobile-nav-action" aria-current={favoritosAtivo ? 'page' : undefined}>
-          <Icone nome="estrela" tamanho={20} /><span>Favoritos</span>
-        </Link>
-        <button ref={maisRef} type="button" className="mobile-nav-action" aria-expanded={sheet === 'mais'} onClick={() => setSheet('mais')}>
-          <Icone nome="engrenagem" tamanho={20} /><span>Mais</span>
         </button>
       </nav>
 
-      <BottomSheet title="Ferramentas" open={sheet === 'ferramentas'} onClose={fechar} triggerRef={ferramentasRef}>
-        <div className="grid gap-2">{FERRAMENTAS.map((item) => <SheetLink key={item.href} {...item} onClick={fechar} />)}</div>
-      </BottomSheet>
-      <BottomSheet title="Mais opções" open={sheet === 'mais'} onClose={fechar} triggerRef={maisRef}>
-        <div className="grid gap-2">
-          <SheetLink href="/" label="Início" descricao="Voltar à busca principal" icone="busca" onClick={fechar} />
-          <SheetLink href="/#consultas-recentes" label="Consultas recentes" descricao="Retomar uma pesquisa" icone="relogio" onClick={fechar} />
-          <SheetLink href="/comprimir-pdf" label="Comprimir PDF" descricao="Reduzir arquivos no aparelho" icone="comprimir" onClick={fechar} />
-        </div>
+      <BottomSheet title="Ferramentas" open={open} onClose={fechar} triggerRef={ferramentasRef}>
+        <ToolGroups pathname={pathname} onNavigate={fechar} />
+        <Link href="/#consultas-recentes" onClick={fechar} className="tools-recent">
+          <Icone nome="relogio" tamanho={18} /> Consultas recentes
+        </Link>
       </BottomSheet>
     </>
   );
