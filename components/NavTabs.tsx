@@ -3,56 +3,63 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useEffect, useRef } from 'react';
-import Icone, { type NomeIcone } from './ui/Icone';
+import { destinoAtivo, ferramentaAtiva, NAVEGACAO_PRINCIPAL } from '@/lib/navigation';
+import Icone from './ui/Icone';
+import ToolGroups from './ToolGroups';
 
-export interface ItemNav {
-  href: string;
-  label: string;
-  /** Shorter label for phones */
-  curto: string;
-  icone: NomeIcone;
-  /** Other paths that belong to this section */
-  tambem?: string[];
-}
-
-function ativo(item: ItemNav, pathname: string): boolean {
-  if (item.href === '/') return pathname === '/' || (item.tambem ?? []).some((p) => pathname.startsWith(p));
-  return pathname === item.href || pathname.startsWith(`${item.href}/`);
-}
-
-/**
- * Desktop section pills keep the active destination in view. Compact mobile
- * shortcuts use a fixed grid so every quick consultation remains visible.
- */
-export default function NavTabs({ itens, compacto = false }: { itens: ItemNav[]; compacto?: boolean }) {
+export default function NavTabs() {
   const pathname = usePathname() ?? '/';
-  const listaRef = useRef<HTMLUListElement>(null);
+  const menuRef = useRef<HTMLDetailsElement>(null);
+  const fechar = () => { if (menuRef.current) menuRef.current.open = false; };
+
+  useEffect(() => { if (menuRef.current) menuRef.current.open = false; }, [pathname]);
 
   useEffect(() => {
-    const lista = listaRef.current;
-    const atual = lista?.querySelector<HTMLElement>('[aria-current="page"]');
-    if (!lista || !atual || lista.scrollWidth <= lista.clientWidth) return;
-    lista.scrollLeft = atual.offsetLeft - (lista.clientWidth - atual.offsetWidth) / 2;
-  }, [pathname]);
+    const fecharFora = (event: PointerEvent) => {
+      if (event.target instanceof Node && !menuRef.current?.contains(event.target)) fechar();
+    };
+    const fecharComEscape = (event: KeyboardEvent) => {
+      if (event.key !== 'Escape' || !menuRef.current?.open) return;
+      fechar();
+      menuRef.current.querySelector('summary')?.focus();
+    };
+    const media = typeof window.matchMedia === 'function' ? window.matchMedia('(min-width: 768px)') : null;
+    const aoMudarTela = () => { if (!media?.matches) fechar(); };
+    document.addEventListener('pointerdown', fecharFora);
+    document.addEventListener('keydown', fecharComEscape);
+    media?.addEventListener('change', aoMudarTela);
+    return () => {
+      document.removeEventListener('pointerdown', fecharFora);
+      document.removeEventListener('keydown', fecharComEscape);
+      media?.removeEventListener('change', aoMudarTela);
+    };
+  }, []);
 
   return (
-    <div role={compacto ? undefined : "navigation"} aria-label={compacto ? undefined : "Navegação principal"}>
-      <ul ref={listaRef} className={compacto ? "mobile-quick-links" : "nav-tabs nav-tabs-compact"}>
-        {itens.map((item) => (
-          <li key={item.href} className="shrink-0">
-            <Link
-              href={item.href}
-              aria-label={item.label}
-              title={item.label}
-              aria-current={ativo(item, pathname) ? 'page' : undefined}
-              className="nav-tab"
-            >
-              <Icone nome={item.icone} tamanho={16} className="shrink-0" />
-              <span>{compacto && item.href === "/" ? "Consulta CTB" : compacto && item.href === "/pop" ? "POPs" : item.curto}</span>
+    <nav aria-label="Navegação principal" className="relative">
+      <ul className="nav-tabs nav-tabs-compact">
+        {NAVEGACAO_PRINCIPAL.map((item) => (
+          <li key={item.href}>
+            <Link href={item.href} aria-current={destinoAtivo(item.href, pathname) ? 'page' : undefined} className="nav-tab">
+              <Icone nome={item.icone} tamanho={18} /><span>{item.label}</span>
             </Link>
           </li>
         ))}
+        <li>
+          <details ref={menuRef} className="desktop-tools">
+            <summary className="nav-tab" data-active={ferramentaAtiva(pathname) || undefined}>
+              <Icone nome="lista" tamanho={18} /><span>Ferramentas</span>
+              <Icone nome="chevron" tamanho={14} className="tools-chevron" />
+            </summary>
+            <div className="desktop-tools-panel">
+              <ToolGroups pathname={pathname} onNavigate={fechar} />
+              <Link href="/#consultas-recentes" onClick={fechar} className="tools-recent">
+                <Icone nome="relogio" tamanho={18} /> Consultas recentes
+              </Link>
+            </div>
+          </details>
+        </li>
       </ul>
-    </div>
+    </nav>
   );
 }

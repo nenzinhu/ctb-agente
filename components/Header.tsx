@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import InstalarApp from './InstalarApp';
-import OperationalNavigation from './OperationalNavigation';
+import NavTabs from './NavTabs';
 import TemaEscuroToggle from './TemaEscuroToggle';
 import TemaToggle from './TemaToggle';
 import Icone from './ui/Icone';
@@ -40,9 +40,9 @@ export default function Header() {
         </div>
       </div>
 
-      <div className="header-strip">
-        <div className="mx-auto max-w-6xl px-3 sm:px-6">
-          <OperationalNavigation />
+      <div data-testid="desktop-navigation" className="header-strip hidden md:block">
+        <div className="mx-auto max-w-6xl px-4 sm:px-6">
+          <NavTabs />
         </div>
       </div>
     </header>

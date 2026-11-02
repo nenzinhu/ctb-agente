@@ -1,120 +1,77 @@
-import Link from 'next/link';
 import ConsultaForm from '@/components/ConsultaForm';
 import RecentQueries from '@/components/RecentQueries';
 import HomeReveal from '@/components/HomeReveal';
-import Icone, { type NomeIcone } from '@/components/ui/Icone';
-import SectionCard from '@/components/ui/SectionCard';
+import ToolGroups from '@/components/ToolGroups';
 import styles from './home.module.css';
+import Icone, { type NomeIcone } from '@/components/ui/Icone';
 
-const EXEMPLOS = ['516-91', 'art. 165', 'moto sem capacete', 'recusa do bafômetro', 'racha'];
+const EXEMPLOS = ['516-91', 'art. 165', 'moto sem capacete'];
 
 const TIPOS = [
-  { titulo: 'Tem o código?', exemplo: '516-91 ou art. 165', texto: 'Use o enquadramento MBFT ou o artigo do CTB.', icone: 'balanca' },
-  { titulo: 'Descreva a situação', exemplo: 'motorista mexendo no celular', texto: 'Conte o que aconteceu, com as palavras do dia a dia.', icone: 'busca' },
-  { titulo: 'Lembra só uma parte?', exemplo: 'estacion ou bafomet', texto: 'Tente o começo da palavra. Acrescente detalhes para refinar a busca.', icone: 'faisca' },
+  { titulo: 'Código ou artigo', exemplo: '516-91 ou art. 165', texto: 'Use o enquadramento MBFT ou o artigo do CTB.', icone: 'balanca' },
+  { titulo: 'Situação', exemplo: 'motorista mexendo no celular', texto: 'Descreva o que aconteceu, com as palavras do dia a dia.', icone: 'busca' },
+  { titulo: 'Parte da palavra', exemplo: 'estacion ou bafomet', texto: 'Abreviações e termos do dia a dia também ajudam a buscar.', icone: 'faisca' },
 ] satisfies { titulo: string; exemplo: string; texto: string; icone: NomeIcone }[];
-
-const ATALHOS: { href: string; titulo: string; texto: string; icone: NomeIcone }[] = [
-  { href: '/favoritos', titulo: 'Seus favoritos', texto: 'Retome os enquadramentos salvos neste aparelho.', icone: 'estrela' },
-  { href: '/apostila', titulo: 'Gerar apostila', texto: 'Crie material de estudo com qualquer documento indexado do acervo.', icone: 'livro' },
-  { href: '/comprimir-pdf', titulo: 'Comprimir PDF', texto: 'Reduza arquivos no aparelho, inclusive para somente texto.', icone: 'comprimir' },
-];
 
 export default function Home() {
   return (
     <HomeReveal>
       <div className={styles.paper}>
-      <main className={`page max-w-6xl space-y-4 sm:space-y-9 ${styles.page}`}>
-        <div data-home-reveal data-home-reveal-group="0">
-          <div className={styles.edition} aria-hidden="true">
-            <span>CTB / MBFT / POP</span><span>Caderno de campo</span>
+      <main className={`page max-w-6xl space-y-6 sm:space-y-8 ${styles.page}`}>
+        <div className="flex items-center justify-between gap-6" data-home-reveal data-home-reveal-group="0">
+          <div>
+          <h1 className="text-2xl font-bold tracking-tight text-ds-text sm:text-3xl">Consultar infrações e artigos</h1>
+          <p className="mt-2 text-sm text-ds-subtle sm:text-base">Busque no CTB e nas fichas do MBFT por código, artigo ou situação.</p>
           </div>
-          <div className={styles.heroLayout}>
-          <div className={styles.heroCopy}>
-          <p className="eyebrow">Apoio operacional para agentes de campo</p>
-          <h1 className={styles.title}>Consulta rápida.<br /><span className={styles.tagline}>Apoio em cada abordagem.</span></h1>
-          <p className="consultation-lead sm:hidden">CTB, MBFT e POPs para apoiar sua atuação.</p>
-          <p className="consultation-lead hidden sm:block">
-            Aplicativo de apoio ao agente em campo para consultar rapidamente o CTB, as fichas do MBFT e os POPs,
-            esclarecer dúvidas e conferir a fonte oficial antes da atuação.
-          </p>
-          </div>
-          <div className={styles.stickers} aria-hidden="true">
-            {/* Original decorative artwork, drawn on a pixel grid. */}
+          <div className="hidden shrink-0 items-center gap-3 sm:flex" aria-hidden="true">
+            {/* Original artwork from the current main branch. */}
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/illustrations/manual-pixel.svg" alt="" width={160} height={160} className={styles.manual} />
+            <img src="/illustrations/manual-pixel.svg" alt="" width={80} height={80} className="h-20 w-20" />
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/illustrations/semaforo-pixel.svg" alt="" width={96} height={160} className={styles.signal} />
-            <span className={styles.stickerCaption}>Consulte. Confira. Atue.</span>
-          </div>
+            <img src="/illustrations/semaforo-pixel.svg" alt="" width={48} height={80} className="h-20 w-12" />
           </div>
         </div>
 
-        <div className="mx-auto w-full max-w-3xl">
+        <div className="grid items-start gap-5 lg:grid-cols-[minmax(0,1fr)_300px] lg:gap-8">
           <div className="min-w-0" data-home-reveal data-home-reveal-group="1">
-            <div className={styles.windowTab} aria-hidden="true">
-              <span className={styles.windowKey}>01</span> Consulta rápida
-              <span className={styles.windowDots}>▪ ▪ ▪</span>
-            </div>
-            <SectionCard titulo="Consultar infrações e artigos" icone="busca" className={`min-w-0 consultation-card ${styles.searchPanel}`}>
+            <section aria-label="Consulta CTB" className="card-pad rounded-card bg-ds-surface">
               <ConsultaForm exemplos={EXEMPLOS} />
-              <div id="consultas-recentes" className="scroll-mt-24"><RecentQueries /></div>
-            </SectionCard>
-            <p className="mt-3 flex items-start justify-center gap-2 text-xs leading-relaxed text-ds-subtle">
-              <Icone nome="escudo" tamanho={16} className="mt-0.5 shrink-0" />
-              Use como apoio e confirme a norma vigente antes de agir.
-            </p>
+              <p className="mt-5 border-t border-ds-line pt-4 text-xs leading-relaxed text-ds-subtle">
+                Ferramenta de apoio. A decisão e o procedimento devem observar a norma e o documento vigente.
+              </p>
+              <div id="consultas-recentes" className="scroll-mt-32"><RecentQueries /></div>
+            </section>
           </div>
+
+          <aside className="min-w-0" aria-label="Ajuda para consultar" data-home-reveal data-home-reveal-group="2">
+            <details className="search-help">
+              <summary>
+                <span className="flex items-center gap-2"><Icone nome="info" tamanho={19} />Como pesquisar</span>
+                <Icone nome="chevron" tamanho={18} className="tools-chevron shrink-0" />
+              </summary>
+              <div className="px-4 pb-4">
+                <p className="text-sm leading-relaxed text-ds-subtle">Não precisa lembrar o termo exato.</p>
+                <ul className="mt-5 space-y-5">
+                  {TIPOS.map((tipo) => (
+                    <li key={tipo.titulo} className="flex items-start gap-3">
+                      <Icone nome={tipo.icone} tamanho={18} className="mt-0.5 shrink-0 text-ds-primary-strong" />
+                      <div className="min-w-0">
+                        <h2 className="text-sm font-semibold text-ds-text">{tipo.titulo}</h2>
+                        <p className="mt-1 text-sm font-medium text-ds-primary-strong">“{tipo.exemplo}”</p>
+                        <p className="mt-1 text-sm leading-relaxed text-ds-subtle">{tipo.texto}</p>
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+                <p className="mt-5 border-t border-ds-line pt-4 text-xs leading-relaxed text-ds-subtle">Informe o veículo, a conduta e o local quando forem relevantes. Confira a fonte oficial antes da atuação.</p>
+              </div>
+            </details>
+          </aside>
         </div>
 
-        <aside
-          className="min-w-0"
-          aria-label="Ajuda para consultar"
-          data-home-reveal
-          data-home-reveal-group="2"
-        >
-            <section className={`search-guide ${styles.guide}`} aria-labelledby="como-perguntar">
-              <h2 id="como-perguntar" className="text-lg font-semibold text-ds-text">Como perguntar</h2>
-              <p className="mt-1 text-sm text-ds-subtle">Não precisa lembrar o termo exato.</p>
-              <ul className="mt-5 grid gap-5 md:grid-cols-3 md:gap-6">
-                {TIPOS.map((tipo) => (
-                  <li key={tipo.titulo} className="flex items-start gap-3">
-                    <span className="search-guide-icon"><Icone nome={tipo.icone} tamanho={18} /></span>
-                    <div className="min-w-0">
-                      <h3 className="text-sm font-semibold text-ds-text">{tipo.titulo}</h3>
-                      <p className="mt-1 text-sm font-medium text-ds-primary-strong">“{tipo.exemplo}”</p>
-                      <p className="mt-1 text-sm leading-relaxed text-ds-subtle">{tipo.texto}</p>
-                    </div>
-                  </li>
-                ))}
-              </ul>
-            </section>
-            <p className="mt-3 flex items-start gap-2 px-1 text-xs leading-relaxed text-ds-subtle">
-              <Icone nome="info" tamanho={16} className="mt-0.5 shrink-0" />
-              Mais detalhes ajudam: informe o veículo, a conduta e o local quando forem relevantes.
-            </p>
-        </aside>
-
-        <section aria-labelledby="ferramentas-titulo" data-home-reveal data-home-reveal-group="3">
-          <div className={`mb-4 flex items-center justify-between gap-3 ${styles.toolsHeading}`}>
-            <h2 id="ferramentas-titulo" className="text-lg font-semibold text-ds-text">No seu dia a dia</h2>
-            <span className="text-xs text-ds-subtle">Ferramentas de apoio</span>
-          </div>
-          <ul className="grid gap-3 sm:grid-cols-3">
-            {ATALHOS.map((atalho, index) => (
-              <li key={atalho.href} className="min-w-0">
-                <Link href={atalho.href} className={`tool-link group ${styles.tool}`}>
-                  <span className={styles.toolIndex} aria-hidden="true">0{index + 2} / FERRAMENTAS</span>
-                  <span className="flex items-center justify-between gap-3">
-                    <Icone nome={atalho.icone} tamanho={21} className="text-ds-primary" />
-                    <Icone nome="seta" tamanho={16} className="text-ds-subtle transition-transform group-hover:translate-x-1" />
-                  </span>
-                  <span className="mt-3 block font-semibold text-ds-text">{atalho.titulo}</span>
-                  <span className="mt-1 block text-sm leading-relaxed text-ds-subtle">{atalho.texto}</span>
-                </Link>
-              </li>
-            ))}
-          </ul>
+        <section aria-labelledby="ferramentas-titulo" className="home-tools" data-home-reveal data-home-reveal-group="3">
+          <h2 id="ferramentas-titulo" className="mb-5 text-lg font-semibold text-ds-text">Ferramentas por tarefa</h2>
+          <ToolGroups />
         </section>
       </main>
       </div>
