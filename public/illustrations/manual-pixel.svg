@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="160" height="160" viewBox="0 0 32 32" shape-rendering="crispEdges">
+  <!-- Original pixel-grid field manual. White die-cut edge, stepped silhouette. -->
+  <path fill="#fff" d="M6 2h19v2h3v25h-3v2H6v-2H3V5h3z"/>
+  <path fill="#172b23" d="M7 4h17v2h2v21h-2v2H7v-2H5V7h2z"/>
+  <path fill="#087448" d="M9 6h13v2h2v16H9z"/>
+  <path fill="#075335" d="M7 8h2v17H7zM20 8h2v14h-2z"/>
+  <path fill="#f6df83" d="M12 9h8v2h-8zM12 13h5v2h-5z"/>
+  <path fill="#fff" d="M12 18h8v1h-8zM12 21h6v1h-6z"/>
+  <path fill="#e7ede8" d="M9 25h15v2H9z"/>
+  <path fill="#172b23" d="M11 25h1v1h-1zM14 25h1v1h-1zM17 25h1v1h-1zM20 25h1v1h-1z"/>
+  <path fill="#d59a33" d="M19 25h3v6h-1v-1h-1v1h-1z"/>
+</svg>

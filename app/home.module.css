@@ -1,0 +1,263 @@
+/* Editorial treatment belongs only to the home. Shared consultation UI keeps
+   its existing tokens, interaction states and operational layout. */
+.paper {
+  --home-paper: #ffffff;
+  --home-dot: #d2d8d4;
+  --home-outline: #243e34;
+  --home-highlight: #f6df83;
+  background-color: var(--home-paper);
+  background-image: radial-gradient(circle, var(--home-dot) 1px, transparent 1.3px);
+  background-size: 24px 24px;
+}
+
+.page {
+  padding-top: 24px;
+}
+
+.edition {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--ds-line);
+  color: var(--ds-subtle);
+  font: 600 11px / 1.5 var(--font-mono);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.heroLayout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 240px;
+  align-items: center;
+  gap: 32px;
+  padding: 32px 0 8px;
+}
+
+.heroCopy {
+  min-width: 0;
+}
+
+.title {
+  margin-top: 12px;
+  color: var(--ds-text);
+  font-size: clamp(48px, 6.4vw, 80px);
+  font-weight: 800;
+  line-height: 1.02;
+  letter-spacing: -0.055em;
+}
+
+.title span {
+  color: var(--ds-primary-strong);
+  text-decoration: underline;
+  text-decoration-color: var(--home-highlight);
+  text-decoration-thickness: 8px;
+  text-underline-offset: 8px;
+  text-decoration-skip-ink: none;
+}
+
+.lead {
+  max-width: 680px;
+  margin-top: 24px;
+  color: var(--ds-subtle);
+  font-size: 16px;
+  line-height: 1.7;
+}
+
+.stickers {
+  display: grid;
+  grid-template-columns: 144px 80px;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  pointer-events: none;
+  user-select: none;
+}
+
+.manual,
+.signal {
+  max-width: 100%;
+  height: auto;
+  image-rendering: pixelated;
+  filter: drop-shadow(3px 4px 0 rgb(36 62 52 / 0.12));
+}
+
+.stickerCaption {
+  grid-column: 1 / -1;
+  justify-self: center;
+  padding: 5px 8px;
+  background: var(--home-highlight);
+  color: #243e34;
+  font: 600 11px / 1.4 var(--font-mono);
+}
+
+.windowTab {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 44px;
+  padding: 8px 16px;
+  border: 1px solid var(--home-outline);
+  border-bottom: 0;
+  border-radius: 8px 8px 0 0;
+  background: var(--ds-muted);
+  color: var(--ds-text);
+  font: 600 12px / 1.5 var(--font-mono);
+}
+
+.windowKey {
+  padding: 0 5px;
+  border: 1px solid var(--home-outline);
+  border-bottom-width: 3px;
+  background: var(--ds-surface);
+}
+
+.windowDots {
+  margin-left: auto;
+  letter-spacing: 3px;
+}
+
+.searchPanel {
+  border: 1px solid var(--home-outline);
+  border-radius: 0 0 8px 8px;
+  box-shadow: 4px 4px 0 var(--ds-line);
+}
+
+.guide {
+  border-radius: 4px;
+  background: var(--ds-surface);
+}
+
+.toolsHeading {
+  padding-top: 20px;
+  border-top: 1px solid var(--home-outline);
+}
+
+.tool {
+  border-radius: 4px;
+  border-color: var(--home-outline);
+  box-shadow: 3px 3px 0 var(--ds-line);
+}
+
+.toolIndex {
+  display: block;
+  margin-bottom: 16px;
+  color: var(--ds-subtle);
+  font: 600 11px / 1.5 var(--font-mono);
+  letter-spacing: 0.06em;
+}
+
+.tool:hover {
+  background: var(--ds-muted);
+}
+
+.tool:active {
+  box-shadow: none;
+}
+
+:global(.dark) .paper {
+  --home-paper: var(--ds-bg);
+  --home-dot: #39483f;
+  --home-outline: #738a7d;
+  --home-highlight: #e3c668;
+}
+
+@media (max-width: 639px) {
+  .page {
+    padding-top: 16px;
+  }
+
+  .heroLayout {
+    position: relative;
+    display: block;
+    padding-top: 20px;
+  }
+
+  .heroCopy > :global(.eyebrow) {
+    max-width: 240px;
+    font-size: 10px;
+  }
+
+  .title {
+    max-width: calc(100% - 120px);
+    font-size: clamp(42px, 12vw, 48px);
+    line-height: 1.08;
+  }
+
+  .title span {
+    display: block;
+  }
+
+  .lead {
+    margin-top: 20px;
+    font-size: 15px;
+    line-height: 1.6;
+  }
+
+  .stickers {
+    position: absolute;
+    top: 64px;
+    right: 0;
+    width: 120px;
+    grid-template-columns: 80px 40px;
+    gap: 0;
+  }
+
+  .stickerCaption {
+    display: none;
+  }
+}
+
+/* Field readability takes precedence over decoration in the sunlight mode. */
+:global(:root[data-tema='sol']) .paper {
+  --home-paper: #ffffff;
+  --home-outline: #000000;
+  background-image: none;
+}
+
+:global(:root[data-tema='sol']) .stickers {
+  display: none;
+}
+
+:global(:root[data-tema='sol']) .heroLayout {
+  display: block;
+}
+
+:global(:root[data-tema='sol']) .title {
+  max-width: none;
+}
+
+:global(:root[data-tema='sol']) .title span {
+  text-decoration: none;
+}
+
+:global(:root[data-tema='sol']) .searchPanel,
+:global(:root[data-tema='sol']) .tool {
+  box-shadow: none;
+}
+
+@media print {
+  .paper {
+    background: none;
+  }
+
+  .stickers,
+  .edition,
+  .windowTab {
+    display: none;
+  }
+
+  .heroLayout {
+    display: block;
+  }
+
+  .title {
+    max-width: none;
+  }
+
+  .searchPanel,
+  .tool {
+    box-shadow: none;
+  }
+}
