@@ -62,6 +62,8 @@ export default function OperationalNavigation() {
     return () => document.removeEventListener('click', fechar);
   }, []);
 
+  const pilarAberto = PILARES.find((pilar) => pilar.id === aberto) ?? null;
+
   return (
     <nav ref={navRef} aria-label="Pilares operacionais" className="operational-navigation">
       <ul className="operational-pillars">
@@ -82,28 +84,28 @@ export default function OperationalNavigation() {
                 <span>{pilar.label}</span>
                 <Icone nome="chevron" tamanho={15} className={expandido ? 'rotate-180' : ''} />
               </button>
-              {expandido && (
-                <ul id={`submenu-${pilar.id}`} className="operational-submenu">
-                  {pilar.itens.map((item) => (
-                    <li key={item.href}>
-                      <Link
-                        href={item.href}
-                        aria-label={item.label}
-                        aria-current={corresponde(item.href, pathname, item.tambem) ? 'page' : undefined}
-                        className="operational-submenu-link"
-                        onClick={() => setAberto(null)}
-                      >
-                        <Icone nome={item.icone} tamanho={19} />
-                        <span>{item.label}</span>
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
-              )}
             </li>
           );
         })}
       </ul>
+      {pilarAberto && (
+          <ul id={`submenu-${pilarAberto.id}`} className="operational-submenu">
+            {pilarAberto.itens.map((item) => (
+              <li key={item.href}>
+                <Link
+                  href={item.href}
+                  aria-label={item.label}
+                  aria-current={corresponde(item.href, pathname, item.tambem) ? 'page' : undefined}
+                  className="operational-submenu-link"
+                  onClick={() => setAberto(null)}
+                >
+                  <Icone nome={item.icone} tamanho={19} />
+                  <span>{item.label}</span>
+                </Link>
+              </li>
+            ))}
+          </ul>
+      )}
     </nav>
   );
 }

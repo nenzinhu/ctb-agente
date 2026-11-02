@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 
 let pathname = '/';
 jest.mock('next/navigation', () => ({ usePathname: () => pathname }));
@@ -23,5 +23,14 @@ describe('OperationalNavigation', () => {
 
     expect(screen.getByRole('link', { name: /consulta ctb e mbft/i })).toHaveAttribute('href', '/');
     expect(screen.getByRole('link', { name: /fatos pmsc/i })).toHaveAttribute('aria-current', 'page');
+  });
+
+  it('abre o submenu quando o pilar recebe um toque ou clique', () => {
+    render(<OperationalNavigation />);
+
+    fireEvent.click(screen.getByRole('button', { name: /procedimentos/i }));
+
+    expect(screen.getByRole('link', { name: /pops pmsc/i })).toBeVisible();
+    expect(screen.getByRole('link', { name: /casos práticos/i })).toBeVisible();
   });
 });
