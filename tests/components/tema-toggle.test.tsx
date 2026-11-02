@@ -11,7 +11,7 @@ describe('TemaToggle', () => {
   it('starts in the default theme', () => {
     render(<TemaToggle />);
 
-    expect(screen.getByRole('button', { name: /Modo sol$/ })).toHaveAttribute(
+    expect(screen.getByRole('button', { name: /Modo pista$/ })).toHaveAttribute(
       'aria-pressed',
       'false'
     );
@@ -26,7 +26,7 @@ describe('TemaToggle', () => {
 
     expect(document.documentElement.dataset.tema).toBe('sol');
     expect(localStorage.getItem('ctb-tema')).toBe('sol');
-    expect(screen.getByRole('button', { name: /Modo sol: ativo/ })).toHaveAttribute(
+    expect(screen.getByRole('button', { name: /Modo pista: ativo/ })).toHaveAttribute(
       'aria-pressed',
       'true'
     );

@@ -1,4 +1,5 @@
-import { render, screen } from '@testing-library/react';
+import { render, screen, within } from '@testing-library/react';
+import type { FichaMbft } from '@/lib/mbft/parser';
 import FichaFiscalizacao from '@/components/FichaFiscalizacao';
 import { CartaoEstruturado } from '@/lib/response/response-types';
 import { parseMbftFields } from '@/lib/response/mbft-fields';
@@ -59,6 +60,31 @@ const mockCard: CartaoEstruturado = {
 const campos = parseMbftFields(TEXTO_MBFT_181_XX);
 
 describe('FichaFiscalizacao', () => {
+  it('destaca conduta, pontuação e penalidade sem substituir dados oficiais pelo banco', () => {
+    const oficial: FichaMbft = {
+      codigo: '763-31', tipificacaoResumida: 'Dirigir veículo segurando telefone celular.',
+      amparoLegal: 'Art. 252, parágrafo único', tipificacao: 'Dirigir segurando celular',
+      gravidade: 'Gravíssima', pontuacao: '7', penalidade: 'Multa',
+      medidaAdministrativa: '', configuraCrime: 'NÃO', infrator: 'Condutor', competencia: 'Estadual',
+      constatacao: 'Sem abordagem', quandoAutuar: [], quandoNaoAutuar: [], definicoes: [],
+      exemplos: [], informacoesComplementares: [], pagina: 100,
+    };
+    render(<FichaFiscalizacao card={mockCard} campos={campos} oficial={oficial} />);
+    const resumo = screen.getByRole('group', { name: 'Resumo operacional' });
+    expect(within(resumo).getByText('7 ponto(s)')).toBeInTheDocument();
+    expect(within(resumo).getByText('Multa')).toBeInTheDocument();
+    expect(within(resumo).queryByText(/293,47/)).not.toBeInTheDocument();
+    expect(screen.getByText('Dirigir veículo segurando telefone celular.').closest('header')).toBeInTheDocument();
+    expect(screen.queryByText(mockCard.enquadramento!.descricao)).not.toBeInTheDocument();
+  });
+
+  it('indica dados ausentes no resumo em vez de inferir pontos e multa', () => {
+    render(<FichaFiscalizacao card={{ ...mockCard, enquadramento: null, normas: [] }} campos={null} />);
+    const resumo = screen.getByRole('group', { name: 'Resumo operacional' });
+    expect(within(resumo).getAllByText('—')).toHaveLength(3);
+    expect(within(resumo).queryByText(/R\$/)).not.toBeInTheDocument();
+  });
+
   it('renderiza o título e as seções da ficha', () => {
     render(<FichaFiscalizacao card={mockCard} campos={campos} />);
 

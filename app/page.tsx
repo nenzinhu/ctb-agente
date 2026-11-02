@@ -1,6 +1,5 @@
 import Link from 'next/link';
 import ConsultaForm from '@/components/ConsultaForm';
-import ConsultaModes from '@/components/ConsultaModes';
 import RecentQueries from '@/components/RecentQueries';
 import HomeReveal from '@/components/HomeReveal';
 import Icone, { type NomeIcone } from '@/components/ui/Icone';
@@ -25,100 +24,99 @@ export default function Home() {
   return (
     <HomeReveal>
       <div className={styles.paper}>
-        <main className={`page max-w-6xl space-y-6 sm:space-y-9 ${styles.page}`}>
-          <div data-home-reveal data-home-reveal-group="0">
-            <div className={styles.edition} aria-hidden="true">
-              <span>CTB / MBFT / POP</span>
-              <span>Caderno de campo</span>
-            </div>
-            <div className={styles.heroLayout}>
-              <div className={styles.heroCopy}>
-                <p className="eyebrow">Ferramenta operacional para agentes de campo</p>
-                <h1 className={styles.title}>CTB <span>Agente</span></h1>
-                <p className={styles.lead}>
-                  Aplicativo de apoio ao agente em campo para consultar rapidamente o CTB, as fichas do MBFT e os POPs,
-                  esclarecer dúvidas e conferir a fonte oficial antes da atuação.
-                </p>
-                <p className="mt-3 text-sm leading-relaxed text-ds-subtle">
-                  Ferramenta de apoio. A decisão e o procedimento devem observar a norma e o documento vigente.
-                </p>
-              </div>
-              <div className={styles.stickers} aria-hidden="true">
-                {/* Original decorative artwork; native images keep the pixel grid crisp. */}
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src="/illustrations/manual-pixel.svg" alt="" width={160} height={160} className={styles.manual} />
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src="/illustrations/semaforo-pixel.svg" alt="" width={96} height={160} className={styles.signal} />
-                <span className={styles.stickerCaption}>Consulte. Confira. Atue.</span>
-              </div>
-            </div>
+      <main className={`page max-w-6xl space-y-4 sm:space-y-9 ${styles.page}`}>
+        <div data-home-reveal data-home-reveal-group="0">
+          <div className={styles.edition} aria-hidden="true">
+            <span>CTB / MBFT / POP</span><span>Caderno de campo</span>
           </div>
-
-          <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_320px]">
-            <div className="min-w-0" data-home-reveal data-home-reveal-group="1">
-              <div className={styles.windowTab} aria-hidden="true">
-                <span className={styles.windowKey}>01</span>
-                Consulta rápida
-                <span className={styles.windowDots}>▪ ▪ ▪</span>
-              </div>
-              <SectionCard titulo="Consultar infrações e artigos" icone="busca" className={`min-w-0 consultation-card ${styles.searchPanel}`}>
-                <ConsultaModes atual="ctb" />
-                <ConsultaForm exemplos={EXEMPLOS} />
-                <div id="consultas-recentes" className="scroll-mt-24"><RecentQueries /></div>
-              </SectionCard>
-            </div>
-
-            <aside
-              className="min-w-0 space-y-5"
-              aria-label="Ajuda para consultar"
-              data-home-reveal
-              data-home-reveal-group="2"
-            >
-              <section className={`search-guide ${styles.guide}`} aria-labelledby="como-perguntar">
-                <h2 id="como-perguntar" className="text-lg font-semibold text-ds-text">Como perguntar</h2>
-                <p className="mt-1 text-sm text-ds-subtle">Não precisa lembrar o termo exato.</p>
-                <ul className="mt-5 space-y-5">
-                  {TIPOS.map((tipo) => (
-                    <li key={tipo.titulo} className="flex items-start gap-3">
-                      <span className="search-guide-icon"><Icone nome={tipo.icone} tamanho={18} /></span>
-                      <div className="min-w-0">
-                        <h3 className="text-sm font-semibold text-ds-text">{tipo.titulo}</h3>
-                        <p className="mt-1 text-sm font-medium text-ds-primary-strong">“{tipo.exemplo}”</p>
-                        <p className="mt-1 text-sm leading-relaxed text-ds-subtle">{tipo.texto}</p>
-                      </div>
-                    </li>
-                  ))}
-                </ul>
-              </section>
-              <p className="flex items-start gap-2 px-1 text-xs leading-relaxed text-ds-subtle">
-                <Icone nome="info" tamanho={16} className="mt-0.5 shrink-0" />
-                Mais detalhes ajudam: informe o veículo, a conduta e o local quando forem relevantes.
-              </p>
-            </aside>
+          <div className={styles.heroLayout}>
+          <div className={styles.heroCopy}>
+          <p className="eyebrow">Apoio operacional para agentes de campo</p>
+          <h1 className={styles.title}>Consulta rápida.<br /><span className={styles.tagline}>Apoio em cada abordagem.</span></h1>
+          <p className="consultation-lead sm:hidden">CTB, MBFT e POPs para apoiar sua atuação.</p>
+          <p className="consultation-lead hidden sm:block">
+            Aplicativo de apoio ao agente em campo para consultar rapidamente o CTB, as fichas do MBFT e os POPs,
+            esclarecer dúvidas e conferir a fonte oficial antes da atuação.
+          </p>
           </div>
+          <div className={styles.stickers} aria-hidden="true">
+            {/* Original decorative artwork, drawn on a pixel grid. */}
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/illustrations/manual-pixel.svg" alt="" width={160} height={160} className={styles.manual} />
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/illustrations/semaforo-pixel.svg" alt="" width={96} height={160} className={styles.signal} />
+            <span className={styles.stickerCaption}>Consulte. Confira. Atue.</span>
+          </div>
+          </div>
+        </div>
 
-          <section aria-labelledby="ferramentas-titulo" data-home-reveal data-home-reveal-group="3">
-            <div className={`mb-4 flex items-center justify-between gap-3 ${styles.toolsHeading}`}>
-              <h2 id="ferramentas-titulo" className="text-lg font-semibold text-ds-text">No seu dia a dia</h2>
-              <span className="text-xs text-ds-subtle">Ferramentas de apoio</span>
+        <div className="mx-auto w-full max-w-3xl">
+          <div className="min-w-0" data-home-reveal data-home-reveal-group="1">
+            <div className={styles.windowTab} aria-hidden="true">
+              <span className={styles.windowKey}>01</span> Consulta rápida
+              <span className={styles.windowDots}>▪ ▪ ▪</span>
             </div>
-            <ul className="grid gap-3 sm:grid-cols-3">
-              {ATALHOS.map((atalho, index) => (
-                <li key={atalho.href} className="min-w-0">
-                  <Link href={atalho.href} className={`tool-link group ${styles.tool}`}>
-                    <span className={styles.toolIndex} aria-hidden="true">0{index + 2} / FERRAMENTAS</span>
-                    <span className="flex items-center justify-between gap-3">
-                      <Icone nome={atalho.icone} tamanho={21} className="text-ds-primary" />
-                      <Icone nome="seta" tamanho={16} className="text-ds-subtle transition-transform group-hover:translate-x-1" />
-                    </span>
-                    <span className="mt-3 block font-semibold text-ds-text">{atalho.titulo}</span>
-                    <span className="mt-1 block text-sm leading-relaxed text-ds-subtle">{atalho.texto}</span>
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </section>
-        </main>
+            <SectionCard titulo="Consultar infrações e artigos" icone="busca" className={`min-w-0 consultation-card ${styles.searchPanel}`}>
+              <ConsultaForm exemplos={EXEMPLOS} />
+              <div id="consultas-recentes" className="scroll-mt-24"><RecentQueries /></div>
+            </SectionCard>
+            <p className="mt-3 flex items-start justify-center gap-2 text-xs leading-relaxed text-ds-subtle">
+              <Icone nome="escudo" tamanho={16} className="mt-0.5 shrink-0" />
+              Use como apoio e confirme a norma vigente antes de agir.
+            </p>
+          </div>
+        </div>
+
+        <aside
+          className="min-w-0"
+          aria-label="Ajuda para consultar"
+          data-home-reveal
+          data-home-reveal-group="2"
+        >
+            <section className={`search-guide ${styles.guide}`} aria-labelledby="como-perguntar">
+              <h2 id="como-perguntar" className="text-lg font-semibold text-ds-text">Como perguntar</h2>
+              <p className="mt-1 text-sm text-ds-subtle">Não precisa lembrar o termo exato.</p>
+              <ul className="mt-5 grid gap-5 md:grid-cols-3 md:gap-6">
+                {TIPOS.map((tipo) => (
+                  <li key={tipo.titulo} className="flex items-start gap-3">
+                    <span className="search-guide-icon"><Icone nome={tipo.icone} tamanho={18} /></span>
+                    <div className="min-w-0">
+                      <h3 className="text-sm font-semibold text-ds-text">{tipo.titulo}</h3>
+                      <p className="mt-1 text-sm font-medium text-ds-primary-strong">“{tipo.exemplo}”</p>
+                      <p className="mt-1 text-sm leading-relaxed text-ds-subtle">{tipo.texto}</p>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            </section>
+            <p className="mt-3 flex items-start gap-2 px-1 text-xs leading-relaxed text-ds-subtle">
+              <Icone nome="info" tamanho={16} className="mt-0.5 shrink-0" />
+              Mais detalhes ajudam: informe o veículo, a conduta e o local quando forem relevantes.
+            </p>
+        </aside>
+
+        <section aria-labelledby="ferramentas-titulo" data-home-reveal data-home-reveal-group="3">
+          <div className={`mb-4 flex items-center justify-between gap-3 ${styles.toolsHeading}`}>
+            <h2 id="ferramentas-titulo" className="text-lg font-semibold text-ds-text">No seu dia a dia</h2>
+            <span className="text-xs text-ds-subtle">Ferramentas de apoio</span>
+          </div>
+          <ul className="grid gap-3 sm:grid-cols-3">
+            {ATALHOS.map((atalho, index) => (
+              <li key={atalho.href} className="min-w-0">
+                <Link href={atalho.href} className={`tool-link group ${styles.tool}`}>
+                  <span className={styles.toolIndex} aria-hidden="true">0{index + 2} / FERRAMENTAS</span>
+                  <span className="flex items-center justify-between gap-3">
+                    <Icone nome={atalho.icone} tamanho={21} className="text-ds-primary" />
+                    <Icone nome="seta" tamanho={16} className="text-ds-subtle transition-transform group-hover:translate-x-1" />
+                  </span>
+                  <span className="mt-3 block font-semibold text-ds-text">{atalho.titulo}</span>
+                  <span className="mt-1 block text-sm leading-relaxed text-ds-subtle">{atalho.texto}</span>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </section>
+      </main>
       </div>
     </HomeReveal>
   );

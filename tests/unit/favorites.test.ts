@@ -116,6 +116,17 @@ describe('favorites', () => {
     expect(getFavorites()).toEqual([]);
   });
 
+  it('does not claim favorites were deleted when storage refuses removal', () => {
+    toggleFavorite(card({ consulta: 'art. 165' }));
+    const remove = jest.spyOn(Storage.prototype, 'removeItem').mockImplementation(() => { throw new Error('blocked'); });
+    const log = jest.spyOn(console, 'error').mockImplementation(() => {});
+    expect(clearFavorites()).toBe(false);
+    expect(getFavorites()).toHaveLength(1);
+    remove.mockRestore(); log.mockRestore();
+    expect(clearFavorites()).toBe(true);
+    expect(getFavorites()).toHaveLength(0);
+  });
+
   it('survives corrupted storage', () => {
     const erroSilenciado = jest.spyOn(console, 'error').mockImplementation(() => {});
     localStorage.setItem(FAVORITES_STORAGE_KEY, '{not json');

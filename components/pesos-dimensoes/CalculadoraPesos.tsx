@@ -1,6 +1,8 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { requestJson, RequestError } from '@/lib/client/request';
+
+import { useEffect, useMemo, useRef, useState } from 'react';
 
 import Field from '@/components/ui/Field';
 import Icone, { type NomeIcone } from '@/components/ui/Icone';
@@ -41,15 +43,26 @@ export default function CalculadoraPesos() {
   const [resultado, setResultado] = useState<RespostaCalculoPesos | null>(null);
   const [erro, setErro] = useState<string | null>(null);
   const [carregando, setCarregando] = useState(false);
+  const requisicao = useRef<AbortController | null>(null);
+  useEffect(() => () => { requisicao.current?.abort(); }, []);
   const configuracao = useMemo(() => obterConfiguracao(configuracaoId)!, [configuracaoId]);
 
+  const cancelarCalculo = () => {
+    requisicao.current?.abort();
+    requisicao.current = null;
+    setCarregando(false);
+    setResultado(null);
+  };
+
   const alterar = (nome: string, valor: string) => {
+    cancelarCalculo();
     setCampos((atual) => ({ ...atual, [nome]: valor }));
     setErro(null);
   };
 
   /** Drawing → PBT/PBTC: the catalog limit of the chosen configuration. */
   const escolherDesenho = (id: string) => {
+    cancelarCalculo();
     setConfiguracaoId(id);
     setPbtTexto(pbtDoDesenho(id));
     setCampos({});
@@ -59,6 +72,7 @@ export default function CalculadoraPesos() {
 
   /** The plate value narrows the limit, but never guesses the axle drawing. */
   const alterarPbt = (valor: string) => {
+    cancelarCalculo();
     setPbtTexto(valor);
     setResultado(null);
     setErro(null);
@@ -132,20 +146,24 @@ export default function CalculadoraPesos() {
       },
     };
 
+    if (requisicao.current && !requisicao.current.signal.aborted) requisicao.current.abort();
+    const controller = new AbortController();
+    requisicao.current = controller;
     setCarregando(true);
+    setResultado(null);
     setErro(null);
     try {
-      const response = await fetch('/api/pesos-dimensoes/consultar', {
-        method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload),
+      const body = await requestJson<RespostaCalculoPesos>('/api/pesos-dimensoes/consultar', {
+        method: 'POST', signal: controller.signal, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload),
       });
-      const body = await response.json().catch(() => null);
-      if (!response.ok) throw new Error(body?.message || 'Não foi possível realizar o cálculo.');
-      setResultado(body as RespostaCalculoPesos);
+      if (controller.signal.aborted || requisicao.current !== controller) return;
+      setResultado(body);
     } catch (falha) {
+      if (controller.signal.aborted || requisicao.current !== controller || (falha instanceof RequestError && falha.kind === 'aborted')) return;
       setErro(falha instanceof Error ? falha.message : 'Não foi possível realizar o cálculo.');
       setResultado(null);
     } finally {
-      setCarregando(false);
+      if (!controller.signal.aborted && requisicao.current === controller) setCarregando(false);
     }
   };
 
@@ -185,12 +203,15 @@ export default function CalculadoraPesos() {
             <div className="grid grid-cols-2 gap-2">
               {([['documento', 'Nota fiscal', 'arquivo'], ['balanca', 'Balança', 'balanca']] as const).map(([id, label, icone]) => (
                 <label key={id} className={`flex min-h-16 cursor-pointer items-center justify-center gap-2 rounded-control border-2 px-3 font-semibold ${modo === id ? 'border-ds-primary bg-ds-primary-soft text-ds-primary-strong' : 'border-ds-border bg-ds-surface'}`}>
-                  <input type="radio" name="modo" value={id} checked={modo === id} onChange={() => { setModo(id); setResultado(null); }} className="sr-only" />
+                  <input type="radio" name="modo" value={id} checked={modo === id} onChange={() => { cancelarCalculo(); setModo(id); setResultado(null); }} className="sr-only" />
                   <Icone nome={icone as NomeIcone} tamanho={24} aria-label={`Fiscalização por ${label.toLocaleLowerCase('pt-BR')}`} />
                   {label}
                 </label>
               ))}
             </div>
+            <p className="mt-3 rounded-control border border-ds-line bg-ds-muted p-3 text-xs leading-relaxed text-ds-subtle">
+              Tolerância aplicada automaticamente: <strong className="text-ds-text">5% no peso total</strong> e <strong className="text-ds-text">12,5% por grupo de eixo</strong>, quando houver aferição individualizada.
+            </p>
           </fieldset>
 
           <div className="mt-4 grid gap-4 sm:grid-cols-2">
@@ -201,7 +222,7 @@ export default function CalculadoraPesos() {
                   <div className="grid gap-2 sm:grid-cols-2">
                     {([['carga', 'Carga declarada (tara + carga)'], ['peso-bruto-total', 'Peso bruto total declarado']] as const).map(([id, label]) => (
                       <label key={id} className={`flex min-h-11 cursor-pointer items-center justify-center rounded-control border px-3 text-center text-sm font-semibold ${tipoPesoDocumento === id ? 'border-ds-primary bg-ds-primary-soft text-ds-primary-strong' : 'border-ds-border bg-ds-surface'}`}>
-                        <input type="radio" name="tipoPesoDocumento" value={id} checked={tipoPesoDocumento === id} onChange={() => { setTipoPesoDocumento(id); setResultado(null); }} className="sr-only" />
+                        <input type="radio" name="tipoPesoDocumento" value={id} checked={tipoPesoDocumento === id} onChange={() => { cancelarCalculo(); setTipoPesoDocumento(id); setResultado(null); }} className="sr-only" />
                         {label}
                       </label>
                     ))}
@@ -232,9 +253,9 @@ export default function CalculadoraPesos() {
           </div>
         </SectionCard>
 
-        {erro && <p role="alert" className="rounded-control border border-ds-danger bg-ds-danger/5 p-3 text-sm text-ds-danger">{erro}</p>}
+        {erro && <p role="alert" className="rounded-control border border-ds-danger bg-ds-danger/5 p-3 text-sm text-ds-danger">{erro} <a className="underline" href="/consulta?q=excesso%20peso">Consultar as fichas de excesso de peso no MBFT</a></p>}
         <PrimaryButton type="submit" icone="balanca" carregando={carregando} textoCarregando="Calculando…" className="min-h-12 w-full">
-          Calcular fiscalização
+          {erro ? 'Tentar novamente' : 'Calcular fiscalização'}
         </PrimaryButton>
       </form>
       {resultado && <ResultadoPesos resultado={resultado} />}

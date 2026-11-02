@@ -111,7 +111,8 @@ Settings → Environment Variables, marcadas para **Production** (e Preview, se 
 | `CEREBRAS_API_KEY` | Cerebras Cloud | Provedor 2 de respostas |
 | `COHERE_API_KEY` | Cohere Dashboard | Provedor 3 de respostas |
 | `OPENROUTER_API_KEY` | OpenRouter | Provedor 4 de respostas (modelos gratuitos autorizados) |
-| `MISTRAL_API_KEY` | Mistral | Somente embeddings do RAG (vetores semânticos; sem ela a busca usa só palavras) |
+| `MISTRAL_API_KEY` | Mistral | Embeddings alternativos do RAG; vetores legados preservados |
+| `RAG_EMBEDDING_MODEL` | RAG | Opcional: `nvidia/nemotron-3.5-embed-8b:free` (principal via `OPENROUTER_API_KEY`) ou `mistral-embed`; a escolha no painel prevalece |
 | `NEXT_PUBLIC_TURNSTILE_SITE_KEY` | Cloudflare Turnstile | Exibe o widget |
 | `TURNSTILE_SECRET_KEY` | Cloudflare Turnstile | Valida o token no servidor |
 | `RATE_LIMIT_QUERIES_PER_HOUR` | você | Limite inicial (depois ajustável no painel) |

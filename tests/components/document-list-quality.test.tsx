@@ -63,6 +63,23 @@ describe('qualidade na lista de documentos', () => {
     expect(screen.getByText('conferido em 01/09/2026')).toBeInTheDocument();
   });
 
+  it('permite pesquisar o arquivo mesmo com uma base pequena', async () => {
+    global.fetch = jest.fn(async () => ({
+      ok: true,
+      json: async () => resposta([base]),
+    })) as unknown as typeof fetch;
+
+    render(<DocumentList colecao="ctb" />);
+    const busca = await screen.findByRole('searchbox', { name: 'Pesquisar arquivo ou artigo' });
+
+    await userEvent.type(busca, 'ctb.pdf');
+    expect(screen.getByText('CTB compilado')).toBeInTheDocument();
+
+    await userEvent.clear(busca);
+    await userEvent.type(busca, 'resolução 432');
+    expect(await screen.findByText('Nenhum arquivo encontrado')).toBeInTheDocument();
+  });
+
   it('salva a revisão por PATCH e recarrega a lista', async () => {
     const antigo = { ...base, fonte_oficial: null, versao: null, vigente_desde: null, conferido_em: null, situacao: 'revisar' };
     const fetchMock = jest.fn(async (_url: string, init?: RequestInit) => ({

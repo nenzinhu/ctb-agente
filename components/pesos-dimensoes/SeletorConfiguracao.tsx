@@ -77,17 +77,18 @@ export default function SeletorConfiguracao({ valor, onChange }: Props) {
         aria-haspopup="listbox"
         aria-expanded={aberto}
         onClick={() => setAberto((estado) => !estado)}
-        className="flex min-h-24 w-full items-center gap-3 rounded-control border-2 border-ds-border bg-ds-surface px-3 py-2 text-left shadow-sm transition hover:border-ds-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ds-primary"
+        className="flex min-h-28 w-full flex-col items-stretch gap-2 rounded-control border-2 border-ds-border bg-ds-surface px-2.5 py-2.5 text-left shadow-sm transition hover:-translate-y-0.5 hover:border-ds-primary hover:shadow-md focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ds-primary max-[639px]:flex-row max-[639px]:items-center sm:min-h-32 sm:flex-row sm:items-center sm:gap-4 sm:px-4 sm:py-3"
       >
         <DesenhoVeiculo configuracao={selecionada} compacto />
         <span className="min-w-0 flex-1">
-          <span className="mb-1 inline-flex rounded bg-ds-primary px-2 py-0.5 font-mono text-xs font-bold text-white">{selecionada.codigo}</span>
-          <strong className="block text-sm text-ds-text">{selecionada.nome}</strong>
-          <small className="mt-1 block text-xs text-ds-subtle">
-            {selecionada.quantidadeEixos} eixos · {selecionada.requerAet ? 'AET obrigatória' : 'configuração comum'}
-          </small>
-          <small className="mt-1 block text-xs text-ds-subtle">Conhecido como: {selecionada.apelidos.join(', ')}</small>
-          <small className="mt-1 block text-xs font-semibold text-ds-primary">{pbtMaximo(selecionada.limiteTotalKg)}</small>
+          <span className="mb-1.5 flex flex-wrap gap-1.5 sm:mb-2 sm:gap-2">
+            <span className="inline-flex rounded bg-ds-primary px-1.5 py-1 font-mono text-[11px] font-bold text-ds-on-solid sm:px-2 sm:text-xs">{selecionada.codigo}</span>
+            <span className="inline-flex rounded border border-ds-line bg-ds-soft px-1.5 py-1 text-[11px] font-bold text-ds-text sm:px-2 sm:text-xs">{selecionada.quantidadeEixos} EIXOS</span>
+            <span className="hidden rounded border border-ds-line bg-ds-soft px-2 py-1 text-xs font-bold text-ds-text sm:inline-flex">{selecionada.unidades} {selecionada.unidades === 1 ? 'UNIDADE' : 'UNIDADES'}</span>
+          </span>
+          <strong className="block text-sm font-extrabold uppercase leading-snug text-ds-text sm:text-base">{selecionada.nome}</strong>
+          <small className="mt-1 block truncate text-xs leading-relaxed text-ds-subtle sm:mt-2 sm:text-sm">Conhecido como: {selecionada.apelidos.join(', ')}</small>
+          <small className="mt-1 block text-xs font-bold text-ds-primary sm:mt-2 sm:text-sm">{pbtMaximo(selecionada.limiteTotalKg)}</small>
         </span>
         <span aria-hidden="true" className={`text-ds-primary transition ${aberto ? 'rotate-180' : ''}`}>⌄</span>
       </button>
@@ -109,17 +110,18 @@ export default function SeletorConfiguracao({ valor, onChange }: Props) {
                 onChange(configuracao.id);
                 fechar();
               }}
-              className="mb-1 flex min-h-24 w-full items-center gap-3 rounded-control border border-transparent px-2 py-2 text-left last:mb-0 hover:border-ds-primary hover:bg-ds-soft focus-visible:border-ds-primary focus-visible:bg-ds-soft focus-visible:outline-none aria-selected:border-ds-accent aria-selected:bg-ds-accent/10"
+              className="mb-2 flex min-h-28 w-full flex-col items-stretch gap-2 rounded-control border border-ds-line px-2.5 py-2.5 text-left shadow-sm transition last:mb-0 hover:-translate-y-0.5 hover:border-ds-primary hover:bg-ds-soft hover:shadow-md focus-visible:border-ds-primary focus-visible:bg-ds-soft focus-visible:outline-none aria-selected:border-ds-accent aria-selected:bg-ds-accent/10 max-[639px]:flex-row max-[639px]:items-center sm:min-h-32 sm:flex-row sm:items-center sm:gap-4 sm:px-3 sm:py-3"
             >
               <DesenhoVeiculo configuracao={configuracao} compacto />
               <span className="min-w-0 flex-1">
-                <strong className="block text-sm text-ds-text">{configuracao.nome}</strong>
-                <small className="block text-xs text-ds-subtle">
-                  <span className="mr-1 font-mono font-bold text-ds-primary">{configuracao.codigo}</span>
-                  · {configuracao.quantidadeEixos} eixos · {configuracao.unidades} {configuracao.unidades === 1 ? 'unidade' : 'unidades'}
-                </small>
-                <small className="block text-xs text-ds-subtle">{configuracao.apelidos.join(', ')}</small>
-                <small className="block text-xs font-semibold text-ds-primary">{pbtMaximo(configuracao.limiteTotalKg)}</small>
+                <span className="mb-1.5 flex flex-wrap gap-1.5 sm:mb-2 sm:gap-2">
+                  <span className="rounded bg-ds-primary px-1.5 py-1 font-mono text-[11px] font-bold text-ds-on-solid sm:px-2 sm:text-xs">{configuracao.codigo}</span>
+                  <span className="rounded border border-ds-line bg-ds-surface px-1.5 py-1 text-[11px] font-bold sm:px-2 sm:text-xs">{configuracao.quantidadeEixos} EIXOS</span>
+                  <span className="hidden rounded border border-ds-line bg-ds-surface px-2 py-1 text-xs font-bold sm:inline">{configuracao.unidades} {configuracao.unidades === 1 ? 'UNIDADE' : 'UNIDADES'}</span>
+                </span>
+                <strong className="block text-sm font-extrabold uppercase leading-snug text-ds-text sm:text-base">{configuracao.nome}</strong>
+                <small className="mt-1 block truncate text-xs leading-relaxed text-ds-subtle sm:text-sm">{configuracao.apelidos.join(', ')}</small>
+                <small className="mt-1 block text-xs font-bold text-ds-primary sm:mt-2 sm:text-sm">{pbtMaximo(configuracao.limiteTotalKg)}</small>
               </span>
             </button>
           ))}

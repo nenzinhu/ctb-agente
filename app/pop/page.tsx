@@ -14,7 +14,7 @@ export default function PopPage() {
   return (
     <main className="page max-w-6xl">
       <div className="consultation-intro">
-        <p className="eyebrow">Apoio ao serviço operacional</p>
+        <p className="eyebrow">Apoio operacional</p>
         <h1 className="consultation-title">POP-PMSC</h1>
         <p className="consultation-lead">Encontre o procedimento e confira os trechos que orientam a resposta.</p>
       </div>

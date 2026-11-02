@@ -1,6 +1,8 @@
 'use client';
 
-import { useState } from 'react';
+import { requestJson, RequestError } from '@/lib/client/request';
+
+import { useEffect, useRef, useState } from 'react';
 
 import Field from '@/components/ui/Field';
 import PrimaryButton from '@/components/ui/PrimaryButton';
@@ -12,24 +14,30 @@ export default function PerguntasPesos() {
   const [resposta, setResposta] = useState<RespostaPeso | null>(null);
   const [erro, setErro] = useState<string | null>(null);
   const [carregando, setCarregando] = useState(false);
+  const requisicao = useRef<AbortController | null>(null);
+  useEffect(() => () => { requisicao.current?.abort(); }, []);
 
   const enviar = async (evento: React.FormEvent) => {
     evento.preventDefault();
     if (consulta.trim().length < 3 || carregando) return;
+    if (requisicao.current && !requisicao.current.signal.aborted) requisicao.current.abort();
+    const controller = new AbortController();
+    requisicao.current = controller;
     setCarregando(true);
+    setResposta(null);
     setErro(null);
     try {
-      const response = await fetch('/api/pesos-dimensoes/perguntar', {
-        method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ consulta: consulta.trim() }),
+      const body = await requestJson<RespostaPeso>('/api/pesos-dimensoes/perguntar', {
+        method: 'POST', signal: controller.signal, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ consulta: consulta.trim() }),
       });
-      const body = await response.json().catch(() => null);
-      if (!response.ok) throw new Error(body?.message || 'Não foi possível consultar as fontes.');
-      setResposta(body as RespostaPeso);
+      if (controller.signal.aborted || requisicao.current !== controller) return;
+      setResposta(body);
     } catch (falha) {
+      if (controller.signal.aborted || requisicao.current !== controller || (falha instanceof RequestError && falha.kind === 'aborted')) return;
       setErro(falha instanceof Error ? falha.message : 'Não foi possível consultar as fontes.');
       setResposta(null);
     } finally {
-      setCarregando(false);
+      if (!controller.signal.aborted && requisicao.current === controller) setCarregando(false);
     }
   };
 
@@ -49,9 +57,10 @@ export default function PerguntasPesos() {
           erro={erro}
         />
         <PrimaryButton type="submit" icone="busca" carregando={carregando} textoCarregando="Consultando…" disabled={consulta.trim().length < 3} className="min-h-12 w-full sm:w-auto">
-          Consultar fontes
+          {erro ? 'Tentar novamente' : 'Consultar fontes'}
         </PrimaryButton>
       </form>
+      {erro && <p className="mt-3 text-sm"><a className="underline" href="/consulta?q=excesso%20peso">Consultar as fichas de excesso de peso no MBFT</a></p>}
       {resposta && (
         <div className="mt-5 border-t border-ds-line pt-5" aria-live="polite">
           <span className="badge-brand">{resposta.origem === 'ia' ? 'Explicação por IA' : 'Trechos oficiais'}</span>

@@ -8,6 +8,7 @@ import { ETAPAS_CONSULTA } from '@/components/etapas';
 import Icone from '@/components/ui/Icone';
 import Stepper from '@/components/ui/Stepper';
 import TitleCard from '@/components/ui/TitleCard';
+import { requestJson, RequestError } from '@/lib/client/request';
 import { CartaoEstruturado } from '@/lib/response/response-types';
 
 const TURNSTILE_STORAGE_KEY = 'ctb-turnstile-token';
@@ -28,6 +29,7 @@ export default function ConsultaPageContent() {
   const searchParams = useSearchParams();
   const [result, setResult] = useState<CartaoEstruturado | null>(null);
   const [loading, setLoading] = useState(false);
+  const [tentativa, setTentativa] = useState(0);
   const [error, setError] = useState<string | null>(null);
 
   const query = searchParams.get('q');
@@ -35,6 +37,7 @@ export default function ConsultaPageContent() {
   useEffect(() => {
     if (!query) return;
 
+    const controller = new AbortController();
     const fetchResult = async () => {
       setLoading(true);
       setError(null);
@@ -48,33 +51,29 @@ export default function ConsultaPageContent() {
       }
 
       try {
-        const response = await fetch('/api/consulta', {
+        const data = await requestJson<{ card?: CartaoEstruturado }>('/api/consulta', {
+          signal: controller.signal,
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ consulta: query, turnstileToken }),
         });
 
-        const data = await response.json();
-
-        if (!response.ok) {
-          throw new Error(
-            data.message ||
-              (response.status === 429
-                ? 'Limite de consultas atingido. Tente novamente mais tarde.'
-                : 'Não foi possível concluir a consulta.')
-          );
+        if (!data || !data.card || typeof data.card.sucesso !== 'boolean') {
+          throw new RequestError('invalid-response', 'O serviço retornou uma resposta inválida. Tente novamente.');
         }
-
+        if (controller.signal.aborted) return;
         setResult(data.card ?? null);
       } catch (err) {
+        if (controller.signal.aborted) return;
         setError(err instanceof Error ? err.message : 'Erro desconhecido');
       } finally {
-        setLoading(false);
+        if (!controller.signal.aborted) setLoading(false);
       }
     };
 
-    fetchResult();
-  }, [query]);
+    void fetchResult();
+    return () => controller.abort();
+  }, [query, tentativa]);
 
   // Sem consulta na URL não há o que buscar: sem isso a página ficava em branco.
   if (!query) {
@@ -123,6 +122,8 @@ export default function ConsultaPageContent() {
           <div>
             <p className="font-semibold">Erro</p>
             <p className="mt-1 text-ds-subtle">{error}</p>
+            <button type="button" className="btn-secondary mt-3" onClick={() => setTentativa((atual) => atual + 1)}>Tentar novamente</button>
+            <p className="mt-3 text-sm"><a href="https://www.planalto.gov.br/ccivil_03/leis/l9503compilado.htm" target="_blank" rel="noopener noreferrer" className="underline">Consultar o CTB no Planalto (abre em nova aba)</a> e conferir a fonte vigente antes de agir.</p>
             <Link href="/?form=1" className="mt-3 inline-block font-semibold text-ds-ink underline">
               Fazer nova consulta
             </Link>

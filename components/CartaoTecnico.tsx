@@ -19,9 +19,9 @@ export default function CartaoTecnico({ card }: CartaoTecnicoProps) {
 
   return (
     <article className="card overflow-hidden">
-      <header className="border-b-2 border-ds-border bg-ds-primary-soft px-4 py-5 sm:px-6">
+      <header className="result-card-header">
         <div className="flex flex-wrap items-center gap-2">
-          <span className="rounded-md border-2 border-ds-border bg-ds-surface px-2.5 py-1 font-mono text-sm font-bold text-ds-text">
+          <span className="result-code">
             {enquadramento.codigo_mbft}
           </span>
           <BadgeGravidade gravidade={enquadramento.gravidade} />
@@ -86,7 +86,7 @@ export default function CartaoTecnico({ card }: CartaoTecnicoProps) {
         </div>
       )}
 
-      <footer className="border-t-2 border-ds-border px-4 py-4 sm:px-6">
+      <footer className="border-t border-ds-line px-4 py-4 sm:px-6">
         <h3 className="stat-label">Amparo Legal</h3>
         <p className="mt-1 font-mono text-sm text-ds-text">{enquadramento.amparo_legal}</p>
       </footer>

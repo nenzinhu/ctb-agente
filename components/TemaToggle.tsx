@@ -30,7 +30,7 @@ export function aplicarTema(tema: Tema): void {
 }
 
 /**
- * Accessible toggle between the default palette and the sunlight / high-contrast mode
+ * Accessible toggle between the default palette and the field / high-contrast mode.
  */
 export default function TemaToggle() {
   const [tema, setTema] = useState<Tema>('padrao');
@@ -59,12 +59,12 @@ export default function TemaToggle() {
       type="button"
       onClick={alternar}
       aria-pressed={ativo}
-      aria-label={ativo ? 'Modo sol: ativo' : 'Modo sol'}
+      aria-label={ativo ? 'Modo pista: ativo' : 'Modo pista'}
       title="Alto contraste para ler sob luz do sol"
       className="header-pill"
     >
       <Icone nome="sol" tamanho={17} />
-      <span className="hidden md:inline">{ativo ? 'Sol: ativo' : 'Modo sol'}</span>
+      <span className="hidden md:inline">{ativo ? 'Pista: ativo' : 'Modo pista'}</span>
     </button>
   );
 }

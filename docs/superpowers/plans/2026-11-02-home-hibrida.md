@@ -30,3 +30,13 @@ Mudança visual reversível: usar testes existentes e verificação real no nave
 - 12 testes Playwright aprovados em desktop e celular: inicial, tela pequena, movimento reduzido, modo sol, envio e histórico de consultas.
 - Inspeção visual em temas claro, escuro e sol; larguras 320, 360, 390, 768 e 1440px sem rolagem horizontal ou adesivos sobre o título.
 - Modo sol sem fundo pontilhado nem adesivos. Rota `/consulta` sem elementos ou estilos editoriais. Nenhum erro JavaScript observado no navegador.
+
+## Integração com a main remota
+
+A revisão `64629eb` trouxe 22 commits posteriores à base local. A integração preserva o cabeçalho com submenus, a busca por código/artigo/palavra-chave, o histórico com proteção de dados e a apresentação compacta para celular. A decoração foi adaptada a essa estrutura.
+
+- Suíte integrada: 154 suítes e 1.161 testes aprovados.
+- Build de produção aprovado após a integração.
+- Oito testes de navegador aprovados: hidratação, botão na primeira tela de 360px, consulta por artigo e manifesto PWA, em desktop e celular.
+- Os testes antigos de descoberta dos módulos (320/360/390px), favoritos no tablet e precedência do tema esperam rótulos removidos na main: `Consultas rápidas`, link direto `Favoritos` e `Modo sol`. São dez falhas nas duas plataformas. Confirmado na cópia isolada da revisão remota, sem esta mudança: esses seletores não existem; o botão atual se chama `Modo pista`. Esses testes não foram alterados nesta integração.
+- Conferidas larguras 320, 360, 390, 768 e 1440px sem rolagem horizontal.

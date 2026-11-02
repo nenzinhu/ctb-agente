@@ -42,7 +42,7 @@
 .title {
   margin-top: 12px;
   color: var(--ds-text);
-  font-size: clamp(48px, 6.4vw, 80px);
+  font-size: clamp(32px, 4.4vw, 56px);
   font-weight: 800;
   line-height: 1.02;
   letter-spacing: -0.055em;
@@ -55,6 +55,14 @@
   text-decoration-thickness: 8px;
   text-underline-offset: 8px;
   text-decoration-skip-ink: none;
+}
+
+.tagline {
+  display: inline-block;
+  margin-top: 8px;
+  font-size: 0.65em;
+  line-height: 1.2;
+  letter-spacing: -0.025em;
 }
 
 .lead {
@@ -164,29 +172,45 @@
 }
 
 @media (max-width: 639px) {
+  .edition {
+    display: none;
+  }
+
   .page {
-    padding-top: 16px;
+    padding-top: 12px;
   }
 
   .heroLayout {
     position: relative;
     display: block;
-    padding-top: 20px;
+    padding-top: 8px;
   }
 
   .heroCopy > :global(.eyebrow) {
-    max-width: 240px;
+    max-width: none;
     font-size: 10px;
   }
 
   .title {
+    margin-top: 8px;
     max-width: calc(100% - 120px);
-    font-size: clamp(42px, 12vw, 48px);
+    font-size: clamp(26px, 7.5vw, 30px);
     line-height: 1.08;
   }
 
   .title span {
     display: block;
+    text-decoration-thickness: 4px;
+    text-underline-offset: 4px;
+  }
+
+  .tagline {
+    margin-top: 4px;
+  }
+
+  .heroCopy > :global(.consultation-lead) {
+    margin-top: 8px;
+    font-size: 14px;
   }
 
   .lead {
@@ -197,7 +221,7 @@
 
   .stickers {
     position: absolute;
-    top: 64px;
+    top: 40px;
     right: 0;
     width: 120px;
     grid-template-columns: 80px 40px;

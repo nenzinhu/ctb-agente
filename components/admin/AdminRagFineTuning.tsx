@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import Icone from '@/components/ui/Icone';
+import AdminModeloVetorial from './AdminModeloVetorial';
 
 interface HealthRag {
   banco: 'ok' | 'indisponivel';
@@ -209,6 +210,10 @@ export default function AdminRagFineTuning() {
         </ol>
       </section>
 
+      <AdminModeloVetorial onChange={() => {
+        void fetch('/api/health', { cache: 'no-store' }).then((r) => r.json()).then(setHealth).catch(() => setErro(true));
+      }} />
+
       <section className="card card-pad">
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div>
@@ -405,7 +410,7 @@ export default function AdminRagFineTuning() {
         <div className="mt-4 flex flex-wrap gap-2">
           <Link href="/consulta" className="btn-secondary btn-sm">Testar CTB/MBFT</Link>
           <Link href="/pop" className="btn-secondary btn-sm">Testar POP</Link>
-          <Link href="/professor" className="btn-secondary btn-sm">Testar Professor Emérito</Link>
+          <Link href="/professor" className="btn-secondary btn-sm">Testar Professor CTB</Link>
         </div>
       </section>
     </div>

@@ -2,6 +2,8 @@
 // down, rate limited, no MISTRAL_API_KEY yet, or the upload ran out of time).
 // Time-boxed: the panel calls it repeatedly until nothing is left.
 import { embeddingChain } from '@/lib/ai/embeddings';
+import { getEmbeddingConfig } from '@/lib/ai/embedding-config';
+import type { EmbeddingConfig } from '@/lib/ai/embedding-models';
 import { supabaseAdmin } from '@/lib/db/client';
 import { embeddingInput } from './processor';
 import { isMissingSchemaError } from './documents';
@@ -22,19 +24,20 @@ interface Pendente {
   texto: string;
 }
 
-async function pendentesDispositivos(): Promise<Pendente[]> {
+async function pendentesDispositivos(config: EmbeddingConfig): Promise<Pendente[]> {
   const { data, error } = await supabaseAdmin
     .from('dispositivos')
     .select('id, numero_dispositivo, texto, norma_id, documento_id')
-    .is('embedding', null)
+    .is(config.coluna, null)
     .limit(BATCH);
   if (error) {
+    if (config.coluna === 'embedding_nemotron' && isMissingSchemaError(error)) throw new Error('Aplique scripts/migrations-015-nemotron-embeddings.sql para gerar os vetores Nemotron.');
     // Before migration 008 there is no documento_id column: retry without it.
     if (!isMissingSchemaError(error)) throw new Error(error.message);
     const retry = await supabaseAdmin
       .from('dispositivos')
       .select('id, numero_dispositivo, texto, norma_id')
-      .is('embedding', null)
+      .is(config.coluna, null)
       .limit(BATCH);
     if (retry.error) throw new Error(retry.error.message);
     return (retry.data ?? []).map((row) => ({
@@ -52,13 +55,14 @@ async function pendentesDispositivos(): Promise<Pendente[]> {
   }));
 }
 
-async function pendentesTrechos(): Promise<Pendente[]> {
+async function pendentesTrechos(config: EmbeddingConfig): Promise<Pendente[]> {
   const { data, error } = await supabaseAdmin
     .from('documento_trechos')
     .select('id, documento_id, secao, texto, documentos(titulo)')
-    .is('embedding', null)
+    .is(config.coluna, null)
     .limit(BATCH);
   if (error) {
+    if (config.coluna === 'embedding_nemotron' && isMissingSchemaError(error)) throw new Error('Aplique scripts/migrations-015-nemotron-embeddings.sql para gerar os vetores Nemotron.');
     if (isMissingSchemaError(error)) return [];
     throw new Error(error.message);
   }
@@ -77,13 +81,15 @@ async function pendentesTrechos(): Promise<Pendente[]> {
 /**
  * @returns How many excerpts still have no embedding, in both tables
  */
-export async function countPendingEmbeddings(): Promise<number> {
+export async function countPendingEmbeddings(selected?: EmbeddingConfig): Promise<number> {
+  const config = selected ?? await getEmbeddingConfig();
   const contar = async (tabela: string) => {
     const { count, error } = await supabaseAdmin
       .from(tabela)
       .select('id', { count: 'exact', head: true })
-      .is('embedding', null);
+      .is(config.coluna, null);
     if (error) {
+      if (config.coluna === 'embedding_nemotron' && isMissingSchemaError(error)) throw new Error('Aplique scripts/migrations-015-nemotron-embeddings.sql para gerar os vetores Nemotron.');
       if (isMissingSchemaError(error)) return 0;
       throw new Error(error.message);
     }
@@ -93,7 +99,7 @@ export async function countPendingEmbeddings(): Promise<number> {
   return dispositivos + trechos;
 }
 
-async function atualizarContagens(documentoIds: Set<string>): Promise<void> {
+async function atualizarContagens(documentoIds: Set<string>, config: EmbeddingConfig): Promise<void> {
   for (const id of documentoIds) {
     const [ctb, pop] = await Promise.all(
       ['dispositivos', 'documento_trechos'].map((tabela) =>
@@ -101,7 +107,7 @@ async function atualizarContagens(documentoIds: Set<string>): Promise<void> {
           .from(tabela)
           .select('id', { count: 'exact', head: true })
           .eq('documento_id', id)
-          .is('embedding', null)
+          .is(config.coluna, null)
       )
     );
     const semVetor = (ctb.count ?? 0) + (pop.count ?? 0);
@@ -117,22 +123,23 @@ async function atualizarContagens(documentoIds: Set<string>): Promise<void> {
  * @param deadline - Epoch ms after which no new batch is started
  */
 export async function backfillEmbeddings(deadline: number): Promise<BackfillResult> {
+  const config = await getEmbeddingConfig();
   let atualizados = 0;
   const tocados = new Set<string>();
 
   try {
     while (Date.now() < deadline) {
-      let lote = await pendentesDispositivos();
-      if (lote.length === 0) lote = await pendentesTrechos();
+      let lote = await pendentesDispositivos(config);
+      if (lote.length === 0) lote = await pendentesTrechos(config);
       if (lote.length === 0) break;
 
       let vetores: number[][];
       try {
-        vetores = await embeddingChain.embedBatch(lote.map((p) => p.texto));
+        vetores = await embeddingChain.embedBatch(lote.map((p) => p.texto), config.id);
       } catch (error) {
         return {
           atualizados,
-          restantes: await countPendingEmbeddings(),
+          restantes: await countPendingEmbeddings(config),
           erro: error instanceof Error ? error.message : String(error),
         };
       }
@@ -142,7 +149,7 @@ export async function backfillEmbeddings(deadline: number): Promise<BackfillResu
           lote.slice(i, i + UPDATE_CONCURRENCY).map(async (pendente, j) => {
             const { error } = await supabaseAdmin
               .from(pendente.tabela)
-              .update({ embedding: vetores[i + j] })
+              .update({ [config.coluna]: vetores[i + j] })
               .eq('id', pendente.id);
             if (error) throw new Error(error.message);
             atualizados++;
@@ -152,8 +159,8 @@ export async function backfillEmbeddings(deadline: number): Promise<BackfillResu
       }
     }
   } finally {
-    await atualizarContagens(tocados).catch((error) => console.error('Falha ao atualizar as contagens:', error));
+    await atualizarContagens(tocados, config).catch((error) => console.error('Falha ao atualizar as contagens:', error));
   }
 
-  return { atualizados, restantes: await countPendingEmbeddings() };
+  return { atualizados, restantes: await countPendingEmbeddings(config) };
 }

@@ -7,15 +7,11 @@ jest.mock('../../components/TemaToggle', () => () => <button>Modo sol</button>);
 import Header from '@/components/Header';
 
 describe('Header no mobile', () => {
-  it('mantém a marca compacta e deixa as abas completas somente para desktop', () => {
+  it('mantém a marca compacta e organiza os módulos em pilares', () => {
     render(<Header />);
     expect(screen.getByRole('link', { name: /ctb agente — início/i })).toHaveClass('mobile-header-brand');
-    expect(screen.getByTestId('desktop-navigation')).toHaveClass('hidden', 'md:block');
-    expect(screen.getByRole('navigation', { name: /navegação principal/i }).querySelector('ul')).toHaveClass(
-      'nav-tabs-compact',
-    );
-    expect(screen.getByRole('link', { name: 'Lista de Fatos (PMSC Mobile)' })).toHaveTextContent(/^Fatos$/);
-    expect(screen.getByRole('link', { name: 'Condutores e Veículos Estrangeiros' })).toHaveAttribute('href', '/estrangeiros');
+    expect(screen.getByRole('navigation', { name: /pilares operacionais/i })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /fiscalização/i })).toBeInTheDocument();
     expect(screen.queryByRole('link', { name: /enquadramento guiado/i })).not.toBeInTheDocument();
   });
 });

@@ -3,7 +3,7 @@ import { expect, test } from '@playwright/test';
 test.describe('Consulta aos manuais incluídos no aplicativo', () => {
   test('encontra a ficha do celular mesmo com erro de digitação', async ({ page }) => {
     await page.goto('/');
-    await page.getByLabel('Sua consulta').fill('segurando celualr');
+    await page.getByLabel('O que aconteceu?').fill('segurando celualr');
     await page.getByRole('button', { name: 'Consultar', exact: true }).click();
     const ficha = page.getByRole('article', { name: 'Ficha de Fiscalização', exact: true });
     await expect(ficha).toContainText('763-31');
@@ -26,18 +26,17 @@ test.describe('Consulta aos manuais incluídos no aplicativo', () => {
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
   });
 
-  test('mostra os POPs em linhas e abre o procedimento selecionado', async ({ page }) => {
+  test('mostra os POPs em um seletor compacto e abre o procedimento selecionado', async ({ page }) => {
     await page.goto('/pop');
     await page.getByLabel('Sua pergunta sobre os POPs').fill('abordagem');
     await page.getByRole('button', { name: 'Perguntar', exact: true }).click();
-    const escolhas = page.getByRole('group', { name: /POPs encontrados/ });
-    await expect(escolhas.getByRole('radio', { name: /POP 004/ })).toBeVisible();
-    await expect(escolhas.getByRole('radio', { name: /POP 005/ })).toBeVisible();
-    await expect(page.getByRole('combobox', { name: /POPs encontrados/ })).toHaveCount(0);
+    const escolhas = page.getByRole('combobox', { name: /POPs encontrados/ });
+    await expect(escolhas).toBeVisible();
+    await expect(escolhas.locator('option')).toContainText(['POP 004', 'POP 005']);
 
-    await escolhas.getByRole('radio', { name: /POP 005/ }).check();
+    await escolhas.selectOption('1');
     await expect(page.getByRole('article', { name: 'ABORDAGEM POLICIAL (TÉCNICA POLICIAL)', exact: true })).toContainText('POP 005');
-    await expect(escolhas.getByRole('radio', { name: /POP 005/ })).toBeChecked();
+    await expect(escolhas).toHaveValue('1');
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
   });
 });

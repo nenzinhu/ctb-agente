@@ -2,6 +2,7 @@
 // collection, or any other kept in `documento_trechos`.
 import { databaseAdminConfigured, supabaseAdmin } from '@/lib/db/client';
 import { embeddingChain } from '@/lib/ai/embeddings';
+import { getEmbeddingConfig } from '@/lib/ai/embedding-config';
 import { MigrationPendingError, isMissingSchemaError, type Colecao } from '@/lib/ingestion/documents';
 import { expandirSinonimos } from './sinonimos';
 import { reordenarListasBusca, type ColecaoRanking } from './reranker';
@@ -52,17 +53,19 @@ async function porTexto(consulta: string, colecao: Colecao): Promise<Linha[]> {
 }
 
 async function porVetor(consulta: string, colecao: Colecao): Promise<Linha[]> {
-  if (!process.env.MISTRAL_API_KEY) return [];
+  const config = await getEmbeddingConfig();
+  if (!config.configurado) return [];
   try {
     // Word search answers in ~1s: don't let a slow embedding hold it back.
     let timer: ReturnType<typeof setTimeout> | undefined;
     const embedding = await Promise.race([
-      embeddingChain.embed(consulta),
+      embeddingChain.embed(consulta, config.id),
       new Promise<never>((_, reject) => {
         timer = setTimeout(() => reject(new Error('embedding demorou demais')), TEMPO_EMBEDDING_MS);
       }),
     ]).finally(() => clearTimeout(timer));
-    const { data, error } = await supabaseAdmin.rpc('search_trechos_vetor', {
+    const rpc = config.coluna === 'embedding_nemotron' ? 'search_trechos_nemotron' : 'search_trechos_vetor';
+    const { data, error } = await supabaseAdmin.rpc(rpc, {
       query_embedding: embedding,
       p_colecao: colecao,
       limit_count: CANDIDATOS,

@@ -14,7 +14,7 @@ export default function PesosDimensoesPage() {
     <main className="page max-w-6xl">
       <div className="consultation-intro">
         <p className="eyebrow">Ferramenta para o agente de campo</p>
-        <h1 className="consultation-title">PESOS E DIMENSÕES</h1>
+        <h1 className="consultation-title">Calcular peso e dimensões</h1>
         <p className="consultation-lead">Escolha o veículo pelo desenho, informe o peso e confira o limite do conjunto, o excesso autuável, o código e o valor estimado.</p>
       </div>
 

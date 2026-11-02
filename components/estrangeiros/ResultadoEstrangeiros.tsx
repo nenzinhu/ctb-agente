@@ -1,3 +1,4 @@
+import { FONTES_ESTRANGEIROS } from '@/lib/estrangeiros/acervo';
 import type { ResultadoEstrangeiros as Resultado } from '@/lib/estrangeiros/types';
 
 const ROTULOS: Record<string, string> = {
@@ -13,7 +14,7 @@ const ROTULOS: Record<string, string> = {
 export default function ResultadoEstrangeiros({ resultado }: { resultado: Resultado }) {
   return (
     <section className="mt-6 space-y-4" aria-live="polite">
-      <div className="rounded-card border border-amber-300 bg-amber-50 p-4 text-amber-950 dark:border-amber-700 dark:bg-amber-950/30 dark:text-amber-100">
+      <div className="alert-warn block">
         <strong>Requer conferência documental</strong>
         <p className="mt-1 text-sm">{resultado.aviso}</p>
       </div>
@@ -51,8 +52,8 @@ export default function ResultadoEstrangeiros({ resultado }: { resultado: Result
 
       {resultado.trechos && resultado.trechos.length > 0 && (
         <article className="card p-5">
-          <h2 className="text-lg font-semibold">Trechos oficiais recuperados</h2>
-          <p className="mt-1 text-sm text-ds-subtle">RAG documental para conferência: leia o contexto e abra o PDF antes de concluir.</p>
+          <h2 className="text-lg font-semibold">Trechos do acervo recuperados</h2>
+          <p className="mt-1 text-sm text-ds-subtle">Leia o contexto e abra o documento de origem antes de concluir. Trechos sem confirmação oficial permanecem sujeitos à revisão.</p>
           <div className="mt-4 grid gap-3">
             {resultado.trechos.map((trecho) => (
               <div key={trecho.id} className="rounded-card border border-ds-line p-4">
@@ -63,8 +64,10 @@ export default function ResultadoEstrangeiros({ resultado }: { resultado: Result
                 </div>
                 <blockquote className="mt-2 border-l-2 border-ds-accent pl-3 text-sm text-ds-subtle">{trecho.texto}</blockquote>
                 <div className="mt-3 flex flex-wrap gap-4 text-xs">
-                  {trecho.arquivo && <a className="text-ds-accent underline" href={trecho.arquivo} target="_blank" rel="noreferrer">Abrir PDF anexado</a>}
-                  {trecho.urlOficial && <a className="text-ds-accent underline" href={trecho.urlOficial} target="_blank" rel="noreferrer">Ver fonte oficial</a>}
+                  {trecho.arquivo && <a className="text-ds-ink underline" href={trecho.arquivo} target="_blank" rel="noreferrer">Abrir PDF anexado</a>}
+                  {!trecho.urlOficial && <p className="font-medium text-ds-warn">Pendente de confirmação em fonte oficial.</p>}
+                  {FONTES_ESTRANGEIROS.find((fonte) => fonte.id === trecho.fonteId)?.situacao === 'revisar' && <p className="text-ds-subtle">Fonte marcada para revisão no acervo.</p>}
+                  {trecho.urlOficial && <a className="text-ds-ink underline" href={trecho.urlOficial} target="_blank" rel="noreferrer">Ver fonte oficial</a>}
                 </div>
               </div>
             ))}
@@ -79,8 +82,8 @@ export default function ResultadoEstrangeiros({ resultado }: { resultado: Result
             {resultado.infracoes.map((item, indice) => (
               <div key={`${item.codigo}-${indice}`} className="rounded-card border border-ds-line p-4">
                 <div className="flex flex-wrap items-center gap-2"><strong>{item.codigo}</strong><span className="badge">{item.artigo}</span><span className="badge">Condicional</span></div>
-                <p className="mt-2 text-sm">{item.condicao}</p>
-                <p className="mt-2 text-xs text-ds-subtle">{item.fonte}</p>
+                <p className="mt-2 text-sm font-medium">{item.descricao}</p><p className="mt-2 text-sm"><strong>Condição: </strong>{item.condicao}</p><p className="mt-2 text-sm"><strong>Medida: </strong>{item.medida}</p>
+                <p className="mt-2 text-xs text-ds-subtle"><strong>Fonte: </strong>{item.fonte}</p>
               </div>
             ))}
           </div>
@@ -89,7 +92,7 @@ export default function ResultadoEstrangeiros({ resultado }: { resultado: Result
 
       <div className="grid gap-4 lg:grid-cols-2">
         <article className="card p-5"><h2 className="text-lg font-semibold">Medidas e providências</h2><ul className="mt-3 list-disc space-y-2 pl-5 text-sm text-ds-subtle">{resultado.providencias.map((item) => <li key={item}>{item}</li>)}</ul></article>
-        <article className="card p-5"><h2 className="text-lg font-semibold">Fontes</h2>{resultado.fontes.map((fonte) => <div key={fonte.referencia} className="mt-3 text-sm"><strong>{fonte.titulo}</strong><p className="text-ds-subtle">{fonte.referencia}</p></div>)}</article>
+        <article className="card p-5"><h2 className="text-lg font-semibold">Fontes</h2>{resultado.fontes.map((fonte) => <div key={fonte.referencia} className="mt-3 text-sm"><strong>{fonte.titulo}</strong><p className="text-ds-subtle">{fonte.referencia}</p>{fonte.situacao === 'revisar' && <p className="mt-1 font-medium text-ds-warn">Requer revisão no acervo.</p>}</div>)}</article>
       </div>
     </section>
   );
