@@ -1032,3 +1032,10 @@ select {
   :root[data-reading-mode='scroll'] .page-viewport-flow [data-page-flow] > * + * { margin-top: revert; }
   :root[data-reading-mode='scroll'] .page-viewport-flow .grid { max-width: 100%; }
 }
+.reading-mode-panel { flex: none; display: flex; align-items: center; justify-content: space-between; gap: 8px; padding-bottom: 8px; }
+.reading-mode-panel > span { font-size: 11px; font-weight: 600; color: var(--ds-subtle); }
+.reading-mode-panel > div { display: inline-flex; padding: 2px; border: 1px solid var(--ds-line); border-radius: 10px; background: var(--ds-surface); }
+.reading-mode-panel button { min-height: 40px; padding: 6px 10px; border-radius: 7px; color: var(--ds-subtle); font-size: 12px; font-weight: 600; }
+.reading-mode-panel button[aria-pressed='true'] { background: var(--ds-primary-strong); color: var(--ds-on-solid); }
+.reading-mode-panel button:focus-visible { outline: 2px solid var(--ds-primary-strong); outline-offset: 2px; }
+@media (max-width: 359px) { .reading-mode-panel > span { max-width: 55px; line-height: 1.2; } .reading-mode-panel button { padding-inline: 8px; } }

@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import ConsultaForm from './ConsultaForm';
 import FloatingPageArrows from './FloatingPageArrows';
+import ReadingModeToggle from './ReadingModeToggle';
 import Icone, { type NomeIcone } from './ui/Icone';
 import { GRUPOS_FERRAMENTAS } from '@/lib/navigation';
 import { getFavorites, type CartaoFavorito } from '@/lib/favorites/favorites';
@@ -40,6 +41,7 @@ export default function HomeDashboard() {
           {aba === 'consulta' && <button type="button" className={styles.help} aria-label={ajuda ? 'Voltar à consulta' : 'Como pesquisar'} aria-pressed={ajuda} onClick={() => setAjuda(!ajuda)}><Icone nome={ajuda ? 'voltar' : 'info'} tamanho={21} /></button>}
         </div>
 
+        <ReadingModeToggle panel />
         <section id="painel-inicial" role="tabpanel" aria-labelledby={`aba-${aba}`} className={styles.panel} tabIndex={0}>
           <div className={styles.content}>
             <div hidden={aba !== 'consulta' || ajuda} className={styles.search}>

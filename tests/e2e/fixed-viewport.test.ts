@@ -108,8 +108,8 @@ test('opção de rolar preserva campos e mantém as abas inferiores no lugar', a
   const field = page.getByLabel('PBT/PBTC do conjunto (kg)');
   await field.focus();
   await field.fill('22000');
-  await page.getByRole('button', { name: 'Rolar texto', exact: true }).click();
-  await expect(page.getByRole('button', { name: 'Rolar texto', exact: true })).toHaveAttribute('aria-pressed', 'true');
+  await page.getByRole('button', { name: 'Rolar conteúdo central', exact: true }).click();
+  await expect(page.getByRole('button', { name: 'Rolar conteúdo central', exact: true })).toHaveAttribute('aria-pressed', 'true');
   await expect(field).toHaveValue('22000');
   const nav = page.locator('.mobile-nav');
   const before = await nav.boundingBox();

@@ -3,6 +3,7 @@
 import { usePathname } from 'next/navigation';
 import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react';
 import FloatingPageArrows from './FloatingPageArrows';
+import ReadingModeToggle from './ReadingModeToggle';
 import { useScrollReading } from '@/lib/client/reading-mode';
 
 /** CSS columns fragment the original DOM rather than cloning forms or cutting
@@ -69,7 +70,15 @@ function PaginatedContent({ children, scroll }: { children: ReactNode; scroll: b
         if (scroll) {
           current.current = Math.min(total - 1, Math.floor(container.scrollTop / height));
           setPage(current.current);
-        } else navigate(current.current);
+        } else {
+          const focused = document.activeElement;
+          const bounds = container.getBoundingClientRect();
+          if (focused instanceof HTMLElement && content.contains(focused)) {
+            const rect = focused.getBoundingClientRect();
+            if (rect.width && rect.height) current.current = Math.floor((rect.left - bounds.left + container.scrollLeft + 1) / (container.clientWidth + 32));
+          }
+          navigate(current.current);
+        }
         const bounds = container.getBoundingClientRect();
         const headings = [...content.querySelectorAll<HTMLElement>('h1,h2,h3')].filter(el => el.getClientRects().length).map(el => ({
           label: el.textContent?.trim() || 'Seção',
@@ -115,6 +124,7 @@ function PaginatedContent({ children, scroll }: { children: ReactNode; scroll: b
   }, [navigate]);
 
   return <div className={`page-viewport${scroll ? ' page-viewport-scroll' : ''}`}>
+    <ReadingModeToggle panel />
     <div ref={frame} className="page-viewport-frame" onScroll={() => {
       const container = frame.current;
       if (!container) return;
