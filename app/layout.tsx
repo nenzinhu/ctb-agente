@@ -33,7 +33,7 @@ export const viewport: Viewport = {
 // Applies the saved themes before the first paint, so the page never flashes
 // the wrong palette: "modo sol" (components/TemaToggle.tsx) and the dark theme
 // (components/TemaEscuroToggle.tsx, which follows the system until chosen).
-const TEMA_SALVO = `(function(){var d=document.documentElement,t=null,e=null;try{t=localStorage.getItem('ctb-tema');e=localStorage.getItem('ctb-escuro')}catch(x){}if(t==='sol')d.dataset.tema='sol';if(e==='1'||(e!=='0'&&window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches))d.classList.add('dark')})()`;
+const TEMA_SALVO = `(function(){var d=document.documentElement,t=null,e=null;try{t=localStorage.getItem('ctb-tema');e=localStorage.getItem('ctb-escuro')}catch(x){}try{d.dataset.readingMode=localStorage.getItem('ctb-reading-mode')==='scroll'?'scroll':'pages'}catch(x){}if(t==='sol')d.dataset.tema='sol';if(e==='1'||(e!=='0'&&window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches))d.classList.add('dark')})()`;
 
 export default function RootLayout({
   children,

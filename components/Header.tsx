@@ -3,6 +3,7 @@ import InstalarApp from './InstalarApp';
 import NavTabs from './NavTabs';
 import TemaEscuroToggle from './TemaEscuroToggle';
 import TemaToggle from './TemaToggle';
+import ReadingModeToggle from './ReadingModeToggle';
 import Icone from './ui/Icone';
 
 /**
@@ -27,6 +28,7 @@ export default function Header() {
 
         <div className="ml-auto flex shrink-0 items-center gap-1 sm:gap-1.5">
           <InstalarApp />
+          <ReadingModeToggle />
           <TemaEscuroToggle />
           <TemaToggle />
           {/* The panel is behind the auth middleware: prefetching it while the

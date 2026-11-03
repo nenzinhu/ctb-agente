@@ -101,3 +101,24 @@ test('setas laterais ficam transparentes e livres dos controles principais', asy
     })).toBe(true);
   }
 });
+
+test('opção de rolar preserva campos e mantém as abas inferiores no lugar', async ({ page }) => {
+  await page.goto('/pesos-dimensoes');
+  await page.addStyleTag({ content: 'nextjs-portal { display: none !important; }' });
+  const field = page.getByLabel('PBT/PBTC do conjunto (kg)');
+  await field.focus();
+  await field.fill('22000');
+  await page.getByRole('button', { name: 'Rolar texto', exact: true }).click();
+  await expect(page.getByRole('button', { name: 'Rolar texto', exact: true })).toHaveAttribute('aria-pressed', 'true');
+  await expect(field).toHaveValue('22000');
+  const nav = page.locator('.mobile-nav');
+  const before = await nav.boundingBox();
+  await page.locator('.page-viewport-frame').evaluate(el => { el.scrollTop = el.scrollHeight; });
+  await expect.poll(() => page.locator('.page-viewport-frame').evaluate(el => el.scrollTop)).toBeGreaterThan(100);
+  if (await nav.isVisible()) expect((await nav.boundingBox())?.y).toBe(before?.y);
+  expect(await page.evaluate(() => document.documentElement.scrollHeight <= innerHeight)).toBe(true);
+  await page.reload();
+  await expect(page.getByRole('button', { name: 'Rolar texto', exact: true })).toHaveAttribute('aria-pressed', 'true');
+  await page.getByRole('button', { name: 'Rolar texto', exact: true }).click();
+  await expect(page.getByLabel('Conteúdo paginado')).toBeAttached();
+});

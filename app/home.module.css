@@ -69,3 +69,7 @@
   .quick { position: absolute; right: 0; bottom: 0; width: calc(50% - 7px); flex-wrap: nowrap; }
   .quick a { font-size: 10px; gap: 3px; padding-inline: 4px; }
 }
+/* The home keeps its bottom tabs fixed when continuous reading is selected. */
+:global(:root[data-reading-mode='scroll']) .workspace { overflow-y: auto; overflow-x: hidden; margin-block: 0; scrollbar-width: thin; }
+:global(:root[data-reading-mode='scroll']) .panel { flex: none; min-height: 420px; }
+:global(:root[data-reading-mode='scroll']) .content { min-height: 360px; }

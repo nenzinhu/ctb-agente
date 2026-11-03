@@ -48,11 +48,12 @@ export default function FloatingPageArrows({ onPrevious, onNext, previousDisable
     if (content) observer.observe(content, { subtree: true, childList: true, characterData: true, attributes: true, attributeFilter: ['class', 'open', 'hidden'] });
     const resize = typeof ResizeObserver === 'undefined' ? null : new ResizeObserver(position);
     if (content) resize?.observe(content);
+    content?.addEventListener('scroll', position, true);
     window.addEventListener('resize', position);
     document.addEventListener('focusin', position);
     document.addEventListener('click', position);
     position();
-    return () => { cancelAnimationFrame(raf); observer.disconnect(); resize?.disconnect(); window.removeEventListener('resize', position); document.removeEventListener('focusin', position); document.removeEventListener('click', position); };
+    return () => { cancelAnimationFrame(raf); observer.disconnect(); resize?.disconnect(); content?.removeEventListener('scroll', position, true); window.removeEventListener('resize', position); document.removeEventListener('focusin', position); document.removeEventListener('click', position); };
   }, [previousDisabled, nextDisabled]);
 
   return <div className="floating-page-arrows print:hidden" role="group" aria-label="Navegação lateral">

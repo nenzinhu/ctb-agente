@@ -1021,3 +1021,14 @@ select {
 @media screen { .page-pagination { justify-content: center; } }
 @media (prefers-reduced-motion: reduce) { .floating-page-arrow { transition: none; } }
 @media print { .floating-page-arrows { display: none; } }
+@media screen {
+  .reading-mode-toggle { padding-inline: 8px; gap: 4px; }
+  .reading-mode-toggle span { font-size: 10px; white-space: nowrap; }
+  .reading-mode-toggle[aria-pressed='true'] { background: var(--ds-surface); color: var(--ds-primary-strong); }
+  :root[data-reading-mode='scroll'] .page-viewport-frame { overflow-y: auto; overflow-x: hidden; scrollbar-width: thin; scrollbar-color: var(--ds-line) transparent; }
+  :root[data-reading-mode='scroll'] .page-viewport-flow { height: auto; columns: auto; animation: none; }
+  :root[data-reading-mode='scroll'] .page-viewport-flow main { display: block; padding: 0; margin: 0; max-width: none; min-height: 0; }
+  :root[data-reading-mode='scroll'] .page-viewport-flow [data-page-flow] { display: revert !important; }
+  :root[data-reading-mode='scroll'] .page-viewport-flow [data-page-flow] > * + * { margin-top: revert; }
+  :root[data-reading-mode='scroll'] .page-viewport-flow .grid { max-width: 100%; }
+}
