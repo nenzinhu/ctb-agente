@@ -48,7 +48,8 @@ export interface GrupoLegado {
 export interface DocumentosResposta {
   documentos: DocumentoRegistro[];
   legado: GrupoLegado[];
-  pendentesVetor: number;
+  pendentesVetor: number | null;
+  legadoIndisponivel?: boolean;
   migracaoPendente: boolean;
   migracaoQualidadePendente: boolean;
   bancoConfigurado: boolean;

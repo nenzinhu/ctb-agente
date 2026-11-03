@@ -196,7 +196,7 @@ export default function DocumentList({ colecao, refreshTrigger, onChange }: Docu
         </div>
       )}
 
-      {dados.pendentesVetor > 0 && (
+      {(dados.pendentesVetor ?? 0) > 0 && (
         <div className="panel flex flex-col gap-3 p-4 sm:flex-row sm:items-center">
           <Icone nome="faisca" className="shrink-0 text-ds-primary" />
           <p className="flex-1 text-sm text-ds-text">
@@ -234,9 +234,9 @@ export default function DocumentList({ colecao, refreshTrigger, onChange }: Docu
       {documentos.length === 0 && dados.legado.length === 0 ? (
         <div className="rounded-control border-2 border-dashed border-ds-line px-6 py-10 text-center">
           <Icone nome="arquivo" tamanho={28} className="mx-auto text-ds-subtle" />
-          <p className="mt-2 font-semibold text-ds-text">{termo ? 'Nenhum arquivo encontrado' : 'Nenhum documento indexado ainda'}</p>
+          <p className="mt-2 font-semibold text-ds-text">{termo ? 'Nenhum arquivo encontrado' : dados.legadoIndisponivel ? 'Não foi possível conferir toda a base' : 'Nenhum documento indexado ainda'}</p>
           <p className="mt-1 text-sm text-ds-subtle">
-            {termo ? `Nenhum arquivo corresponde a “${busca.trim()}”.` : 'Envie um arquivo acima para começar.'}
+            {termo ? `Nenhum arquivo corresponde a “${busca.trim()}”.` : dados.legadoIndisponivel ? 'A consulta dos trechos legados está indisponível. Tente atualizar a lista antes de reenviar arquivos.' : 'Envie um arquivo acima para começar.'}
           </p>
         </div>
       ) : (
