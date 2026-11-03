@@ -1180,3 +1180,7 @@ body::before {
   .pmrv-tab-track { gap: 6px; }
   .pmrv-tab-track > .pmrv-tab { flex-basis: calc((100% - 6px) / 2); min-width: 112px; padding-inline: 14px; font-size: 12px; }
 }
+/* iPhone 14 (390px): three readable plaques between the two arrow controls. */
+@media (max-width: 767px) {
+  .pmrv-tab-track > .pmrv-tab { flex-basis: calc((100% - 12px) / 3); min-width: 0; padding-inline: 6px; font-size: clamp(10px, 2.8vw, 12px); overflow-wrap: anywhere; }
+}

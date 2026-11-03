@@ -48,7 +48,7 @@ Fonte nativa sem downloads; monoespaçada existente para códigos e metadados. A
 
 ## Layout
 
-SPA com altura de tela e conteúdo central paginado; o modo de leitura contínua permite rolagem central. A navegação inferior permanece visível no mobile, respeitando a área segura. Na home, a área central limita-se a 760px e sete abas ficam em uma faixa horizontal com setas de avanço e retorno. Preservar rotas, atalhos e funções existentes.
+SPA com altura de tela e conteúdo central paginado; o modo de leitura contínua permite rolagem central. A navegação inferior permanece visível no mobile, respeitando a área segura. Na home, a área central limita-se a 760px e sete abas ficam em uma faixa horizontal com setas de avanço e retorno, com três visíveis no celular (390px) e quatro no desktop. Preservar rotas, atalhos e funções existentes.
 
 ## Elevation & Depth
 

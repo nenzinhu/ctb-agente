@@ -1,5 +1,7 @@
 'use client';
 
+import TextoReferenciasCtb from './TextoReferenciasCtb';
+
 import { useState } from 'react';
 import { CartaoEstruturado } from '@/lib/response/response-types';
 import Icone from './ui/Icone';
@@ -49,7 +51,7 @@ export default function CitacaoEvidencia({ citacoes }: CitacaoEvidenciaProps) {
 
               {aberta && (
                 <blockquote className="border-t border-ds-line bg-ds-muted px-4 py-3 text-sm italic leading-relaxed text-ds-text">
-                  “{cit.trecho}”
+                  “<TextoReferenciasCtb texto={cit.trecho} />”
                 </blockquote>
               )}
             </li>

@@ -1,5 +1,7 @@
 'use client';
 
+import TextoReferenciasCtb from './TextoReferenciasCtb';
+
 import { CartaoEstruturado } from '@/lib/response/response-types';
 import { formatarMulta, labelDocumento, labelResponsavel } from '@/lib/response/format';
 import BadgeGravidade from './ui/BadgeGravidade';
@@ -88,7 +90,7 @@ export default function CartaoTecnico({ card }: CartaoTecnicoProps) {
 
       <footer className="border-t border-ds-line px-4 py-4 sm:px-6">
         <h3 className="stat-label">Amparo Legal</h3>
-        <p className="mt-1 font-mono text-sm text-ds-text">{enquadramento.amparo_legal}</p>
+        <p className="mt-1 font-mono text-sm text-ds-text"><TextoReferenciasCtb texto={enquadramento.amparo_legal} contextoCtb /></p>
       </footer>
     </article>
   );

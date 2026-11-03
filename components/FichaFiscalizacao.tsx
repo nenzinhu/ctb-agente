@@ -1,5 +1,7 @@
 'use client';
 
+import TextoReferenciasCtb from './TextoReferenciasCtb';
+
 import type { ReactNode } from 'react';
 import { CartaoEstruturado } from '@/lib/response/response-types';
 import { MbftFields } from '@/lib/response/mbft-fields';
@@ -238,7 +240,7 @@ export default function FichaFiscalizacao({ card, campos: doBanco, oficial = nul
           <SecaoTitulo>Identificação da Infração</SecaoTitulo>
           <dl className="mt-2">
             <Linha rotulo="Amparo Legal:">
-              <Valor>{enquadramento?.amparo_legal ?? campos?.amparo}</Valor>
+              <Valor><TextoReferenciasCtb texto={enquadramento?.amparo_legal ?? campos?.amparo ?? '—'} contextoCtb /></Valor>
             </Linha>
             <Linha rotulo="Tipificação do Enquadramento:">
               <Valor>{campos?.tipificacao}</Valor>

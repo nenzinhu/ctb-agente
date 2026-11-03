@@ -1,5 +1,7 @@
 'use client';
 
+import TextoReferenciasCtb from './TextoReferenciasCtb';
+
 import { CartaoEstruturado } from '@/lib/response/response-types';
 import Icone from './ui/Icone';
 
@@ -20,14 +22,14 @@ export default function CartaoSimples({ card }: CartaoSimplesProps) {
       <div className="space-y-6">
         <div>
           <h3 className="font-mono text-xs font-semibold uppercase tracking-[0.08em] text-ds-subtle">O que aconteceu?</h3>
-          <p className="mt-2 leading-relaxed text-ds-text">{card.explicacao_simples}</p>
+          <p className="mt-2 leading-relaxed text-ds-text"><TextoReferenciasCtb texto={card.explicacao_simples} contextoCtb /></p>
         </div>
 
         {card.exemplo_dia_a_dia && (
           <div>
             <h3 className="font-mono text-xs font-semibold uppercase tracking-[0.08em] text-ds-subtle">Exemplo do dia a dia</h3>
             <p className="mt-2 rounded-control border-l-4 border-ds-primary bg-ds-muted p-4 italic leading-relaxed text-ds-text">
-              {card.exemplo_dia_a_dia}
+              <TextoReferenciasCtb texto={card.exemplo_dia_a_dia} contextoCtb />
             </p>
           </div>
         )}

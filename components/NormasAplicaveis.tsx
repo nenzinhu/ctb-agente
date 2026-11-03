@@ -1,5 +1,7 @@
 'use client';
 
+import TextoReferenciasCtb from './TextoReferenciasCtb';
+
 import { useState } from 'react';
 import type { NormaAplicavel } from '@/lib/response/response-types';
 import Icone from './ui/Icone';
@@ -53,7 +55,7 @@ export default function NormasAplicaveis({ normas }: NormasAplicaveisProps) {
 
               {expandida && (
                 <p className="whitespace-pre-line border-t border-ds-line bg-ds-muted px-4 py-3 text-sm leading-relaxed text-ds-text">
-                  {norma.texto || 'Texto não cadastrado na base.'}
+                  <TextoReferenciasCtb texto={norma.texto || 'Texto não cadastrado na base.'} contextoCtb={/^ctb(?:-|$)/i.test(norma.norma_id)} />
                 </p>
               )}
             </li>
