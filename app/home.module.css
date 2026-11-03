@@ -12,13 +12,13 @@
 :global(body):has(.dashboard) > footer,
 :global(body):has(.dashboard) :global(.mobile-nav) { display: none; }
 :global(body):has(.dashboard) > :global(#conteudo) { flex: 1; min-height: 0; }
-.dashboard { height: 100%; width: 100vw; overflow: hidden; display: flex; flex-direction: column; color: var(--ds-text); background: var(--ds-bg); }
+.dashboard { height: 100%; width: 100vw; overflow: hidden; display: flex; flex-direction: column; color: var(--ds-text); background: transparent; }
 .workspace { width: 100%; max-width: 760px; margin: auto; padding: clamp(12px, 3vh, 32px) 20px 10px; flex: 1; min-height: 0; display: flex; flex-direction: column; gap: 14px; }
 .heading { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex: none; }
 .heading h1 { font-size: clamp(20px, 4.8vw, 28px); font-weight: 700; letter-spacing: -.025em; line-height: 1.15; }
 .heading p { margin-top: 6px; font-size: 13px; color: var(--ds-subtle); }
 .help { min-width: 44px; height: 44px; display: grid; place-items: center; border: 1px solid var(--ds-line); border-radius: 12px; background: var(--ds-surface); }
-.panel { flex: 1; min-height: 0; background: var(--ds-surface); border: 1px solid var(--ds-line); border-radius: 16px; padding: clamp(12px, 2.5vh, 24px); display: flex; flex-direction: column; gap: 12px; }
+.panel { flex: 1; min-height: 0; background: color-mix(in srgb, var(--ds-surface) 82%, transparent); border: 1px solid var(--ds-line); border-radius: 16px; padding: clamp(12px, 2.5vh, 24px); display: flex; flex-direction: column; gap: 12px; }
 .content { min-height: 0; flex: 1; animation: panel-in 180ms ease-out; }
 .search { height: 100%; display: flex; flex-direction: column; justify-content: center; gap: 16px; }
 .search[hidden] { display: none; }
@@ -73,3 +73,9 @@
 :global(:root[data-reading-mode='scroll']) .workspace { overflow-y: auto; overflow-x: hidden; margin-block: 0; scrollbar-width: thin; }
 :global(:root[data-reading-mode='scroll']) .panel { flex: none; min-height: 420px; }
 :global(:root[data-reading-mode='scroll']) .content { min-height: 360px; }
+
+/* The supplied PMRv plaque is shared by home and route navigation. */
+.tabs { gap: 8px; background: color-mix(in srgb, var(--ds-surface) 92%, transparent); border-top-color: var(--ds-gold); padding-top: 10px; }
+.tabs button:global(.pmrv-tab) { flex-direction: row; border-radius: 0; font-size: clamp(11px, 2.8vw, 14px); }
+.tabs button:global(.pmrv-tab)[aria-selected='true'] { color: var(--pmrv-plaque-ink); background: transparent; box-shadow: none; }
+.tabs button:global(.pmrv-tab):hover { background: transparent; }
