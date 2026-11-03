@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from 'next';
 import './globals.css';
 import Header from '@/components/Header';
+import SplashScreen from '@/components/SplashScreen';
 import PageViewport from '@/components/PageViewport';
 import Footer from '@/components/Footer';
 import MobileNavigation from '@/components/mobile/MobileNavigation';
@@ -52,6 +53,7 @@ export default function RootLayout({
         >
           Pular para o conteúdo
         </a>
+        <SplashScreen />
         <Header />
         <div id="conteudo" tabIndex={-1} className="outline-none">
           <PageViewport>{children}</PageViewport>
