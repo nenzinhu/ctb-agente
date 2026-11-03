@@ -9,8 +9,17 @@ const pop: Pop = {
 };
 
 describe('resultados responsivos', () => {
-  it('mantém tabelas longas dentro de um contêiner rolável', () => {
-    render(<FichaPop pop={pop} />);
-    expect(screen.getByRole('table').parentElement).toHaveClass('mobile-table-scroll');
+  it('empilha a fundamentação no celular e mantém a tabela a partir de md', () => {
+    const { container } = render(<FichaPop pop={pop} />);
+
+    const tabela = screen.getByRole('table');
+    // A tabela não força mais largura mínima: nada de rolagem horizontal.
+    expect(tabela).not.toHaveClass('min-w-[34rem]');
+    expect(tabela.parentElement).toHaveClass('hidden', 'md:block');
+
+    const listaMobile = container.querySelector('ul.md\\:hidden');
+    expect(listaMobile).not.toBeNull();
+    expect(listaMobile).toHaveTextContent('Súmula Vinculante 11');
+    expect(listaMobile).toHaveTextContent('Uso excepcional');
   });
 });

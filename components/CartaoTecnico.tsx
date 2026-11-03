@@ -33,7 +33,9 @@ export default function CartaoTecnico({ card }: CartaoTecnicoProps) {
         <p className="mt-1.5 text-sm text-ds-subtle">Responsável: {labelResponsavel(enquadramento.responsavel)}</p>
       </header>
 
-      <dl className="grid grid-cols-2 gap-3 p-4 sm:grid-cols-3 sm:p-6">
+      {/* Stacked on phones (no cramped two-column figures), three across from
+          `sm` up. */}
+      <dl className="grid grid-cols-1 gap-3 p-4 sm:grid-cols-3 sm:p-6">
         <div className="stat">
           <dt className="stat-label">Pontos</dt>
           <dd className="stat-value">{enquadramento.pontos}</dd>
@@ -43,7 +45,7 @@ export default function CartaoTecnico({ card }: CartaoTecnicoProps) {
           <dd className="stat-value">{formatarMulta(enquadramento.valor_multa)}</dd>
           <dd className="text-xs text-ds-subtle">{enquadramento.unidade}</dd>
         </div>
-        <div className="stat col-span-2 sm:col-span-1">
+        <div className="stat">
           <dt className="stat-label">CNH exigida</dt>
           <dd className="stat-value text-base">{card.categoria_cnh_exigida}</dd>
         </div>

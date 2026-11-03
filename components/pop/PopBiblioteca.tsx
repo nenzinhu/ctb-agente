@@ -108,7 +108,7 @@ export default function PopBiblioteca() {
               {master && (
                 <button
                   type="button"
-                  className="btn-ghost btn-sm !min-h-[32px] !px-2 text-ds-danger"
+                  className="btn-ghost btn-sm min-h-[44px] min-w-[44px] !px-2 text-ds-danger"
                   onClick={() => excluir(doc)}
                   disabled={excluindo === doc.id}
                   aria-label={`Remover ${doc.titulo}`}

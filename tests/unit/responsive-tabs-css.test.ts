@@ -8,9 +8,17 @@ describe('abas responsivas', () => {
     expect(css).toMatch(/@media \(min-width: 1024px\)\s*{\s*\.nav-tabs\s*{\s*mask-image: none;/);
   });
 
-  it('preserva alvos confortáveis em dispositivos de toque', () => {
-    expect(css).toMatch(/@media \(pointer: coarse\)[\s\S]*?\.tab\s*{\s*min-height: 40px;/);
-    expect(css).toMatch(/@media \(pointer: coarse\)[\s\S]*?\.nav-tab\s*{\s*min-height: 36px;/);
+  it('preserva alvos de toque de pelo menos 44px em dispositivos de toque', () => {
+    expect(css).toMatch(/@media \(pointer: coarse\)[\s\S]*?\.tab\s*{\s*min-height: 44px;/);
+    expect(css).toMatch(/@media \(pointer: coarse\)[\s\S]*?\.nav-tab\s*{\s*min-height: 44px;/);
+  });
+
+  it('mantém 44px nos alvos menores mesmo sem ponteiro grosso', () => {
+    expect(css).toMatch(/\.btn-sm\s*{\s*@apply min-h-\[44px\]/);
+    expect(css).toMatch(/\.chip\s*{\s*@apply inline-flex min-h-\[44px\]/);
+    expect(css).toMatch(/\.tab\s*{\s*@apply inline-flex min-h-\[44px\]/);
+    expect(css).toMatch(/\.nav-tab\s*{\s*@apply flex min-h-\[44px\]/);
+    expect(css).toMatch(/\.icon-btn\s*{\s*@apply inline-grid h-11 w-11/);
   });
 
   it('distribui as três abas de resultado em telas estreitas', () => {

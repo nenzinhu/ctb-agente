@@ -128,7 +128,7 @@ export function useDitado({ onTranscricao, maxSegundos = 60 }: OpcoesDitado): Di
  * Microphone toggle for a field's action slot. Stays pressed (and red) while
  * recording; a second tap stops and transcribes.
  */
-export default function BotaoVoz({ ditado }: { ditado: Ditado }) {
+export default function BotaoVoz({ ditado, grande = false }: { ditado: Ditado; grande?: boolean }) {
   if (!ditado.suportado) return null;
 
   const gravando = ditado.estado === 'gravando';
@@ -140,6 +140,7 @@ export default function BotaoVoz({ ditado }: { ditado: Ditado }) {
       rotulo="Ditar por voz"
       title={gravando ? 'Parar e transcrever' : 'Ditar por voz'}
       tom={gravando ? 'perigo' : 'primario'}
+      grande={grande}
       aria-pressed={gravando}
       aria-busy={ocupado || undefined}
       disabled={ocupado}

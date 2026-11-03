@@ -202,7 +202,14 @@ body {
 
 @media (max-width: 767px) {
   body {
+    /* Bottom navigation only */
     padding-bottom: calc(4rem + env(safe-area-inset-bottom));
+  }
+
+  /* Screens with the fixed query bar (components/mobile/BarraAcaoCampo.tsx):
+     the bar adds 4rem above the navigation, so the content clears both. */
+  body[data-barra-acao='1'] {
+    padding-bottom: calc(8rem + env(safe-area-inset-bottom));
   }
 }
 
@@ -258,8 +265,12 @@ body::before {
   .eyebrow {
     @apply font-mono text-xs font-semibold uppercase tracking-[0.12em] text-ds-gold-strong;
   }
+  /* Fluid headings: one clamp() per step instead of a hard jump at sm, so a
+     360px phone, a 768px tablet and a 1024px screen all read well. */
   .page-title {
-    @apply text-xl font-bold tracking-tight text-ds-text sm:text-2xl;
+    @apply font-bold tracking-tight text-ds-text;
+    font-size: clamp(1.25rem, 1.08rem + 0.75vw, 1.5rem);
+    line-height: 1.25;
   }
   .page-lead {
     @apply mt-2 max-w-2xl text-base text-ds-subtle;
@@ -300,7 +311,9 @@ body::before {
     @apply rounded-card border border-ds-line bg-ds-surface px-4 py-5 text-center sm:px-6;
   }
   .card-destaque-titulo {
-    @apply inline-flex items-center justify-center gap-2 text-xl font-bold tracking-tight text-ds-primary sm:text-2xl;
+    @apply inline-flex items-center justify-center gap-2 font-bold tracking-tight text-ds-primary;
+    font-size: clamp(1.25rem, 1.08rem + 0.75vw, 1.5rem);
+    line-height: 1.25;
   }
   .card-destaque-sub {
     @apply mx-auto mt-1.5 max-w-2xl text-sm text-ds-subtle;
@@ -323,11 +336,18 @@ body::before {
   .btn-danger {
     @apply btn border-2 border-ds-danger bg-ds-surface text-ds-danger hover:bg-ds-danger/10;
   }
+  /* Still the smaller button, but never below the 44px touch target: field
+     work happens with gloves and in a hurry. */
   .btn-sm {
-    @apply min-h-[36px] px-3 py-1.5 text-xs;
+    @apply min-h-[44px] px-3 py-1.5 text-xs;
   }
+  /* 44px touch target; use `icon-btn-grande` for the primary field action. */
   .icon-btn {
-    @apply inline-grid h-10 w-10 shrink-0 place-items-center rounded-control border-2 border-ds-primary bg-ds-surface text-ds-primary transition-colors hover:bg-ds-primary-soft disabled:cursor-not-allowed disabled:opacity-50;
+    @apply inline-grid h-11 w-11 shrink-0 place-items-center rounded-control border-2 border-ds-primary bg-ds-surface text-ds-primary transition-colors hover:bg-ds-primary-soft disabled:cursor-not-allowed disabled:opacity-50;
+  }
+  /* 48px: the microphone beside a query field. */
+  .icon-btn-grande {
+    @apply h-12 w-12;
   }
   .icon-btn-perigo {
     @apply border-ds-danger bg-ds-danger/10 text-ds-danger hover:bg-ds-danger/15;
@@ -338,8 +358,9 @@ body::before {
     @apply block min-h-[48px] w-full rounded-control border border-ds-border-input bg-ds-surface px-3.5 py-3 text-base text-ds-text placeholder:text-ds-subtle/80 disabled:cursor-not-allowed disabled:opacity-60 aria-[invalid=true]:border-ds-danger;
   }
 
+  /* Chips are taps too: 44px. */
   .chip {
-    @apply inline-flex min-h-[36px] max-w-full items-center gap-1.5 truncate rounded-full border border-ds-line bg-ds-surface px-3 py-1 text-[13px] text-ds-text transition-colors hover:border-ds-primary hover:bg-ds-primary-soft disabled:cursor-not-allowed disabled:opacity-50;
+    @apply inline-flex min-h-[44px] max-w-full items-center gap-1.5 truncate rounded-full border border-ds-line bg-ds-surface px-3 py-1 text-[13px] text-ds-text transition-colors hover:border-ds-primary hover:bg-ds-primary-soft disabled:cursor-not-allowed disabled:opacity-50;
   }
 
   /* ---- CTB and POP consultation workspace ---- */
@@ -347,16 +368,19 @@ body::before {
     @apply pt-1 sm:pt-3;
   }
   .consultation-title {
-    @apply mt-2 text-3xl font-bold tracking-tight text-ds-text sm:text-[2.75rem] sm:leading-tight;
+    @apply mt-2 font-bold tracking-tight text-ds-text;
+    font-size: clamp(1.5rem, 1.1rem + 2.4vw, 2.75rem);
+    line-height: 1.1;
   }
   .consultation-lead {
-    @apply mt-2 max-w-2xl text-base leading-relaxed text-ds-subtle sm:text-lg;
+    @apply mt-2 max-w-2xl leading-relaxed text-ds-subtle;
+    font-size: clamp(0.9375rem, 0.88rem + 0.35vw, 1.125rem);
   }
   .mobile-home-intro .consultation-title {
-    @apply text-2xl sm:text-[2.75rem];
+    font-size: clamp(1.375rem, 1.05rem + 2vw, 2.75rem);
   }
   .mobile-home-intro .consultation-lead {
-    @apply text-sm sm:text-lg;
+    font-size: clamp(0.875rem, 0.83rem + 0.3vw, 1.125rem);
   }
   .mobile-query-field {
     field-sizing: content;
@@ -374,7 +398,7 @@ body::before {
     @apply border-ds-primary bg-ds-surface text-ds-primary-strong shadow-sm;
   }
   .query-example {
-    @apply min-h-[40px] whitespace-normal text-left;
+    @apply min-h-[44px] whitespace-normal text-left;
     overflow-wrap: anywhere;
   }
   .search-guide {
@@ -446,12 +470,18 @@ body::before {
     @apply animate-pulse rounded-control bg-ds-text/10;
   }
 
+  /* Empty result: a dashed panel so it reads as "nothing here", not as a card
+     that failed to load. Used by the guided screening and by the PMSC facts. */
+  .empty-state {
+    @apply rounded-control border-2 border-dashed border-ds-line bg-ds-muted px-4 py-5 text-sm text-ds-subtle;
+  }
+
   /* ---- Segmented tabs (result views, admin sections) ---- */
   .tabs {
     @apply inline-flex max-w-full gap-0.5 rounded-lg border border-ds-border bg-ds-surface/95 p-0.5 shadow-sm backdrop-blur-sm;
   }
   .tab {
-    @apply inline-flex min-h-[34px] items-center justify-center gap-1 whitespace-nowrap rounded-md px-2.5 font-mono text-[11px] font-semibold uppercase tracking-[0.045em] text-ds-subtle transition-all duration-200 hover:bg-ds-muted hover:text-ds-text;
+    @apply inline-flex min-h-[44px] items-center justify-center gap-1 whitespace-nowrap rounded-md px-2.5 font-mono text-[11px] font-semibold uppercase tracking-[0.045em] text-ds-subtle transition-all duration-200 hover:bg-ds-muted hover:text-ds-text;
   }
   .tab-active {
     @apply -translate-y-px bg-ds-primary text-ds-on-solid shadow-sm hover:bg-ds-primary hover:text-ds-on-solid;
@@ -488,7 +518,8 @@ body::before {
     outline-offset: 2px;
   }
   .step-label {
-    @apply max-w-full break-words font-mono text-[10px] font-semibold uppercase leading-tight tracking-[0.08em] text-ds-text sm:text-[11px];
+    @apply max-w-full break-words font-mono font-semibold uppercase leading-tight tracking-[0.08em] text-ds-text;
+    font-size: clamp(0.6875rem, 0.65rem + 0.2vw, 0.75rem);
   }
   .step[data-estado='atual'] .step-label {
     @apply font-bold;
@@ -519,7 +550,7 @@ body::before {
     color: var(--ds-on-header-soft);
   }
   .header-pill {
-    @apply inline-flex min-h-[38px] min-w-[38px] items-center justify-center gap-1.5 rounded-full border px-2 font-mono text-[11px] font-semibold uppercase tracking-[0.08em] transition-colors md:px-3;
+    @apply inline-flex min-h-[44px] min-w-[44px] items-center justify-center gap-1.5 rounded-full border px-2 font-mono text-[11px] font-semibold uppercase tracking-[0.08em] transition-colors md:px-3;
     background-color: var(--ds-header-pill);
     border-color: var(--ds-header-pill-border);
     color: var(--ds-on-header);
@@ -548,7 +579,7 @@ body::before {
     display: none;
   }
   .nav-tab {
-    @apply flex min-h-[32px] snap-start items-center gap-1 whitespace-nowrap rounded-md border border-transparent px-2.5 text-[11px] font-medium transition-all duration-200;
+    @apply flex min-h-[44px] snap-start items-center gap-1 whitespace-nowrap rounded-md border border-transparent px-2.5 text-[11px] font-medium transition-all duration-200;
     color: var(--ds-on-header-soft);
   }
   .nav-tab:hover {
@@ -561,6 +592,27 @@ body::before {
     background-color: var(--ds-header-pill);
     border-color: var(--ds-header-pill-border);
     box-shadow: 0 2px 8px rgb(0 0 0 / 14%);
+  }
+
+  /* ---- Fixed query bar (phones only, sits on top of the bottom navigation) ---- */
+  .barra-acao {
+    @apply fixed inset-x-0 z-30 flex items-center gap-2 border-t border-ds-line bg-ds-surface px-3 py-2 shadow-overlay;
+    bottom: calc(4rem + env(safe-area-inset-bottom));
+  }
+  /* The real field is focused, so the keyboard is open: the bar has nothing to
+     add and would only cover the page. */
+  .barra-acao[data-oculta='true'] {
+    display: none;
+  }
+  /* Reads as a field, but it is a button: it moves the agent to the real one. */
+  .barra-acao-campo {
+    @apply flex min-h-[48px] min-w-0 flex-1 items-center gap-2 rounded-control border border-ds-border-input bg-ds-surface px-3 text-left text-sm text-ds-subtle transition-colors hover:border-ds-primary hover:bg-ds-primary-soft;
+  }
+  .barra-acao-texto {
+    @apply min-w-0 flex-1 truncate;
+  }
+  .barra-acao-texto[data-preenchido='true'] {
+    @apply text-ds-text;
   }
 
   .mobile-nav {
@@ -658,13 +710,15 @@ body::before {
   }
 }
 
+/* Coarse pointers keep the same 44px floor: the size is already in the base
+   component, so nothing shrinks on touch devices. */
 @media (pointer: coarse) {
   .tab {
-    min-height: 40px;
+    min-height: 44px;
   }
 
   .nav-tab {
-    min-height: 36px;
+    min-height: 44px;
   }
 }
 

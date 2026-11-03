@@ -15,6 +15,7 @@ import FichaPop from './FichaPop';
 import type { Pop } from '@/lib/pop/parser';
 import ConsultaModes from '../ConsultaModes';
 import SearchSuggestions from '../SearchSuggestions';
+import BarraAcaoCampo from '../mobile/BarraAcaoCampo';
 import type { ResumoPop } from '@/lib/pop/referencias';
 
 const EXEMPLOS = [
@@ -48,7 +49,11 @@ function Fonte({ fonte }: { fonte: FontePop }) {
             {fonte.texto}
           </p>
           {longo && (
-            <button type="button" className="mt-1 text-xs font-semibold text-ds-ink underline" onClick={() => setAberta(!aberta)}>
+            <button
+              type="button"
+              className="mt-1 inline-flex min-h-[44px] items-center text-xs font-semibold text-ds-ink underline"
+              onClick={() => setAberta(!aberta)}
+            >
               {aberta ? 'Mostrar menos' : 'Ver trecho completo'}
             </button>
           )}
@@ -180,6 +185,8 @@ export default function PopConsulta({ catalogo = [] }: { catalogo?: ResumoPop[] 
   const [carregando, setCarregando] = useState(false);
   const [erro, setErro] = useState<string | null>(null);
   const [resultado, setResultado] = useState<RespostaPop | null>(null);
+  /** The real field is focused, so the fixed bar (phones) steps aside. */
+  const [campoEmFoco, setCampoEmFoco] = useState(false);
   const segundos = useSegundos(carregando);
   const ditado = useDitado({ onTranscricao: (texto) => setPergunta((atual) => (atual ? `${atual} ${texto}` : texto)) });
 
@@ -243,9 +250,11 @@ export default function PopConsulta({ catalogo = [] }: { catalogo?: ResumoPop[] 
               maxLength={500}
               enterKeyHint="search"
               placeholder="Ex: Como proceder na abordagem a veículo suspeito?"
-              controlClassName="min-h-[124px] resize-y leading-relaxed"
+              controlClassName="min-h-[124px] resize-y leading-relaxed md:min-h-[132px]"
               hint="Use número, assunto, parte da palavra ou termos como “baculejo”, “blitz” e “encontrado morto”. Enter consulta; Shift + Enter cria uma nova linha."
-              acao={<BotaoVoz ditado={ditado} />}
+              acao={<BotaoVoz ditado={ditado} grande />}
+              onFocus={() => setCampoEmFoco(true)}
+              onBlur={() => setCampoEmFoco(false)}
             />
             <AvisoVoz ditado={ditado} />
             <SearchSuggestions
@@ -264,7 +273,7 @@ export default function PopConsulta({ catalogo = [] }: { catalogo?: ResumoPop[] 
             carregando={carregando}
             textoCarregando="Consultando os POPs…"
             disabled={pergunta.trim().length < 3}
-            className="w-full text-base"
+            className="min-h-[48px] w-full text-base"
           >
             Perguntar
           </PrimaryButton>
@@ -290,6 +299,20 @@ export default function PopConsulta({ catalogo = [] }: { catalogo?: ResumoPop[] 
           </div>
         </form>
       </SectionCard>
+
+      <BarraAcaoCampo
+        campoId="pergunta-pop"
+        valor={pergunta.trim()}
+        placeholder="Consultar procedimentos"
+        rotuloCampo="Ir para o campo de perguntas sobre os POPs"
+        rotuloEnviar="Perguntar"
+        enviarCarregando="Consultando..."
+        enviando={carregando}
+        podeEnviar={pergunta.trim().length >= 3}
+        campoEmFoco={campoEmFoco}
+        ditado={ditado}
+        onEnviar={() => void perguntar(pergunta)}
+      />
 
       {carregando && (
         <div className="card card-pad space-y-3" role="status" aria-live="polite">

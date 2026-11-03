@@ -154,7 +154,7 @@ function CarregandoResultado() {
       <span className="sr-only">Buscando informações...</span>
       <div className="card card-pad space-y-4">
         <div className="skeleton h-6 w-2/3" />
-        <div className="grid grid-cols-3 gap-3">
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
           <div className="skeleton h-16" />
           <div className="skeleton h-16" />
           <div className="skeleton h-16" />

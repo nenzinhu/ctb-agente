@@ -103,28 +103,47 @@ export default function FichaPop({ pop, catalogo, onAbrirReferencia }: { pop: Po
           {pop.fundamentacao.length === 0 ? (
             <p className="text-sm text-ds-subtle">—</p>
           ) : (
-            <div className="mobile-table-scroll">
-            <table className="w-full min-w-[34rem] text-left text-sm">
-              <thead>
-                <tr className="border-b border-ds-line">
-                  <th scope="col" className="stat-label py-1.5 pr-3 font-semibold">Legislação/Doutrina</th>
-                  <th scope="col" className="stat-label py-1.5 font-semibold">Especificação</th>
-                </tr>
-              </thead>
-              <tbody>
+            <>
+              {/* Phones and tablets: one block per item, no horizontal scrolling.
+                  From `md` up the table below takes over. */}
+              <ul className="space-y-3 md:hidden">
                 {pop.fundamentacao.map((f, i) => (
-                  <tr key={i} className="border-b border-ds-line last:border-b-0 align-top">
-                    <td className="py-2 pr-3 text-ds-text">
+                  <li key={i} className="rounded-control border border-ds-line bg-ds-surface p-3">
+                    <p className="stat-label">Legislação/Doutrina</p>
+                    <p className="mt-1 break-words text-sm text-ds-text">
                       <TextoComReferencias texto={f.norma || '—'} catalogo={catalogo} onAbrirReferencia={onAbrirReferencia} />
-                    </td>
-                    <td className="py-2 text-ds-text">
+                    </p>
+                    <p className="stat-label mt-3">Especificação</p>
+                    <p className="mt-1 break-words text-sm text-ds-text">
                       <TextoComReferencias texto={f.especificacao || '—'} catalogo={catalogo} onAbrirReferencia={onAbrirReferencia} />
-                    </td>
-                  </tr>
+                    </p>
+                  </li>
                 ))}
-              </tbody>
-            </table>
-            </div>
+              </ul>
+
+              <div className="hidden md:block">
+                <table className="w-full text-left text-sm">
+                  <thead>
+                    <tr className="border-b border-ds-line">
+                      <th scope="col" className="stat-label py-1.5 pr-3 font-semibold">Legislação/Doutrina</th>
+                      <th scope="col" className="stat-label py-1.5 font-semibold">Especificação</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {pop.fundamentacao.map((f, i) => (
+                      <tr key={i} className="border-b border-ds-line last:border-b-0 align-top">
+                        <td className="py-2 pr-3 text-ds-text">
+                          <TextoComReferencias texto={f.norma || '—'} catalogo={catalogo} onAbrirReferencia={onAbrirReferencia} />
+                        </td>
+                        <td className="py-2 text-ds-text">
+                          <TextoComReferencias texto={f.especificacao || '—'} catalogo={catalogo} onAbrirReferencia={onAbrirReferencia} />
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </>
           )}
         </Secao>
 

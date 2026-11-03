@@ -53,12 +53,12 @@ function ChecklistAit({ itens }: { itens: string[] }) {
       <ul className="mt-4 space-y-1">
         {itens.map((item, i) => (
           <li key={i}>
-            <label className="flex cursor-pointer items-start gap-3 rounded-lg px-2 py-2 hover:bg-ds-muted">
+            <label className="flex min-h-[44px] cursor-pointer items-center gap-3 rounded-lg px-2 py-2 hover:bg-ds-muted">
               <input
                 type="checkbox"
                 checked={feitos.has(i)}
                 onChange={() => alternar(i)}
-                className="mt-0.5 h-5 w-5 shrink-0 rounded border-ds-line accent-ds-primary"
+                className="h-5 w-5 shrink-0 rounded border-ds-line accent-ds-primary"
               />
               <span className={`text-sm ${feitos.has(i) ? 'text-ds-subtle line-through' : 'text-ds-text'}`}>{semMarcador(item)}</span>
             </label>

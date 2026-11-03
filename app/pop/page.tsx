@@ -19,9 +19,9 @@ export default function PopPage() {
         <p className="consultation-lead">Encontre o procedimento e confira os trechos que orientam a resposta.</p>
       </div>
 
-      <div className="mt-7 grid grid-cols-1 items-start gap-6 sm:mt-9 lg:grid-cols-[minmax(0,1fr)_320px]">
+      <div className="mt-7 grid grid-cols-1 items-start gap-6 sm:mt-9 md:grid-cols-[minmax(0,1fr)_280px] lg:grid-cols-[minmax(0,1fr)_320px]">
         <PopConsulta catalogo={catalogo} />
-        <aside className="min-w-0 space-y-5 lg:sticky lg:top-32" aria-label="Ajuda e documentos dos POPs">
+        <aside className="min-w-0 space-y-5 md:sticky md:top-32" aria-label="Ajuda e documentos dos POPs">
           <section className="search-guide" aria-labelledby="dica-pop">
             <span className="search-guide-icon"><Icone nome="busca" tamanho={18} /></span>
             <h2 id="dica-pop" className="mt-3 text-lg font-semibold text-ds-text">Pergunte do seu jeito</h2>

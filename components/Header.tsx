@@ -25,7 +25,7 @@ export default function Header() {
   return (
     <header className="ds-header sticky top-0 z-40 print:hidden">
       <div className="mx-auto flex h-12 max-w-6xl items-center gap-2 px-3 sm:h-14 sm:gap-3 sm:px-6">
-        <Link href="/" aria-label="CTB Agente — início" className="mobile-header-brand flex min-w-0 items-center gap-2 rounded-control sm:gap-2.5">
+        <Link href="/" aria-label="CTB Agente — início" className="mobile-header-brand flex min-h-[44px] min-w-0 items-center gap-2 rounded-control sm:gap-2.5">
           {/* Decorative: the link's aria-label already names it */}
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src="/brasao-cpmrv.png" alt="" width={38} height={48} className="h-9 w-auto shrink-0 drop-shadow sm:h-12" />

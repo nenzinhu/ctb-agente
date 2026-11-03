@@ -8,6 +8,7 @@ import BotaoVoz, { AvisoVoz, useDitado } from './BotaoVoz';
 import Field from './ui/Field';
 import PrimaryButton from './ui/PrimaryButton';
 import SearchSuggestions from './SearchSuggestions';
+import BarraAcaoCampo from './mobile/BarraAcaoCampo';
 
 interface ConsultaFormProps {
   autoFocus?: boolean;
@@ -31,6 +32,8 @@ export default function ConsultaForm({ autoFocus = false, exemplos = [] }: Consu
   const [loading, setLoading] = useState(false);
   const [token, setToken] = useState<string | null>(null);
   const [erro, setErro] = useState<Erro | null>(null);
+  /** The real field is focused, so the fixed bar (phones) steps aside. */
+  const [campoEmFoco, setCampoEmFoco] = useState(false);
   const campoRef = useRef<HTMLTextAreaElement>(null);
   const router = useRouter();
   const ditado = useDitado({
@@ -102,15 +105,17 @@ export default function ConsultaForm({ autoFocus = false, exemplos = [] }: Consu
               consultar(query);
             }
           }}
+          onFocus={() => setCampoEmFoco(true)}
+          onBlur={() => setCampoEmFoco(false)}
           placeholder="Ex: 516-91, art. 165 ou motorista mexendo no celular"
           maxLength={LIMITE_CONSULTA}
           autoFocus={autoFocus}
           enterKeyHint="search"
           rows={4}
-          controlClassName="mobile-query-field min-h-[108px] resize-y leading-relaxed sm:min-h-[124px]"
+          controlClassName="mobile-query-field min-h-[108px] resize-y leading-relaxed sm:min-h-[124px] md:min-h-[132px]"
           hint="Use código, artigo, parte da palavra, abreviações ou gírias como “zap”, “bafom” e “doc atrasado”. Enter consulta; Shift + Enter cria uma nova linha."
           erro={erro?.doCampo ? erro.mensagem : null}
-          acao={<BotaoVoz ditado={ditado} />}
+          acao={<BotaoVoz ditado={ditado} grande />}
         />
         <AvisoVoz ditado={ditado} />
         <SearchSuggestions
@@ -164,6 +169,20 @@ export default function ConsultaForm({ autoFocus = false, exemplos = [] }: Consu
           </div>
         </div>
       )}
+
+      <BarraAcaoCampo
+        campoId="consulta"
+        valor={query.trim()}
+        placeholder="Consultar infrações e artigos"
+        rotuloCampo="Ir para o campo de consulta"
+        rotuloEnviar="Consultar"
+        enviarCarregando="Consultando..."
+        enviando={loading}
+        podeEnviar={Boolean(query.trim())}
+        campoEmFoco={campoEmFoco}
+        ditado={ditado}
+        onEnviar={() => consultar(query)}
+      />
     </form>
   );
 }
