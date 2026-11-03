@@ -146,12 +146,12 @@ function PaginatedContent({ children, scroll }: { children: ReactNode; scroll: b
     }}>
       <div ref={flow} className="page-viewport-flow" id="painel-da-pagina">{children}</div>
     </div>
-    <nav className="page-pagination print:hidden" aria-label="Páginas do conteúdo">
+    {!scroll && <nav className="page-pagination print:hidden" aria-label="Páginas do conteúdo">
 
       <div><select className="page-section-select" aria-label="Ir para uma seção" value="" onChange={event => { if (event.target.value !== '') navigate(Number(event.target.value)); }}><option value="">{scroll ? 'Ir para seção' : section || 'Ir para seção'}</option>{sections.map((item, index) => <option key={`${item.label}-${index}`} value={item.page}>{item.label}</option>)}</select><span role="status" aria-live="polite">{scroll ? 'Rolagem livre' : `${page + 1} / ${pages}`}</span></div>
 
-    </nav>
-    <FloatingPageArrows onPrevious={() => navigate(page - 1)} onNext={() => navigate(page + 1)} previousDisabled={page === 0} nextDisabled={page + 1 >= pages} />
+    </nav>}
+    {!scroll && <FloatingPageArrows onPrevious={() => navigate(page - 1)} onNext={() => navigate(page + 1)} previousDisabled={page === 0} nextDisabled={page + 1 >= pages} />}
   </div>;
 }
 

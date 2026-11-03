@@ -14,7 +14,6 @@ import SearchableSelect from '../ui/SearchableSelect';
 import RespostaFormatada from './RespostaFormatada';
 import FichaPop from './FichaPop';
 import type { Pop } from '@/lib/pop/parser';
-import ConsultaModes from '../ConsultaModes';
 import SearchSuggestions from '../SearchSuggestions';
 import type { ResumoPop } from '@/lib/pop/referencias';
 
@@ -260,8 +259,7 @@ export default function PopConsulta({ catalogo = [] }: { catalogo?: ResumoPop[] 
 
   return (
     <div className="min-w-0 space-y-5">
-      <SectionCard titulo="Consultar procedimentos" icone="busca" className="consultation-card">
-        <ConsultaModes atual="pop" />
+      <section className="card card-pad consultation-card" aria-label="Pesquisa nos POPs">
         <form
           className="space-y-4"
           aria-busy={carregando}
@@ -286,11 +284,11 @@ export default function PopConsulta({ catalogo = [] }: { catalogo?: ResumoPop[] 
                   void perguntar(pergunta);
                 }
               }}
-              rows={4}
+              rows={3}
               maxLength={500}
               enterKeyHint="search"
               placeholder="Ex: Como proceder na abordagem a veículo suspeito?"
-              controlClassName="min-h-[124px] resize-y leading-relaxed"
+              controlClassName="min-h-[96px] resize-y leading-relaxed"
               hint="Use o número, o assunto ou descreva a situação com suas palavras."
               acao={<BotaoVoz ditado={ditado} />}
             />
@@ -316,8 +314,8 @@ export default function PopConsulta({ catalogo = [] }: { catalogo?: ResumoPop[] 
             Perguntar
           </PrimaryButton>
           <TurnstileWidget onToken={setToken} />
-          <div className="border-t border-ds-line pt-4">
-            <p className="mb-2 text-xs font-semibold text-ds-subtle">Experimente uma pergunta</p>
+          <details className="search-details">
+            <summary>Ver exemplos de pesquisa</summary>
             <div className="flex flex-wrap gap-2">
               {EXEMPLOS.map((exemplo) => (
                 <button
@@ -334,9 +332,9 @@ export default function PopConsulta({ catalogo = [] }: { catalogo?: ResumoPop[] 
                 </button>
               ))}
             </div>
-          </div>
+          </details>
         </form>
-      </SectionCard>
+      </section>
 
       {carregando && (
         <div className="card card-pad space-y-3" role="status" aria-live="polite">

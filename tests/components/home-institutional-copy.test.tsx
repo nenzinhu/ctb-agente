@@ -24,7 +24,7 @@ describe('apresentação institucional da página inicial', () => {
   it('explica o propósito de campo e orienta a conferência oficial', () => {
     render(<Home />);
 
-    expect(screen.getByRole('heading', { level: 1, name: 'Consultar infrações e artigos' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { level: 1, name: 'Consultar CTB' })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Como pesquisar' })).toHaveAttribute('aria-pressed', 'false');
     expect(screen.getByRole('textbox', { name: 'O que aconteceu?' })).toBeInTheDocument();
     expect(

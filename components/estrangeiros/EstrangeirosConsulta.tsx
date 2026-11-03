@@ -88,55 +88,22 @@ export default function EstrangeirosConsulta() {
 
   return (
     <div className="space-y-6">
-      <section className="card p-5 sm:p-6">
-        <h2 className="text-xl font-semibold">Consulta rápida</h2>
-        <p className="mt-1 text-sm text-ds-subtle">Use frases como “argentino com carteira vencida” ou “carro paraguaio sem seguro”.</p>
-        <label htmlFor="consulta-estrangeiros" className="mt-4 block text-sm font-medium">Descreva a situação</label>
+      <form className="card p-5 sm:p-6" onSubmit={event => { event.preventDefault(); void interpretar(); }}>
+        <h2 className="sr-only">Consulta rápida</h2>
+        <label htmlFor="consulta-estrangeiros" className="block text-sm font-medium">Descreva a situação</label>
         <div className="mt-2 flex flex-col gap-2 sm:flex-row">
-          <input id="consulta-estrangeiros" value={pergunta} onChange={(evento) => setPergunta(evento.target.value)} maxLength={500} className="input flex-1" placeholder="Ex.: uruguaio, PID sem carteira e veículo estrangeiro" />
-          <button type="button" className="btn-primary" onClick={interpretar} disabled={pergunta.trim().length < 2 || consultando}>{consultando ? 'Consultando…' : 'Interpretar consulta'}</button>
+          <input id="consulta-estrangeiros" enterKeyHint="search" value={pergunta} onChange={(evento) => setPergunta(evento.target.value)} maxLength={500} className="input flex-1" placeholder="Ex.: argentino com carteira vencida" />
+          <button type="submit" className="btn-primary" disabled={pergunta.trim().length < 2 || consultando}>{consultando ? 'Consultando…' : 'Interpretar consulta'}</button>
         </div>
-      </section>
+      </form>
 
       {consultando && <p role="status" className="text-sm text-ds-subtle">Consultando o serviço. A espera é limitada a 15 segundos.</p>}
       {erro && <div role="alert" className="rounded-card border border-amber-300 p-4 text-sm"><p>{erro}</p><p className="mt-2">Exibindo análise local com as regras e os trechos já incorporados ao aplicativo. A recuperação complementar do serviço não foi concluída. Confira os documentos abaixo.</p><button type="button" className="btn-secondary mt-3" onClick={() => void interpretar()} disabled={consultando}>Tentar novamente</button></div>}
-      <section className="card p-5 sm:p-6">
-        <h2 className="text-xl font-semibold">Documentos de origem anexados</h2>
-        <p className="mt-1 text-sm text-ds-subtle">A consulta recupera trechos destes documentos e mostra artigo, página e origem para conferência humana.</p>
-        <div className="mt-4 grid gap-3 sm:grid-cols-2">
-          {FONTES_ESTRANGEIROS.map((fonte) => (
-            <article key={fonte.id} className="rounded-card border border-ds-line p-4">
-              <a className="font-semibold text-ds-ink underline-offset-4 hover:underline" href={fonte.arquivo} target="_blank" rel="noreferrer">{fonte.titulo}</a>
-              <p className="mt-1 text-xs text-ds-subtle">{fonte.orgao} · {fonte.versao}</p>
-              <p className="mt-2 text-xs text-ds-subtle">Conferência registrada no acervo: {new Date(`${fonte.conferidoEm}T00:00:00`).toLocaleDateString('pt-BR')}. Não equivale a confirmação de vigência.</p>
-              {fonte.situacao === 'revisar' && <p className="mt-2 text-xs font-medium text-ds-warn">Situação no acervo: requer revisão.</p>}
-              {fonte.urlOficial ? (
-                <a className="mt-2 inline-block text-xs text-ds-ink underline" href={fonte.urlOficial} target="_blank" rel="noreferrer">Consultar publicação oficial</a>
-              ) : (
-                <p className="mt-2 text-xs font-medium text-ds-warn">Pendente de confirmação em fonte oficial</p>
-              )}
-            </article>
-          ))}
-        </div>
-      </section>
 
-      <section className="card p-5 sm:p-6">
-        <h2 className="text-xl font-semibold">Fiscalização guiada</h2>
+      {resultado && <Resultado resultado={resultado} />}
+      <details className="support-details"><summary>Preencher dados manualmente</summary>
+        <h2 className="sr-only">Fiscalização guiada</h2>
         <p className="mt-1 text-sm text-ds-subtle">Informe apenas os fatos necessários. Não digite nome, placa ou número de documento.</p>
-        <div className="mt-4" aria-label="Filtros rápidos por país">
-          <p className="label">País do veículo ou condutor</p>
-          <div className="flex flex-wrap gap-2">
-            {PAISES_AMERICA_SUL.map(([valor, nome]) => (
-              <button key={valor} type="button" className="inline-flex min-h-[44px] items-center gap-2 rounded-control border border-ds-line bg-ds-surface px-3 py-2 text-xs font-semibold transition-colors hover:bg-ds-muted aria-pressed:border-ds-primary aria-pressed:bg-ds-primary-soft aria-pressed:text-ds-primary-strong" aria-pressed={fatos.paisHabilitacao === valor} onClick={() => atualizar('paisHabilitacao', fatos.paisHabilitacao === valor ? undefined : valor)}>
-                {/* Flag assets from flag-icons (MIT), served locally for field use. */}
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={`/bandeiras/${valor.toLowerCase()}.svg`} alt="" width={24} height={18} className="h-[18px] w-6 rounded-sm border border-ds-line object-cover" />
-                {nome}
-              </button>
-            ))}
-          </div>
-          <p className="mt-2 text-xs text-ds-subtle">Países estrangeiros da América do Sul. Para veículos brasileiros, use a opção de registro brasileiro.</p>
-        </div>
         <div className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           <label className="text-sm font-medium">País emissor da habilitação
             <select className="input mt-1" value={fatos.paisHabilitacao ?? ''} onChange={(e) => atualizar('paisHabilitacao', e.target.value || undefined)}><option value="">Selecione</option>{PAISES_AMERICA_SUL.map(([valor, nome]) => <option key={valor} value={valor}>{nome}</option>)}</select>
@@ -162,10 +129,29 @@ export default function EstrangeirosConsulta() {
           <label className="flex items-center gap-2 self-end rounded-control border border-ds-line p-3 text-sm"><input type="checkbox" checked={fatos.pidApresentada ?? false} onChange={(e) => atualizar('pidApresentada', e.target.checked)} /> PID apresentada</label>
         </div>
         <button type="button" className="btn-primary mt-5" disabled={consultando} onClick={() => { setErro(null); setResultado(avaliarEstrangeiro(fatos)); }}>Analisar situação</button>
-      </section>
-      <ChecklistDocumental pais={fatos.paisHabilitacao} />
-      <ModelosDocumentos />
-      {resultado && <Resultado resultado={resultado} />}
+      </details>
+      {resultado && <ChecklistDocumental pais={fatos.paisHabilitacao} />}
+      <details className="support-details"><summary>Fontes e documentos oficiais</summary>
+
+        <p className="mt-1 text-sm text-ds-subtle">A consulta recupera trechos destes documentos e mostra artigo, página e origem para conferência humana.</p>
+        <div className="mt-4 grid gap-3 sm:grid-cols-2">
+          {FONTES_ESTRANGEIROS.map((fonte) => (
+            <article key={fonte.id} className="rounded-card border border-ds-line p-4">
+              <a className="font-semibold text-ds-ink underline-offset-4 hover:underline" href={fonte.arquivo} target="_blank" rel="noreferrer">{fonte.titulo}</a>
+              <p className="mt-1 text-xs text-ds-subtle">{fonte.orgao} · {fonte.versao}</p>
+              <p className="mt-2 text-xs text-ds-subtle">Conferência registrada no acervo: {new Date(`${fonte.conferidoEm}T00:00:00`).toLocaleDateString('pt-BR')}. Não equivale a confirmação de vigência.</p>
+              {fonte.situacao === 'revisar' && <p className="mt-2 text-xs font-medium text-ds-warn">Situação no acervo: requer revisão.</p>}
+              {fonte.urlOficial ? (
+                <a className="mt-2 inline-block text-xs text-ds-ink underline" href={fonte.urlOficial} target="_blank" rel="noreferrer">Consultar publicação oficial</a>
+              ) : (
+                <p className="mt-2 text-xs font-medium text-ds-warn">Pendente de confirmação em fonte oficial</p>
+              )}
+            </article>
+          ))}
+        </div>
+      </details>
+
+      <details className="support-details"><summary>Modelos de documentos</summary><ModelosDocumentos /></details>
     </div>
   );
 }

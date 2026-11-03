@@ -37,9 +37,9 @@ describe('ConsultaForm', () => {
     render(<ConsultaForm />);
     await usuario.type(screen.getByLabelText('O que aconteceu?'), 'motorista usando celular');
     await usuario.click(screen.getByRole('button', { name: 'Código' }));
-    await usuario.click(screen.getByRole('button', { name: 'Palavra-chave' }));
+    await usuario.click(screen.getByRole('button', { name: 'Situação' }));
     expect(screen.getByLabelText('O que aconteceu?')).toHaveValue('motorista usando celular');
-    expect(screen.getByRole('button', { name: 'Palavra-chave' })).toHaveAttribute('aria-pressed', 'true');
+    expect(screen.getByRole('button', { name: 'Situação' })).toHaveAttribute('aria-pressed', 'true');
     expect(mockPush).not.toHaveBeenCalled();
     await usuario.click(screen.getByRole('button', { name: 'Consultar' }));
     expect(mockPush).toHaveBeenCalledWith('/consulta?q=motorista%20usando%20celular');

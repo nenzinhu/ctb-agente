@@ -1,5 +1,9 @@
 import { expect, test } from '@playwright/test';
 
+test.beforeEach(async ({ page }) => {
+  await page.addInitScript(() => { sessionStorage.setItem('ctb-pmrv-splash-v1', '1'); if (!localStorage.getItem('ctb-reading-mode')) localStorage.setItem('ctb-reading-mode', 'pages'); });
+});
+
 const routes = ['/pop', '/pesos-dimensoes', '/estrangeiros', '/fatos-pmsc', '/professor', '/apostila', '/comprimir-pdf', '/gerador-pdf', '/favoritos', '/enquadramento', '/casos', '/consulta', '/offline', '/admin/login', '/ferramentas'];
 
 test('todas as páginas usam o painel fixo sem rolagem do documento', async ({ page }) => {
@@ -118,7 +122,7 @@ test('opção de rolar preserva campos e mantém as abas inferiores no lugar', a
   if (await nav.isVisible()) expect((await nav.boundingBox())?.y).toBe(before?.y);
   expect(await page.evaluate(() => document.documentElement.scrollHeight <= innerHeight)).toBe(true);
   await page.reload();
-  await expect(page.getByRole('button', { name: 'Rolar texto', exact: true })).toHaveAttribute('aria-pressed', 'true');
-  await page.getByRole('button', { name: 'Rolar texto', exact: true }).click();
+  await expect(page.getByRole('button', { name: 'Rolar conteúdo central', exact: true })).toHaveAttribute('aria-pressed', 'true');
+  await page.getByRole('button', { name: 'Ler conteúdo por páginas', exact: true }).click();
   await expect(page.getByLabel('Conteúdo paginado')).toBeAttached();
 });

@@ -63,16 +63,15 @@ it('limita a espera e cancela a consulta ao desmontar', async () => {
 });
 
 
-it('oferece somente países estrangeiros da América do Sul com bandeiras', () => {
+it('oferece uma única seleção de país estrangeiro da América do Sul', () => {
   render(<EstrangeirosConsulta />);
   const paises = screen.getByRole('combobox', { name: /país emissor/i });
   expect(within(paises).getAllByRole('option')).toHaveLength(12);
   expect(within(paises).getByRole('option', { name: 'Colômbia' })).toHaveValue('CO');
   expect(within(paises).getByRole('option', { name: 'Suriname' })).toHaveValue('SR');
   expect(within(paises).queryByRole('option', { name: /outro|estados unidos|brasil/i })).not.toBeInTheDocument();
-  const argentina = screen.getByRole('button', { name: 'Argentina' });
-  expect(argentina.querySelector('img')).toHaveAttribute('src', '/bandeiras/ar.svg');
-  fireEvent.click(screen.getByRole('button', { name: 'Colômbia' }));
+  expect(screen.queryByRole('button', { name: 'Argentina' })).not.toBeInTheDocument();
+  fireEvent.change(paises, { target: { value: 'CO' } });
   expect(paises).toHaveValue('CO');
   fireEvent.click(screen.getByRole('button', { name: /analisar situação/i }));
   expect(screen.getByText(/Colômbia:.*reciprocidade/i)).toBeInTheDocument();

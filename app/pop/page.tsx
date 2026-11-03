@@ -14,14 +14,13 @@ export default function PopPage() {
   return (
     <main className="page max-w-6xl">
       <div className="consultation-intro">
-        <p className="eyebrow">Apoio operacional</p>
-        <h1 className="consultation-title">POP-PMSC</h1>
+        <h1 className="consultation-title">Consultar POPs</h1>
         <p className="consultation-lead">Encontre o procedimento e confira os trechos que orientam a resposta.</p>
       </div>
 
       <div className="mt-7 grid grid-cols-1 items-start gap-6 sm:mt-9 lg:grid-cols-[minmax(0,1fr)_320px]">
         <PopConsulta catalogo={catalogo} />
-        <aside className="min-w-0 space-y-5 lg:sticky lg:top-32" aria-label="Ajuda e documentos dos POPs">
+        <aside className="min-w-0 lg:sticky lg:top-32" aria-label="Ajuda e documentos dos POPs"><details className="support-details"><summary>Ajuda e documentos dos POPs</summary><div className="space-y-5">
           <section className="search-guide" aria-labelledby="dica-pop">
             <span className="search-guide-icon"><Icone nome="busca" tamanho={18} /></span>
             <h2 id="dica-pop" className="mt-3 text-lg font-semibold text-ds-text">Pergunte do seu jeito</h2>
@@ -33,7 +32,7 @@ export default function PopPage() {
             </p>
           </section>
           <PopBiblioteca />
-        </aside>
+        </div></details></aside>
       </div>
     </main>
   );

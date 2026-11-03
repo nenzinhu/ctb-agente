@@ -9,7 +9,12 @@
       "watermarkOpacity": {
         "light": 0.18,
         "dark": 0.18,
-        "sol": 0.035
+        "sol": 0.035,
+        "mobile": {
+          "light": 0.08,
+          "dark": 0.08,
+          "sol": 0.025
+        }
       },
       "source": "app/globals.css — overrides PMRv"
     },
@@ -41,6 +46,11 @@
         "sol": ":root[data-tema='sol']"
       },
       "rule": "Manter a cascata real, incluindo overrides PMRv; não presumir que o modo sol elimina o degradê das placas."
+    },
+    "mobileReading": {
+      "default": "scroll when no saved preference",
+      "controls": "single panel toolbar; fixed tab strip",
+      "support": "native details for examples, guidance and source documents"
     }
   },
   "components": [

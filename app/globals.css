@@ -1184,3 +1184,26 @@ body::before {
 @media (max-width: 767px) {
   .pmrv-tab-track > .pmrv-tab { flex-basis: calc((100% - 12px) / 3); min-width: 0; padding-inline: 6px; font-size: clamp(10px, 2.8vw, 12px); overflow-wrap: anywhere; }
 }
+
+/* Reading-first mobile layout: one toolbar, natural scrolling, help on demand. */
+.search-details, .support-details { border-top: 1px solid var(--ds-line); padding-top: 8px; }
+.search-details > summary, .support-details > summary { cursor: pointer; padding-block: 12px; min-height: 44px; font-size: 14px; font-weight: 600; color: var(--ds-text); }
+.search-details[open] > summary, .support-details[open] > summary { margin-bottom: 12px; }
+.support-details > .search-guide { margin-top: 8px; }
+@media (max-width: 767px) {
+  .reading-mode-panel { padding-bottom: 6px; gap: 12px; }
+  .reading-mode-panel > span { font-size: 12px; }
+  .reading-mode-panel button { min-height: 40px; padding: 5px 10px; }
+  .consultation-intro { margin-bottom: 16px; }
+  .consultation-title { font-size: 23px; line-height: 1.2; }
+  .consultation-lead { font-size: 14px; line-height: 1.5; }
+  .page-viewport-flow .page > .mt-7, .page-viewport-flow .page > .sm\\:mt-9 { margin-top: 16px; }
+  .search-shortcuts { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 4px; }
+  .search-shortcut { justify-content: center; min-height: 40px; padding-inline: 7px; font-size: 12px; }
+  .page-viewport-scroll .page-viewport-frame { scrollbar-width: thin; scrollbar-color: var(--ds-line) transparent; }
+  body > footer[aria-label='Informações institucionais'] { display: none; }
+}
+@media (max-width: 767px) {
+  :root, :root.dark { --pmrv-watermark-opacity: .08; }
+  :root[data-tema='sol'] { --pmrv-watermark-opacity: .025; }
+}

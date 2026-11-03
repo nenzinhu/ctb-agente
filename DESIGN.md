@@ -68,3 +68,11 @@ Abas de navegação e da home compartilham a placa CSS. A faixa inclui Estrangei
 - **Do** verificar desktop, mobile, teclado e temas claro, escuro e sol.
 - **Don't** adicionar SVG às abas ou converter seus rótulos em imagens.
 - **Don't** alterar rotas, conteúdo legal ou comportamento de leitura para aplicar a identidade.
+
+## Pesquisa e leitura no celular
+
+Há um único grupo de leitura no painel. Sem preferência salva, celular inicia em rolagem contínua; uma escolha anterior de páginas é respeitada. No modo de rolagem, o gesto vertical substitui as setas laterais e a barra de paginação. As três abas inferiores e suas setas continuam fixas. O cabeçalho não repete o controle de leitura, e o rodapé institucional fica no desktop.
+
+A pesquisa aparece antes de conteúdo auxiliar. CTB mantém Código, Artigo e Situação sem exemplos duplicados. POPs reúne exemplos e ajuda em seções expansíveis. Estrangeiros mostra o resultado após a pesquisa e oferece preenchimento manual, fontes e modelos sob demanda; o país tem uma única seleção. Pesos mantém campos e regras do cálculo, com perguntas e fontes em uma seção expansível. Expandir ou fechar uma seção preserva os valores preenchidos.
+
+No celular a marca-d’água usa opacidade 0,08 (0,025 em modo sol), preservando o contraste dos conteúdos.

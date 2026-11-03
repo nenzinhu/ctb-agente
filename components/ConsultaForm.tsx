@@ -9,12 +9,12 @@ import SugestoesIntencao from './SugestoesIntencao';
 import Field from './ui/Field';
 import PrimaryButton from './ui/PrimaryButton';
 import SearchSuggestions from './SearchSuggestions';
-import Icone, { type NomeIcone } from './ui/Icone';
+import type { NomeIcone } from './ui/Icone';
 
 const ATALHOS = [
   { id: 'codigo', label: 'Código', icone: 'lista', placeholder: 'Ex: 516-91', dica: 'Informe o código de enquadramento MBFT, com ou sem hífen.' },
   { id: 'artigo', label: 'Artigo', icone: 'livro', placeholder: 'Ex: 165 ou art. 181, XX', dica: 'Digite o número do artigo do CTB. Acrescente o inciso quando souber.' },
-  { id: 'palavra', label: 'Palavra-chave', icone: 'busca', placeholder: 'Ex: 516-91, art. 165 ou celular', dica: 'Descreva a conduta. Aceita palavras incompletas, abreviações e gírias.' },
+  { id: 'palavra', label: 'Situação', icone: 'busca', placeholder: 'Ex: 516-91, art. 165 ou celular', dica: 'Descreva a conduta. Aceita palavras incompletas, abreviações e gírias.' },
 ] satisfies { id: string; label: string; icone: NomeIcone; placeholder: string; dica: string }[];
 
 interface ConsultaFormProps {
@@ -112,7 +112,7 @@ export default function ConsultaForm({ autoFocus = false, exemplos = [] }: Consu
                 campoRef.current?.focus();
               }}
             >
-              <Icone nome={item.icone} tamanho={17} className="shrink-0" />
+
               {item.label}
             </button>
           ))}
