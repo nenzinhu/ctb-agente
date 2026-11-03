@@ -25,3 +25,12 @@ it('disponibiliza todas as ferramentas por paginação e aceita navegação por 
   expect(screen.getByRole('link', { name: /Comprimir PDF/ })).toBeInTheDocument();
   expect(screen.getByRole('button', { name: 'Próxima página' })).toBeDisabled();
 });
+
+it('permite avançar e voltar pelas setas laterais da página inicial', () => {
+  render(<HomeDashboard />);
+  expect(screen.getByRole('button', { name: 'Voltar à aba anterior' })).toBeDisabled();
+  fireEvent.click(screen.getByRole('button', { name: 'Avançar à próxima aba' }));
+  expect(screen.getByRole('tab', { name: 'POPs' })).toHaveAttribute('aria-selected', 'true');
+  fireEvent.click(screen.getByRole('button', { name: 'Voltar à aba anterior' }));
+  expect(screen.getByRole('tab', { name: 'Consultar' })).toHaveAttribute('aria-selected', 'true');
+});

@@ -19,14 +19,14 @@ test('mantém o valor dos campos ao paginar e navegar por seções', async ({ pa
   await page.goto('/pesos-dimensoes');
   await page.addStyleTag({ content: 'nextjs-portal { display: none !important; }' });
   const pagination = page.getByRole('navigation', { name: 'Páginas do conteúdo' });
-  const next = pagination.getByRole('button', { name: 'Próxima página do conteúdo' });
+  const next = page.getByRole('button', { name: 'Próxima página do conteúdo' });
   await expect(next).toBeEnabled();
   const field = page.getByLabel('PBT/PBTC do conjunto (kg)');
   await field.focus();
   await field.fill('22000');
   await next.click();
   await expect(pagination.getByRole('status')).not.toHaveText(/^1 \/ /);
-  await pagination.getByRole('button', { name: 'Página anterior do conteúdo' }).click();
+  await page.getByRole('button', { name: 'Página anterior do conteúdo' }).click();
   await expect(field).toHaveValue('22000');
   await expect(page.getByRole('combobox', { name: 'Ir para uma seção' })).toBeVisible();
 });
@@ -83,4 +83,21 @@ test('opções de veículo continuam acessíveis sem uma lista com rolagem', asy
   })).toBe(true);
   await options.last().press('Enter');
   await expect(page.getByRole('listbox', { name: 'Configurações de veículo' })).not.toBeAttached();
+});
+
+test('setas laterais ficam transparentes e livres dos controles principais', async ({ page }) => {
+  for (const route of ['/', '/pop', '/pesos-dimensoes', '/professor']) {
+    await page.goto(route);
+    await page.addStyleTag({ content: 'nextjs-portal { display: none !important; }' });
+    await expect(page.getByRole('group', { name: 'Navegação lateral' })).toBeAttached();
+    await expect(page.locator('.floating-page-arrow-next')).toBeVisible();
+    await expect.poll(() => page.evaluate(() => {
+      const buttons = [...document.querySelectorAll<HTMLButtonElement>('.floating-page-arrow')];
+      const controls = [...document.querySelectorAll<HTMLElement>('#conteudo button,#conteudo input,#conteudo select,#conteudo textarea,#conteudo a[href]')].filter(el => !el.closest('.floating-page-arrows'));
+      return buttons.every(button => {
+        const r = button.getBoundingClientRect();
+        return getComputedStyle(button).position === 'fixed' && (r.left < 10 || r.right > innerWidth - 10) && !controls.some(control => [...control.getClientRects()].some(c => c.width && c.height && c.left < r.right && c.right > r.left && c.top < r.bottom && c.bottom > r.top));
+      });
+    })).toBe(true);
+  }
 });

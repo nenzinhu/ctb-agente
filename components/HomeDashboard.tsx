@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import ConsultaForm from './ConsultaForm';
+import FloatingPageArrows from './FloatingPageArrows';
 import Icone, { type NomeIcone } from './ui/Icone';
 import { GRUPOS_FERRAMENTAS } from '@/lib/navigation';
 import { getFavorites, type CartaoFavorito } from '@/lib/favorites/favorites';
@@ -70,6 +71,12 @@ export default function HomeDashboard() {
         </section>
         <p className={styles.disclaimer}>Ferramenta de apoio. A decisão e o procedimento devem observar a norma e o documento vigente.</p>
       </div>
+      <FloatingPageArrows
+        previousLabel="Voltar à aba anterior" nextLabel="Avançar à próxima aba"
+        previousDisabled={aba === ABAS[0].id} nextDisabled={aba === ABAS[ABAS.length - 1].id}
+        onPrevious={() => mudarAba(ABAS[Math.max(0, ABAS.findIndex(item => item.id === aba) - 1)].id)}
+        onNext={() => mudarAba(ABAS[Math.min(ABAS.length - 1, ABAS.findIndex(item => item.id === aba) + 1)].id)}
+      />
       <nav className={styles.tabs} role="tablist" aria-label="Áreas do painel">
         {ABAS.map((item, index) => <button key={item.id} id={`aba-${item.id}`} type="button" role="tab" aria-selected={aba === item.id} aria-controls="painel-inicial" tabIndex={aba === item.id ? 0 : -1} onClick={() => mudarAba(item.id)} onKeyDown={e => { if (['ArrowRight', 'ArrowLeft', 'Home', 'End'].includes(e.key)) { e.preventDefault(); const next = e.key === 'Home' ? 0 : e.key === 'End' ? ABAS.length - 1 : (index + (e.key === 'ArrowRight' ? 1 : -1) + ABAS.length) % ABAS.length; mudarAba(ABAS[next].id); document.getElementById(`aba-${ABAS[next].id}`)?.focus(); } }}><Icone nome={item.icone} tamanho={22} /><span>{item.label}</span></button>)}
       </nav>

@@ -2,7 +2,7 @@
 
 import { usePathname } from 'next/navigation';
 import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react';
-import Icone from './ui/Icone';
+import FloatingPageArrows from './FloatingPageArrows';
 
 /** CSS columns fragment the original DOM rather than cloning forms or cutting
  * screenshots. Inputs, React state and links remain the same across pages. */
@@ -117,10 +117,11 @@ function PaginatedContent({ children }: { children: ReactNode }) {
       <div ref={flow} className="page-viewport-flow" id="painel-da-pagina">{children}</div>
     </div>
     <nav className="page-pagination print:hidden" aria-label="Páginas do conteúdo">
-      <button type="button" aria-label="Página anterior do conteúdo" aria-controls="painel-da-pagina" disabled={page === 0} onClick={() => navigate(page - 1)}><Icone nome="voltar" tamanho={18} /><span>Anterior</span></button>
+
       <div><select className="page-section-select" aria-label="Ir para uma seção" value="" onChange={event => { if (event.target.value !== '') navigate(Number(event.target.value)); }}><option value="">{section || 'Ir para seção'}</option>{sections.map((item, index) => <option key={`${item.label}-${index}`} value={item.page}>{item.label}</option>)}</select><span role="status" aria-live="polite">{page + 1} / {pages}</span></div>
-      <button type="button" aria-label="Próxima página do conteúdo" aria-controls="painel-da-pagina" disabled={page + 1 >= pages} onClick={() => navigate(page + 1)}><span>Próxima</span><Icone nome="seta" tamanho={18} /></button>
+
     </nav>
+    <FloatingPageArrows onPrevious={() => navigate(page - 1)} onNext={() => navigate(page + 1)} previousDisabled={page === 0} nextDisabled={page + 1 >= pages} />
   </div>;
 }
 
