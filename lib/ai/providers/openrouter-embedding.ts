@@ -32,15 +32,33 @@ export class OpenRouterEmbedding implements EmbeddingProvider {
   private async request(texts: string[], inputType: 'query' | 'passage'): Promise<number[][]> {
     if (texts.length === 0) return [];
     if (!this.apiKey) throw new Error('OPENROUTER_API_KEY não configurada para o modelo vetorial Nemotron.');
-    const response = await fetchWithTimeout('https://openrouter.ai/api/v1/embeddings', {
-      method: 'POST',
-      headers: { Authorization: `Bearer ${this.apiKey}`, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ model: NEMOTRON_EMBED_MODEL, input: texts, input_type: inputType,
-        dimensions: EMBEDDING_DIMENSIONS, encoding_format: 'float' }),
-    }, 30_000);
+    const deadline = Date.now() + 30_000;
+    let response: Response;
+    for (let attempt = 0; ; attempt++) {
+      response = await fetchWithTimeout('https://openrouter.ai/api/v1/embeddings', {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${this.apiKey}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ model: NEMOTRON_EMBED_MODEL, input: texts, input_type: inputType,
+          dimensions: EMBEDDING_DIMENSIONS, encoding_format: 'float' }),
+      }, Math.max(1, deadline - Date.now()));
+      // Retry once within the original timeout; never change embedding spaces.
+      if (![500, 502, 503, 504, 529].includes(response.status) || attempt >= 1) break;
+      const retryAfter = Number(response.headers.get('retry-after'));
+      const delay = Number.isFinite(retryAfter) && retryAfter > 0 ? retryAfter * 1000 : 500;
+      if (Date.now() + delay + 1_000 >= deadline) break;
+      await response.body?.cancel().catch(() => undefined);
+      await new Promise((resolve) => setTimeout(resolve, delay));
+    }
     if (!response.ok) {
       // Upstream bodies can contain submitted text or credentials; never echo them.
-      throw new Error(`OpenRouter Nemotron Embed: erro HTTP ${response.status}. ${response.status === 429 ? 'Limite temporário do modelo gratuito; tente novamente mais tarde.' : 'Verifique a chave e a disponibilidade do modelo.'}`);
+      const detail = response.status >= 500
+        ? 'Provedor do Nemotron indisponível ou com falha na resposta. Os trechos foram preservados; tente gerar os vetores novamente mais tarde.'
+        : response.status === 429
+          ? 'Limite temporário do modelo gratuito; tente novamente mais tarde.'
+          : [401, 403].includes(response.status)
+            ? 'Verifique a chave OpenRouter e as permissões de acesso ao modelo.'
+            : 'Verifique a disponibilidade e a configuração do modelo.';
+      throw new Error(`OpenRouter Nemotron Embed: erro HTTP ${response.status}. ${detail}`);
     }
     const payload = await response.json() as { data?: EmbeddingItem[]; error?: unknown };
     if (payload.error || !Array.isArray(payload.data) || payload.data.length !== texts.length) {

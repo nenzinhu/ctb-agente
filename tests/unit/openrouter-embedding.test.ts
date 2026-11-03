@@ -57,6 +57,38 @@ describe('Nemotron embeddings via OpenRouter', () => {
     expect(mockFetch).not.toHaveBeenCalled();
   });
 
+  it('recupera uma falha HTTP 502 transitória sem trocar o modelo', async () => {
+    const mockFetch = jest.fn()
+      .mockResolvedValueOnce(new Response('upstream unavailable', { status: 502 }))
+      .mockResolvedValueOnce(new Response(JSON.stringify({ data: [{ index: 0, embedding: vector(1) }] })));
+    global.fetch = mockFetch;
+    await expect(new OpenRouterEmbedding('key').embed('pergunta')).resolves.toHaveLength(1024);
+    expect(mockFetch).toHaveBeenCalledTimes(2);
+    expect(mockFetch.mock.calls[1][1].body).toBe(mockFetch.mock.calls[0][1].body);
+  });
+
+  it('limita as tentativas e explica indisponibilidade sem expor o corpo upstream', async () => {
+    const mockFetch = jest.fn(async () => new Response('secret texto privado', { status: 502 }));
+    global.fetch = mockFetch;
+    const error = await new OpenRouterEmbedding('secret').embed('texto privado').catch((e: Error) => e);
+    expect(error).toBeInstanceOf(Error);
+    expect((error as Error).message).toMatch(/502.*indisponível/);
+    expect((error as Error).message).not.toMatch(/secret|texto privado|chave/);
+    expect(mockFetch).toHaveBeenCalledTimes(2);
+  });
+
+  it('respeita Retry-After que ultrapassa o prazo sem repetir imediatamente', async () => {
+    global.fetch = jest.fn(async () => new Response('', { status: 503, headers: { 'Retry-After': '60' } }));
+    await expect(new OpenRouterEmbedding('key').embed('pergunta')).rejects.toThrow(/503/);
+    expect(global.fetch).toHaveBeenCalledTimes(1);
+  });
+
+  it('não insiste quando o modelo gratuito limita a taxa', async () => {
+    global.fetch = jest.fn(async () => new Response('', { status: 429 }));
+    await expect(new OpenRouterEmbedding('key').embed('pergunta')).rejects.toThrow(/Limite temporário/);
+    expect(global.fetch).toHaveBeenCalledTimes(1);
+  });
+
   it('relata falha de autenticação sem expor a chave nem repetir a requisição', async () => {
     const mockFetch = jest.fn(async () => new Response('unauthorized', { status: 401 }));
     global.fetch = mockFetch;
