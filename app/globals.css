@@ -1163,3 +1163,20 @@ body::before {
 :root.dark { --ds-ink: #c6dbca; --pmrv-watermark-opacity: .18; }
 :root[data-tema='sol'] { --pmrv-watermark-opacity: .035; }
 .mobile-nav-compact .pmrv-tab { font-size: clamp(10px, 2.8vw, 12px); padding-inline: 4px; }
+
+/* Seven destinations, without squeezing labels or scrolling the document. */
+.pmrv-tab-carousel { display: flex; align-items: center; gap: 8px; width: 100%; min-width: 0; }
+.pmrv-tab-track { display: flex; flex: 1; min-width: 0; gap: 8px; overflow-x: auto; overflow-y: hidden; padding-block: 5px; scrollbar-width: none; scroll-snap-type: x proximity; }
+.pmrv-tab-track::-webkit-scrollbar { display: none; }
+.pmrv-tab-track > .pmrv-tab { flex: 0 0 calc((100% - 24px) / 4); min-width: 112px; min-height: 52px; scroll-snap-align: start; white-space: normal; }
+.pmrv-tab-arrow { display: grid; place-items: center; flex: 0 0 44px; width: 44px; height: 44px; border: 1px solid var(--ds-line); border-radius: 10px; background: var(--ds-surface); color: var(--ds-text); }
+.pmrv-tab-arrow:hover:not(:disabled) { background: var(--ds-muted); }
+.pmrv-tab-arrow:disabled { opacity: .3; cursor: default; }
+.pmrv-chevron { width: 10px; height: 10px; border-top: 2px solid currentColor; border-right: 2px solid currentColor; transform: rotate(45deg); margin-right: 4px; }
+.pmrv-chevron-back { transform: rotate(-135deg); margin-right: 0; margin-left: 4px; }
+@media (max-width: 767px) { .mobile-nav-compact { display: block; } }
+@media (max-width: 767px) {
+  .pmrv-tab-carousel { gap: 4px; }
+  .pmrv-tab-track { gap: 6px; }
+  .pmrv-tab-track > .pmrv-tab { flex-basis: calc((100% - 6px) / 2); min-width: 112px; padding-inline: 14px; font-size: 12px; }
+}

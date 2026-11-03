@@ -17,7 +17,9 @@ it('troca apenas o painel e preserva a consulta digitada entre abas', () => {
 it('disponibiliza todas as ferramentas por paginação e aceita navegação por teclado', () => {
   render(<HomeDashboard />);
   fireEvent.keyDown(screen.getByRole('tab', { name: 'Consultar' }), { key: 'End' });
-  expect(screen.getByRole('tab', { name: 'Ferramentas' })).toHaveFocus();
+  expect(screen.getByRole('tab', { name: 'Fatos comunicantes' })).toHaveFocus();
+  expect(screen.getByRole('link', { name: 'Consultar fatos comunicantes' })).toHaveAttribute('href', '/fatos-pmsc');
+  fireEvent.click(screen.getByRole('tab', { name: 'Ferramentas' }));
   expect(screen.getByRole('link', { name: /Lista de Fatos PMSC/ })).toBeInTheDocument();
   fireEvent.click(screen.getByRole('button', { name: 'Próxima página' }));
   fireEvent.click(screen.getByRole('button', { name: 'Próxima página' }));
@@ -34,3 +36,13 @@ it('permite avançar e voltar pelas setas laterais da página inicial', () => {
   fireEvent.click(screen.getByRole('button', { name: 'Voltar à aba anterior' }));
   expect(screen.getByRole('tab', { name: 'Consultar' })).toHaveAttribute('aria-selected', 'true');
 });
+
+ it.each([
+  ['Estrangeiros', 'Consultar estrangeiros', '/estrangeiros'],
+  ['Pesos', 'Abrir calculadora de pesos', '/pesos-dimensoes'],
+ ])('acessa a nova aba %s', (tab, action, href) => {
+  render(<HomeDashboard />);
+  fireEvent.click(screen.getByRole('tab', { name: tab }));
+  expect(screen.getByRole('tab', { name: tab })).toHaveAttribute('aria-selected', 'true');
+  expect(screen.getByRole('link', { name: action })).toHaveAttribute('href', href);
+ });

@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import ConsultaForm from './ConsultaForm';
+import TabCarousel from './TabCarousel';
 import FloatingPageArrows from './FloatingPageArrows';
 import ReadingModeToggle from './ReadingModeToggle';
 import Icone, { type NomeIcone } from './ui/Icone';
@@ -16,6 +17,9 @@ const ABAS = [
   { id: 'pop', label: 'POPs', icone: 'escudo' },
   { id: 'salvos', label: 'Salvos', icone: 'estrela' },
   { id: 'ferramentas', label: 'Ferramentas', icone: 'lista' },
+  { id: 'estrangeiros', label: 'Estrangeiros', icone: 'globo' },
+  { id: 'pesos', label: 'Pesos', icone: 'balanca' },
+  { id: 'fatos', label: 'Fatos comunicantes', icone: 'arquivo' },
 ] satisfies { id: string; label: string; icone: NomeIcone }[];
 
 export default function HomeDashboard() {
@@ -28,6 +32,11 @@ export default function HomeDashboard() {
   const ferramentas = GRUPOS_FERRAMENTAS.flatMap(grupo => grupo.itens);
   const lista = aba === 'salvos' ? favoritos : ferramentas;
   const paginas = Math.max(1, Math.ceil(lista.length / 2));
+  const atalho = ({
+    estrangeiros: { titulo: 'Condutores e veículos estrangeiros', descricao: 'Documentos, acordos e enquadramentos para fiscalização.', href: '/estrangeiros', acao: 'Consultar estrangeiros' },
+    pesos: { titulo: 'Pesos e dimensões', descricao: 'Consulte limites e calcule o excesso de peso.', href: '/pesos-dimensoes', acao: 'Abrir calculadora de pesos' },
+    fatos: { titulo: 'Fatos comunicantes', descricao: 'Consulte a lista de Fatos PMSC, naturezas e potencial ofensivo.', href: '/fatos-pmsc', acao: 'Consultar fatos comunicantes' },
+  } as Record<string, { titulo: string; descricao: string; href: string; acao: string }>)[aba];
   const mudarAba = (id: string) => { setAba(id); setPagina(0); setAjuda(false); };
 
   return (
@@ -35,8 +44,8 @@ export default function HomeDashboard() {
       <div className={styles.workspace}>
         <div className={styles.heading}>
           <div>
-            <h1>{aba === 'consulta' ? 'Consultar infrações e artigos' : aba === 'pop' ? 'Procedimentos operacionais' : aba === 'salvos' ? 'Seus favoritos' : 'Ferramentas de apoio'}</h1>
-            <p>{aba === 'consulta' ? 'CTB e MBFT · Código, artigo ou situação' : aba === 'pop' ? 'POPs da Polícia Militar de Santa Catarina' : aba === 'salvos' ? 'Cartões guardados somente neste aparelho' : 'Escolha a tarefa que precisa realizar'}</p>
+            <h1>{atalho ? atalho.titulo : aba === 'consulta' ? 'Consultar infrações e artigos' : aba === 'pop' ? 'Procedimentos operacionais' : aba === 'salvos' ? 'Seus favoritos' : 'Ferramentas de apoio'}</h1>
+            <p>{atalho ? atalho.descricao : aba === 'consulta' ? 'CTB e MBFT · Código, artigo ou situação' : aba === 'pop' ? 'POPs da Polícia Militar de Santa Catarina' : aba === 'salvos' ? 'Cartões guardados somente neste aparelho' : 'Escolha a tarefa que precisa realizar'}</p>
           </div>
           {aba === 'consulta' && <button type="button" className={styles.help} aria-label={ajuda ? 'Voltar à consulta' : 'Como pesquisar'} aria-pressed={ajuda} onClick={() => setAjuda(!ajuda)}><Icone nome={ajuda ? 'voltar' : 'info'} tamanho={21} /></button>}
         </div>
@@ -58,6 +67,7 @@ export default function HomeDashboard() {
               <p><strong>Não lembra a palavra?</strong><br />Tente “estacion” ou “bafomet”.</p>
               <button className="btn-primary" onClick={() => setAjuda(false)}>Voltar à consulta</button>
             </div>}
+            {atalho && <div className={styles.guide}><h2>{atalho.titulo}</h2><p>{atalho.descricao}</p><Link href={atalho.href} className="btn-primary">{atalho.acao}</Link></div>}
             {aba === 'pop' && <div className={styles.guide}>
               <span className={styles.symbol}><Icone nome="escudo" tamanho={32} /></span>
               <h2>Encontre o procedimento certo</h2>
@@ -79,9 +89,9 @@ export default function HomeDashboard() {
         onPrevious={() => mudarAba(ABAS[Math.max(0, ABAS.findIndex(item => item.id === aba) - 1)].id)}
         onNext={() => mudarAba(ABAS[Math.min(ABAS.length - 1, ABAS.findIndex(item => item.id === aba) + 1)].id)}
       />
-      <nav className={styles.tabs} role="tablist" aria-label="Áreas do painel">
+      <nav className={styles.tabs} aria-label="Abas do painel"><TabCarousel activeKey={aba} tablist>
         {ABAS.map((item, index) => <button key={item.id} id={`aba-${item.id}`} type="button" className="pmrv-tab" role="tab" aria-selected={aba === item.id} aria-controls="painel-inicial" tabIndex={aba === item.id ? 0 : -1} onClick={() => mudarAba(item.id)} onKeyDown={e => { if (['ArrowRight', 'ArrowLeft', 'Home', 'End'].includes(e.key)) { e.preventDefault(); const next = e.key === 'Home' ? 0 : e.key === 'End' ? ABAS.length - 1 : (index + (e.key === 'ArrowRight' ? 1 : -1) + ABAS.length) % ABAS.length; mudarAba(ABAS[next].id); document.getElementById(`aba-${ABAS[next].id}`)?.focus(); } }}><span>{item.label}</span></button>)}
-      </nav>
+      </TabCarousel></nav>
     </main>
   );
 }

@@ -79,3 +79,5 @@
 .tabs button:global(.pmrv-tab) { flex-direction: row; border-radius: 0; font-size: clamp(11px, 2.8vw, 14px); }
 .tabs button:global(.pmrv-tab)[aria-selected='true'] { color: var(--pmrv-plaque-ink); background: transparent; box-shadow: none; }
 .tabs button:global(.pmrv-tab):hover { background: transparent; }
+.tabs { display: block; }
+.tabs :global(.pmrv-tab-arrow) { min-height: 44px; font-size: inherit; }

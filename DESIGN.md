@@ -48,7 +48,7 @@ Fonte nativa sem downloads; monoespaçada existente para códigos e metadados. A
 
 ## Layout
 
-SPA com altura de tela e conteúdo central paginado; o modo de leitura contínua permite rolagem central. A navegação inferior permanece visível no mobile, respeitando a área segura. Na home, a área central limita-se a 760px e as quatro abas compartilham a largura. Preservar rotas, atalhos e funções existentes.
+SPA com altura de tela e conteúdo central paginado; o modo de leitura contínua permite rolagem central. A navegação inferior permanece visível no mobile, respeitando a área segura. Na home, a área central limita-se a 760px e sete abas ficam em uma faixa horizontal com setas de avanço e retorno. Preservar rotas, atalhos e funções existentes.
 
 ## Elevation & Depth
 
@@ -60,7 +60,7 @@ Abas com topo estreito, laterais inclinadas e base larga: recorte `polygon(12% 0
 
 ## Components
 
-Abas de navegação e da home compartilham a placa CSS. Seleção: sublinhado, elevação de 3px e base mais espessa; hover: elevação de 2px. Foco visível usa contorno de 3px. Ferramentas usam placas maiores com borda inferior dourada. Botões, campos, cartões e indicadores legais preservam os componentes e estados existentes. Movimento reduzido desativa as transições das abas.
+Abas de navegação e da home compartilham a placa CSS. A faixa inclui Estrangeiros, Pesos e Fatos comunicantes; as setas movem somente a faixa e a aba ativa fica visível ao navegar por teclado ou trocar de página. Seleção: sublinhado, elevação de 3px e base mais espessa; hover: elevação de 2px. Foco visível usa contorno de 3px. Ferramentas usam placas maiores com borda inferior dourada. Botões, campos, cartões e indicadores legais preservam os componentes e estados existentes. Movimento reduzido desativa as transições das abas.
 
 ## Do's and Don'ts
 

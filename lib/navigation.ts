@@ -13,6 +13,13 @@ export const NAVEGACAO_PRINCIPAL: Destino[] = [
   { href: '/favoritos', label: 'Favoritos', descricao: 'Enquadramentos salvos neste aparelho', icone: 'estrela' },
 ];
 
+/** Direct access in the shared bottom/top tab strip. */
+export const ABAS_ADICIONAIS: Destino[] = [
+  { href: '/estrangeiros', label: 'Estrangeiros', descricao: 'Condutores e veículos estrangeiros', icone: 'globo' },
+  { href: '/pesos-dimensoes', label: 'Pesos', descricao: 'Limites de peso e dimensões', icone: 'balanca' },
+  { href: '/fatos-pmsc', label: 'Fatos comunicantes', descricao: 'Lista de Fatos PMSC', icone: 'arquivo' },
+];
+
 export const GRUPOS_FERRAMENTAS: { titulo: string; itens: Destino[] }[] = [
   {
     titulo: 'Fiscalização',
