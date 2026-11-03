@@ -914,3 +914,89 @@ select {
     break-inside: avoid;
   }
 }
+
+/* Shared single-screen shell. Every route changes inside the central panel. */
+@media screen {
+  html, body { width: 100vw; height: 100vh; height: 100dvh; overflow: hidden; }
+  body { display: flex; flex-direction: column; min-height: 0 !important; padding-bottom: 0; }
+  body > .ds-header { position: relative; flex: none; padding-top: env(safe-area-inset-top); }
+  body > #conteudo { flex: 1; min-height: 0; overflow: hidden; }
+  .page-viewport { height: 100%; min-height: 0; display: flex; flex-direction: column; padding: 12px 16px 0; max-width: 1024px; margin-inline: auto; }
+  .page-viewport-frame { flex: 1; min-height: 0; overflow: hidden; overscroll-behavior: none; overflow-anchor: none; }
+  .page-viewport-flow { height: 100%; column-width: auto; column-count: 1; column-gap: 32px; column-fill: auto; overflow: visible; overflow-wrap: anywhere; }
+  .page-viewport-flow main { display: contents; }
+  .page-viewport-flow :is(div,section,article,aside,form,fieldset,ul,ol,li) { max-height: none; overflow: visible; }
+  .page-viewport-flow [data-page-flow] { display: block !important; }
+  .page-viewport-flow [data-page-flow] > * + * { margin-top: 12px; }
+  .page-viewport-flow :is(.sticky,.fixed) { position: static; }
+  .page-viewport-flow :is(.card,.search-guide,.section-card) { break-inside: auto; box-decoration-break: clone; -webkit-box-decoration-break: clone; }
+  .page-viewport-flow :is(h1,h2,h3,h4,legend) { break-after: avoid; break-inside: avoid; }
+  .page-viewport-flow :is(input,select,textarea,button,label,summary,figure,svg) { break-inside: avoid; }
+  .page-viewport-flow :is(p,li) { orphans: 2; widows: 2; }
+  .page-viewport-flow :is(input,select,textarea) { max-width: 100%; }
+  .page-viewport-flow textarea { resize: none; max-height: min(160px, 25dvh); }
+  .page-viewport-flow :is(img,video,canvas) { max-width: 100%; max-height: 40dvh; object-fit: contain; }
+  .page-viewport-flow table { width: 100%; table-layout: fixed; font-size: 12px; }
+  .page-viewport-flow :is(th,td) { white-space: normal; overflow-wrap: anywhere; padding: 8px; }
+  .page-viewport-flow .consultation-intro { margin-bottom: 16px; }
+  .page-viewport-flow .consultation-title { font-size: clamp(22px, 5vw, 30px); }
+  .page-viewport-flow .consultation-lead { font-size: 14px; line-height: 1.45; margin-top: 8px; }
+  .page-viewport-flow .card-pad { padding: 16px; }
+  .page-viewport-flow .eyebrow { font-size: 10px; margin-bottom: 6px; }
+  .page-pagination { flex: none; display: flex; align-items: center; justify-content: space-between; gap: 8px; border-top: 1px solid var(--ds-line); margin-top: 8px; min-height: 56px; padding-block: 4px; background: var(--ds-bg); }
+  .page-pagination button { display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-width: 44px; min-height: 44px; padding-inline: 8px; border-radius: 10px; font-size: 12px; font-weight: 600; color: var(--ds-primary-strong); transition: background 150ms ease; }
+  .page-pagination button:hover:enabled { background: var(--ds-muted); }
+  .page-pagination button:disabled { opacity: .35; }
+  .page-pagination > div { min-width: 0; display: flex; flex-direction: column; align-items: center; gap: 2px; font-size: 12px; font-variant-numeric: tabular-nums; }
+  .page-section-name { max-width: 35vw; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--ds-subtle); font-size: 11px; }
+  .page-pagination button:focus-visible { outline: 2px solid var(--ds-primary-strong); outline-offset: -2px; }
+  .mobile-nav { position: static !important; flex: none; padding-bottom: env(safe-area-inset-bottom); }
+}
+@media screen and (max-height: 520px) {
+  .page-viewport { padding-top: 6px; }
+  .page-pagination { min-height: 44px; margin-top: 4px; padding: 0; }
+  .page-pagination button { min-height: 40px; }
+  .page-viewport-flow .card-pad { padding: 12px; }
+  .page-viewport-flow .consultation-title { font-size: 21px; }
+}
+@media (prefers-reduced-motion: reduce) { .page-pagination button { transition: none; } }
+@media print {
+  .page-viewport, .page-viewport-frame, .page-viewport-flow { display: block; height: auto; overflow: visible; columns: auto; }
+  .page-pagination { display: none; }
+}
+.viewport-tool-group { margin-bottom: 20px; }
+.viewport-tool-group h2 { font-size: 14px; font-weight: 650; color: var(--ds-subtle); margin-bottom: 8px; }
+.viewport-tool-link { display: flex; align-items: center; gap: 12px; padding: 16px 4px; min-height: 80px; border-bottom: 1px solid var(--ds-line); break-inside: avoid; }
+.viewport-tool-link > svg { flex: none; color: var(--ds-primary-strong); }
+.viewport-tool-link > span { flex: 1; font-weight: 600; font-size: 15px; }
+.viewport-tool-link small { display: block; font-size: 13px; font-weight: 400; color: var(--ds-subtle); margin-top: 4px; }
+.viewport-tool-link:hover { background: var(--ds-muted); }
+@media screen {
+  .page-section-select { max-width: min(40vw, 360px); min-height: 24px; background: transparent; border: 0; color: var(--ds-subtle); font-size: 11px; padding-inline: 4px; text-overflow: ellipsis; }
+  .page-viewport-flow nav[aria-label='Seções do painel'] { width: 100%; overflow: visible; margin-inline: 0; padding-inline: 0; }
+  .page-viewport-flow nav[aria-label='Seções do painel'] .tabs { width: 100%; display: flex; flex-wrap: wrap; }
+  .page-viewport-frame:focus-visible, .page-section-select:focus-visible { outline: 2px solid var(--ds-primary-strong); outline-offset: -2px; }
+}
+@media screen {
+  .page-viewport-flow tr { break-inside: avoid; }
+  .page-viewport-flow .label { break-after: avoid; }
+}
+@media screen {
+  body > footer { flex: none; }
+  body > footer > div { padding-block: 4px; gap: 0; font-size: 10px; line-height: 1.3; }
+}
+@media screen {
+  /* Also contain offscreen, absolutely positioned radio inputs. Without a
+     containing block Chromium includes later columns in the root width. */
+  .page-viewport-frame { position: relative; contain: layout paint; }
+  .page-viewport-flow { animation: viewport-enter 160ms ease-out; }
+}
+@keyframes viewport-enter { from { opacity: .7; } to { opacity: 1; } }
+@media (prefers-reduced-motion: reduce) { .page-viewport-flow { animation: none; } }
+@media screen {
+  body > footer > .mx-auto { padding-block: 4px; gap: 0; font-size: 10px; line-height: 1.3; }
+}
+@media screen {
+  .page-viewport-flow [role='listbox'],
+  .page-viewport-flow .absolute:has(> [role='listbox']) { position: static; max-height: none; overflow: visible; }
+}

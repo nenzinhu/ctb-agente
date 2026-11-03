@@ -1,55 +1,26 @@
-import { render, screen, waitFor } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
-
+import { render, screen } from '@testing-library/react';
 let pathname = '/';
 jest.mock('next/navigation', () => ({ usePathname: () => pathname }));
-
 import MobileNavigation from '@/components/mobile/MobileNavigation';
 
 describe('MobileNavigation', () => {
-  beforeEach(() => { pathname = '/'; });
-
-  it('oferece os quatro destinos com alvos de toque e marca Buscar na consulta', () => {
+  it('mantém quatro destinos e indica a consulta ativa', () => {
     pathname = '/consulta';
     render(<MobileNavigation />);
-    expect(screen.getByRole('navigation', { name: /navegação mobile/i })).toHaveClass('mobile-nav-compact');
-    const buscar = screen.getByRole('link', { name: /buscar/i });
-    expect(buscar).toHaveAttribute('aria-current', 'page');
-    expect(screen.getByRole('button', { name: /ferramentas/i })).toHaveClass('mobile-nav-action');
-    expect(screen.getByRole('link', { name: /favoritos/i })).toBeInTheDocument();
-    expect(screen.getByRole('link', { name: /pops/i })).toHaveAttribute('href', '/pop');
-  });
-
-  it('abre Ferramentas, fecha com Escape e devolve o foco ao acionador', async () => {
-    const user = userEvent.setup();
-    render(<MobileNavigation />);
-    const trigger = screen.getByRole('button', { name: /ferramentas/i });
-    await user.click(trigger);
-    expect(screen.getByRole('dialog', { name: /ferramentas/i })).toBeInTheDocument();
-    expect(screen.queryByRole('link', { name: /enquadramento guiado/i })).not.toBeInTheDocument();
-    expect(screen.getByRole('heading', { name: 'Fiscalização' })).toBeInTheDocument();
-    expect(screen.getByRole('heading', { name: 'Estudo' })).toBeInTheDocument();
-    expect(screen.getByRole('heading', { name: 'Documentos' })).toBeInTheDocument();
-    expect(screen.getByRole('link', { name: /lista de fatos/i })).toHaveFocus();
-    expect(screen.getByRole('link', { name: /comprimir pdf/i })).toHaveAttribute('href', '/comprimir-pdf');
-    await user.keyboard('{Escape}');
-    await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument());
-    expect(trigger).toHaveFocus();
-  });
-
-  it('fecha a folha ao clicar no fundo', async () => {
-    const user = userEvent.setup();
-    render(<MobileNavigation />);
-    await user.click(screen.getByRole('button', { name: /ferramentas/i }));
-    expect(screen.getByRole('dialog', { name: /ferramentas/i })).toBeInTheDocument();
-    await user.click(screen.getByTestId('bottom-sheet-backdrop'));
+    expect(screen.getByRole('link', { name: 'Consultar' })).toHaveAttribute('aria-current', 'page');
+    expect(screen.getByRole('link', { name: 'POPs' })).toHaveAttribute('href', '/pop');
+    expect(screen.getByRole('link', { name: 'Salvos' })).toHaveAttribute('href', '/favoritos');
+    expect(screen.getByRole('link', { name: 'Ferramentas' })).toHaveAttribute('href', '/ferramentas');
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
   });
-
-  it('oferece a fiscalização de estrangeiros nas ferramentas', async () => {
-    const user = userEvent.setup();
+  it('indica as ferramentas durante uma tarefa', () => {
+    pathname = '/estrangeiros';
     render(<MobileNavigation />);
-    await user.click(screen.getByRole('button', { name: /ferramentas/i }));
-    expect(screen.getByRole('link', { name: /condutores e veículos estrangeiros/i })).toHaveAttribute('href', '/estrangeiros');
+    expect(screen.getByRole('link', { name: 'Ferramentas' })).toHaveAttribute('aria-current', 'page');
+  });
+  it('preserva a navegação própria da administração', () => {
+    pathname = '/admin';
+    render(<MobileNavigation />);
+    expect(screen.queryByRole('navigation')).not.toBeInTheDocument();
   });
 });

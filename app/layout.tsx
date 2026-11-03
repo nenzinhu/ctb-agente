@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from 'next';
 import './globals.css';
 import Header from '@/components/Header';
+import PageViewport from '@/components/PageViewport';
 import Footer from '@/components/Footer';
 import MobileNavigation from '@/components/mobile/MobileNavigation';
 
@@ -53,7 +54,7 @@ export default function RootLayout({
         </a>
         <Header />
         <div id="conteudo" tabIndex={-1} className="outline-none">
-          {children}
+          <PageViewport>{children}</PageViewport>
         </div>
         <Footer />
         <MobileNavigation />
