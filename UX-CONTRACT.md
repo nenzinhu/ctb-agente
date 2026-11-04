@@ -34,3 +34,9 @@ Idioma: português brasileiro. A identidade e os tokens estão em [DESIGN.md](DE
 
 - Novos contêineres roláveis herdam o tema global. Não esconder barras por estética; as setas das abas continuam disponíveis como alternativa.
 - Rolagem central e preferência existente de leitura são preservadas. Alto contraste usa as cores e os controles do sistema.
+
+## Artigos e resumo operacional
+
+Referências identificadas como CTB abrem uma cópia do artigo em diálogo nativo, mantendo a consulta ao fundo. Escape e “Voltar à consulta” fecham o leitor e restauram o foco. A fonte oficial continua disponível, inclusive após falha de carregamento. A versão identifica o acervo e não certifica vigência.
+
+As ferramentas da home usam links para suas rotas reais. Resultados de fiscalização mostram resumo e oferecem a ficha completa sob demanda; a seleção de uma alternativa atualiza ambos, sem decisão automática de enquadramento.

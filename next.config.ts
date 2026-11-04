@@ -14,6 +14,7 @@ const nextConfig: NextConfig = {
   // node_modules at runtime. Nothing imports those files, so file tracing
   // wouldn't ship them to the Vercel function on its own.
   outputFileTracingIncludes: {
+    '/api/ctb/artigos/*': ['./data/acervo/ctb-lei-9503-compilado.txt'],
     '/api/ingestion/upload': [
       './node_modules/pdfjs-dist/cmaps/**/*',
       './node_modules/pdfjs-dist/standard_fonts/**/*',

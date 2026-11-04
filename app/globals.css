@@ -1234,3 +1234,11 @@ body::before {
   *::-webkit-scrollbar-thumb { background: ButtonText; border-color: Canvas; }
   *::-webkit-scrollbar-track { background: Canvas; }
 }
+
+.app-dialog { padding: 0; width: min(760px, calc(100vw - 24px)); max-height: calc(100dvh - 32px); border: 1px solid var(--ds-line); border-radius: 16px; color: var(--ds-text); background: var(--ds-surface); box-shadow: var(--ds-shadow-overlay); }
+.app-dialog::backdrop { background: rgb(0 0 0 / .55); }
+.app-dialog[open] { display: flex; flex-direction: column; }
+.app-dialog-header { display: flex; flex: none; align-items: center; justify-content: space-between; gap: 12px; padding: 16px; border-bottom: 1px solid var(--ds-line); }
+.app-dialog-header h2 { font-size: 20px; font-weight: 700; }
+.app-dialog-body { padding: 16px; overflow-y: auto; overscroll-behavior: contain; min-height: 0; }
+@media print { .app-dialog { display: none; } }

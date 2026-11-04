@@ -2,6 +2,7 @@ import { render, screen } from '@testing-library/react';
 import Home from '@/app/page';
 
 jest.mock('next/navigation', () => ({
+  usePathname: () => '/',
   useRouter() {
     return { push: jest.fn() };
   },

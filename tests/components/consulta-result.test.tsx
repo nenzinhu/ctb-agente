@@ -1,7 +1,13 @@
-import { fireEvent, render, screen, within } from '@testing-library/react';
+import { fireEvent, render as baseRender, screen, within } from '@testing-library/react';
 import ConsultaResult from '@/components/ConsultaResult';
 import { CartaoEstruturado } from '@/lib/response/response-types';
 import { buscarFichas } from '@/lib/mbft/fichas';
+
+function render(element: Parameters<typeof baseRender>[0]) {
+  const result = baseRender(element);
+  screen.queryAllByText('Ver ficha completa e fundamentos', { selector: 'summary' }).forEach(summary => fireEvent.click(summary));
+  return result;
+}
 
 const mockCard: CartaoEstruturado = {
   tipo: 'codigo',
