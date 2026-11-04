@@ -261,6 +261,7 @@ export default function PopConsulta({ catalogo = [] }: { catalogo?: ResumoPop[] 
     <div className="min-w-0 space-y-5">
       <section className="card card-pad consultation-card" aria-label="Pesquisa nos POPs">
         <form
+          noValidate
           className="space-y-4"
           aria-busy={carregando}
           onSubmit={(e) => {
@@ -272,6 +273,12 @@ export default function PopConsulta({ catalogo = [] }: { catalogo?: ResumoPop[] 
             <Field
               as="textarea"
               id="pergunta-pop"
+              onClear={() => {
+                request.current?.abort();
+                request.current = null;
+                ultimaPergunta.current = '';
+                setPergunta(''); setErro(null); setResultado(null); setCarregando(false);
+              }}
               label="Sua pergunta sobre os POPs"
               value={pergunta}
               onChange={(e) => {
@@ -288,7 +295,7 @@ export default function PopConsulta({ catalogo = [] }: { catalogo?: ResumoPop[] 
               maxLength={500}
               enterKeyHint="search"
               placeholder="Ex: Como proceder na abordagem a veículo suspeito?"
-              controlClassName="min-h-[96px] resize-y leading-relaxed"
+              controlClassName="min-h-[96px] resize-none leading-relaxed"
               hint="Use o número, o assunto ou descreva a situação com suas palavras."
               acao={<BotaoVoz ditado={ditado} />}
             />

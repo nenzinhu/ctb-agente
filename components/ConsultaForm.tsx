@@ -97,7 +97,7 @@ export default function ConsultaForm({ autoFocus = false, exemplos = [] }: Consu
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4" aria-busy={loading || !ready}>
+    <form noValidate onSubmit={handleSubmit} className="space-y-4" aria-busy={loading || !ready}>
       <fieldset disabled={loading || !ready}>
         <legend className="mb-2 text-xs font-semibold text-ds-subtle">Buscar por</legend>
         <div className="search-shortcuts">
@@ -123,6 +123,7 @@ export default function ConsultaForm({ autoFocus = false, exemplos = [] }: Consu
           as="textarea"
           id="consulta"
           ref={campoRef}
+          onClear={() => { setQuery(''); setErro(null); }}
           label="O que aconteceu?"
           value={query}
           disabled={!ready}
@@ -142,7 +143,7 @@ export default function ConsultaForm({ autoFocus = false, exemplos = [] }: Consu
           autoFocus={autoFocus}
           enterKeyHint="search"
           rows={2}
-          controlClassName="mobile-query-field min-h-[88px] resize-y leading-relaxed sm:min-h-[96px]"
+          controlClassName="mobile-query-field min-h-[88px] resize-none leading-relaxed sm:min-h-[96px]"
           hint={<>{configuracao.dica}<span className="hidden sm:inline"> Enter consulta; Shift + Enter cria uma nova linha.</span></>}
           erro={erro?.doCampo ? erro.mensagem : null}
           acao={<BotaoVoz ditado={ditado} />}

@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Field from '@/components/ui/Field';
 import Icone from '@/components/ui/Icone';
 import PrimaryButton from '@/components/ui/PrimaryButton';
@@ -14,6 +14,10 @@ export default function LoginPage() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [fieldErrors, setFieldErrors] = useState<{ username?: string; password?: string }>({});
+  const usernameRef = useRef<HTMLInputElement>(null);
+  const passwordRef = useRef<HTMLInputElement>(null);
+  const submitting = useRef(false);
   const [isLoading, setIsLoading] = useState(false);
   const [configured, setConfigured] = useState<boolean | null>(null);
 
@@ -32,7 +36,15 @@ export default function LoginPage() {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    if (submitting.current || configured === false) return;
     setError('');
+    const invalid = { username: username.trim() ? undefined : 'Informe o usuário.', password: password ? undefined : 'Informe a senha.' };
+    setFieldErrors(invalid);
+    if (invalid.username || invalid.password) {
+      (invalid.username ? usernameRef : passwordRef).current?.focus();
+      return;
+    }
+    submitting.current = true;
     setIsLoading(true);
 
     try {
@@ -61,6 +73,7 @@ export default function LoginPage() {
       console.error('Login error:', err);
       setError('Erro de conexão ao entrar. Tente novamente.');
     } finally {
+      submitting.current = false;
       setIsLoading(false);
     }
   };
@@ -90,13 +103,16 @@ export default function LoginPage() {
           </div>
         )}
 
-        <form onSubmit={handleSubmit} className="mt-6 space-y-4">
+        <form noValidate onSubmit={handleSubmit} className="mt-6 space-y-4">
           <Field
             id="username"
+            ref={usernameRef}
+            required
+            erro={fieldErrors.username}
             label="Usuário"
             type="text"
             value={username}
-            onChange={(e) => setUsername(e.target.value)}
+            onChange={(e) => { setUsername(e.target.value); setFieldErrors(current => ({ ...current, username: undefined })); setError(''); }}
             disabled={isLoading}
             autoComplete="username"
             autoCapitalize="none"
@@ -106,10 +122,13 @@ export default function LoginPage() {
 
           <Field
             id="password"
+            ref={passwordRef}
+            required
+            erro={fieldErrors.password}
             label="Senha"
             type="password"
             value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            onChange={(e) => { setPassword(e.target.value); setFieldErrors(current => ({ ...current, password: undefined })); setError(''); }}
             disabled={isLoading}
             autoComplete="current-password"
           />
@@ -118,7 +137,7 @@ export default function LoginPage() {
             type="submit"
             carregando={isLoading}
             textoCarregando="Entrando…"
-            disabled={configured === false || !username || !password}
+            disabled={configured === false}
             className="w-full text-base"
           >
             Entrar

@@ -27,11 +27,12 @@ export default function SearchSuggestions({ query, fonte, disabled = false, onSe
       try {
         const resposta = await fetch(`/api/sugestoes?fonte=${fonte}&q=${encodeURIComponent(texto)}`, { signal: controller.signal });
         const corpo = await resposta.json();
+        if (controller.signal.aborted) return;
         setSugestoes(resposta.ok && Array.isArray(corpo.sugestoes) ? corpo.sugestoes : []);
       } catch (error) {
-        if (!(error instanceof Error && error.name === 'AbortError')) setSugestoes([]);
+        if (!controller.signal.aborted && !(error instanceof Error && error.name === 'AbortError')) setSugestoes([]);
       }
-    }, 180);
+    }, 300);
 
     return () => {
       clearTimeout(timer);
@@ -39,7 +40,7 @@ export default function SearchSuggestions({ query, fonte, disabled = false, onSe
     };
   }, [disabled, fonte, query]);
 
-  if (sugestoes.length === 0) return null;
+  if (query.trim().length < 3 || disabled || sugestoes.length === 0) return null;
 
   return (
     <section className="mt-3" aria-label="Sugestões enquanto você digita">

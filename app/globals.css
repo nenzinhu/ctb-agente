@@ -1207,3 +1207,30 @@ body::before {
   :root, :root.dark { --pmrv-watermark-opacity: .08; }
   :root[data-tema='sol'] { --pmrv-watermark-opacity: .025; }
 }
+
+/* Shared search clear action: inside the field, with stable text geometry. */
+.field-with-clear { position: relative; min-width: 0; }
+.field-with-clear > .input { padding-right: 52px; }
+.field-clear { position: absolute; right: 2px; top: 2px; display: grid; place-items: center; width: 44px; height: 44px; border-radius: 8px; color: var(--ds-subtle); cursor: pointer; }
+.field-clear:hover { background: var(--ds-muted); color: var(--ds-text); }
+.field-clear:active { background: var(--ds-primary-soft); }
+.field-clear-mark { position: relative; width: 14px; height: 14px; }
+.field-clear-mark::before, .field-clear-mark::after { content: ''; position: absolute; width: 16px; height: 2px; top: 6px; left: -1px; background: currentColor; transform: rotate(45deg); }
+.field-clear-mark::after { transform: rotate(-45deg); }
+
+/* One inherited scrollbar baseline, including new overflow regions. */
+:root { --ds-scroll-thumb: var(--ds-subtle); --ds-scroll-track: var(--ds-muted); --ds-scroll-hover: var(--ds-primary-strong); --ds-scroll-active: var(--ds-text); scrollbar-color: var(--ds-scroll-thumb) var(--ds-scroll-track); scrollbar-width: thin; }
+* { scrollbar-color: var(--ds-scroll-thumb) var(--ds-scroll-track); scrollbar-width: thin; }
+*::-webkit-scrollbar { width: 10px; height: 10px; }
+*::-webkit-scrollbar-track { background: var(--ds-scroll-track); }
+*::-webkit-scrollbar-thumb { background: var(--ds-scroll-thumb); border: 2px solid var(--ds-scroll-track); border-radius: 8px; }
+*::-webkit-scrollbar-thumb:hover { background: var(--ds-scroll-hover); }
+*::-webkit-scrollbar-thumb:active { background: var(--ds-scroll-active); }
+/* Tab rails keep their arrow navigation and an operable thin scrollbar. */
+.operational-pillars, .pmrv-tab-track, :root[data-reading-mode='scroll'] .page-viewport-frame, .page-viewport-scroll .page-viewport-frame { scrollbar-width: thin; scrollbar-color: var(--ds-scroll-thumb) var(--ds-scroll-track); }
+.operational-pillars::-webkit-scrollbar, .pmrv-tab-track::-webkit-scrollbar { display: block; height: 6px; }
+@media (forced-colors: active) {
+  :root, * { scrollbar-color: auto !important; scrollbar-width: auto !important; }
+  *::-webkit-scrollbar-thumb { background: ButtonText; border-color: Canvas; }
+  *::-webkit-scrollbar-track { background: Canvas; }
+}

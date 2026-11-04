@@ -1,5 +1,7 @@
 'use client';
 
+import Field from '@/components/ui/Field';
+
 import { useEffect, useRef, useState } from 'react';
 import { requestJson, RequestError } from '@/lib/client/request';
 import { interpretarConsultaEstrangeiros } from '@/lib/estrangeiros/consulta';
@@ -88,11 +90,10 @@ export default function EstrangeirosConsulta() {
 
   return (
     <div className="space-y-6">
-      <form className="card p-5 sm:p-6" onSubmit={event => { event.preventDefault(); void interpretar(); }}>
+      <form noValidate className="card p-5 sm:p-6" onSubmit={event => { event.preventDefault(); void interpretar(); }}>
         <h2 className="sr-only">Consulta rápida</h2>
-        <label htmlFor="consulta-estrangeiros" className="block text-sm font-medium">Descreva a situação</label>
-        <div className="mt-2 flex flex-col gap-2 sm:flex-row">
-          <input id="consulta-estrangeiros" enterKeyHint="search" value={pergunta} onChange={(evento) => setPergunta(evento.target.value)} maxLength={500} className="input flex-1" placeholder="Ex.: argentino com carteira vencida" />
+        <div className="flex flex-col gap-2 sm:flex-row sm:items-end">
+          <Field label="Descreva a situação" className="min-w-0 flex-1" onClear={() => { requisicao.current?.abort(); requisicao.current = null; setPergunta(''); setErro(null); setResultado(null); setConsultando(false); }} id="consulta-estrangeiros" enterKeyHint="search" value={pergunta} onChange={(evento) => setPergunta(evento.target.value)} maxLength={500} placeholder="Ex.: argentino com carteira vencida" />
           <button type="submit" className="btn-primary" disabled={pergunta.trim().length < 2 || consultando}>{consultando ? 'Consultando…' : 'Interpretar consulta'}</button>
         </div>
       </form>

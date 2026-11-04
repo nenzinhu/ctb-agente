@@ -76,3 +76,9 @@ Há um único grupo de leitura no painel. Sem preferência salva, celular inicia
 A pesquisa aparece antes de conteúdo auxiliar. CTB mantém Código, Artigo e Situação sem exemplos duplicados. POPs reúne exemplos e ajuda em seções expansíveis. Estrangeiros mostra o resultado após a pesquisa e oferece preenchimento manual, fontes e modelos sob demanda; o país tem uma única seleção. Pesos mantém campos e regras do cálculo, com perguntas e fontes em uma seção expansível. Expandir ou fechar uma seção preserva os valores preenchidos.
 
 No celular a marca-d’água usa opacidade 0,08 (0,025 em modo sol), preservando o contraste dos conteúdos.
+
+## Campos e barras de rolagem
+
+O componente `Field` é o dono do botão “Limpar pesquisa” e da devolução de foco; os formulários controlam cancelamento, erros e resultados conforme [UX-CONTRACT.md](UX-CONTRACT.md). O botão ocupa 44 × 44 px dentro do campo e reserva espaço para o texto, sem deslocar a ação principal.
+
+Os tokens de execução em `app/globals.css` permanecem canônicos (modelo B): `--ds-scroll-thumb` deriva de `--ds-subtle`, `--ds-scroll-track` de `--ds-muted`, `--ds-scroll-hover` de `--ds-primary-strong` e `--ds-scroll-active` de `--ds-text`. O tema é herdado por todos os contêineres roláveis, com propriedades padrão e fallback WebKit. As barras horizontais das abas continuam operáveis; em alto contraste prevalecem os controles do sistema.
