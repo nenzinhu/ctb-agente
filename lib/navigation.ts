@@ -40,6 +40,7 @@ export const GRUPOS_FERRAMENTAS: { titulo: string; itens: Destino[] }[] = [
   {
     titulo: 'Documentos',
     itens: [
+      { href: '/offline', label: 'Consulta offline', descricao: 'Baixar e consultar acervo neste aparelho', icone: 'livro' },
       { href: '/gerador-pdf', label: 'Gerar PDF', descricao: 'Criar documentos para consulta e impressão', icone: 'arquivo' },
       { href: '/comprimir-pdf', label: 'Comprimir PDF', descricao: 'Reduzir arquivos no aparelho', icone: 'comprimir' },
     ],

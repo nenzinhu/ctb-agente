@@ -7,6 +7,8 @@ import { referenciaDaFonte } from '@/lib/rag/pop';
 import TurnstileWidget, { turnstileConfigurado } from '../TurnstileWidget';
 import BotaoVoz, { AvisoVoz, useDitado } from '../BotaoVoz';
 import Field from '../ui/Field';
+import DraftStatus from '../DraftStatus';
+import { useDraftPersistence } from '@/lib/client/drafts';
 import Icone from '../ui/Icone';
 import PrimaryButton from '../ui/PrimaryButton';
 import SectionCard from '../ui/SectionCard';
@@ -220,6 +222,7 @@ export default function PopConsulta({ catalogo = [] }: { catalogo?: ResumoPop[] 
   const [carregando, setCarregando] = useState(false);
   const [erro, setErro] = useState<string | null>(null);
   const [resultado, setResultado] = useState<RespostaPop | null>(null);
+  const draft = useDraftPersistence('pop', { pergunta }, saved => { if (typeof saved.pergunta === 'string') setPergunta(saved.pergunta.slice(0, 500)); });
   const segundos = useSegundos(carregando);
   const ditado = useDitado({ onTranscricao: (texto) => setPergunta((atual) => (atual ? `${atual} ${texto}` : texto)) });
 
@@ -321,6 +324,7 @@ export default function PopConsulta({ catalogo = [] }: { catalogo?: ResumoPop[] 
             Perguntar
           </PrimaryButton>
           <TurnstileWidget onToken={setToken} />
+          {(pergunta || draft.restored || !draft.available) && <DraftStatus {...draft} onClear={() => { request.current?.abort(); setPergunta(''); setResultado(null); setCarregando(false); draft.clear(); }} />}
           <details className="search-details">
             <summary>Ver exemplos de pesquisa</summary>
             <div className="flex flex-wrap gap-2">

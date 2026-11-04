@@ -7,6 +7,8 @@ import TurnstileWidget, { turnstileConfigurado } from './TurnstileWidget';
 import BotaoVoz, { AvisoVoz, useDitado } from './BotaoVoz';
 import SugestoesIntencao from './SugestoesIntencao';
 import Field from './ui/Field';
+import DraftStatus from './DraftStatus';
+import { useDraftPersistence } from '@/lib/client/drafts';
 import PrimaryButton from './ui/PrimaryButton';
 import SearchSuggestions from './SearchSuggestions';
 import type { NomeIcone } from './ui/Icone';
@@ -42,6 +44,10 @@ export default function ConsultaForm({ autoFocus = false, exemplos = [] }: Consu
   const [loading, setLoading] = useState(false);
   const [token, setToken] = useState<string | null>(null);
   const [erro, setErro] = useState<Erro | null>(null);
+  const draft = useDraftPersistence('ctb', { query, atalho }, saved => {
+    if (typeof saved.query === 'string') setQuery(saved.query.slice(0, LIMITE_CONSULTA));
+    if (ATALHOS.some(a => a.id === saved.atalho)) setAtalho(saved.atalho);
+  });
   const campoRef = useRef<HTMLTextAreaElement>(null);
   const router = useRouter();
   const ditado = useDitado({
@@ -180,6 +186,7 @@ export default function ConsultaForm({ autoFocus = false, exemplos = [] }: Consu
       </PrimaryButton>
 
       <TurnstileWidget onToken={setToken} />
+      {(query || draft.restored || !draft.available) && <DraftStatus {...draft} onClear={() => { draft.clear(); setQuery(''); setErro(null); }} />}
 
       {erro && !erro.doCampo && (
         <p className="field-error" role="alert">

@@ -21,6 +21,7 @@ const PUBLIC_SHELL_ROUTES = new Set([
   '/gerador-pdf',
   '/offline',
   '/pop',
+  '/pesos-dimensoes',
   '/professor',
 ]);
 

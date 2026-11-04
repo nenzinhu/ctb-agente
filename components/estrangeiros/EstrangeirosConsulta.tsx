@@ -1,6 +1,8 @@
 'use client';
 
 import Field from '@/components/ui/Field';
+import DraftStatus from '@/components/DraftStatus';
+import { useDraftPersistence } from '@/lib/client/drafts';
 
 import { useEffect, useRef, useState } from 'react';
 import { requestJson, RequestError } from '@/lib/client/request';
@@ -58,6 +60,14 @@ export default function EstrangeirosConsulta() {
   useEffect(() => () => requisicao.current?.abort(), []);
   const atualizar = <K extends keyof FatosEstrangeiros>(campo: K, valor: FatosEstrangeiros[K]) => setFatos((atual) => ({ ...atual, [campo]: valor }));
 
+  const draft = useDraftPersistence('estrangeiros', { pergunta, fatos }, saved => {
+    if (typeof saved.pergunta === 'string') setPergunta(saved.pergunta.slice(0, 500));
+    if (saved.fatos && typeof saved.fatos === 'object' && !Array.isArray(saved.fatos)) {
+      const allowed = ['paisHabilitacao','paisPlaca','visitanteOuResidente','dataEntrada','habilitacao','pidApresentada','identidadeApresentada','categoriaCompativel','registroVeiculo','finalidade','seguroApresentado','admissaoTemporariaApresentada'];
+      setFatos(Object.fromEntries(Object.entries(saved.fatos).filter(([k,v]) => allowed.includes(k) && (typeof v === 'boolean' || (typeof v === 'string' && v.length <= 30)))));
+    }
+  });
+
   const interpretar = async () => {
     if (consultando || pergunta.trim().length < 2) return;
     const controller = new AbortController();
@@ -96,6 +106,7 @@ export default function EstrangeirosConsulta() {
           <Field label="Descreva a situação" className="min-w-0 flex-1" onClear={() => { requisicao.current?.abort(); requisicao.current = null; setPergunta(''); setErro(null); setResultado(null); setConsultando(false); }} id="consulta-estrangeiros" enterKeyHint="search" value={pergunta} onChange={(evento) => setPergunta(evento.target.value)} maxLength={500} placeholder="Ex.: argentino com carteira vencida" />
           <button type="submit" className="btn-primary" disabled={pergunta.trim().length < 2 || consultando}>{consultando ? 'Consultando…' : 'Interpretar consulta'}</button>
         </div>
+      {(pergunta || Object.keys(fatos).length > 0 || draft.restored || !draft.available) && <DraftStatus {...draft} onClear={() => { requisicao.current?.abort(); setConsultando(false); setPergunta(''); setFatos({}); setResultado(null); setErro(null); draft.clear(); }} />}
       </form>
 
       {consultando && <p role="status" className="text-sm text-ds-subtle">Consultando o serviço. A espera é limitada a 15 segundos.</p>}

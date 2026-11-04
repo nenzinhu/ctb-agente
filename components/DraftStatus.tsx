@@ -1,0 +1,3 @@
+export default function DraftStatus({ available, restored, onClear }: { available: boolean; restored: boolean; onClear: () => void }) {
+  return <details className="search-details print:hidden"><summary>{!available ? 'Rascunho indisponível neste navegador' : restored ? 'Preenchimento recuperado neste aparelho' : 'Rascunho neste aparelho'}</summary><p className="text-xs text-ds-subtle">Apenas o preenchimento é guardado localmente. Evite dados pessoais; identificadores reconhecidos são ocultados. Resultados anteriores não são retomados como atuais.</p><button type="button" className="btn-ghost mt-2" onClick={onClear}>Descartar preenchimento</button></details>;
+}

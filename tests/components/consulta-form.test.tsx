@@ -54,6 +54,8 @@ describe('ConsultaForm', () => {
     unmount();
     render(<ConsultaForm />);
     await usuario.click(screen.getByRole('button', { name: 'Artigo' }));
+    expect(screen.getByLabelText('O que aconteceu?')).toHaveValue('516-91');
+    await usuario.clear(screen.getByLabelText('O que aconteceu?'));
     await usuario.type(screen.getByLabelText('O que aconteceu?'), 'art. 181, XX{Enter}');
     expect(mockPush).toHaveBeenLastCalledWith('/consulta?q=art.%20181%2C%20XX');
   });

@@ -40,3 +40,9 @@ Idioma: português brasileiro. A identidade e os tokens estão em [DESIGN.md](DE
 Referências identificadas como CTB abrem uma cópia do artigo em diálogo nativo, mantendo a consulta ao fundo. Escape e “Voltar à consulta” fecham o leitor e restauram o foco. A fonte oficial continua disponível, inclusive após falha de carregamento. A versão identifica o acervo e não certifica vigência.
 
 As ferramentas da home usam links para suas rotas reais. Resultados de fiscalização mostram resumo e oferecem a ficha completa sob demanda; a seleção de uma alternativa atualiza ambos, sem decisão automática de enquadramento.
+
+### Acervo local e retomada
+- `/offline` exige download explícito do pacote público incluído no app. Versão, contagens e data ficam visíveis; uploads administrativos não entram automaticamente. IndexedDB preserva a versão anterior em atualizações e mantém o pacote em falha de download/gravação.
+- Consulta local não envia perguntas nem gera respostas por IA. Vigência deve ser conferida na fonte oficial.
+- Rascunhos de CTB, POP, estrangeiros e pesos restauram somente campos conhecidos, com aviso local e opção de descarte; nunca retomam resultados nem enviam uma consulta automaticamente. Identificadores reconhecidos são mascarados; não inserir dados pessoais.
+- Histórico contém apenas códigos/artigos. Comparação mantém no máximo três fichas do acervo em memória, com remoção e limpeza, sem recomendação automática de enquadramento.

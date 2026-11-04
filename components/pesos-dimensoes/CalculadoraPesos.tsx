@@ -5,6 +5,8 @@ import { requestJson, RequestError } from '@/lib/client/request';
 import { useEffect, useMemo, useRef, useState } from 'react';
 
 import Field from '@/components/ui/Field';
+import DraftStatus from '@/components/DraftStatus';
+import { useDraftPersistence } from '@/lib/client/drafts';
 import Icone, { type NomeIcone } from '@/components/ui/Icone';
 import PrimaryButton from '@/components/ui/PrimaryButton';
 import SectionCard from '@/components/ui/SectionCard';
@@ -46,6 +48,14 @@ export default function CalculadoraPesos() {
   const requisicao = useRef<AbortController | null>(null);
   useEffect(() => () => { requisicao.current?.abort(); }, []);
   const configuracao = useMemo(() => obterConfiguracao(configuracaoId)!, [configuracaoId]);
+
+  const draft = useDraftPersistence('pesos', { configuracaoId, pbtTexto, modo, tipoPesoDocumento, campos }, saved => {
+    if (typeof saved.configuracaoId === 'string' && obterConfiguracao(saved.configuracaoId)) setConfiguracaoId(saved.configuracaoId);
+    if (typeof saved.pbtTexto === 'string' && saved.pbtTexto.length < 50) setPbtTexto(saved.pbtTexto);
+    if (saved.modo === 'documento' || saved.modo === 'balanca') setModo(saved.modo);
+    if (saved.tipoPesoDocumento === 'carga' || saved.tipoPesoDocumento === 'peso-bruto-total') setTipoPesoDocumento(saved.tipoPesoDocumento);
+    if (saved.campos && typeof saved.campos === 'object') setCampos(Object.fromEntries(Object.entries(saved.campos).filter(([k,v]) => /^(tara|cargaNota|pbtDocumento|pesoBalanca|cmt|aet|eixo-[\w-]+)$/.test(k) && typeof v === 'string' && v.length < 50)));
+  });
 
   const cancelarCalculo = () => {
     requisicao.current?.abort();
@@ -258,6 +268,7 @@ export default function CalculadoraPesos() {
           {erro ? 'Tentar novamente' : 'Calcular fiscalização'}
         </PrimaryButton>
       </form>
+      {(Object.keys(campos).length > 0 || pbtTexto !== pbtDoDesenho(CONFIGURACAO_INICIAL) || draft.restored || !draft.available) && <DraftStatus {...draft} onClear={() => { cancelarCalculo(); setConfiguracaoId(CONFIGURACAO_INICIAL); setPbtTexto(pbtDoDesenho(CONFIGURACAO_INICIAL)); setCampos({}); setModo('documento'); setTipoPesoDocumento('carga'); setErro(null); draft.clear(); }} />}
       {resultado && <ResultadoPesos resultado={resultado} />}
     </div>
   );

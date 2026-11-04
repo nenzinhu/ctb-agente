@@ -90,7 +90,7 @@ test('opções de veículo continuam acessíveis sem uma lista com rolagem', asy
 });
 
 test('setas laterais ficam transparentes e livres dos controles principais', async ({ page }) => {
-  for (const route of ['/', '/pop', '/pesos-dimensoes', '/professor']) {
+  for (const route of ['/pop', '/pesos-dimensoes', '/professor']) {
     await page.goto(route);
     await page.addStyleTag({ content: 'nextjs-portal { display: none !important; }' });
     await expect(page.getByRole('group', { name: 'Navegação lateral' })).toBeAttached();

@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from 'next';
 import './globals.css';
 import Header from '@/components/Header';
+import ComparisonProvider from '@/components/comparison/ComparisonProvider';
 import CtbReaderProvider from '@/components/ctb/CtbReaderProvider';
 import SplashScreen from '@/components/SplashScreen';
 import PageViewport from '@/components/PageViewport';
@@ -54,7 +55,7 @@ export default function RootLayout({
         >
           Pular para o conteúdo
         </a>
-        <CtbReaderProvider>
+        <CtbReaderProvider><ComparisonProvider>
         <SplashScreen />
         <Header />
         <div id="conteudo" tabIndex={-1} className="outline-none">
@@ -62,7 +63,7 @@ export default function RootLayout({
         </div>
         <Footer />
         <MobileNavigation />
-        </CtbReaderProvider>
+        </ComparisonProvider></CtbReaderProvider>
       </body>
     </html>
   );

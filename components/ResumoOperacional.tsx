@@ -1,6 +1,7 @@
 import type { CartaoEstruturado } from '@/lib/response/response-types';
 import type { FichaMbft } from '@/lib/mbft/parser';
 import type { MbftFields } from '@/lib/response/mbft-fields';
+import { CompareFichaButton } from './comparison/ComparisonProvider';
 import TextoReferenciasCtb from './TextoReferenciasCtb';
 export default function ResumoOperacional({ card, ficha, campos }: { card: CartaoEstruturado; ficha?: FichaMbft; campos?: MbftFields | null }) {
   const e = card.enquadramento;
@@ -14,6 +15,7 @@ export default function ResumoOperacional({ card, ficha, campos }: { card: Carta
     <dl className="mt-4 grid gap-3 sm:grid-cols-2"><div><dt className="text-sm text-ds-subtle">Gravidade</dt><dd>{gravidade || 'Confira na ficha completa'}</dd></div><div><dt className="text-sm text-ds-subtle">Providência registrada</dt><dd>{medida || 'Confira as condições e os procedimentos na ficha'}</dd></div></dl>
     {ficha?.quandoAutuar?.length ? <p className="mt-4 text-sm"><strong>Condição a conferir: </strong>{ficha.quandoAutuar[0]}</p> : null}
     {ficha?.quandoNaoAutuar?.length ? <p className="mt-3 text-sm"><strong>Atenção às exceções: </strong>{ficha.quandoNaoAutuar[0]}</p> : null}
+    {ficha && <CompareFichaButton ficha={ficha} />}
     <p className="mt-4 text-xs text-ds-subtle">Resumo de apoio. A correspondência da busca não decide o enquadramento; confira a ficha completa, suas exceções e a fonte vigente.</p>
   </section>;
 }
