@@ -42,7 +42,7 @@ describe('qualidade na lista de documentos', () => {
     })) as unknown as typeof fetch;
 
     render(<DocumentList colecao="ctb" />);
-    expect(await screen.findByText('Revisão necessária')).toBeInTheDocument();
+    expect(await screen.findByText('Revisão pendente')).toBeInTheDocument();
   });
 
   it('mostra versão e data de conferência do documento vigente', async () => {
@@ -61,6 +61,23 @@ describe('qualidade na lista de documentos', () => {
     render(<DocumentList colecao="ctb" />);
     expect(await screen.findByText('versão: CTB 2026')).toBeInTheDocument();
     expect(screen.getByText('conferido em 01/09/2026')).toBeInTheDocument();
+  });
+
+  it('permite pesquisar o arquivo mesmo com uma base pequena', async () => {
+    global.fetch = jest.fn(async () => ({
+      ok: true,
+      json: async () => resposta([base]),
+    })) as unknown as typeof fetch;
+
+    render(<DocumentList colecao="ctb" />);
+    const busca = await screen.findByRole('searchbox', { name: 'Pesquisar arquivo ou artigo' });
+
+    await userEvent.type(busca, 'ctb.pdf');
+    expect(screen.getByText('CTB compilado')).toBeInTheDocument();
+
+    await userEvent.clear(busca);
+    await userEvent.type(busca, 'resolução 432');
+    expect(await screen.findByText('Nenhum arquivo encontrado')).toBeInTheDocument();
   });
 
   it('salva a revisão por PATCH e recarrega a lista', async () => {
@@ -91,4 +108,25 @@ describe('qualidade na lista de documentos', () => {
     });
     await waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(3));
   });
+});
+
+it('mostra a resolução mesmo quando a contagem de vetores está indisponível', async () => {
+  const original = global.fetch;
+  global.fetch = jest.fn(async () => ({ ok: true, json: async () => ({ ...resposta([{ ...base, titulo: 'Resolução 1.013/2024', nome_arquivo: 'resolucao-1013.pdf' }]), pendentesVetor: null, message: 'Não foi possível conferir a contagem de vetores. Os documentos registrados continuam listados.' }) })) as unknown as typeof fetch;
+  try {
+    render(<DocumentList colecao="ctb" />);
+    expect(await screen.findByText('Resolução 1.013/2024')).toBeInTheDocument();
+    expect(screen.getByRole('note')).toHaveTextContent('contagem de vetores');
+    expect(screen.queryByText('Nenhum documento indexado ainda')).not.toBeInTheDocument();
+  } finally { global.fetch = original; }
+});
+
+it('não informa base vazia quando a consulta legada falhou', async () => {
+  const original = global.fetch;
+  global.fetch = jest.fn(async () => ({ ok: true, json: async () => ({ ...resposta([]), legadoIndisponivel: true }) })) as unknown as typeof fetch;
+  try {
+    render(<DocumentList colecao="ctb" />);
+    expect(await screen.findByText('Não foi possível conferir toda a base')).toBeInTheDocument();
+    expect(screen.queryByText('Nenhum documento indexado ainda')).not.toBeInTheDocument();
+  } finally { global.fetch = original; }
 });

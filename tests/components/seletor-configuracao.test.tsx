@@ -6,6 +6,20 @@ import SeletorConfiguracao from '@/components/pesos-dimensoes/SeletorConfiguraca
 import { listarConfiguracoes, obterConfiguracao } from '@/lib/pesos-dimensoes/catalogo';
 
 describe('Seletor visual de configuração', () => {
+  it('mantém as opções compactas sem rótulos técnicos minúsculos na miniatura', async () => {
+    render(<SeletorConfiguracao valor="truck-3-eixos" onChange={jest.fn()} />);
+    const gatilho = screen.getByRole('button', { name: /selecionar configuração/i });
+
+    expect(within(gatilho).getByRole('img', { name: /truck.*3 eixos/i })).toBeInTheDocument();
+    expect(within(gatilho).queryByText('E1')).not.toBeInTheDocument();
+    expect(screen.getByText(/E1.*Eixo dianteiro.*6\.000 kg/i)).toBeInTheDocument();
+
+    await userEvent.click(gatilho);
+    const opcao = screen.getAllByRole('option')[0];
+    expect(within(opcao).getByRole('img', { name: /2 eixos/i })).toBeInTheDocument();
+    expect(within(opcao).queryByText('E1')).not.toBeInTheDocument();
+  });
+
   it('abre opções em linhas com nome, eixos e desenho', async () => {
     const onChange = jest.fn();
     render(<SeletorConfiguracao valor="truck-3-eixos" onChange={onChange} />);
@@ -20,7 +34,7 @@ describe('Seletor visual de configuração', () => {
     expect(within(lista).getAllByText(/9 eixos/i).length).toBeGreaterThan(0);
     expect(within(lista).getByText('3S3D3')).toBeInTheDocument();
     expect(within(lista).getByText(/rodotrem, nove eixos/i)).toBeInTheDocument();
-    expect(within(lista).getByText(/PBT\/PBTC máximo: 74\.000 kg/i)).toBeInTheDocument();
+    expect(within(lista).getByText(/Máx\. 74\.000 kg/i)).toBeInTheDocument();
 
     await userEvent.click(within(lista).getByRole('option', { name: /rodotrem/i }));
     expect(onChange).toHaveBeenCalledWith('rodotrem-9-eixos-aet');

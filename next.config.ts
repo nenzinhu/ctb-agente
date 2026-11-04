@@ -14,6 +14,8 @@ const nextConfig: NextConfig = {
   // node_modules at runtime. Nothing imports those files, so file tracing
   // wouldn't ship them to the Vercel function on its own.
   outputFileTracingIncludes: {
+    '/api/offline/pacote': ['./data/acervo/ctb-lei-9503-compilado.txt', './data/acervo/mbft-fichas.json', './data/acervo/pop-pmsc.json'],
+    '/api/ctb/artigos/*': ['./data/acervo/ctb-lei-9503-compilado.txt'],
     '/api/ingestion/upload': [
       './node_modules/pdfjs-dist/cmaps/**/*',
       './node_modules/pdfjs-dist/standard_fonts/**/*',
@@ -37,7 +39,7 @@ const withSerwist = withSerwistInit({
   disable: process.env.NODE_ENV !== 'production',
   register: true,
   cacheOnNavigation: false,
-  additionalPrecacheEntries: [{ url: '/offline', revision: '1' }],
+  additionalPrecacheEntries: [{ url: '/offline', revision: process.env.VERCEL_GIT_COMMIT_SHA || 'offline-publico-v2' }],
   globPublicPatterns: ['icons/**/*', 'manifest.json', 'favicon.ico', 'brasao-cpmrv.*'],
 });
 

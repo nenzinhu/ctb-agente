@@ -26,6 +26,7 @@ export const maxDuration = 60;
 
 const ArquivoBase = {
   storagePath: z.string().min(1),
+  preserveStorageFile: z.boolean().default(false),
   fileName: z.string().min(1),
   titulo: z.string().trim().max(200).optional(),
 };
@@ -188,7 +189,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     // Best-effort: the object in `documentos-pendentes` is scratch space,
     // not the document of record (that's the rows processChunks inserted).
     try {
-      await supabaseAdmin.storage.from(DOCUMENTS_BUCKET).remove([storagePath]);
+      if (!input.preserveStorageFile) await supabaseAdmin.storage.from(DOCUMENTS_BUCKET).remove([storagePath]);
     } catch (cleanupError) {
       console.error('Falha ao excluir o objeto temporário do armazenamento:', cleanupError);
     }

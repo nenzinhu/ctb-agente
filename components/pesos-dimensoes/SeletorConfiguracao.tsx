@@ -77,17 +77,18 @@ export default function SeletorConfiguracao({ valor, onChange }: Props) {
         aria-haspopup="listbox"
         aria-expanded={aberto}
         onClick={() => setAberto((estado) => !estado)}
-        className="flex min-h-24 w-full items-center gap-3 rounded-control border-2 border-ds-border bg-ds-surface px-3 py-2 text-left shadow-sm transition hover:border-ds-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ds-primary"
+        className="flex min-h-[88px] w-full items-center gap-3 rounded-control border border-ds-border bg-ds-surface px-3 py-2 text-left shadow-sm transition-colors hover:border-ds-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ds-primary sm:gap-4"
       >
-        <DesenhoVeiculo configuracao={selecionada} compacto />
+        <DesenhoVeiculo configuracao={selecionada} miniatura />
         <span className="min-w-0 flex-1">
-          <span className="mb-1 inline-flex rounded bg-ds-primary px-2 py-0.5 font-mono text-xs font-bold text-white">{selecionada.codigo}</span>
-          <strong className="block text-sm text-ds-text">{selecionada.nome}</strong>
-          <small className="mt-1 block text-xs text-ds-subtle">
-            {selecionada.quantidadeEixos} eixos · {selecionada.requerAet ? 'AET obrigatória' : 'configuração comum'}
-          </small>
-          <small className="mt-1 block text-xs text-ds-subtle">Conhecido como: {selecionada.apelidos.join(', ')}</small>
-          <small className="mt-1 block text-xs font-semibold text-ds-primary">{pbtMaximo(selecionada.limiteTotalKg)}</small>
+          <span className="mb-1 flex flex-wrap gap-1.5">
+            <span className="inline-flex rounded bg-ds-primary px-1.5 py-1 font-mono text-[11px] font-bold text-ds-on-solid sm:px-2 sm:text-xs">{selecionada.codigo}</span>
+            <span className="inline-flex rounded border border-ds-line bg-ds-soft px-1.5 py-1 text-[11px] font-bold text-ds-text sm:px-2 sm:text-xs">{selecionada.quantidadeEixos} EIXOS</span>
+            <span className="hidden rounded border border-ds-line bg-ds-soft px-2 py-1 text-xs font-bold text-ds-text sm:inline-flex">{selecionada.unidades} {selecionada.unidades === 1 ? 'UNIDADE' : 'UNIDADES'}</span>
+          </span>
+          <strong className="block text-xs font-semibold leading-snug text-ds-text sm:text-sm">{selecionada.nome}</strong>
+          <small className="mt-1 block truncate text-[11px] leading-relaxed text-ds-subtle">Conhecido como: {selecionada.apelidos.join(', ')}</small>
+          <small className="mt-1 block text-[11px] font-semibold text-ds-primary-strong">{pbtMaximo(selecionada.limiteTotalKg)}</small>
         </span>
         <span aria-hidden="true" className={`text-ds-primary transition ${aberto ? 'rotate-180' : ''}`}>⌄</span>
       </button>
@@ -96,7 +97,7 @@ export default function SeletorConfiguracao({ valor, onChange }: Props) {
         <div
           role="listbox"
           aria-label="Configurações de veículo"
-          className="absolute z-30 mt-2 max-h-[60vh] w-full overflow-y-auto rounded-control border-2 border-ds-border bg-ds-surface p-2 shadow-xl"
+          className="absolute z-30 mt-2 max-h-[min(60dvh,420px)] w-full overflow-y-auto rounded-control border-2 border-ds-border bg-ds-surface p-2 shadow-xl"
         >
           {configuracoes.map((configuracao, indice) => (
             <button
@@ -109,25 +110,28 @@ export default function SeletorConfiguracao({ valor, onChange }: Props) {
                 onChange(configuracao.id);
                 fechar();
               }}
-              className="mb-1 flex min-h-24 w-full items-center gap-3 rounded-control border border-transparent px-2 py-2 text-left last:mb-0 hover:border-ds-primary hover:bg-ds-soft focus-visible:border-ds-primary focus-visible:bg-ds-soft focus-visible:outline-none aria-selected:border-ds-accent aria-selected:bg-ds-accent/10"
+              className="mb-1 flex min-h-[76px] w-full items-center gap-2 rounded-lg border border-ds-line px-2 py-2 text-left transition-colors last:mb-0 hover:border-ds-primary hover:bg-ds-soft focus-visible:border-ds-primary focus-visible:bg-ds-soft focus-visible:outline-none aria-selected:border-ds-primary aria-selected:bg-ds-primary/10 sm:gap-3 sm:px-3"
             >
-              <DesenhoVeiculo configuracao={configuracao} compacto />
+              <DesenhoVeiculo configuracao={configuracao} miniatura />
               <span className="min-w-0 flex-1">
-                <strong className="block text-sm text-ds-text">{configuracao.nome}</strong>
-                <small className="block text-xs text-ds-subtle">
-                  <span className="mr-1 font-mono font-bold text-ds-primary">{configuracao.codigo}</span>
-                  · {configuracao.quantidadeEixos} eixos · {configuracao.unidades} {configuracao.unidades === 1 ? 'unidade' : 'unidades'}
-                </small>
-                <small className="block text-xs text-ds-subtle">{configuracao.apelidos.join(', ')}</small>
-                <small className="block text-xs font-semibold text-ds-primary">{pbtMaximo(configuracao.limiteTotalKg)}</small>
+                <span className="mb-1 flex flex-wrap gap-1.5">
+                  <span className="rounded bg-ds-primary px-1.5 py-1 font-mono text-[11px] font-bold text-ds-on-solid sm:px-2 sm:text-xs">{configuracao.codigo}</span>
+                  <span className="rounded border border-ds-line bg-ds-surface px-1.5 py-1 text-[11px] font-bold sm:px-2 sm:text-xs">{configuracao.quantidadeEixos} EIXOS</span>
+                  <span className="hidden rounded border border-ds-line bg-ds-surface px-2 py-1 text-xs font-bold sm:inline">{configuracao.unidades} {configuracao.unidades === 1 ? 'UNIDADE' : 'UNIDADES'}</span>
+                </span>
+                <strong className="block text-xs font-semibold leading-snug text-ds-text sm:text-sm">{configuracao.nome}</strong>
+                <small className="sr-only">{configuracao.apelidos.join(', ')}</small>
+                <small className="mt-1 block text-[11px] font-semibold text-ds-primary-strong">{configuracao.limiteTotalKg === null ? 'Conforme AET' : `Máx. ${configuracao.limiteTotalKg.toLocaleString('pt-BR')} kg`}</small>
               </span>
             </button>
           ))}
         </div>
       )}
 
-      <div className="mt-3 rounded-control border border-ds-line bg-ds-soft/50 p-3">
-        <p className="text-xs font-semibold uppercase tracking-wide text-ds-primary">Identificação dos eixos</p>
+      <details className="mt-3 rounded-control border border-ds-line bg-ds-soft/50 p-3">
+        <summary className="min-h-[44px] cursor-pointer text-sm font-semibold text-ds-primary-strong">Ver desenho ampliado e identificação dos eixos</summary>
+        <DesenhoVeiculo configuracao={selecionada} />
+        <p className="mt-2 text-xs font-semibold uppercase tracking-wide text-ds-primary">Identificação dos eixos</p>
         <ul className="mt-2 grid gap-1.5 text-xs text-ds-text sm:grid-cols-2">
           {selecionada.gruposEixo.map((grupo, indice) => {
             const primeiroEixo = 1 + selecionada.gruposEixo
@@ -137,7 +141,7 @@ export default function SeletorConfiguracao({ valor, onChange }: Props) {
             return <li key={grupo.id} className="rounded-md bg-ds-surface px-2.5 py-2">{descricao}</li>;
           })}
         </ul>
-      </div>
+      </details>
     </div>
   );
 }

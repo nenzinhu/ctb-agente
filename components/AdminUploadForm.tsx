@@ -6,6 +6,7 @@ import { ACCEPT_DOCUMENTOS, FORMATOS_ACEITOS_TEXTO, formatoDoArquivo } from '@/l
 import { enviarDocumento, limiteDeOrigem, type Compressao, type ResultadoEnvio } from '@/lib/ingestion/upload-client';
 import type { Colecao } from '@/lib/ingestion/documents';
 import Icone from './ui/Icone';
+import StorageImport from './admin/StorageImport';
 
 /**
  * Upload form for the document bases: the CTB (laws, resoluções, manuais) and
@@ -260,6 +261,8 @@ export default function AdminUploadForm({ onUploadSuccess, colecao = 'ctb', comp
         </div>
         <p className="hint">Esses dados permitem conferir a vigência e identificar rapidamente conteúdo desatualizado.</p>
       </fieldset>
+
+      <StorageImport disabled={isUploading} onBusyChange={setIsUploading} onComplete={onUploadSuccess} metadata={{ colecao, normaId: ehCtb ? normaId : undefined, documentType: ehCtb ? documentType : undefined, titulo, fonteOficial, versao, vigenteDesde, conferidoEm }} />
 
       <fieldset>
         <legend className="label">Compressão antes de enviar</legend>

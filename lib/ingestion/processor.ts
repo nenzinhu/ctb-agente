@@ -10,6 +10,9 @@
 // rate-limited MISTRAL_API_KEY meant "nothing was indexed".
 import { z } from 'zod';
 import { embeddingChain } from '@/lib/ai/embeddings';
+import { getEmbeddingConfig } from '@/lib/ai/embedding-config';
+import type { EmbeddingConfig, EmbeddingModelId } from '@/lib/ai/embedding-models';
+import { isMissingSchemaError } from './documents';
 import { supabaseAdmin } from '@/lib/db/client';
 
 const ChunkSchema = z.object({
@@ -98,13 +101,14 @@ export function embeddingInput(texto: string, contexto: (string | null | undefin
  */
 async function embedOrNull(
   texts: string[],
-  deadline: number
+  deadline: number,
+  modelo: EmbeddingModelId
 ): Promise<{ vectors: (number[] | null)[]; erro?: string }> {
   if (Date.now() > deadline) {
     return { vectors: texts.map(() => null), erro: 'tempo esgotado para gerar vetores nesta requisição' };
   }
   try {
-    return { vectors: await embeddingChain.embedBatch(texts) };
+    return { vectors: await embeddingChain.embedBatch(texts, modelo) };
   } catch (error) {
     return { vectors: texts.map(() => null), erro: error instanceof Error ? error.message : String(error) };
   }
@@ -120,7 +124,8 @@ async function indexChunks(
   chunks: Chunk[],
   embeddingText: (chunk: Chunk) => string,
   buildRow: RowBuilder,
-  deadline: number
+  deadline: number,
+  config: EmbeddingConfig
 ): Promise<ProcessingResult> {
   const result: ProcessingResult = {
     insertedCount: 0,
@@ -139,14 +144,22 @@ async function indexChunks(
 
   async function processBatch(indexes: number[]): Promise<void> {
     try {
-      const { vectors, erro } = await embedOrNull(indexes.map((i) => embeddingText(chunks[i])), deadline);
+      let { vectors, erro } = await embedOrNull(indexes.map((i) => embeddingText(chunks[i])), deadline, config.id);
       if (erro) {
         console.warn(`Embeddings unavailable for chunks ${indexes[0]}-${indexes[indexes.length - 1]}: ${erro}`);
         result.avisoVetor ??= erro;
       }
 
       const rows = indexes.map((i, j) => buildRow(chunks[i], i, vectors[j]));
-      const { data, error } = await supabaseAdmin.from(table).insert(rows).select('id');
+      let { data, error } = await supabaseAdmin.from(table).insert(rows).select('id');
+      if (error && config.coluna === 'embedding_nemotron' && isMissingSchemaError(error)
+        && /embedding_nemotron/i.test(error.message)) {
+        // A missing additive migration must not discard the document's text.
+        const textRows = rows.map(({ embedding_nemotron: _vector, ...row }) => row);
+        ({ data, error } = await supabaseAdmin.from(table).insert(textRows).select('id'));
+        vectors = vectors.map(() => null);
+        result.avisoVetor = 'Aplique scripts/migrations-015-nemotron-embeddings.sql e gere os vetores pendentes.';
+      }
 
       if (error) {
         console.error(`Falha ao inserir os trechos ${indexes[0]}-${indexes[indexes.length - 1]}:`, error);
@@ -202,6 +215,7 @@ export function fallbackLabel(chunk: Pick<Chunk, 'text' | 'section' | 'order'>, 
  */
 export async function processChunks(input: ProcessorInput): Promise<ProcessingResult> {
   const validated = ProcessorInputSchema.parse(input);
+  const config = await getEmbeddingConfig();
 
   // Set defaults for dates if not provided
   const now = new Date().toISOString();
@@ -221,7 +235,7 @@ export async function processChunks(input: ProcessorInput): Promise<ProcessingRe
       data_publicacao: dataPublicacao,
       data_vigencia_inicio: dataVigenciaInicio,
       data_vigencia_fim: validated.dataVigenciaFim || null,
-      embedding,
+      ...(config.coluna === 'embedding' || embedding ? { [config.coluna]: embedding } : {}),
       citacoes_dentro: extractCitations(chunk.text),
       criado_em: now,
       atualizado_em: now,
@@ -229,7 +243,8 @@ export async function processChunks(input: ProcessorInput): Promise<ProcessingRe
       // Columns added by migration 008; sent only when it is applied.
       ...(validated.documentoId ? { documento_id: validated.documentoId, ordem: chunk.order } : {}),
     }),
-    deadline
+    deadline,
+    config
   );
 }
 
@@ -245,6 +260,7 @@ const TrechosInputSchema = z.object({
  */
 export async function processTrechos(input: z.input<typeof TrechosInputSchema>): Promise<ProcessingResult> {
   const validated = TrechosInputSchema.parse(input);
+  const config = await getEmbeddingConfig();
   const deadline = validated.deadline ?? Date.now() + DEFAULT_EMBEDDING_BUDGET_MS;
 
   return indexChunks(
@@ -257,9 +273,10 @@ export async function processTrechos(input: z.input<typeof TrechosInputSchema>):
       secao: chunk.section ?? null,
       pagina: chunk.page ?? null,
       texto: chunk.text,
-      embedding,
+      ...(config.coluna === 'embedding' || embedding ? { [config.coluna]: embedding } : {}),
     }),
-    deadline
+    deadline,
+    config
   );
 }
 

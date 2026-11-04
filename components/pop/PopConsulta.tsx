@@ -1,21 +1,48 @@
 'use client';
 
+import { requestJson, RequestError } from '@/lib/client/request';
 import { useEffect, useRef, useState } from 'react';
 import type { FontePop, RespostaPop } from '@/lib/rag/pop';
 import { referenciaDaFonte } from '@/lib/rag/pop';
 import TurnstileWidget, { turnstileConfigurado } from '../TurnstileWidget';
 import BotaoVoz, { AvisoVoz, useDitado } from '../BotaoVoz';
 import Field from '../ui/Field';
-import ResultChoices from '../ui/ResultChoices';
+import DraftStatus from '../DraftStatus';
+import { useDraftPersistence } from '@/lib/client/drafts';
 import Icone from '../ui/Icone';
 import PrimaryButton from '../ui/PrimaryButton';
 import SectionCard from '../ui/SectionCard';
+import SearchableSelect from '../ui/SearchableSelect';
 import RespostaFormatada from './RespostaFormatada';
 import FichaPop from './FichaPop';
 import type { Pop } from '@/lib/pop/parser';
-import ConsultaModes from '../ConsultaModes';
 import SearchSuggestions from '../SearchSuggestions';
 import type { ResumoPop } from '@/lib/pop/referencias';
+
+/** Validate server data before passing it to the manual's structured renderer. */
+function isPop(value: unknown): value is Pop {
+  if (!value || typeof value !== 'object') return false;
+  const pop = value as Record<string, unknown>;
+  const stringFields = ['numero', 'titulo', 'estabelecido', 'atualizado', 'execucao'];
+  const itemFields = ['material', 'sequencia', 'atividadesCriticas', 'errosEvitar', 'anexos'];
+  return stringFields.every((key) => typeof pop[key] === 'string')
+    && typeof pop.pagina === 'number' && Number.isFinite(pop.pagina)
+    && itemFields.every((key) => Array.isArray(pop[key]) && pop[key].every((item: unknown) => {
+      if (!item || typeof item !== 'object') return false;
+      const entry = item as Record<string, unknown>;
+      return typeof entry.texto === 'string' && typeof entry.nivel === 'number' && Number.isFinite(entry.nivel);
+    }))
+    && Array.isArray(pop.fundamentacao) && pop.fundamentacao.every((item: unknown) => {
+      if (!item || typeof item !== 'object') return false;
+      const entry = item as Record<string, unknown>;
+      return typeof entry.norma === 'string' && typeof entry.especificacao === 'string';
+    });
+}
+
+function validatePop(value: unknown): Pop {
+  if (!isPop(value)) throw new RequestError('invalid-response', 'O serviço retornou um procedimento inválido. Tente novamente.');
+  return value;
+}
 
 const EXEMPLOS = [
   'Como proceder na abordagem a pessoas?',
@@ -65,6 +92,8 @@ export function PopsEncontrados({ pops, catalogo = [] }: { pops: Pop[]; catalogo
   const [posicao, setPosicao] = useState(0);
   const [carregandoReferencia, setCarregandoReferencia] = useState<string | null>(null);
   const [erroReferencia, setErroReferencia] = useState<string | null>(null);
+  const referenciaRequest = useRef<AbortController | null>(null);
+  useEffect(() => () => referenciaRequest.current?.abort(), []);
   const cache = useRef(new Map(pops.map((pop) => [pop.numero, pop])));
   const atual = historico[posicao] ?? pops[Math.min(indice, pops.length - 1)];
 
@@ -78,36 +107,46 @@ export function PopsEncontrados({ pops, catalogo = [] }: { pops: Pop[]; catalogo
 
   const abrirReferencia = async (numero: string) => {
     if (carregandoReferencia || numero === atual.numero) return;
+    const controller = new AbortController();
+    referenciaRequest.current = controller;
     setCarregandoReferencia(numero);
     setErroReferencia(null);
     try {
       let destino = cache.current.get(numero);
       if (!destino) {
-        const resposta = await fetch(`/api/pop/${encodeURIComponent(numero)}`);
-        if (!resposta.ok) throw new Error('O POP relacionado não pôde ser carregado.');
-        destino = await resposta.json() as Pop;
+        destino = validatePop(await requestJson<unknown>(`/api/pop/${encodeURIComponent(numero)}`, { signal: controller.signal }));
         cache.current.set(numero, destino);
       }
+      if (controller.signal.aborted) return;
       const novoHistorico = [...historico.slice(0, posicao + 1), destino];
       setHistorico(novoHistorico);
       setPosicao(novoHistorico.length - 1);
     } catch (error) {
-      setErroReferencia(error instanceof Error ? error.message : 'Não foi possível abrir o POP relacionado.');
+      if (!controller.signal.aborted) setErroReferencia(error instanceof Error ? error.message : 'Não foi possível abrir o POP relacionado.');
     } finally {
-      setCarregandoReferencia(null);
+      if (!controller.signal.aborted) setCarregandoReferencia(null);
     }
   };
 
   return (
     <div className="space-y-4">
       {pops.length > 1 && (
-          <ResultChoices
+        <section className="card card-pad min-w-0 overflow-hidden">
+          <Field
+            as="select"
             label={`POPs encontrados (${pops.length})`}
             value={String(indice)}
-            onChange={(value) => selecionarResultado(Number(value))}
-            hint="Confira os procedimentos encontrados e selecione qual deseja ler."
-            options={pops.map((pop, i) => ({ value: String(i), title: `POP ${pop.numero}`, description: pop.titulo }))}
-          />
+            onChange={(event) => selecionarResultado(Number(event.target.value))}
+            hint="Selecione o procedimento que deseja ler."
+            controlClassName="w-full max-w-full min-w-0 truncate"
+          >
+            {pops.map((pop, i) => (
+              <option key={`${pop.numero}-${i}`} value={String(i)}>
+                POP {pop.numero} — {pop.titulo}
+              </option>
+            ))}
+          </Field>
+        </section>
       )}
       {historico.length > 1 && (
         <nav className="rounded-control border border-ds-line bg-ds-surface p-3" aria-label="Histórico de POPs consultados">
@@ -175,11 +214,15 @@ function useSegundos(ativo: boolean): number {
  * excerpts it came from, and the excerpts are always shown.
  */
 export default function PopConsulta({ catalogo = [] }: { catalogo?: ResumoPop[] }) {
+  const request = useRef<AbortController | null>(null);
+  const ultimaPergunta = useRef('');
+  useEffect(() => () => request.current?.abort(), []);
   const [pergunta, setPergunta] = useState('');
   const [token, setToken] = useState<string | null>(null);
   const [carregando, setCarregando] = useState(false);
   const [erro, setErro] = useState<string | null>(null);
   const [resultado, setResultado] = useState<RespostaPop | null>(null);
+  const draft = useDraftPersistence('pop', { pergunta }, saved => { if (typeof saved.pergunta === 'string') setPergunta(saved.pergunta.slice(0, 500)); });
   const segundos = useSegundos(carregando);
   const ditado = useDitado({ onTranscricao: (texto) => setPergunta((atual) => (atual ? `${atual} ${texto}` : texto)) });
 
@@ -192,30 +235,36 @@ export default function PopConsulta({ catalogo = [] }: { catalogo?: ResumoPop[] 
       return;
     }
 
+    const controller = new AbortController();
+    request.current = controller;
+    ultimaPergunta.current = texto;
     setCarregando(true);
     setErro(null);
     setResultado(null);
     try {
-      const resposta = await fetch('/api/pop/consulta', {
+      const corpo = await requestJson<RespostaPop>('/api/pop/consulta', {
+        signal: controller.signal,
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ pergunta: texto, turnstileToken: token ?? undefined }),
-      });
-      const corpo = await resposta.json().catch(() => null);
-      if (!resposta.ok) throw new Error(corpo?.message || 'Não foi possível consultar os POPs.');
+      }, 25000);
+      if (!corpo || !Array.isArray(corpo.fontes) || typeof corpo.semResposta !== 'boolean' || (corpo.pops !== undefined && (!Array.isArray(corpo.pops) || !corpo.pops.every(isPop)))) {
+        throw new RequestError('invalid-response', 'O serviço retornou uma resposta inválida. Tente novamente.');
+      }
+      if (controller.signal.aborted) return;
       setResultado(corpo as RespostaPop);
     } catch (error) {
-      setErro(error instanceof Error ? error.message : 'Erro desconhecido.');
+      if (!controller.signal.aborted) setErro(error instanceof Error ? error.message : 'Erro desconhecido.');
     } finally {
-      setCarregando(false);
+      if (!controller.signal.aborted) setCarregando(false);
     }
   };
 
   return (
     <div className="min-w-0 space-y-5">
-      <SectionCard titulo="Consultar procedimentos" icone="busca" className="consultation-card">
-        <ConsultaModes atual="pop" />
+      <section className="card card-pad consultation-card" aria-label="Pesquisa nos POPs">
         <form
+          noValidate
           className="space-y-4"
           aria-busy={carregando}
           onSubmit={(e) => {
@@ -227,6 +276,12 @@ export default function PopConsulta({ catalogo = [] }: { catalogo?: ResumoPop[] 
             <Field
               as="textarea"
               id="pergunta-pop"
+              onClear={() => {
+                request.current?.abort();
+                request.current = null;
+                ultimaPergunta.current = '';
+                setPergunta(''); setErro(null); setResultado(null); setCarregando(false);
+              }}
               label="Sua pergunta sobre os POPs"
               value={pergunta}
               onChange={(e) => {
@@ -239,12 +294,12 @@ export default function PopConsulta({ catalogo = [] }: { catalogo?: ResumoPop[] 
                   void perguntar(pergunta);
                 }
               }}
-              rows={4}
+              rows={3}
               maxLength={500}
               enterKeyHint="search"
               placeholder="Ex: Como proceder na abordagem a veículo suspeito?"
-              controlClassName="min-h-[124px] resize-y leading-relaxed"
-              hint="Use número, assunto, parte da palavra ou termos como “baculejo”, “blitz” e “encontrado morto”. Enter consulta; Shift + Enter cria uma nova linha."
+              controlClassName="min-h-[96px] resize-none leading-relaxed"
+              hint="Use o número, o assunto ou descreva a situação com suas palavras."
               acao={<BotaoVoz ditado={ditado} />}
             />
             <AvisoVoz ditado={ditado} />
@@ -269,8 +324,9 @@ export default function PopConsulta({ catalogo = [] }: { catalogo?: ResumoPop[] 
             Perguntar
           </PrimaryButton>
           <TurnstileWidget onToken={setToken} />
-          <div className="border-t border-ds-line pt-4">
-            <p className="mb-2 text-xs font-semibold text-ds-subtle">Experimente uma pergunta</p>
+          {(pergunta || draft.restored || !draft.available) && <DraftStatus {...draft} onClear={() => { request.current?.abort(); setPergunta(''); setResultado(null); setCarregando(false); draft.clear(); }} />}
+          <details className="search-details">
+            <summary>Ver exemplos de pesquisa</summary>
             <div className="flex flex-wrap gap-2">
               {EXEMPLOS.map((exemplo) => (
                 <button
@@ -287,9 +343,9 @@ export default function PopConsulta({ catalogo = [] }: { catalogo?: ResumoPop[] 
                 </button>
               ))}
             </div>
-          </div>
+          </details>
         </form>
-      </SectionCard>
+      </section>
 
       {carregando && (
         <div className="card card-pad space-y-3" role="status" aria-live="polite">
@@ -308,8 +364,15 @@ export default function PopConsulta({ catalogo = [] }: { catalogo?: ResumoPop[] 
       {erro && (
         <div className="alert-error" role="alert">
           <Icone nome="alerta" className="mt-0.5 shrink-0 text-ds-danger" />
-          <p>{erro}</p>
+          <div><p>{erro}</p><button type="button" className="btn-secondary mt-3" onClick={() => void perguntar(ultimaPergunta.current)}>Tentar novamente</button><p className="mt-3 text-sm">Consulte o manual disponível abaixo e confirme o procedimento vigente antes de agir.</p></div>
         </div>
+      )}
+
+      {catalogo.length > 0 && (
+        <SectionCard titulo="Consultar o manual disponível" icone="livro">
+          <p className="mb-3 text-sm text-ds-subtle">Acesso ao conteúdo do manual incluído no projeto, sem depender da geração de resposta. Confira a versão vigente antes de agir.</p>
+          <ManualDisponivel catalogo={catalogo} />
+        </SectionCard>
       )}
 
       {resultado && (
@@ -388,4 +451,42 @@ export default function PopConsulta({ catalogo = [] }: { catalogo?: ResumoPop[] 
       )}
     </div>
   );
+}
+
+function ManualDisponivel({ catalogo }: { catalogo: ResumoPop[] }) {
+  const [numero, setNumero] = useState('');
+  const [tentativa, setTentativa] = useState(0);
+  const [pop, setPop] = useState<Pop | null>(null);
+  const [erro, setErro] = useState<string | null>(null);
+  const [carregando, setCarregando] = useState(false);
+  useEffect(() => {
+    if (!numero) {
+      setPop(null); setErro(null); setCarregando(false);
+      return;
+    }
+    const controller = new AbortController();
+    setCarregando(true); setErro(null); setPop(null);
+    requestJson<Pop>(`/api/pop/${encodeURIComponent(numero)}`, { signal: controller.signal })
+      .then((value) => { const valid = validatePop(value); if (!controller.signal.aborted) setPop(valid); })
+      .catch((error) => { if (!controller.signal.aborted) setErro(error instanceof Error ? error.message : 'Não foi possível abrir o manual.'); })
+      .finally(() => { if (!controller.signal.aborted) setCarregando(false); });
+    return () => controller.abort();
+  }, [numero, tentativa]);
+  return <div className="space-y-3">
+    <SearchableSelect
+      label="Selecione o procedimento"
+      placeholder="Escolher POP"
+      searchPlaceholder="Buscar por número ou nome"
+      value={numero}
+      onChange={setNumero}
+      options={catalogo.map((item) => ({
+        value: item.numero,
+        label: `POP ${item.numero} — ${item.titulo}`,
+        keywords: item.titulo,
+      }))}
+    />
+    {carregando && <p role="status">Abrindo procedimento…</p>}
+    {erro && <div role="alert"><p>{erro}</p><button type="button" className="btn-secondary mt-2" onClick={() => setTentativa((atual) => atual + 1)}>Tentar novamente</button></div>}
+    {pop && <PopsEncontrados key={pop.numero} pops={[pop]} catalogo={catalogo} />}
+  </div>;
 }

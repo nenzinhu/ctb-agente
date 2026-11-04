@@ -40,7 +40,7 @@ Ilhas Cayman|R|2||cayman
 Ceuta e Melilla|R|2
 Chile|A|2|CL|chileno,chilena
 Singapura|R|2||cingapura
-Colômbia|R|2
+Colômbia|R|2|CO|colombiano,colombiana
 Congo|V|2
 Coreia do Sul|R|2
 Costa do Marfim|V|2||cote d ivoire
@@ -50,7 +50,7 @@ Cuba|V|2
 Dinamarca|V|2
 El Salvador|R|3
 Emirados Árabes Unidos|V|3||emirados arabes,eau
-Equador|R|3
+Equador|R|3|EC|equatoriano,equatoriana
 Escócia|R|3
 Eslovênia|V|3
 Espanha|R|3|ES|espanhol,espanhola
@@ -68,7 +68,7 @@ Grécia|R,V|3
 Groenlândia|V|3
 Guadalupe|V|3
 Guatemala|R|3
-Guiana|V|3
+Guiana|V|3|GY|guianense
 Guiana Francesa|V|3
 Guiné-Bissau|R|3||guine bissau
 Haiti|R|3
@@ -162,7 +162,7 @@ Turquia|V|7
 Ucrânia|V|7
 Uruguai|A,V|7|UY|uruguaio,uruguaia
 Uzbequistão|V|7
-Venezuela|R|7
+Venezuela|R|7|VE|venezuelano,venezuelana
 Vietnam|V|7||vietna,vietnã
 Zimbábue|V|7||zimbabwe
 `.trim();

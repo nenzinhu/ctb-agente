@@ -20,7 +20,9 @@ const PUBLIC_SHELL_ROUTES = new Set([
   '/favoritos',
   '/gerador-pdf',
   '/offline',
+  '/atualizacoes',
   '/pop',
+  '/pesos-dimensoes',
   '/professor',
 ]);
 

@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from '@testing-library/react';
+import { act, fireEvent, render, screen, within } from '@testing-library/react';
 import EstrangeirosConsulta from '@/components/estrangeiros/EstrangeirosConsulta';
 
 describe('EstrangeirosConsulta', () => {
@@ -22,4 +22,76 @@ describe('EstrangeirosConsulta', () => {
     expect(screen.getByRole('heading', { name: /dados que ainda precisam/i })).toBeInTheDocument();
     expect(screen.queryByRole('combobox', { name: /possíveis enquadramentos/i })).not.toBeInTheDocument();
   });
+});
+
+it('mostra a data original e a revisão pendente sem validar a fonte pelo registro de conferência', () => {
+  render(<EstrangeirosConsulta />);
+  expect(screen.getByText(/conteúdo atualizado em 30 de julho de 2019/i)).toBeInTheDocument();
+  expect(screen.getAllByText(/conferência registrada no acervo: 12\/10\/2026.*não equivale/i)).toHaveLength(3);
+  expect(screen.getAllByText(/situação no acervo: requer revisão/i)).toHaveLength(3);
+  expect(screen.getByText(/pendente de confirmação em fonte oficial/i)).toBeInTheDocument();
+});
+
+it('identifica falha do serviço e a análise local e permite repetir a consulta', async () => {
+  const fetchMock = jest.fn().mockRejectedValue(new Error('offline'));
+  global.fetch = fetchMock;
+  render(<EstrangeirosConsulta />);
+  fireEvent.change(screen.getByLabelText(/descreva a situação/i), { target: { value: 'argentino com carteira vencida' } });
+  fireEvent.click(screen.getByRole('button', { name: /interpretar consulta/i }));
+  expect(await screen.findByRole('alert')).toHaveTextContent(/análise local/i);
+  expect(screen.getByRole('heading', { name: /trechos do acervo recuperados/i })).toBeInTheDocument();
+  expect(screen.getAllByText(/pendente de confirmação em fonte oficial/i).length).toBeGreaterThan(1);
+  fireEvent.click(screen.getByRole('button', { name: /tentar novamente/i }));
+  await screen.findByRole('alert');
+  expect(fetchMock).toHaveBeenCalledTimes(2);
+});
+
+it('limita a espera e cancela a consulta ao desmontar', async () => {
+  jest.useFakeTimers();
+  global.fetch = jest.fn(() => new Promise(() => {})) as typeof fetch;
+  const { unmount } = render(<EstrangeirosConsulta />);
+  fireEvent.change(screen.getByLabelText(/descreva a situação/i), { target: { value: 'argentino' } });
+  fireEvent.click(screen.getByRole('button', { name: /interpretar consulta/i }));
+  await act(async () => { jest.advanceTimersByTime(15000); });
+  expect(screen.getByRole('alert')).toHaveTextContent(/tempo de espera terminou/i);
+  expect(screen.getByRole('alert')).toHaveTextContent(/análise local/i);
+  fireEvent.click(screen.getByRole('button', { name: /tentar novamente/i }));
+  const signal = (global.fetch as jest.Mock).mock.calls[1][1].signal;
+  unmount();
+  expect(signal.aborted).toBe(true);
+  jest.useRealTimers();
+});
+
+
+it('oferece uma única seleção de país estrangeiro da América do Sul', () => {
+  render(<EstrangeirosConsulta />);
+  const paises = screen.getByRole('combobox', { name: /país emissor/i });
+  expect(within(paises).getAllByRole('option')).toHaveLength(12);
+  expect(within(paises).getByRole('option', { name: 'Colômbia' })).toHaveValue('CO');
+  expect(within(paises).getByRole('option', { name: 'Suriname' })).toHaveValue('SR');
+  expect(within(paises).queryByRole('option', { name: /outro|estados unidos|brasil/i })).not.toBeInTheDocument();
+  expect(screen.queryByRole('button', { name: 'Argentina' })).not.toBeInTheDocument();
+  fireEvent.change(paises, { target: { value: 'CO' } });
+  expect(paises).toHaveValue('CO');
+  fireEvent.click(screen.getByRole('button', { name: /analisar situação/i }));
+  expect(screen.getByText(/Colômbia:.*reciprocidade/i)).toBeInTheDocument();
+});
+
+it('disponibiliza modelos ilustrativos dos documentos sob demanda', () => {
+  render(<EstrangeirosConsulta />);
+  expect(screen.getByRole('heading', { name: /modelos visuais dos documentos/i })).toBeInTheDocument();
+  expect(screen.getByText(/não reproduzem layouts oficiais/i)).toBeInTheDocument();
+  const modelo = screen.getByText('Ver modelo de habilitação').closest('details')!;
+  fireEvent.click(within(modelo).getByText('Ver modelo de habilitação'));
+  expect(within(modelo).getByRole('img', { name: /modelo ilustrativo.*habilitação/i })).toHaveAttribute('src', '/documentos/estrangeiros/modelos/habilitacao.svg');
+  expect(within(modelo).getByRole('link', { name: /ampliar modelo/i })).toHaveAttribute('target', '_blank');
+});
+
+it('descarta campos com tipos inválidos no rascunho antes da análise local', () => {
+ localStorage.setItem('ctb-rascunho-estrangeiros',JSON.stringify({schema:1,valor:{pergunta:'',fatos:{paisHabilitacao:true,identidadeApresentada:'false',habilitacao:'inventada',dataEntrada:'2026-99-99',registroVeiculo:'estrangeiro'}}}));
+ render(<EstrangeirosConsulta/>);
+ const saved=JSON.parse(localStorage.getItem('ctb-rascunho-estrangeiros')!);
+ expect(saved.valor.fatos).toEqual({registroVeiculo:'estrangeiro'});
+ fireEvent.click(screen.getByRole('button',{name:/analisar situação/i}));
+ expect(screen.getByRole('heading',{name:/dados que ainda precisam/i})).toBeInTheDocument();
 });

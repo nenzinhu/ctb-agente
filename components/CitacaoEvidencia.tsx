@@ -1,5 +1,7 @@
 'use client';
 
+import TextoReferenciasCtb from './TextoReferenciasCtb';
+
 import { useState } from 'react';
 import { CartaoEstruturado } from '@/lib/response/response-types';
 import Icone from './ui/Icone';
@@ -22,6 +24,7 @@ export default function CitacaoEvidencia({ citacoes }: CitacaoEvidenciaProps) {
         Fontes e citações
       </h3>
 
+      <p className="mt-2 text-xs text-ds-subtle">Localizar o trecho na base não confirma vigência ou revisão jurídica.</p>
       <ul className="mt-4 space-y-2">
         {citacoes.map((cit, idx) => {
           const aberta = expanded === idx;
@@ -37,7 +40,7 @@ export default function CitacaoEvidencia({ citacoes }: CitacaoEvidenciaProps) {
                   <span className="block font-mono text-sm font-semibold text-ds-primary">{cit.dispositivo}</span>
                   <span className={`mt-1 ${cit.validada ? 'badge-brand' : 'badge-media'}`}>
                     <Icone nome={cit.validada ? 'check' : 'alerta'} tamanho={12} />
-                    {cit.validada ? 'Validada no texto da lei' : 'Não verificada'}
+                    {cit.validada ? 'Trecho localizado na base' : 'Revisão pendente'}
                   </span>
                 </span>
                 <Icone
@@ -49,7 +52,7 @@ export default function CitacaoEvidencia({ citacoes }: CitacaoEvidenciaProps) {
 
               {aberta && (
                 <blockquote className="border-t border-ds-line bg-ds-muted px-4 py-3 text-sm italic leading-relaxed text-ds-text">
-                  “{cit.trecho}”
+                  “<TextoReferenciasCtb texto={cit.trecho} />”
                 </blockquote>
               )}
             </li>

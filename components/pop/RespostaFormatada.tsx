@@ -1,10 +1,12 @@
+import TextoReferenciasCtb from '../TextoReferenciasCtb';
+import { contextoCtbSeguro } from '@/lib/ctb/referencias';
 import { formatarResposta, type Trecho } from '@/lib/rag/formatar-resposta';
 
-function Inline({ trechos, prefixo }: { trechos: Trecho[]; prefixo: string }) {
+function Inline({ trechos, prefixo, contextoCtb }: { trechos: Trecho[]; prefixo: string; contextoCtb: boolean }) {
   return (
     <>
       {trechos.map((t, i) => {
-        if (t.tipo === 'negrito') return <strong key={i}>{t.valor}</strong>;
+        if (t.tipo === 'negrito') return <strong key={i}><TextoReferenciasCtb texto={t.valor} contextoCtb={contextoCtb} /></strong>;
         if (t.tipo === 'citacao') {
           return (
             <a
@@ -17,7 +19,7 @@ function Inline({ trechos, prefixo }: { trechos: Trecho[]; prefixo: string }) {
             </a>
           );
         }
-        return <span key={i}>{t.valor}</span>;
+        return <span key={i}><TextoReferenciasCtb texto={t.valor} contextoCtb={contextoCtb} /></span>;
       })}
     </>
   );
@@ -33,7 +35,7 @@ export default function RespostaFormatada({ texto, prefixo = 'fonte' }: { texto:
         if (bloco.tipo === 'paragrafo') {
           return (
             <p key={i}>
-              <Inline trechos={bloco.conteudo} prefixo={prefixo} />
+              <Inline trechos={bloco.conteudo} prefixo={prefixo} contextoCtb={contextoCtbSeguro(texto)} />
             </p>
           );
         }
@@ -42,7 +44,7 @@ export default function RespostaFormatada({ texto, prefixo = 'fonte' }: { texto:
           <Lista key={i} className={`space-y-1.5 pl-5 ${bloco.tipo === 'numerada' ? 'list-decimal' : 'list-disc'}`}>
             {bloco.itens.map((item, j) => (
               <li key={j}>
-                <Inline trechos={item} prefixo={prefixo} />
+                <Inline trechos={item} prefixo={prefixo} contextoCtb={contextoCtbSeguro(texto)} />
               </li>
             ))}
           </Lista>

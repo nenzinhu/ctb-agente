@@ -1,3 +1,4 @@
+import TextoReferenciasCtb from '../TextoReferenciasCtb';
 import type { ItemPop, Pop } from '@/lib/pop/parser';
 import ExplicacaoSimples from '../ExplicacaoSimples';
 import Icone, { type NomeIcone } from '../ui/Icone';
@@ -16,9 +17,9 @@ function TextoComReferencias({
   catalogo = [],
   onAbrirReferencia,
 }: { texto: string } & ReferenciasProps) {
-  if (!onAbrirReferencia || catalogo.length === 0) return texto;
+  if (!onAbrirReferencia || catalogo.length === 0) return <TextoReferenciasCtb texto={texto} />;
   return segmentarReferenciasPop(texto, catalogo).map((segmento, indice) =>
-    segmento.tipo === 'texto' ? segmento.texto : (
+    segmento.tipo === 'texto' ? <TextoReferenciasCtb key={indice} texto={segmento.texto} /> : (
       <button
         key={`${segmento.numero}-${indice}`}
         type="button"

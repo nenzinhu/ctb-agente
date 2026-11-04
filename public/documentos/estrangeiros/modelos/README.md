@@ -1,0 +1,1 @@
+Diagramas vetoriais originais para ajuda visual. Não são fotografias, reproduções ou padrões oficiais de documentos nacionais. Não contêm dados pessoais, brasões, selos, assinaturas nem códigos verificáveis. A finalidade é indicar campos a conferir; as exigências devem ser verificadas nas fontes oficiais do módulo.

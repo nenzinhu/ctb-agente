@@ -1,4 +1,6 @@
 // GET /api/health — liveness probe used by the deployment guide and CI smoke tests
+import { getEmbeddingConfig } from '@/lib/ai/embedding-config';
+import type { EmbeddingConfig } from '@/lib/ai/embedding-models';
 import { NextResponse } from 'next/server';
 import { databaseAdminConfigured, databaseConfigured, supabase, supabaseAdmin } from '@/lib/db/client';
 import { listProviders } from '@/lib/ai/providers/registry';
@@ -19,6 +21,7 @@ interface HealthPayload {
   cache: 'ok' | 'indisponivel';
   /** Busca semântica: sem chave de embedding metade da busca híbrida fica de fora. */
   embeddings: 'ok' | 'indisponivel';
+  modeloVetorial: string;
   avisos: string[];
 }
 
@@ -26,10 +29,10 @@ interface HealthPayload {
  * Check whether the vector-search RPC is reachable (migration 003 applied)
  * @returns 'ok' when the RPC answers, 'indisponivel' otherwise
  */
-async function checkVectorRpc(): Promise<boolean> {
+async function checkVectorRpc(config: EmbeddingConfig): Promise<boolean> {
   try {
     // Never true for a zero vector against real rows; cheap and needs no key.
-    const { error } = await supabase.rpc('search_dispositivos_vector', {
+    const { error } = await supabase.rpc(config.coluna === 'embedding_nemotron' ? 'search_dispositivos_nemotron' : 'search_dispositivos_vector', {
       query_embedding: new Array(1024).fill(0),
       limit_count: 1,
     });
@@ -57,7 +60,8 @@ async function checkRagSchema(): Promise<number | null> {
 export async function GET() {
   let banco: 'ok' | 'indisponivel' = 'ok';
   let cache: 'ok' | 'indisponivel' = 'ok';
-  let embeddings: 'ok' | 'indisponivel' = process.env.MISTRAL_API_KEY ? 'ok' : 'indisponivel';
+  const config = await getEmbeddingConfig();
+  let embeddings: 'ok' | 'indisponivel' = config.configurado ? 'ok' : 'indisponivel';
   let esquemaRag: number | null = null;
   const avisos: string[] = [];
 
@@ -90,9 +94,12 @@ export async function GET() {
       cache = 'indisponivel';
     }
 
-    const rpcOk = await checkVectorRpc();
+    const rpcOk = await checkVectorRpc(config);
     if (!rpcOk) {
-      avisos.push('Busca vetorial indisponível: aplique scripts/migrations-003-search-functions.sql.');
+      embeddings = 'indisponivel';
+      avisos.push(config.coluna === 'embedding_nemotron'
+        ? 'Busca Nemotron indisponível: aplique scripts/migrations-015-nemotron-embeddings.sql e gere os vetores pendentes.'
+        : 'Busca vetorial indisponível: aplique scripts/migrations-003-search-functions.sql.');
     }
 
     esquemaRag = await checkRagSchema();
@@ -110,7 +117,7 @@ export async function GET() {
 
   if (embeddings === 'indisponivel') {
     avisos.push(
-      'Busca semântica desativada: defina MISTRAL_API_KEY — sem ela a busca híbrida roda só com BM25.'
+      `Busca semântica indisponível para ${config.nome}: verifique ${config.envVar} e a migração do modelo. A busca textual continua disponível (alternativa: MISTRAL_API_KEY).`
     );
   }
 
@@ -126,6 +133,7 @@ export async function GET() {
     esquemaRag,
     cache,
     embeddings,
+    modeloVetorial: config.id,
     configuracoes: settings,
     provedoresConfigurados: providers.filter((p) => p.configurado).map((p) => p.nome),
     provedoresAusentes: providers.filter((p) => !p.configurado).map((p) => p.nome),

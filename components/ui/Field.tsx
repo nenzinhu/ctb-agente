@@ -1,4 +1,4 @@
-import { useId, type ComponentPropsWithRef, type ReactNode } from 'react';
+import { useId, useRef, type ComponentPropsWithRef, type ReactNode } from 'react';
 import { cx } from './cx';
 
 interface CampoBase {
@@ -9,6 +9,8 @@ interface CampoBase {
   erro?: string | null;
   /** Control placed beside the field, such as an IconButton */
   acao?: ReactNode;
+  /** Explicit clear action for search fields; caller owns cancellation. */
+  onClear?: () => void;
   /** Classes for the wrapper */
   className?: string;
   /** Extra classes for the control itself */
@@ -26,8 +28,9 @@ export type FieldProps = CampoBase & Controle;
  * Label + control wired together: the label targets the control, and the
  * hint and error are announced with it (aria-describedby).
  */
-export default function Field({ label, hint, erro, acao, className, controlClassName, ...controle }: FieldProps) {
+export default function Field({ label, hint, erro, acao, onClear, className, controlClassName, ...controle }: FieldProps) {
   const gerado = useId();
+  const clearContainer = useRef<HTMLDivElement>(null);
   const id = controle.id ?? `campo-${gerado}`;
   const idDica = hint ? `${id}-dica` : undefined;
   const idErro = erro ? `${id}-erro` : undefined;
@@ -49,6 +52,12 @@ export default function Field({ label, hint, erro, acao, className, controlClass
   } else {
     const { as: _as, ...resto } = controle;
     campo = <input {...resto} {...comum} />;
+  }
+
+  if (onClear && controle.as !== 'select') {
+    campo = <div ref={clearContainer} className="field-with-clear">{campo}
+      {typeof controle.value === 'string' && controle.value.length > 0 && <button type="button" className="field-clear" aria-label="Limpar pesquisa" title="Limpar pesquisa" onClick={() => { onClear(); clearContainer.current?.querySelector<HTMLInputElement | HTMLTextAreaElement>('input,textarea')?.focus(); }}><span className="field-clear-mark" aria-hidden="true" /></button>}
+    </div>;
   }
 
   return (

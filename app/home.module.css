@@ -1,0 +1,83 @@
+/* The fixed viewport belongs to the home dashboard only. Legal reading routes
+   retain their complete content and normal document navigation. */
+:global(html):has(.dashboard), :global(body):has(.dashboard) {
+  height: 100vh;
+  height: 100dvh;
+  width: 100%;
+  overflow: hidden;
+}
+:global(body):has(.dashboard) { display: flex; flex-direction: column; }
+:global(body):has(.dashboard) > :global(.ds-header) { flex: none; padding-top: env(safe-area-inset-top); }
+:global(body):has(.dashboard) :global(.header-strip),
+:global(body):has(.dashboard) > footer,
+:global(body):has(.dashboard) :global(.mobile-nav) { display: none; }
+:global(body):has(.dashboard) > :global(#conteudo) { flex: 1; min-height: 0; }
+.dashboard { height: 100%; width: 100vw; overflow: hidden; display: flex; flex-direction: column; color: var(--ds-text); background: transparent; }
+.workspace { width: 100%; max-width: 760px; margin: auto; padding: clamp(12px, 3vh, 32px) 20px 10px; flex: 1; min-height: 0; display: flex; flex-direction: column; gap: 14px; }
+.heading { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex: none; }
+.heading h1 { font-size: clamp(20px, 4.8vw, 28px); font-weight: 700; letter-spacing: -.025em; line-height: 1.15; }
+.heading p { margin-top: 6px; font-size: 13px; color: var(--ds-subtle); }
+.help { min-width: 44px; height: 44px; display: grid; place-items: center; border: 1px solid var(--ds-line); border-radius: 12px; background: var(--ds-surface); }
+.panel { flex: 1; min-height: 0; background: color-mix(in srgb, var(--ds-surface) 82%, transparent); border: 1px solid var(--ds-line); border-radius: 16px; padding: clamp(12px, 2.5vh, 24px); display: flex; flex-direction: column; gap: 12px; }
+.content { min-height: 0; flex: 1; animation: panel-in 180ms ease-out; }
+.search { height: 100%; display: flex; flex-direction: column; justify-content: center; gap: 16px; }
+.search[hidden] { display: none; }
+.search form { display: flex; flex-direction: column; gap: 12px; }
+.search form > * { margin-top: 0 !important; }
+.search textarea { min-height: 72px !important; max-height: 90px; resize: none; }
+.search :global(.hint) { font-size: 12px; line-height: 1.4; }
+.quick { display: flex; flex-wrap: wrap; gap: 8px; }
+.quick a { display: inline-flex; gap: 8px; align-items: center; padding: 8px 10px; border-radius: 8px; background: var(--ds-muted); font-size: 12px; min-height: 40px; }
+.recent { flex: none; border-top: 1px solid var(--ds-line); padding-top: 10px; display: flex; align-items: center; justify-content: space-between; gap: 12px; font-size: 12px; color: var(--ds-subtle); }
+.recent a { display: flex; align-items: center; gap: 12px; color: var(--ds-primary-strong); min-height: 32px; }
+.disclaimer { font-size: 11px; line-height: 1.4; color: var(--ds-subtle); flex: none; }
+.tabs { flex: none; display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; padding: 8px max(12px, calc((100vw - 720px) / 2)) max(8px, env(safe-area-inset-bottom)); background: var(--ds-surface); border-top: 1px solid var(--ds-line); }
+.tabs button { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px; min-height: 56px; border-radius: 12px; color: var(--ds-subtle); font-size: 12px; transition: background 160ms ease, color 160ms ease; }
+.tabs button[aria-selected='true'] { background: var(--ds-muted); color: var(--ds-primary-strong); font-weight: 700; box-shadow: inset 0 -3px var(--ds-primary-strong); }
+.tabs button:hover, .help:hover, .row:hover { background: var(--ds-muted); }
+.tabs button:focus-visible, .panel:focus-visible, .help:focus-visible, .row:focus-visible, .quick a:focus-visible, .pagination button:focus-visible { outline: 2px solid var(--ds-primary-strong); outline-offset: 2px; }
+.guide { display: flex; height: 100%; flex-direction: column; align-items: flex-start; justify-content: center; gap: clamp(12px, 2vh, 20px); }
+.guide h2 { font-size: 21px; line-height: 1.2; font-weight: 650; letter-spacing: -.02em; }
+.guide p { font-size: 14px; line-height: 1.5; color: var(--ds-subtle); max-width: 48ch; }
+.guide strong { color: var(--ds-text); }
+.symbol { width: 64px; height: 64px; display: grid; place-items: center; color: var(--ds-primary-strong); border-radius: 16px; background: var(--ds-muted); }
+.list { height: 100%; display: flex; flex-direction: column; justify-content: center; }
+.row { display: flex; align-items: center; gap: 14px; min-height: 90px; padding: 16px 4px; width: 100%; border-bottom: 1px solid var(--ds-line); }
+.row > svg { flex: none; color: var(--ds-primary-strong); }
+.row > span { flex: 1; min-width: 0; font-size: 16px; font-weight: 600; line-height: 1.35; overflow-wrap: anywhere; }
+.row small { display: block; margin-top: 6px; font-size: 13px; line-height: 1.4; font-weight: 400; color: var(--ds-subtle); }
+.pagination { display: flex; justify-content: space-between; align-items: center; font-size: 13px; color: var(--ds-subtle); }
+.pagination button { width: 44px; height: 44px; border: 1px solid var(--ds-line); border-radius: 10px; display: grid; place-items: center; }
+.pagination button:disabled { opacity: .35; }
+@keyframes panel-in { from { opacity: .65; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+@media (max-height: 700px) { .workspace { gap: 8px; padding: 10px 12px 6px; } .heading h1 { font-size: 20px; } .heading p { margin-top: 3px; font-size: 12px; } .panel { padding: 12px; gap: 6px; } .search { gap: 8px; } .search form { gap: 8px; } .quick a { padding: 4px 7px; min-height: 32px; } .guide { gap: 10px; } .symbol { width: 44px; height: 44px; } .tabs button { min-height: 48px; } }
+@media (max-height: 520px) { .workspace { padding-top: 6px; gap: 4px; } .heading p { display: none; } .panel { padding: 8px 12px; } .search form { display: grid; grid-template-columns: 1fr 1fr; align-items: end; gap: 6px 14px; } .search form > fieldset { grid-column: 1 / -1; } .search textarea { min-height: 48px !important; max-height: 48px; } .search :global(.hint) { font-size: 11px; } .quick { gap: 4px; } .recent { padding-top: 2px; } .guide { gap: 6px; } .guide p { font-size: 12px; } .guide h2 { font-size: 17px; } .symbol { display: none; } .row { min-height: 60px; padding: 8px 0; } .tabs { padding-top: 4px; } .tabs button { flex-direction: row; min-height: 44px; } }
+@media (prefers-reduced-motion: reduce) { .content { animation: none; } .tabs button { transition: none; } }
+:global(body):has(.dashboard) { padding-bottom: 0; min-height: 0; }
+@media (max-height: 520px) {
+  .search form > fieldset { grid-column: 1; grid-row: 1; }
+  .search form > div:nth-child(2) { grid-column: 2; grid-row: 1 / 3; }
+  .search form > button[type='submit'] { grid-column: 1; grid-row: 2; }
+  .search { gap: 4px; }
+  .quick a { min-height: 28px; padding-block: 2px; }
+  .recent a { min-height: 24px; }
+}
+@media (max-height: 520px) {
+  .search { position: relative; justify-content: flex-start; }
+  .search :global(.search-shortcuts) { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 4px; }
+  .search :global(.search-shortcut) { padding: 6px; gap: 4px; font-size: 12px; white-space: nowrap; min-width: 0; }
+  .quick { position: absolute; right: 0; bottom: 0; width: calc(50% - 7px); flex-wrap: nowrap; }
+  .quick a { font-size: 10px; gap: 3px; padding-inline: 4px; }
+}
+/* The home keeps its bottom tabs fixed when continuous reading is selected. */
+:global(:root[data-reading-mode='scroll']) .workspace { overflow-y: auto; overflow-x: hidden; margin-block: 0; scrollbar-width: thin; }
+:global(:root[data-reading-mode='scroll']) .panel { flex: none; min-height: 420px; }
+:global(:root[data-reading-mode='scroll']) .content { min-height: 360px; }
+
+/* The supplied PMRv plaque is shared by home and route navigation. */
+.tabs { gap: 8px; background: color-mix(in srgb, var(--ds-surface) 92%, transparent); border-top-color: var(--ds-gold); padding-top: 10px; }
+.tabs button:global(.pmrv-tab) { flex-direction: row; border-radius: 0; font-size: clamp(11px, 2.8vw, 14px); }
+.tabs button:global(.pmrv-tab)[aria-selected='true'] { color: var(--pmrv-plaque-ink); background: transparent; box-shadow: none; }
+.tabs button:global(.pmrv-tab):hover { background: transparent; }
+.tabs { display: block; }
+.tabs :global(.pmrv-tab-arrow) { min-height: 44px; font-size: inherit; }

@@ -1,3 +1,4 @@
+import { getEmbeddingConfig } from '@/lib/ai/embedding-config';
 import { listDocuments } from '@/lib/ingestion/documents';
 import { todasAsFichas } from '@/lib/mbft/fichas';
 import { todosOsPops } from '@/lib/pop/pops';
@@ -94,7 +95,7 @@ export async function executarDiagnostico(colecao: ColecaoQualidade): Promise<Di
   const invalidos = estatisticas.vazios + estatisticas.curtos + local.invalidos + (erros.length > 0 ? 1 : 0);
   const duplicados = estatisticas.duplicados + local.duplicados;
   const vetoresAplicaveis = colecao === 'ctb' || (colecao === 'pop' && estatisticas.trechos > 0);
-  const buscaSemanticaDisponivel = Boolean(process.env.MISTRAL_API_KEY);
+  const buscaSemanticaDisponivel = (await getEmbeddingConfig()).configurado;
   const prontidao = avaliarProntidao({
     fontes,
     documentos: colecao === 'mbft' ? fontes.length : estatisticas.documentos,

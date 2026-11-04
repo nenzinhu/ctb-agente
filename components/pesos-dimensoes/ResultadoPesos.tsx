@@ -76,7 +76,7 @@ export default function ResultadoPesos({ resultado }: { resultado: RespostaCalcu
                   const enquadramento = ENQUADRAMENTOS[codigo];
                   return (
                     <li key={codigo} className="flex items-start gap-3 rounded-md bg-ds-surface p-3">
-                      <span className="shrink-0 rounded-md bg-ds-danger px-2.5 py-1 font-mono font-bold text-white">{codigo}</span>
+                      <span className="shrink-0 rounded-md bg-ds-danger px-2.5 py-1 font-mono font-bold text-ds-on-solid">{codigo}</span>
                       <span className="text-sm">
                         <strong className="block text-ds-text">{enquadramento?.descricao ?? 'Enquadramento de trânsito identificado.'}</strong>
                         {enquadramento && <small className="mt-0.5 block text-ds-subtle">{enquadramento.amparo}</small>}
@@ -86,6 +86,13 @@ export default function ResultadoPesos({ resultado }: { resultado: RespostaCalcu
                 })}
               </ul>
               {fiscalizacao.responsavelProvavel && <p className="mt-3 text-sm"><strong>Responsável provável:</strong> {fiscalizacao.responsavelProvavel}</p>}
+            </div>
+          )}
+
+          {fiscalizacao.status === 'autuavel' && (
+            <div className="mt-4 rounded-control border-2 border-ds-danger bg-ds-danger/10 p-4 text-sm font-semibold text-ds-danger" role="alert">
+              <strong className="block text-base">Transbordo ou remanejamento obrigatório</strong>
+              <span className="mt-1 block font-normal">A carga excedente deve ser regularizada antes de o veículo prosseguir, conforme a providência indicada na análise.</span>
             </div>
           )}
 

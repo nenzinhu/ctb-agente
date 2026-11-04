@@ -106,4 +106,15 @@ describe('FavoritosPage', () => {
 
     expect(await screen.findByText('Nenhum favorito ainda')).toBeInTheDocument();
   });
+
+  it('keeps saved cards visible and announces a refused deletion', async () => {
+    salvarFavorito();
+    const remove = jest.spyOn(Storage.prototype, 'removeItem').mockImplementation(() => { throw new Error('blocked'); });
+    const log = jest.spyOn(console, 'error').mockImplementation(() => {});
+    render(<FavoritosPage />);
+    await userEvent.click(await screen.findByRole('button', { name: 'Limpar tudo' }));
+    expect(screen.getByRole('alert')).toHaveTextContent(/não.*apagar/i);
+    expect(screen.getByRole('link', { name: 'Estacionar em local proibido' })).toBeInTheDocument();
+    remove.mockRestore(); log.mockRestore();
+  });
 });

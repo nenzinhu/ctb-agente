@@ -1,6 +1,7 @@
 'use client';
 
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { requestJson } from '@/lib/client/request';
 import dynamic from 'next/dynamic';
 import Icone from '../ui/Icone';
 import SectionCard from '../ui/SectionCard';
@@ -31,35 +32,46 @@ interface BibliotecaResposta {
  */
 export default function PopBiblioteca() {
   const [dados, setDados] = useState<BibliotecaResposta | null>(null);
-  const [erro, setErro] = useState(false);
+  const [erro, setErro] = useState<string | null>(null);
+  const [carregando, setCarregando] = useState(true);
+  const request = useRef<AbortController | null>(null);
   const [master, setMaster] = useState(false);
   const [anexando, setAnexando] = useState(false);
   const [excluindo, setExcluindo] = useState<string | null>(null);
 
   const carregar = useCallback(async () => {
+    request.current?.abort();
+    const controller = new AbortController();
+    request.current = controller;
+    setCarregando(true); setErro(null);
     try {
-      const resposta = await fetch('/api/pop/documentos');
-      if (!resposta.ok) throw new Error();
-      setDados((await resposta.json()) as BibliotecaResposta);
-      setErro(false);
-    } catch {
-      setErro(true);
+      const dados = await requestJson<BibliotecaResposta>('/api/pop/documentos', { signal: controller.signal });
+      if (!dados || !Array.isArray(dados.documentos) || typeof dados.bancoConfigurado !== 'boolean') throw new Error('O serviço retornou uma biblioteca inválida.');
+      if (!controller.signal.aborted) setDados(dados);
+    } catch (error) {
+      if (!controller.signal.aborted) setErro(error instanceof Error ? error.message : 'Não foi possível carregar a biblioteca.');
+    } finally {
+      if (!controller.signal.aborted) setCarregando(false);
     }
   }, []);
 
   useEffect(() => {
+    const controller = new AbortController();
     void carregar();
-    fetch('/api/admin/session')
-      .then((r) => setMaster(r.ok))
-      .catch(() => setMaster(false));
+    requestJson('/api/admin/session', { signal: controller.signal })
+      .then(() => { if (!controller.signal.aborted) setMaster(true); })
+      .catch(() => { if (!controller.signal.aborted) setMaster(false); });
+    return () => { request.current?.abort(); controller.abort(); };
   }, [carregar]);
 
   const excluir = async (doc: DocumentoPop) => {
     if (!window.confirm(`Remover "${doc.titulo}" da base de POPs?`)) return;
     setExcluindo(doc.id);
     try {
-      await fetch(`/api/admin/documents?id=${encodeURIComponent(doc.id)}`, { method: 'DELETE' });
+      await requestJson(`/api/admin/documents?id=${encodeURIComponent(doc.id)}`, { method: 'DELETE' });
       await carregar();
+    } catch (error) {
+      setErro(error instanceof Error ? error.message : 'Não foi possível remover o documento.');
     } finally {
       setExcluindo(null);
     }
@@ -71,9 +83,9 @@ export default function PopBiblioteca() {
       icone="livro"
       acao={dados && dados.documentos.length > 0 && <span className="badge-neutral">{dados.documentos.length}</span>}
     >
-      {erro && <p className="text-sm text-ds-danger">Não foi possível carregar a biblioteca.</p>}
+      {erro && <div role="alert" className="space-y-3 text-sm text-ds-danger"><p>{erro}</p><button type="button" className="btn-secondary" onClick={() => void carregar()}>Tentar novamente</button><p className="text-ds-subtle">O manual incluído no projeto continua acessível em “Consultar o manual disponível”. Confira a fonte vigente antes de agir.</p></div>}
 
-      {!dados && !erro && (
+      {carregando && (
         <div className="space-y-2" role="status">
           <span className="sr-only">Carregando…</span>
           <div className="skeleton h-12" />
@@ -87,7 +99,9 @@ export default function PopBiblioteca() {
         </p>
       )}
 
-      {dados && !dados.migracaoPendente && dados.documentos.length === 0 && (
+      {dados && !dados.bancoConfigurado && <p className="text-sm text-ds-subtle">A biblioteca de documentos anexados está indisponível: o banco não está configurado. Consulte o manual incluído no projeto.</p>}
+
+      {dados && dados.bancoConfigurado && !dados.migracaoPendente && dados.documentos.length === 0 && (
         <p className="text-sm text-ds-subtle">
           Nenhum POP indexado ainda.{master ? ' Anexe os arquivos abaixo.' : ' O administrador pode anexá-los pelo painel.'}
         </p>

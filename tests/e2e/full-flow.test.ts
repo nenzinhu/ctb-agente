@@ -5,9 +5,9 @@ test.describe('CTB Agente — fluxo completo', () => {
   test('a home carrega com a navegação principal', async ({ page }) => {
     await page.goto('/');
 
-    await expect(page.getByRole('heading', { name: 'CTB Agente' })).toBeVisible();
-    await expect(page.getByLabel('Sua consulta')).toBeVisible();
-    await expect(page.getByRole('link', { name: /POP-PMSC.*procedimentos/i })).toBeVisible();
+    await expect(page.getByRole('heading', { name: /Consulta rápida/ })).toBeVisible();
+    await expect(page.getByLabel('O que aconteceu?')).toBeVisible();
+    await expect(page.getByRole('link', { name: 'POP-PMSC', exact: true })).toBeVisible();
     await expect(page.getByRole('link', { name: /Gerar apostila/ })).toBeVisible();
     await expect(page.getByRole('link', { name: /Comprimir PDF.*somente texto/i })).toBeVisible();
   });
@@ -16,7 +16,7 @@ test.describe('CTB Agente — fluxo completo', () => {
     await page.setViewportSize({ width: 360, height: 800 });
     await page.goto('/');
 
-    await expect(page.getByText(/Aplicativo de apoio ao agente em campo/)).toBeVisible();
+    await expect(page.getByText('CTB, MBFT e POPs para apoiar sua atuação.')).toBeVisible();
     await expect(page.getByText('CTB Agente — desenvolvido pelo Cabo Jeferson')).toBeVisible();
     const semRolagemHorizontal = await page.evaluate(
       () => document.documentElement.scrollWidth <= document.documentElement.clientWidth,
@@ -29,7 +29,7 @@ test.describe('CTB Agente — fluxo completo', () => {
     await page.goto('/');
     await page.reload();
 
-    const campo = page.getByLabel('Sua consulta');
+    const campo = page.getByLabel('O que aconteceu?');
     await expect(campo).toBeVisible();
     await campo.fill('art. 165');
     await expect(campo).toHaveValue('art. 165');
@@ -103,7 +103,7 @@ test.describe('CTB Agente — fluxo completo', () => {
   test('o formulário leva para a página de resultado', async ({ page }) => {
     await page.goto('/');
 
-    await page.getByLabel('Sua consulta').fill('516-91');
+    await page.getByLabel('O que aconteceu?').fill('516-91');
     await page.getByRole('button', { name: 'Consultar', exact: true }).click();
 
     await page.waitForURL(/\/consulta\?q=/);
@@ -111,14 +111,22 @@ test.describe('CTB Agente — fluxo completo', () => {
     await expect(page.getByText('516-91').first()).toBeVisible();
   });
 
-  test('consultas recentes ficam salvas no aparelho', async ({ page }) => {
+  test('apenas identificadores legais ficam salvos no histórico do aparelho', async ({ page }) => {
     await page.goto('/');
-    await page.getByLabel('Sua consulta').fill('teste-e2e');
+    await page.getByLabel('O que aconteceu?').fill('teste-e2e');
     await page.getByRole('button', { name: 'Consultar', exact: true }).click();
     await page.waitForURL(/\/consulta\?q=/);
 
     await page.goto('/');
-    await expect(page.getByRole('button', { name: 'teste-e2e' })).toBeVisible();
+    await expect(page.getByRole('button', { name: 'teste-e2e' })).toHaveCount(0);
+    expect(await page.evaluate(() => localStorage.getItem('ctb-recent-queries'))).toBeNull();
+    await page.getByLabel('O que aconteceu?').fill('516-91');
+    await page.getByRole('button', { name: 'Consultar', exact: true }).click();
+    await page.waitForURL(/\/consulta\?q=/);
+    await page.goto('/');
+    await expect(page.getByRole('region', { name: 'Consultas recentes', exact: true }).getByRole('button', { name: '516-91', exact: true })).toBeVisible();
+    await page.getByRole('button', { name: 'Limpar consultas recentes' }).click();
+    expect(await page.evaluate(() => localStorage.getItem('ctb-recent-queries'))).toBeNull();
   });
 
   test('a página de PDF mostra temas e seções', async ({ page }) => {

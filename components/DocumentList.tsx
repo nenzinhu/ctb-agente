@@ -1,5 +1,6 @@
 'use client';
 
+import OrigemTexto from './OrigemTexto';
 import { useCallback, useEffect, useState } from 'react';
 import type { Colecao, DocumentoRegistro, DocumentosResposta, GrupoLegado } from '@/lib/ingestion/documents';
 import Icone from './ui/Icone';
@@ -158,7 +159,7 @@ export default function DocumentList({ colecao, refreshTrigger, onChange }: Docu
 
   const termo = busca.trim().toLowerCase();
   const documentos: DocumentoRegistro[] = termo
-    ? dados.documentos.filter((d) => `${d.titulo} ${d.nome_arquivo} ${d.norma_id ?? ''}`.toLowerCase().includes(termo))
+    ? dados.documentos.filter((d) => `${d.titulo} ${d.nome_arquivo} ${d.norma_id ?? ''} ${d.tipo ?? ''}`.toLowerCase().includes(termo))
     : dados.documentos;
 
   return (
@@ -173,6 +174,8 @@ export default function DocumentList({ colecao, refreshTrigger, onChange }: Docu
           </p>
         </div>
       )}
+
+      {dados.message && dados.bancoConfigurado && <p className="alert-warn" role="note">{dados.message}</p>}
 
       {dados.migracaoPendente && (
         <div className="alert-warn">
@@ -194,7 +197,7 @@ export default function DocumentList({ colecao, refreshTrigger, onChange }: Docu
         </div>
       )}
 
-      {dados.pendentesVetor > 0 && (
+      {(dados.pendentesVetor ?? 0) > 0 && (
         <div className="panel flex flex-col gap-3 p-4 sm:flex-row sm:items-center">
           <Icone nome="faisca" className="shrink-0 text-ds-primary" />
           <p className="flex-1 text-sm text-ds-text">
@@ -216,24 +219,26 @@ export default function DocumentList({ colecao, refreshTrigger, onChange }: Docu
         </p>
       )}
 
-      {dados.documentos.length > 5 && (
-        <label className="block">
-          <span className="sr-only">Buscar documento</span>
-          <input
-            type="search"
-            value={busca}
-            onChange={(e) => setBusca(e.target.value)}
-            placeholder="Buscar por título, arquivo ou norma…"
-            className="input"
-          />
-        </label>
-      )}
+      <label className="block">
+        <span className="label">Pesquisar arquivo ou artigo</span>
+        <input
+          type="search"
+          value={busca}
+          onChange={(e) => setBusca(e.target.value)}
+          placeholder="Ex.: CTB, Resolução 432, ctb.pdf…"
+          className="input"
+          aria-label="Pesquisar arquivo ou artigo"
+        />
+        <span className="hint">Pesquise pelo título, nome do arquivo, norma ou tipo do documento.</span>
+      </label>
 
       {documentos.length === 0 && dados.legado.length === 0 ? (
         <div className="rounded-control border-2 border-dashed border-ds-line px-6 py-10 text-center">
           <Icone nome="arquivo" tamanho={28} className="mx-auto text-ds-subtle" />
-          <p className="mt-2 font-semibold text-ds-text">Nenhum documento indexado ainda</p>
-          <p className="mt-1 text-sm text-ds-subtle">Envie um arquivo acima para começar.</p>
+          <p className="mt-2 font-semibold text-ds-text">{termo ? 'Nenhum arquivo encontrado' : dados.legadoIndisponivel ? 'Não foi possível conferir toda a base' : 'Nenhum documento indexado ainda'}</p>
+          <p className="mt-1 text-sm text-ds-subtle">
+            {termo ? `Nenhum arquivo corresponde a “${busca.trim()}”.` : dados.legadoIndisponivel ? 'A consulta dos trechos legados está indisponível. Tente atualizar a lista antes de reenviar arquivos.' : 'Envie um arquivo acima para começar.'}
+          </p>
         </div>
       ) : (
         <ul className="divide-y divide-ds-line overflow-hidden rounded-control border border-ds-line">
@@ -256,7 +261,7 @@ export default function DocumentList({ colecao, refreshTrigger, onChange }: Docu
                 </p>
                 <p className="mt-2 flex flex-wrap gap-x-3 gap-y-1 text-xs">
                   {!doc.fonte_oficial || !doc.versao || !doc.conferido_em || doc.situacao === 'revisar' ? (
-                    <span className="font-semibold text-ds-warn">Revisão necessária</span>
+                    <OrigemTexto tipo="pendente" />
                   ) : (
                     <>
                       <span className="text-ds-text">versão: {doc.versao}</span>

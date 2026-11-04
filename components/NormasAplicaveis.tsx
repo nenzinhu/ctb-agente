@@ -1,5 +1,8 @@
 'use client';
 
+import OrigemTexto from './OrigemTexto';
+import TextoReferenciasCtb from './TextoReferenciasCtb';
+
 import { useState } from 'react';
 import type { NormaAplicavel } from '@/lib/response/response-types';
 import Icone from './ui/Icone';
@@ -27,6 +30,7 @@ export default function NormasAplicaveis({ normas }: NormasAplicaveisProps) {
         Normas aplicáveis
       </h3>
 
+      <div className="mt-2"><OrigemTexto tipo="cadastro" /></div>
       <ul className="mt-4 space-y-2">
         {normas.map((norma) => {
           const expandida = aberta === norma.numero_dispositivo;
@@ -41,7 +45,7 @@ export default function NormasAplicaveis({ normas }: NormasAplicaveisProps) {
                 <span className="min-w-0">
                   <span className="block font-mono text-sm font-semibold text-ds-primary">{norma.numero_dispositivo}</span>
                   <span className="mt-0.5 block text-xs text-ds-subtle">
-                    {norma.tipo} · {norma.vigente ? 'vigente' : 'com vigência encerrada'}
+                    Situação cadastrada: {norma.tipo} · {norma.vigente ? 'vigente' : 'com vigência encerrada'}
                   </span>
                 </span>
                 <Icone
@@ -53,7 +57,7 @@ export default function NormasAplicaveis({ normas }: NormasAplicaveisProps) {
 
               {expandida && (
                 <p className="whitespace-pre-line border-t border-ds-line bg-ds-muted px-4 py-3 text-sm leading-relaxed text-ds-text">
-                  {norma.texto || 'Texto não cadastrado na base.'}
+                  <TextoReferenciasCtb texto={norma.texto || 'Texto não cadastrado na base.'} contextoCtb={/^ctb(?:-|$)/i.test(norma.norma_id)} />
                 </p>
               )}
             </li>

@@ -1,0 +1,41 @@
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+const request = jest.fn();
+jest.mock('../../lib/client/request', () => ({ requestJson: (...args: unknown[]) => request(...args) }));
+import StorageImport from '@/components/admin/StorageImport';
+const metadata = { colecao: 'ctb' as const, normaId: 'resolucao-contran-1013-2024', documentType: 'resolucao', fonteOficial: 'https://www.gov.br/transportes/', versao: 'PDF oficial', vigenteDesde: '2024-10-16', conferidoEm: '2026-11-03' };
+beforeEach(() => request.mockReset());
+it('importa um arquivo existente com os metadados e preserva o original', async () => {
+  const complete = jest.fn();
+  request.mockResolvedValueOnce({ entries: [{ name: 'resolucao.pdf', path: 'originais/resolucao.pdf', folder: false, supported: true }], hasMore: false }).mockResolvedValueOnce({ success: true, data: { insertedCount: 8, failedCount: 0, semVetor: 3 } });
+  render(<StorageImport metadata={metadata} disabled={false} onComplete={complete} />);
+  fireEvent.click(screen.getByRole('button', { name: 'Listar arquivos do Supabase' }));
+  await screen.findByRole('option', { name: 'resolucao.pdf' });
+  fireEvent.change(screen.getByRole('combobox', { name: 'Arquivo no Storage' }), { target: { value: 'originais/resolucao.pdf' } });
+  fireEvent.click(screen.getByRole('button', { name: 'Importar documento selecionado' }));
+  await waitFor(() => expect(complete).toHaveBeenCalledTimes(1));
+  const [url, init] = request.mock.calls[1];
+  expect(url).toBe('/api/ingestion/upload');
+  expect(JSON.parse(init.body)).toMatchObject({ ...metadata, storagePath: 'originais/resolucao.pdf', preserveStorageFile: true, situacao: 'revisar', dataVigenciaInicio: '2024-10-16T00:00:00.000Z' });
+  expect(screen.getByRole('status')).toHaveTextContent('8 trecho(s) importado(s)');
+  expect(screen.getByRole('status')).toHaveTextContent('3 trecho(s) sem vetor');
+});
+it('não indexa sem identificação da norma', async () => {
+  request.mockResolvedValueOnce({ entries: [{ name: 'a.pdf', path: 'a.pdf', folder: false, supported: true }] });
+  render(<StorageImport metadata={{ ...metadata, normaId: '' }} disabled={false} />);
+  fireEvent.click(screen.getByRole('button', { name: 'Listar arquivos do Supabase' }));
+  await screen.findByRole('option', { name: 'a.pdf' });
+  fireEvent.change(screen.getByRole('combobox'), { target: { value: 'a.pdf' } });
+  fireEvent.click(screen.getByRole('button', { name: 'Importar documento selecionado' }));
+  expect(screen.getByRole('alert')).toHaveTextContent('Preencha norma');
+  expect(request).toHaveBeenCalledTimes(1);
+});
+it('navega em subpastas e impede o envio de deliberação com tipo incorreto', async () => {
+  request.mockResolvedValueOnce({ entries: [{ name: 'originais', path: 'originais', folder: true, supported: false }] }).mockResolvedValueOnce({ entries: [{ name: 'deliberacao-277.pdf', path: 'originais/deliberacao-277.pdf', folder: false, supported: true }] });
+  render(<StorageImport metadata={metadata} disabled={false} />);
+  fireEvent.click(screen.getByRole('button', { name: 'Listar arquivos do Supabase' }));
+  fireEvent.click(await screen.findByRole('button', { name: 'Abrir pasta originais' }));
+  await screen.findByRole('option', { name: 'deliberacao-277.pdf' });
+  expect(request.mock.calls[1][0]).toContain('prefix=originais');
+  fireEvent.change(screen.getByRole('combobox'), { target: { value: 'originais/deliberacao-277.pdf' } });
+  expect(screen.getByRole('button', { name: 'Importar documento selecionado' })).toBeDisabled();
+});

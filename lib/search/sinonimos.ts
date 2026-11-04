@@ -2,6 +2,10 @@
 // are search alternatives, never legal conclusions or invented infractions.
 // Patterns use lowercase Portuguese without accents.
 export const SINONIMOS: ReadonlyArray<readonly [RegExp, readonly string[]]> = [
+  [/\bppd\b/, ['Permissão para Dirigir']],
+  [/\bacc\b/, ['Autorização para Conduzir Ciclomotor']],
+  [/\bait\b/, ['auto de infração']],
+  [/\b(?:cavalo de pau|zerinho|manobra radical)\b/, ['exibição perícia em manobra']],
   // Abreviações de campo são expandidas como expressões completas. Evitamos
   // corrigir "mot", "doc" ou "cap" isoladamente, pois fora de contexto são
   // ambíguas e poderiam promover uma ficha juridicamente diferente.
@@ -39,12 +43,13 @@ export const SINONIMOS: ReadonlyArray<readonly [RegExp, readonly string[]]> = [
   [/\b(?:correndo|alta velocidade|excesso de velocidade)\b/, ['velocidade superior à máxima permitida']],
   [/\bvaga de idos[oa]s?\b/, ['vaga reservada idoso']],
   [/\bvaga (?:de )?(?:deficiente|pcd)\b/, ['vaga reservada pessoa com deficiência']],
-  [/\b(?:insulfilm|insulfim|pelicula)\b/, ['película vidros']],
+  [/\b(?:insulfilm|insulfim|pelicula|fume|insufilm)\b/, ['película vidros']],
   [/\bsom alto\b|\bpancadao\b/, ['som volume audível', 'perturbação sossego']],
   [/\bmenor de idade\b/, ['menor de dezoito anos']],
   [/\bcapacete\b/, ['capacete de segurança']],
   [/\bcadeirinhas?\b|\bbebe conforto\b|\bassento de elevacao\b/, ['dispositivo de retenção', 'crianças normas de segurança']],
-  [/\bfarol\b|\bfarois\b/, ['luz baixa', 'faróis']],
+  [/\b(?:farol|sinal|sinaleiro|semaforo) (?:vermelho|fechado)\b|\bfur(?:ar|ou|ando) o (?:farol|sinal|sinaleiro)\b/, ['avançar o sinal vermelho do semáforo']],
+  [/(?<!fur\w{1,4} o )\b(?:farol|farois)\b(?! (?:vermelho|fechado))/, ['luz baixa', 'faróis']],
   [/\bfila dupla\b/, ['ao lado de outro veículo em fila dupla']],
   [/\b(?:recusa|recusou|recusar|nao quis soprar)\b/, ['recusar', 'recusou', 'recusa']],
   [/\brec\b(?=\.?\s+(?:do\s+)?baf)/, ['recusar', 'recusa']],
@@ -68,7 +73,7 @@ export const SINONIMOS: ReadonlyArray<readonly [RegExp, readonly string[]]> = [
   [/\b(?:baseado|maconha|cocaina|crack)\b/, ['posse de drogas para consumo', 'tráfico de drogas']],
   [/\b(?:motoca|motinha)\b/, ['motocicleta']],
   [/\b(?:bike|magrela)\b/, ['bicicleta']],
-  [/\b(?:breja|cachaca|pinga)\b/, ['bebida alcoólica', 'influência de álcool']],
+  [/\b(?:breja|cachaca|pinga|manguaca|birita|cerveja)\b/, ['bebida alcoólica', 'influência de álcool']],
   [/\b(?:furou|fugiu da|passou pela) blitz\b/, ['transpor bloqueio policial', 'desobedecer ordem de parada']],
   [/\b(?:farol|lanterna) queimad[oa]\b/, ['defeito no sistema de iluminação']],
   [/\bcrianca solta\b/, ['transportar criança sem observância das normas de segurança']],

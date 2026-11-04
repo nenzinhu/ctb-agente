@@ -285,4 +285,17 @@ describe('POST /api/ingestion/upload', () => {
     expect(deleteDocument).toHaveBeenCalledWith('doc-1');
     expect(remove).toHaveBeenCalledWith([validBody.storagePath]);
   });
+  it('preserva o PDF original em uma importação explícita do Storage', async () => {
+    const resposta = await POST(requisicao({ ...validBody, preserveStorageFile: true }));
+    expect(resposta.status).toBe(200);
+    expect(processChunks).toHaveBeenCalled();
+    expect(remove).not.toHaveBeenCalled();
+  });
+  it('preserva o original mesmo quando a importação do Storage falha', async () => {
+    download.mockResolvedValueOnce({ data: null, error: { message: 'indisponível' } });
+    const resposta = await POST(requisicao({ ...validBody, preserveStorageFile: true }));
+    expect(resposta.status).toBe(404);
+    expect(remove).not.toHaveBeenCalled();
+  });
+
 });

@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { CartaoEstruturado } from '@/lib/response/response-types';
 import { listarFichasMbft, type MbftFields } from '@/lib/response/mbft-fields';
 import type { FichaMbft } from '@/lib/mbft/parser';
+import ResumoOperacional from './ResumoOperacional';
 import CartaoTecnico from './CartaoTecnico';
 import CartaoSimples from './CartaoSimples';
 import FichaFiscalizacao from './FichaFiscalizacao';
@@ -121,7 +122,7 @@ function FichaEscolhida({ card }: { card: CartaoEstruturado }) {
   }, [card]);
   const [indice, setIndice] = useState(0);
 
-  if (opcoes.length === 0) return <FichaFiscalizacao card={card} campos={null} />;
+  if (opcoes.length === 0) return <><ResumoOperacional card={card} /><details className="support-details"><summary>Ver ficha completa e fundamentos</summary><FichaFiscalizacao card={card} campos={null} /></details></>;
   const atual = opcoes[Math.min(indice, opcoes.length - 1)];
 
   return (
@@ -146,7 +147,7 @@ function FichaEscolhida({ card }: { card: CartaoEstruturado }) {
           {atual.oficial.scoreConfianca}% · {ROTULO_METODO[atual.oficial.metodoEncontrado ?? ''] ?? 'correspondência'}
         </p>
       )}
-      <FichaFiscalizacao card={atual.card} campos={atual.campos} oficial={atual.oficial} />
+      <ResumoOperacional card={atual.card} ficha={atual.oficial} campos={atual.campos} /><details className="support-details"><summary>Ver ficha completa e fundamentos</summary><FichaFiscalizacao card={atual.card} campos={atual.campos} oficial={atual.oficial} /></details>
     </div>
   );
 }

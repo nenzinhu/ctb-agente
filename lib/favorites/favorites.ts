@@ -136,13 +136,15 @@ export function toggleFavorite(card: CartaoEstruturado): ResultadoFavorito {
 }
 
 /** Drop every favorite stored on this device. */
-export function clearFavorites(): void {
+export function clearFavorites(): boolean {
   const store = storage();
-  if (!store) return;
+  if (!store) return false;
 
   try {
     store.removeItem(FAVORITES_STORAGE_KEY);
+    return true;
   } catch (err) {
     console.error('Falha ao limpar os favoritos:', err);
+    return false;
   }
 }

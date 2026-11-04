@@ -1,6 +1,10 @@
 import type { Metadata, Viewport } from 'next';
 import './globals.css';
 import Header from '@/components/Header';
+import ComparisonProvider from '@/components/comparison/ComparisonProvider';
+import CtbReaderProvider from '@/components/ctb/CtbReaderProvider';
+import SplashScreen from '@/components/SplashScreen';
+import PageViewport from '@/components/PageViewport';
 import Footer from '@/components/Footer';
 import MobileNavigation from '@/components/mobile/MobileNavigation';
 
@@ -32,7 +36,7 @@ export const viewport: Viewport = {
 // Applies the saved themes before the first paint, so the page never flashes
 // the wrong palette: "modo sol" (components/TemaToggle.tsx) and the dark theme
 // (components/TemaEscuroToggle.tsx, which follows the system until chosen).
-const TEMA_SALVO = `(function(){var d=document.documentElement,t=null,e=null;try{t=localStorage.getItem('ctb-tema');e=localStorage.getItem('ctb-escuro')}catch(x){}if(t==='sol')d.dataset.tema='sol';if(e==='1'||(e!=='0'&&window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches))d.classList.add('dark')})()`;
+const TEMA_SALVO = `(function(){var d=document.documentElement,t=null,e=null;try{t=localStorage.getItem('ctb-tema');e=localStorage.getItem('ctb-escuro')}catch(x){}try{d.dataset.readingMode=localStorage.getItem('ctb-reading-mode')==='pages'?'pages':localStorage.getItem('ctb-reading-mode')==='scroll'||window.matchMedia('(max-width: 767px)').matches?'scroll':'pages'}catch(x){}if(t==='sol')d.dataset.tema='sol';if(e==='1'||(e!=='0'&&window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches))d.classList.add('dark')})()`;
 
 export default function RootLayout({
   children,
@@ -51,12 +55,15 @@ export default function RootLayout({
         >
           Pular para o conteúdo
         </a>
+        <CtbReaderProvider><ComparisonProvider>
+        <SplashScreen />
         <Header />
         <div id="conteudo" tabIndex={-1} className="outline-none">
-          {children}
+          <PageViewport>{children}</PageViewport>
         </div>
         <Footer />
         <MobileNavigation />
+        </ComparisonProvider></CtbReaderProvider>
       </body>
     </html>
   );

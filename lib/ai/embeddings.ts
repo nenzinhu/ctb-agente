@@ -1,45 +1,28 @@
-import { EmbeddingProvider } from './providers/base';
+import type { EmbeddingProvider } from './providers/base';
 import { MistralEmbedding } from './providers/mistral';
+import { OpenRouterEmbedding } from './providers/openrouter-embedding';
+import { getEmbeddingConfig } from './embedding-config';
+import { NEMOTRON_EMBED_MODEL, type EmbeddingModelId } from './embedding-models';
 
 export class EmbeddingChain implements EmbeddingProvider {
-  name = 'Embedding Chain';
-  private providers: EmbeddingProvider[];
+  name = 'Modelo vetorial do RAG';
 
-  constructor() {
-    this.providers = [
-      new MistralEmbedding(process.env.MISTRAL_API_KEY || ''),
-      // Add more providers as fallback
-    ].filter(p => p !== null);
+  private async provider(modelo?: EmbeddingModelId): Promise<EmbeddingProvider> {
+    const id = modelo ?? (await getEmbeddingConfig()).id;
+    return id === NEMOTRON_EMBED_MODEL
+      ? new OpenRouterEmbedding(process.env.OPENROUTER_API_KEY || '')
+      : new MistralEmbedding(process.env.MISTRAL_API_KEY || '');
   }
 
-  async embed(text: string): Promise<number[]> {
-    const [embedding] = await this.embedBatch([text]);
-    return embedding;
+  async embed(text: string, modelo?: EmbeddingModelId): Promise<number[]> {
+    return (await this.provider(modelo)).embed(text);
   }
 
-  async embedBatch(texts: string[]): Promise<number[][]> {
-    let lastError: Error | null = null;
-
-    for (const provider of this.providers) {
-      try {
-        if (provider.embedBatch) {
-          return await provider.embedBatch(texts);
-        }
-        const out: number[][] = [];
-        for (const text of texts) out.push(await provider.embed(text));
-        return out;
-      } catch (error) {
-        lastError = error instanceof Error ? error : new Error(String(error));
-        console.warn(`${provider.name} failed:`, error);
-        continue;
-      }
-    }
-
-    throw new Error(
-      lastError
-        ? `All embedding providers failed. Last error: ${lastError.message}`
-        : 'No embedding providers are configured (set MISTRAL_API_KEY).'
-    );
+  async embedBatch(texts: string[], modelo?: EmbeddingModelId): Promise<number[][]> {
+    if (texts.length === 0) return [];
+    const provider = await this.provider(modelo);
+    // Never fall back across models: their vectors belong to separate spaces.
+    return provider.embedBatch!(texts);
   }
 }
 

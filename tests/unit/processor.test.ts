@@ -12,6 +12,7 @@
  */
 const insertedRows: Record<string, unknown>[] = [];
 let insertCalls = 0;
+let missingNemotronColumn = false;
 
 const embed = jest.fn(async (_text: string) => [0.1, 0.2, 0.3]);
 const tabelas: string[] = [];
@@ -26,14 +27,19 @@ jest.mock('../../lib/db/client', () => {
   const builder = () => {
     const chain: Record<string, unknown> = {};
     let size = 0;
+    let error: { code: string; message: string } | null = null;
     chain.insert = (rows: Record<string, unknown>[]) => {
+      if (missingNemotronColumn && rows.some((r) => r.embedding_nemotron)) {
+        error = { code: 'PGRST204', message: 'Could not find the embedding_nemotron column' };
+        return chain;
+      }
       insertedRows.push(...rows);
       size = rows.length;
       insertCalls++;
       return chain;
     };
     chain.select = () =>
-      Promise.resolve({ data: Array.from({ length: size }, (_v, i) => ({ id: `disp-${i}` })), error: null });
+      Promise.resolve({ data: error ? null : Array.from({ length: size }, (_v, i) => ({ id: `disp-${i}` })), error });
     return chain;
   };
   return {
@@ -48,8 +54,28 @@ jest.mock('../../lib/db/client', () => {
 
 import { embeddingInput, fallbackLabel, processChunks, processTrechos } from '../../lib/ingestion/processor';
 
+beforeEach(() => { process.env.MISTRAL_API_KEY = 'test-key'; delete process.env.OPENROUTER_API_KEY; });
+afterEach(() => { delete process.env.MISTRAL_API_KEY; delete process.env.OPENROUTER_API_KEY; });
+
 describe('processChunks', () => {
+  it('preserva o texto quando a migração Nemotron ainda não foi aplicada', async () => {
+    process.env.OPENROUTER_API_KEY = 'test-openrouter';
+    missingNemotronColumn = true;
+    const result = await processChunks({ chunks: [{ text: 'trecho oficial', order: 0 }], normaId: 'ctb', documentType: 'lei' });
+    expect(result).toMatchObject({ insertedCount: 1, failedCount: 0, semVetor: 1 });
+    expect(result.avisoVetor).toContain('migrations-015');
+    expect(insertedRows[0].texto).toBe('trecho oficial');
+    expect(insertedRows[0]).not.toHaveProperty('embedding_nemotron');
+  });
+  it('grava vetores Nemotron separadamente sem sobrescrever o espaço Mistral', async () => {
+    process.env.OPENROUTER_API_KEY = 'test-openrouter';
+    await processChunks({ chunks: [{ text: 'trecho oficial', order: 0 }], normaId: 'ctb', documentType: 'lei' });
+    expect(insertedRows[0].embedding_nemotron).toEqual([0.1, 0.2, 0.3]);
+    expect(insertedRows[0]).not.toHaveProperty('embedding');
+  });
+
   beforeEach(() => {
+    missingNemotronColumn = false;
     insertedRows.length = 0;
     tabelas.length = 0;
     insertCalls = 0;

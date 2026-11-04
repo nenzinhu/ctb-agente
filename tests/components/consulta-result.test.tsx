@@ -1,7 +1,13 @@
-import { fireEvent, render, screen, within } from '@testing-library/react';
+import { fireEvent, render as baseRender, screen, within } from '@testing-library/react';
 import ConsultaResult from '@/components/ConsultaResult';
 import { CartaoEstruturado } from '@/lib/response/response-types';
 import { buscarFichas } from '@/lib/mbft/fichas';
+
+function render(element: Parameters<typeof baseRender>[0]) {
+  const result = baseRender(element);
+  screen.queryAllByText('Ver ficha completa e fundamentos', { selector: 'summary' }).forEach(summary => fireEvent.click(summary));
+  return result;
+}
 
 const mockCard: CartaoEstruturado = {
   tipo: 'codigo',
@@ -230,10 +236,10 @@ describe('ConsultaResult', () => {
     const alternativas = screen.getByRole('group', { name: 'Enquadramentos encontrados (2)' });
     expect(within(alternativas).getAllByRole('radio')).toHaveLength(2);
     expect(screen.queryByRole('combobox')).not.toBeInTheDocument();
-    expect(screen.getByText('Art. 182, IV')).toBeInTheDocument();
+    expect(screen.getByText((_, node) => node?.tagName === 'DD' && node.textContent === 'Art. 182, IV')).toBeInTheDocument();
     fireEvent.click(within(alternativas).getByRole('radio', { name: /Art\. 182, V —/ }));
     expect(within(alternativas).getByRole('radio', { name: /Art\. 182, V —/ })).toBeChecked();
-    expect(screen.getByText('Art. 182, V')).toBeInTheDocument();
+    expect(screen.getByText((_, node) => node?.tagName === 'DD' && node.textContent === 'Art. 182, V')).toBeInTheDocument();
   });
 
   it('shows the official MBFT sheet, complete, with its code', () => {

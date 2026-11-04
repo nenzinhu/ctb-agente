@@ -94,21 +94,38 @@ export async function GET(request: NextRequest) {
       migracaoPendente = true;
     }
 
-    const [legado, pendentesVetor] = await Promise.all([
-      colecao === 'pop' ? Promise.resolve([]) : gruposLegados(),
+    // The registry is the primary result. Optional legacy/vector diagnostics
+    // must not turn a successful document lookup into an HTTP 500.
+    const [legadoResultado, vetoresResultado] = await Promise.allSettled([
+      colecao === 'pop' ? Promise.resolve([] as GrupoLegado[]) : gruposLegados(),
       countPendingEmbeddings(),
     ]);
+    const legadoIndisponivel = legadoResultado.status === 'rejected';
+    const legado = legadoResultado.status === 'fulfilled' ? legadoResultado.value : [];
+    const pendentesVetor = vetoresResultado.status === 'fulfilled' ? vetoresResultado.value : null;
+    const avisos: string[] = [];
+    if (legadoIndisponivel) {
+      console.warn('Document listing: legacy excerpt lookup unavailable.');
+      avisos.push('Não foi possível conferir os trechos legados. Os documentos registrados continuam listados.');
+    }
+    if (vetoresResultado.status === 'rejected') {
+      console.warn('Document listing: embedding count unavailable.');
+      const mensagem = vetoresResultado.reason instanceof Error ? vetoresResultado.reason.message : '';
+      avisos.push(mensagem.includes('migrations-015-nemotron') ? mensagem : 'Não foi possível conferir a contagem de vetores. Os documentos registrados continuam listados.');
+    }
 
     return NextResponse.json(
       {
         documentos,
         legado,
         pendentesVetor,
+        legadoIndisponivel,
         migracaoPendente,
         migracaoQualidadePendente,
         bancoConfigurado: true,
+        ...(avisos.length ? { message: avisos.join(' ') } : {}),
       },
-      { status: 200 }
+      { status: 200, headers: { 'Cache-Control': 'private, no-store' } }
     );
   } catch (error) {
     console.error('Error fetching documents:', error);
