@@ -42,7 +42,7 @@ describe('qualidade na lista de documentos', () => {
     })) as unknown as typeof fetch;
 
     render(<DocumentList colecao="ctb" />);
-    expect(await screen.findByText('Revisão necessária')).toBeInTheDocument();
+    expect(await screen.findByText('Revisão pendente')).toBeInTheDocument();
   });
 
   it('mostra versão e data de conferência do documento vigente', async () => {

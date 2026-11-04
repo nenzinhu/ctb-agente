@@ -1,4 +1,5 @@
 'use client';
+import OrigemTexto from './OrigemTexto';
 
 import TextoReferenciasCtb from './TextoReferenciasCtb';
 
@@ -143,7 +144,7 @@ export default function FichaFiscalizacao({ card, campos: doBanco, oficial = nul
         <h2 id="ficha-fiscalizacao" className="font-mono text-base font-bold uppercase tracking-[0.08em] text-ds-text sm:text-lg">
           Ficha de Fiscalização
         </h2>
-        <div className="mt-3 flex flex-wrap items-center gap-2">
+        <div className="mt-3 flex flex-wrap items-center gap-2"><OrigemTexto tipo={oficial ? 'acervo' : enquadramento || doBanco ? 'cadastro' : ia ? 'ia' : 'pendente'} />
           {enquadramento ? (
             <>
               <span className="result-code">

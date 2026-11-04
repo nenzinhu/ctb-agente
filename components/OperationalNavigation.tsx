@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
+import { DESTINOS, destinoAtivo } from '@/lib/navigation';
 import Icone, { type NomeIcone } from './ui/Icone';
 
 type Pilar = {
@@ -13,36 +14,16 @@ type Pilar = {
 };
 
 const PILARES: Pilar[] = [
-  {
-    id: 'fiscalizacao', label: 'Fiscalização', icone: 'busca', itens: [
-      { href: '/', label: 'Consulta CTB e MBFT', icone: 'busca', tambem: ['/consulta'] },
-      { href: '/fatos-pmsc', label: 'Fatos PMSC', icone: 'arquivo' },
-    ],
-  },
-  { id: 'pesos', label: 'Pesos', icone: 'balanca', itens: [{ href: '/pesos-dimensoes', label: 'Pesos e dimensões', icone: 'balanca' }] },
-  { id: 'estrangeiros', label: 'Estrangeiros', icone: 'globo', itens: [{ href: '/estrangeiros', label: 'Checklist e regras internacionais', icone: 'globo' }] },
-  {
-    id: 'procedimentos', label: 'Procedimentos', icone: 'escudo', itens: [
-      { href: '/pop', label: 'POPs PMSC', icone: 'escudo' },
-      { href: '/casos', label: 'Casos práticos', icone: 'check' },
-    ],
-  },
-  {
-    id: 'utilitarios', label: 'Utilitários e IA', icone: 'engrenagem', itens: [
-      { href: '/professor', label: 'Professor CTB', icone: 'professor' },
-      { href: '/apostila', label: 'Gerar apostila', icone: 'livro' },
-      { href: '/comprimir-pdf', label: 'Comprimir PDF', icone: 'comprimir' },
-    ],
-  },
-];
-
-function corresponde(href: string, pathname: string, tambem: string[] = []) {
-  if (href === '/') return pathname === '/' || tambem.some((item) => pathname.startsWith(item));
-  return pathname === href || pathname.startsWith(`${href}/`);
-}
+ {id:'fiscalizacao',label:'Fiscalização',icone:'busca'},
+ {id:'pesos',label:'Pesos',icone:'balanca'},
+ {id:'estrangeiros',label:'Estrangeiros',icone:'globo'},
+ {id:'procedimentos',label:'Procedimentos',icone:'escudo'},
+ {id:'utilitarios',label:'Utilitários e IA',icone:'engrenagem'},
+].map(p=>({...p,icone:p.icone as NomeIcone,itens:DESTINOS.filter(d=>d.pilar===p.id).map(d=>({href:d.href,label:d.operacional??d.label,icone:d.icone}))}));
+function corresponde(href:string,pathname:string){return destinoAtivo(href,pathname)}
 
 function pilarAtivo(pilar: Pilar, pathname: string) {
-  return pilar.itens.some((item) => corresponde(item.href, pathname, item.tambem));
+  return pilar.itens.some((item) => corresponde(item.href, pathname));
 }
 
 export default function OperationalNavigation() {
@@ -95,7 +76,7 @@ export default function OperationalNavigation() {
                 <Link
                   href={item.href}
                   aria-label={item.label}
-                  aria-current={corresponde(item.href, pathname, item.tambem) ? 'page' : undefined}
+                  aria-current={corresponde(item.href, pathname) ? 'page' : undefined}
                   className="operational-submenu-link"
                   onClick={() => setAberto(null)}
                 >

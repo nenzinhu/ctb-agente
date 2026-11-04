@@ -46,3 +46,10 @@ As ferramentas da home usam links para suas rotas reais. Resultados de fiscaliza
 - Consulta local não envia perguntas nem gera respostas por IA. Vigência deve ser conferida na fonte oficial.
 - Rascunhos de CTB, POP, estrangeiros e pesos restauram somente campos conhecidos, com aviso local e opção de descarte; nunca retomam resultados nem enviam uma consulta automaticamente. Identificadores reconhecidos são mascarados; não inserir dados pessoais.
 - Histórico contém apenas códigos/artigos. Comparação mantém no máximo três fichas do acervo em memória, com remoção e limpeza, sem recomendação automática de enquadramento.
+
+### Origem, versões e preferências
+- Rótulos diferenciam documento, cadastro, IA e revisão pendente. Uma citação localizada na base não comprova vigência nem revisão jurídica.
+- `/atualizacoes` compara conteúdo das versões atual e anterior no aparelho: artigos, fichas e POPs. Ignora alterações apenas de página/versão. Sem duas versões, explica a condição; não inventa histórico.
+- Ferramentas permite escolher três abas distintas, conhecidas, salvas localmente. Restaurar padrão e falha de armazenamento têm feedback. Navegação de home/mobile/desktop compartilha rotas, ordem, rótulos curtos e indicação do destino ativo; demais destinos permanecem disponíveis.
+
+Verificação final do roadmap: 1.224 testes Jest, typecheck, build webpack de produção e 12 cenários E2E de viewport/leitura aprovados. Conferência adicional em 390 px e 1440 px verificou abas persistentes, foco de retorno do leitor e comparação local de versões. Regressões cobrem citações quebradas dentro de 147-A, referências com sufixo espaçado, rascunhos de tipos incorretos, pacotes corrompidos e tipificação integral offline.

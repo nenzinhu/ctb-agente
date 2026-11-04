@@ -19,24 +19,24 @@ Referências ambíguas não devem abrir norma errada; textos extensos precisam c
 
 ## Grupo 1 — acesso, artigo e resumo
 
-- [ ] Testar acesso direto e parser dos artigos (sufixos, páginas, artigo ausente).
-- [ ] Criar `lib/ctb/artigos.ts`, endpoint público de cópia local e leitor compartilhado; preservar fonte oficial como fallback.
-- [ ] Ligar ferramentas da home às rotas reais e adicionar resumo operacional com ficha completa expansível.
-- [ ] Testar leitor (carga/erro/Escape/foco), seleção de ficha e acesso aos detalhes; typecheck, Jest, build, browser.
-- [ ] Commit, push main e Vercel produção.
+- [x] Testar acesso direto e parser dos artigos (sufixos, páginas, artigo ausente).
+- [x] Criar `lib/ctb/artigos.ts`, endpoint público de cópia local e leitor compartilhado; preservar fonte oficial como fallback.
+- [x] Ligar ferramentas da home às rotas reais e adicionar resumo operacional com ficha completa expansível.
+- [x] Testar leitor (carga/erro/Escape/foco), seleção de ficha e acesso aos detalhes; typecheck, Jest, build, browser.
+- [x] Commit, push main e Vercel produção.
 
 ## Grupo 2 — offline, retomada e comparação
 
-- [ ] Testar busca local, armazenamento inválido/indisponível, restauração e seleção de até três fichas.
-- [ ] Criar pacote público versionado, IndexedDB com versão anterior, painel de download e consulta local explícita.
-- [ ] Persistir consultas e rascunhos locais, com descarte e sem retomada automática de requisições/resultados antigos.
-- [ ] Criar comparação de campos e condições a partir das fichas, sem avaliação automática.
-- [ ] Executar verificações, commit, push main e Vercel produção.
+- [x] Testar busca local, armazenamento inválido/indisponível, restauração e seleção de até três fichas.
+- [x] Criar pacote público versionado, IndexedDB com versão anterior, painel de download e consulta local explícita.
+- [x] Persistir consultas e rascunhos locais, com descarte e sem retomada automática de requisições/resultados antigos.
+- [x] Criar comparação de campos e condições a partir das fichas, sem avaliação automática.
+- [x] Executar verificações, commit, push main e Vercel produção.
 
 ## Grupo 3 — origem, alterações, preferências e navegação
 
-- [ ] Testar classificação de origem, diferenças entre versões e normalização das preferências.
-- [ ] Explicitar origem e revisão pendente em leitor, resumo, fontes e explicações.
-- [ ] Comparar artigos/fichas de versões baixadas; sem versão anterior, mostrar estado vazio honesto.
-- [ ] Centralizar destinos e implementar escolha das três primeiras abas com restauração do padrão.
-- [ ] Atualizar DESIGN/UX, executar verificações finais, commit, push main e Vercel produção.
+- [x] Testar classificação de origem, diferenças entre versões e normalização das preferências.
+- [x] Explicitar origem e revisão pendente em leitor, resumo, fontes e explicações.
+- [x] Comparar artigos/fichas de versões baixadas; sem versão anterior, mostrar estado vazio honesto.
+- [x] Centralizar destinos e implementar escolha das três primeiras abas com restauração do padrão.
+- [x] Atualizar DESIGN/UX, executar verificações finais, commit, push main e Vercel produção.

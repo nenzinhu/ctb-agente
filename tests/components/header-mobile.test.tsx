@@ -14,8 +14,8 @@ describe('Header no mobile', () => {
     render(<Header />);
     expect(screen.getByRole('link', { name: /ctb agente — início/i })).toHaveClass('mobile-header-brand');
     expect(screen.getByTestId('desktop-navigation')).toHaveClass('hidden', 'md:block');
-    expect(screen.getByRole('link', { name: 'Consultar CTB' })).toHaveAttribute('href', '/');
-    expect(screen.getByRole('link', { name: 'Consultar POPs' })).toHaveAttribute('href', '/pop');
+    expect(screen.getByRole('link', { name: 'Consultar' })).toHaveAttribute('href', '/');
+    expect(screen.getByRole('link', { name: 'POPs' })).toHaveAttribute('href', '/pop');
     expect(screen.getByRole('link', { name: 'Ferramentas' })).toHaveAttribute('href', '/ferramentas');
     expect(screen.getByRole('link', { name: 'Estrangeiros' })).toHaveAttribute('aria-current', 'page');
     expect(screen.queryByRole('link', { name: /enquadramento guiado/i })).not.toBeInTheDocument();

@@ -1,5 +1,6 @@
 'use client';
 import { createContext, useContext, useEffect, useState, type ReactNode } from 'react';
+import OrigemTexto from '@/components/OrigemTexto';
 import AppDialog from '@/components/ui/AppDialog';
 import { lerPacote } from '@/lib/offline/store';
 import { requestJson } from '@/lib/client/request';
@@ -33,7 +34,7 @@ export default function CtbReaderProvider({ children }: { children: ReactNode })
     <AppDialog open={!!numero} title={`Art. ${numero} do CTB`} onClose={() => { setNumero(null); setArtigo(null); }}>
         {!artigo && !erro && <p role="status">Abrindo artigo…</p>}
         {erro && <div role="alert"><p>{erro}</p><button type="button" className="btn-secondary mt-3" onClick={() => setTentativa(v => v + 1)}>Tentar novamente</button></div>}
-        {artigo && <><p className="mb-4 text-sm text-ds-subtle">Acervo do aplicativo · versão {artigo.versao}</p><p className="whitespace-pre-wrap text-base leading-relaxed">{artigo.texto}</p><p className="mt-5 text-sm text-ds-subtle">{artigo.aviso}</p></>}
+        {artigo && <><OrigemTexto tipo="acervo" /><p className="mb-4 text-sm text-ds-subtle">Acervo do aplicativo · versão {artigo.versao}</p><p className="whitespace-pre-wrap text-base leading-relaxed">{artigo.texto}</p><p className="mt-5 text-sm text-ds-subtle">{artigo.aviso}</p></>}
         <a className="mt-4 inline-block font-semibold text-ds-ink underline" href={artigo?.fonte ?? `${FONTE_CTB}#art${numero.replace('-', '').toLowerCase()}`} target="_blank" rel="noopener noreferrer">Conferir no Planalto (nova aba)</a>
     </AppDialog>)}</Context.Provider>;
 }

@@ -82,3 +82,11 @@ No celular a marca-d’água usa opacidade 0,08 (0,025 em modo sol), preservando
 O componente `Field` é o dono do botão “Limpar pesquisa” e da devolução de foco; os formulários controlam cancelamento, erros e resultados conforme [UX-CONTRACT.md](UX-CONTRACT.md). O botão ocupa 44 × 44 px dentro do campo e reserva espaço para o texto, sem deslocar a ação principal.
 
 Os tokens de execução em `app/globals.css` permanecem canônicos (modelo B): `--ds-scroll-thumb` deriva de `--ds-subtle`, `--ds-scroll-track` de `--ds-muted`, `--ds-scroll-hover` de `--ds-primary-strong` e `--ds-scroll-active` de `--ds-text`. O tema é herdado por todos os contêineres roláveis, com propriedades padrão e fallback WebKit. As barras horizontais das abas continuam operáveis; em alto contraste prevalecem os controles do sistema.
+
+## Acesso operacional e procedência
+
+A home abre as rotas reais. O resumo vem antes da ficha completa expansível; referências CTB abrem um diálogo com texto, versão e fonte e devolvem foco ao retorno. Comparação usa tabela com rolagem horizontal apenas dentro do painel, mantendo a navegação fixa.
+
+`lib/navigation.ts` concentra rotas, rótulos curtos, grupos e pilares. Home, navegação geral e mobile usam `NavigationLinks`; três destinos podem ser priorizados neste aparelho em Ferramentas. Abas restantes permanecem acessíveis pelas setas. Não duplicar listas de rotas nos componentes.
+
+Origem usa rótulos textuais consistentes: acervo documental, informação cadastrada, texto gerado por IA e revisão pendente. Cores são auxiliares. Correspondência textual, cadastro ou versão de download não equivalem à confirmação de vigência. Consulta offline e versões têm estados explícitos de carga, indisponibilidade e ausência de pacote/anterior.

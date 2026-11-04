@@ -86,3 +86,12 @@ it('disponibiliza modelos ilustrativos dos documentos sob demanda', () => {
   expect(within(modelo).getByRole('img', { name: /modelo ilustrativo.*habilitação/i })).toHaveAttribute('src', '/documentos/estrangeiros/modelos/habilitacao.svg');
   expect(within(modelo).getByRole('link', { name: /ampliar modelo/i })).toHaveAttribute('target', '_blank');
 });
+
+it('descarta campos com tipos inválidos no rascunho antes da análise local', () => {
+ localStorage.setItem('ctb-rascunho-estrangeiros',JSON.stringify({schema:1,valor:{pergunta:'',fatos:{paisHabilitacao:true,identidadeApresentada:'false',habilitacao:'inventada',dataEntrada:'2026-99-99',registroVeiculo:'estrangeiro'}}}));
+ render(<EstrangeirosConsulta/>);
+ const saved=JSON.parse(localStorage.getItem('ctb-rascunho-estrangeiros')!);
+ expect(saved.valor.fatos).toEqual({registroVeiculo:'estrangeiro'});
+ fireEvent.click(screen.getByRole('button',{name:/analisar situação/i}));
+ expect(screen.getByRole('heading',{name:/dados que ainda precisam/i})).toBeInTheDocument();
+});

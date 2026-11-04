@@ -16,3 +16,12 @@ it('recupera artigos do acervo real sem misturar os sufixos', () => {
   expect(artigos.find(a => a.numero === '165-A')?.texto).toContain('Recusar-se');
   expect(artigos.find(a => a.numero === '165')?.texto).not.toContain('Art. 165-A. Recusar-se');
 });
+
+it('preserva a continuação do 147-A e não cria outro 147 a partir de uma citação quebrada em linha', () => {
+  const fs = require('node:fs');
+  const artigos = extrairArtigosCtb(fs.readFileSync('data/acervo/ctb-lei-9503-compilado.txt', 'utf8'));
+  expect(artigos.filter(a => a.numero === '147')).toHaveLength(1);
+  expect(artigos.find(a => a.numero === '147-A')?.texto).toContain('art. 147 desta Lei deve ser acessível');
+  expect(artigos.find(a => a.numero === '147-A')?.texto).toContain('§ 2o É assegurado');
+  expect(new Set(artigos.map(a => a.numero)).size).toBe(artigos.length);
+});

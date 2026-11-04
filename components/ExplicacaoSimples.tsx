@@ -1,5 +1,6 @@
 'use client';
 
+import OrigemTexto from './OrigemTexto';
 import { useState } from 'react';
 import RespostaFormatada from './pop/RespostaFormatada';
 import Icone from './ui/Icone';
@@ -72,6 +73,7 @@ export default function ExplicacaoSimples({ tipo, id }: { tipo: 'ficha' | 'pop';
       )}
       {estado === 'pronto' && explicacao && (
         <div className="mt-3">
+          <OrigemTexto tipo="ia" />
           <RespostaFormatada texto={explicacao.texto} />
           <p className="mt-3 border-t border-ds-line pt-2 text-xs text-ds-subtle">
             Texto didático gerado por IA ({explicacao.modelo}) a partir do texto oficial. Não substitui o{' '}

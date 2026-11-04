@@ -2,6 +2,7 @@
 
 import Field from '@/components/ui/Field';
 import DraftStatus from '@/components/DraftStatus';
+import { validarFatosRascunho } from '@/lib/client/draft-validation';
 import { useDraftPersistence } from '@/lib/client/drafts';
 
 import { useEffect, useRef, useState } from 'react';
@@ -62,10 +63,7 @@ export default function EstrangeirosConsulta() {
 
   const draft = useDraftPersistence('estrangeiros', { pergunta, fatos }, saved => {
     if (typeof saved.pergunta === 'string') setPergunta(saved.pergunta.slice(0, 500));
-    if (saved.fatos && typeof saved.fatos === 'object' && !Array.isArray(saved.fatos)) {
-      const allowed = ['paisHabilitacao','paisPlaca','visitanteOuResidente','dataEntrada','habilitacao','pidApresentada','identidadeApresentada','categoriaCompativel','registroVeiculo','finalidade','seguroApresentado','admissaoTemporariaApresentada'];
-      setFatos(Object.fromEntries(Object.entries(saved.fatos).filter(([k,v]) => allowed.includes(k) && (typeof v === 'boolean' || (typeof v === 'string' && v.length <= 30)))));
-    }
+    setFatos(validarFatosRascunho(saved.fatos));
   });
 
   const interpretar = async () => {

@@ -3,7 +3,7 @@ import HomeDashboard from '@/components/HomeDashboard';
 jest.mock('next/navigation', () => ({ useRouter: () => ({ push: jest.fn() }), usePathname: () => '/' }));
 
 it.each([
-  ['Estrangeiros', '/estrangeiros'], ['Pesos', '/pesos-dimensoes'], ['Fatos comunicantes', '/fatos-pmsc'], ['Consultar POPs', '/pop'], ['Ferramentas', '/ferramentas'],
+  ['Estrangeiros', '/estrangeiros'], ['Pesos', '/pesos-dimensoes'], ['Fatos comunicantes', '/fatos-pmsc'], ['POPs', '/pop'], ['Ferramentas', '/ferramentas'],
 ])('abre %s diretamente sem outro botão intermediário', (name, href) => {
   render(<HomeDashboard />);
   expect(screen.getByRole('link', { name })).toHaveAttribute('href', href);

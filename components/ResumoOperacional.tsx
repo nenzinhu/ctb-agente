@@ -1,3 +1,4 @@
+import OrigemTexto from './OrigemTexto';
 import type { CartaoEstruturado } from '@/lib/response/response-types';
 import type { FichaMbft } from '@/lib/mbft/parser';
 import type { MbftFields } from '@/lib/response/mbft-fields';
@@ -10,7 +11,7 @@ export default function ResumoOperacional({ card, ficha, campos }: { card: Carta
   const medida = ficha?.medidaAdministrativa || e?.medida_administrativa || campos?.medidaAdministrativa;
   const gravidade = ficha?.gravidade || e?.gravidade || campos?.gravidade;
   return <section className="card card-pad" aria-label="Resumo operacional">
-    <h2 className="text-xl font-bold">Resumo operacional</h2><p className="mt-3 font-semibold">{ficha?.codigo || e?.codigo_mbft}{(ficha?.codigo || e?.codigo_mbft) && ' · '}{titulo}</p>
+    <h2 className="text-xl font-bold">Resumo operacional</h2><div className="mt-2"><OrigemTexto tipo={ficha ? 'acervo' : e || campos ? 'cadastro' : card.ficha_ia ? 'ia' : 'pendente'} /></div><p className="mt-3 font-semibold">{ficha?.codigo || e?.codigo_mbft}{(ficha?.codigo || e?.codigo_mbft) && ' · '}{titulo}</p>
     {amparo && <p className="mt-2 text-sm"><TextoReferenciasCtb texto={amparo} contextoCtb /></p>}
     <dl className="mt-4 grid gap-3 sm:grid-cols-2"><div><dt className="text-sm text-ds-subtle">Gravidade</dt><dd>{gravidade || 'Confira na ficha completa'}</dd></div><div><dt className="text-sm text-ds-subtle">Providência registrada</dt><dd>{medida || 'Confira as condições e os procedimentos na ficha'}</dd></div></dl>
     {ficha?.quandoAutuar?.length ? <p className="mt-4 text-sm"><strong>Condição a conferir: </strong>{ficha.quandoAutuar[0]}</p> : null}

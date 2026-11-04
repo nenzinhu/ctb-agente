@@ -9,3 +9,12 @@ it('rejeita pacotes corrompidos', () => { expect(pacoteValido({ schema: 1, versa
 it('aceita os dados publicados do MBFT e dos POPs', () => {
   expect(pacoteValido({ ...pacote, fichas: require('../../data/acervo/mbft-fichas.json'), pops: require('../../data/acervo/pop-pmsc.json') })).toBe(true);
 });
+
+it('rejeita metadados renderizados como objetos em cópias locais corrompidas', () => {
+ const fs=require('node:fs');
+ const pacote={schema:1,versao:'v',artigos:[{numero:'165',texto:'Art. 165',fonte:'https://www.planalto.gov.br',versao:'v',aviso:'Confira'}],fichas:JSON.parse(fs.readFileSync('data/acervo/mbft-fichas.json','utf8')),pops:JSON.parse(fs.readFileSync('data/acervo/pop-pmsc.json','utf8'))};
+ expect(pacoteValido(pacote)).toBe(true);
+ for(const campo of ['versao','aviso'])expect(pacoteValido({...pacote,artigos:[{...pacote.artigos[0],[campo]:{invalido:true}}]})).toBe(false);
+ expect(pacoteValido({...pacote,fichas:[{...pacote.fichas[0],pagina:{invalido:true}}]})).toBe(false);
+ expect(pacoteValido({...pacote,pops:[{...pacote.pops[0],pagina:{invalido:true}}]})).toBe(false);
+});

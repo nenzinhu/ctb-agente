@@ -1,5 +1,6 @@
 'use client';
 
+import OrigemTexto from './OrigemTexto';
 import TextoReferenciasCtb from './TextoReferenciasCtb';
 
 import { useState } from 'react';
@@ -29,6 +30,7 @@ export default function NormasAplicaveis({ normas }: NormasAplicaveisProps) {
         Normas aplicáveis
       </h3>
 
+      <div className="mt-2"><OrigemTexto tipo="cadastro" /></div>
       <ul className="mt-4 space-y-2">
         {normas.map((norma) => {
           const expandida = aberta === norma.numero_dispositivo;
@@ -43,7 +45,7 @@ export default function NormasAplicaveis({ normas }: NormasAplicaveisProps) {
                 <span className="min-w-0">
                   <span className="block font-mono text-sm font-semibold text-ds-primary">{norma.numero_dispositivo}</span>
                   <span className="mt-0.5 block text-xs text-ds-subtle">
-                    {norma.tipo} · {norma.vigente ? 'vigente' : 'com vigência encerrada'}
+                    Situação cadastrada: {norma.tipo} · {norma.vigente ? 'vigente' : 'com vigência encerrada'}
                   </span>
                 </span>
                 <Icone

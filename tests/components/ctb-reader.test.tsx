@@ -23,3 +23,11 @@ it('mantém acesso à fonte quando o artigo não pode ser carregado', async () =
   expect(await screen.findByRole('alert')).toBeInTheDocument();
   expect(screen.getByRole('link', { name: /Conferir no Planalto/ })).toHaveAttribute('href', expect.stringContaining('#art165'));
 });
+
+it('normaliza referência com espaços no sufixo antes de abrir o artigo', async () => {
+  global.fetch = jest.fn(async () => ({ ok:true,json:async()=>({artigo:{numero:'165-A',texto:'Art. 165-A. Recusar-se',fonte:'https://www.planalto.gov.br/',versao:'teste',aviso:'Confira a fonte.'}}) } as Response));
+  render(<CtbReaderProvider><TextoReferenciasCtb texto="Art. 165 - A do CTB"/></CtbReaderProvider>);
+  fireEvent.click(screen.getByRole('link',{name:'Abrir Art. 165 - A no aplicativo'}));
+  expect(await screen.findByText('Art. 165-A. Recusar-se')).toBeInTheDocument();
+  expect(global.fetch).toHaveBeenCalledWith('/api/ctb/artigos/165-A',expect.anything());
+});

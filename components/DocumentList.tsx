@@ -1,5 +1,6 @@
 'use client';
 
+import OrigemTexto from './OrigemTexto';
 import { useCallback, useEffect, useState } from 'react';
 import type { Colecao, DocumentoRegistro, DocumentosResposta, GrupoLegado } from '@/lib/ingestion/documents';
 import Icone from './ui/Icone';
@@ -260,7 +261,7 @@ export default function DocumentList({ colecao, refreshTrigger, onChange }: Docu
                 </p>
                 <p className="mt-2 flex flex-wrap gap-x-3 gap-y-1 text-xs">
                   {!doc.fonte_oficial || !doc.versao || !doc.conferido_em || doc.situacao === 'revisar' ? (
-                    <span className="font-semibold text-ds-warn">Revisão necessária</span>
+                    <OrigemTexto tipo="pendente" />
                   ) : (
                     <>
                       <span className="text-ds-text">versão: {doc.versao}</span>
